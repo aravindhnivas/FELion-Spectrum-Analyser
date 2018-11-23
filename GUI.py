@@ -183,10 +183,15 @@ user_input_label.config(text = " Enter filename (w/o .felix): ", width=30, heigh
 #user_input_label.pack(side = LEFT, padx=2, pady=5, ipady=1, ipadx = 5)
 
 #Text Entry Box;
-content = StringVar()
+init_msg = "Welcome!" #initialising message
+content = StringVar()   #defining Stringvari()
 user_input = Entry(middleFrame, bg = "white", bd = 5, textvariable=content)
 user_input.focus_set()
-content.set("Welcome!")
+content.set(init_msg)
+file_name = user_input.get() #storing user input value in filename
+#if file_name != init_msg:
+#    content.set(file_name) # Keeping the input value now to the entered value
+
 #user_input.pack(side = LEFT, padx=2, pady=20, ipady=5)
 
 #grid points for (location) label and entry column
@@ -194,13 +199,15 @@ user_input_label.grid(row = 0, column = 0, padx=2, pady=20, ipady=5)
 user_input.grid(row = 0, column = 1, padx=2, pady=20, ipady=5)
 
 #Button for testing commands:
-def test(event):
-    print(content.set())
+def test():
+    global file_name
+    content.set(file_name)
+    print(user_input.get())
     return
 
 test_button = Button(bottomFrame)
 test_button.config(text="Test Button", relief=RAISED, width=20, height=1, command=test)
-test_button.bind("<Button-1>", test)
+#test_button.bind("<Button-1>", test)
 test_button.pack(side = TOP, padx=2, pady=2, ipady=5)
 
 #user_input.focus_set() # Sets focus so that all keyboard events for the application are sent to wuser_input.
