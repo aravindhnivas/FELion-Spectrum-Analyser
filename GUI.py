@@ -188,7 +188,7 @@ content = StringVar()   #defining Stringvari()
 user_input = Entry(middleFrame, bg = "white", bd = 5, textvariable=content)
 user_input.focus_set()
 content.set(init_msg)
-file_name = user_input.get() #storing user input value in filename
+#file_name = user_input.get() #storing user input value in filename
 #if file_name != init_msg:
 #    content.set(file_name) # Keeping the input value now to the entered value
 
@@ -200,10 +200,9 @@ user_input.grid(row = 0, column = 1, padx=2, pady=20, ipady=5)
 
 #Button for testing commands:
 def test():
-    global file_name
-    content.set(file_name)
+    tmp = content.set(user_input.get())
     print(user_input.get())
-    return
+    return tmp
 
 test_button = Button(bottomFrame)
 test_button.config(text="Test Button", relief=RAISED, width=20, height=1, command=test)
