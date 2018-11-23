@@ -199,14 +199,14 @@ user_input_label.grid(row = 0, column = 0, padx=2, pady=20, ipady=5)
 user_input.grid(row = 0, column = 1, padx=2, pady=20, ipady=5)
 
 #Button for testing commands:
-def test():
+def input_file():
     tmp = content.set(user_input.get())
     file_name = user_input.get()
     print(file_name)
     return file_name
 
 Submit = Button(middleFrame)
-Submit.config(text="Submit", relief=RAISED, width=20, height=1, command=test)
+Submit.config(text="Submit", relief=RAISED, width=20, height=1, command=input_file)
 Submit.grid(row = 0, column = 2, padx=2, pady=20, ipady=5)
 #Submit.pack(side = TOP, padx=2, pady=2, ipady=5)
 
@@ -241,19 +241,19 @@ textBox.pack(side = RIGHT)'''
 
 #Baseline
 baseline_button = Button(bottomFrame, text="Baseline")
-baseline_button.config(relief=RAISED, width=20, height=1, command=test)
+baseline_button.config(relief=RAISED, width=20, height=1, command=b)
 baseline_button.bind("<Button-1>", b)
 baseline_button.pack(side = TOP, padx=2, pady=2, ipady=5)
 
 #Normline
 normline_button = Button(bottomFrame, text="Normline")
-normline_button.config(relief=RAISED, width=20, height=1, command=test)
+normline_button.config(relief=RAISED, width=20, height=1, command=n)
 normline_button.bind("<Button-1>", n)
 normline_button.pack(side = TOP, padx=2, pady=2, ipady=5)
 
 #Avg_Spectrum
 avg_button = Button(bottomFrame, text="Avg_spectrum")
-avg_button.config(relief=RAISED, width=20, height=1, command=test)
+avg_button.config(relief=RAISED, width=20, height=1, command=a)
 avg_button.bind("<Button-1>", a)
 avg_button.pack(side = TOP, padx=2, pady=2, ipady=5)
 
