@@ -7,6 +7,7 @@ from FELion_normline import *
 from FELion_avgSpec import *
 ###################################################################################################
 
+#Defining Button Actions
 #Defining the baseline_correction function for GUI button
 def baseline_correction(event, fname=""):
     my_path = os.getcwd()
@@ -74,7 +75,6 @@ def baseline_correction(event, fname=""):
         SaveBase(fname, baseline)
     return
 
-#Defining Button Actions
 #Defining Normline
 def normline(event, fname="",s = True, plotShow = False):
     my_path = os.getcwd()
