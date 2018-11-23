@@ -184,8 +184,11 @@ user_input_label = Label(middleFrame, text = " Enter filename (w/o .felix): ",\
                             font=("Courier", 10))
 user_input_label.pack(side = LEFT, padx=2, pady=5, ipady=1, ipadx = 5)
 #Text Entry Box;
-user_input = Entry(middleFrame, bg = "white")
+user_input = Entry(middleFrame, bg = "white", bd = 5)
 user_input.pack(side = LEFT, padx=2, pady=20, ipady=5)
+
+#entryBox_input = ""
+entryBox_input = user_input.get()
 
 #Defining buttons:
 #Defining input file name:
@@ -228,6 +231,17 @@ avg_button = Button(bottomFrame, text="Avg_spectrum", width=20, height=1)
 avg_button.bind("<Button-1>", a)
 avg_button.pack(side = TOP, padx=2, pady=2, ipady=5)
 
+#Button for testing commands:
+def test(event):
+    global entryBox_input
+    if entryBox_input != "":
+        print(entryBox_input)
+    return
+
+test_button = Button(bottomFrame, text="Test Button", width=20, height=1)
+test_button.bind("<Button-1>", test)
+test_button.pack(side = TOP, padx=2, pady=2, ipady=5)
+
 #Quit Button
 def destroy():
     global root
@@ -238,7 +252,5 @@ quitButton = Button(bottomFrame, text="Quit", fg = "red", command=destroy).pack(
 #Root mainloop
 root.mainloop()
 
-print("###############################################################")
-print("\n\nProgram closed.\n\n")
-print("###############################################################")
+print("\n####################################     PROGRAM CLOSED     ####################################")
 #EXIT

@@ -172,5 +172,5 @@ if __name__ == "__main__":
     main()
     help()
 
-if __name__ == "FELion_normline":
-    help()
+#if __name__ == "FELion_normline":
+    #help()

@@ -98,4 +98,4 @@ def help():
     print("majorTickSize: Font size for the major tick label(default is 8)")
     print()
     print("######################################################################################################")
-help()
+#help()
