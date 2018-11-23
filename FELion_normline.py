@@ -134,7 +134,8 @@ def felix_binning(xs, ys, delta=1):
     #data_binned = bin_a[non_zero_i]/bin_occ[non_zero_i]
 
     return binsx, data_binned 
-'''
+
+
 def main(s=True, plotShow=False):
     my_path = os.getcwd()
     raw_filename = str(input("Enter the file name (without .felix): "))
@@ -142,20 +143,15 @@ def main(s=True, plotShow=False):
     powerfile = raw_filename + ".pow"
     fname = filename
 
-    if not os.path.isfile(powerfile):
-        print()
-        print("CAUTION:")
-        print("You don't have the powerfile(.pow)")
-        print()
-    elif os.path.isfile(powerfile):
+    if os.path.isfile(powerfile):
         shutil.copyfile(my_path + r"\{}".format(powerfile), my_path + r"\DATA\{}".format(powerfile))
+        print("Powerfile copied to the DATA folder.")
+    else:
+        print("\nCAUTION:You don't have the powerfile(.pow)\n")
 
     a,b = norm_line_felix(fname, save=s, show=plotShow)
-    print()
-    print()
-    print("Process Completed.")
-    print()
-    print()
+    print("\nProcess Completed.\n")
+
 
 def help():
     print()
@@ -174,5 +170,7 @@ def help():
 
 if __name__ == "__main__":
     main()
+    help()
 
-help()'''
+if __name__ == "FELion_normline":
+    help()

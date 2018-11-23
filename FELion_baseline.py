@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 import sys
 import copy
-import os 
 import matplotlib
 matplotlib.use('TkAgg')
 import numpy as np
@@ -12,32 +11,13 @@ from matplotlib.artist import Artist
 from matplotlib.mlab import dist_point_to_segment
 from scipy.interpolate import interp1d
 
+import os 
 import shutil
 
 #These 2 values are used when guessing the baseline:
 PPS = 5         #points around the value to average
 NUM_POINTS = 18
 baseline=None
-
-########################################################################################
-
-def ReadBase(fname):
-    #open file and skip sharps
-    interpol='cubic'
-    wl, cnt = [],[]
-    f = open('DATA/' + fname + '.base')
-    for line in f:
-        if line[0] == '#':
-            if line.find('INTERP')==1:
-                interpol = line.split('=')[-1].strip('\n')
-            continue
-        else:
-            x, y, = line.split()
-            wl.append(float(x))
-            cnt.append(float(y))
-    
-    f.close()
-    return np.array(wl), np.array(cnt), interpol
 
 # Class for Baseline Calibration
 class BaselineCalibrator(object):
@@ -57,8 +37,6 @@ class BaselineCalibrator(object):
         x = np.arange(self.Bx.min(), self.Bx.max(), 0.5)
         ax.plot(x, self.val(x), marker='', ls='-', c='b')
         ax.plot(self.Bx, self.By, marker='s', ls='', ms=5, c='b', markeredgecolor='b', animated=True)
-
-
 ########################################################################################
 # Interactive LINE plotter
 class InteractivePoints(object):
@@ -187,10 +165,25 @@ class InteractivePoints(object):
         self.ax.draw_artist(self.line)
         self.ax.draw_artist(self.funcLine)
         self.canvas.blit(self.ax.bbox)
+########################################################################################
 
-
-
-################################################################################
+def ReadBase(fname):
+    #open file and skip sharps
+    interpol='cubic'
+    wl, cnt = [],[]
+    f = open('DATA/' + fname + '.base')
+    for line in f:
+        if line[0] == '#':
+            if line.find('INTERP')==1:
+                interpol = line.split('=')[-1].strip('\n')
+            continue
+        else:
+            x, y, = line.split()
+            wl.append(float(x))
+            cnt.append(float(y))
+    
+    f.close()
+    return np.array(wl), np.array(cnt), interpol
 
 def felix_read_file(fname):
     """
@@ -256,3 +249,76 @@ def SaveBase(fname, baseline):
         f.write("{:8.3f}\t{:8.2f}\n".format(b[0][i], b[1][i]))
     f.close()
     return f, fname, baseline
+
+def main(fname=""):
+    if fname == "":
+        fname = input("Please enter the file name (without .felix): ")
+        #fname = retrieve_input()
+    my_path = os.getcwd()
+
+    if os.path.isdir('EXPORT'):
+        print("EXPORT folder exist")
+    else:
+        os.mkdir('EXPORT')
+        print("EXPORT folder created.")
+        
+    if os.path.isdir('OUT'):
+        print("OUT folder exist")
+    else:
+        os.mkdir('OUT')
+        print("OUT folder created.")
+
+    if os.path.isdir('DATA'):
+        print("DATA folder exist")
+    else:
+        os.mkdir('DATA')
+        print("DATA folder created.")
+
+    filename = fname + ".felix"
+
+    if os.path.isfile(filename):
+        print("File exist, Copying to the DATA folder to process.")
+        shutil.copyfile(my_path + r"\{}".format(filename), my_path + r"\DATA\{}".format(filename))
+
+    data = felix_read_file(fname)
+
+    #Check wether the baslien file exists
+    if not os.path.isfile('DATA/'+fname+'.base'):
+        print("Guessing baseline from .felix file!")
+        xs, ys = GuessBaseLine(data)
+    else:
+        print("Reading baseline from .base file!")
+        xs, ys, *rest = ReadBase(fname)
+
+    fig, ax = plt.subplots()
+
+    p = InteractivePoints(fig, ax, xs, ys)
+    ax.plot(data[0], data[1], ls='', marker='o', ms=5, markeredgecolor='r', c='r')
+
+    print("\nUSAGE:\nBlue baseline points are dragable...\
+           \nKeys:\n\
+    'a' - adds a point at current cursor position\n\
+    'd' - delets a point at current cursor position\n\
+    'w' - moves the point to the 'average' value at given x position\n\
+    'q' - stores baseline in .base file and quits!\n")
+
+    ax.set_title('BASELINE points are drag-able!')
+    ax.set_xlim((data[0][0]-70, data[0][-1]+70))
+    ax.set_xlabel("wavenumber (cm-1)")
+    ax.set_ylabel("Counts")
+    plt.show()
+    
+    #Powerfile check
+    powerfile = fname + ".pow"
+    if not os.path.isfile(powerfile):
+        print("NOTE: You don't have .pow file so you can't plot the data yet but you can make the baseline.")
+    elif os.path.isfile(powerfile):
+        shutil.copyfile(my_path + r"\{}".format(powerfile), my_path + r"\DATA\{}".format(powerfile))
+        print("Powerfile is copied to the DATA folder")
+
+    if baseline != None:
+        SaveBase(fname, baseline)
+    return
+
+if __name__ == "__main__":
+    main()

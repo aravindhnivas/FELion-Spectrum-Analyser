@@ -12,10 +12,10 @@ import shutil
 
 #Defining the baseline_correction function for GUI button
 def baseline_correction(event, fname=""):
-    if fname == "":
-        fname = retrieve_input()
     my_path = os.getcwd()
 
+    if fname == "":
+        fname = retrieve_input()
     if os.path.isdir('EXPORT'):
         print("EXPORT folder exist")
     else:
@@ -81,29 +81,25 @@ def baseline_correction(event, fname=""):
     return
 
 #Defining Button Actions
+
+#Defining Normline
 def normline(event, fname="",s = True, plotShow = False):
     my_path = os.getcwd()
     if fname == "":
         fname = retrieve_input()
         full_fname = fname + ".felix"
         powerfile = fname + ".pow"
-    if not os.path.isfile(powerfile):
-        print()
-        print("CAUTION:")
-        print("You don't have the powerfile(.pow)")
-        print()
-    elif os.path.isfile(powerfile):
+    if os.path.isfile(powerfile):
         shutil.copyfile(my_path + r"\{}".format(powerfile), my_path + r"\DATA\{}".format(powerfile))
+        print("Powerfile copied to the DATA folder.")
+    else:
+        print("\nCAUTION:You don't have the powerfile(.pow)\n")
 
     a,b = norm_line_felix(fname, save=s, show=plotShow)
-    print()
-    print()
-    print("Process Completed.")
-    print()
-    print()
+    print("\nProcess Completed.\n")
     return
-    
 
+#Defining Average Spectrum function
 def avgSpec(event, t="Title", ts=10, lgs=5, \
         minor=5, major=50, majorTickSize=8, \
         xmin=1000, xmax=2000):
@@ -161,8 +157,8 @@ def avgSpec(event, t="Title", ts=10, lgs=5, \
     print("Completed.")
     print()
     return
-    
-#Defining the spectrum functions:
+
+#Assigning the spectrum functions:
 b = baseline_correction
 n = normline
 a = avgSpec
