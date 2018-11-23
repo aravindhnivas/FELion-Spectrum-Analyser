@@ -2,115 +2,12 @@
 
 #Importing all the required definitions from various functions
 from tkinter import *
-#from FELion_baseline import *
+from FELion_baseline import *
 from FELion_normline import *
 from FELion_avgSpec import *
-
-#custom import
-import os
-import shutil
-
-import sys
-import copy
-import matplotlib
-matplotlib.use('TkAgg')
-import numpy as np
-import pylab as P
-import matplotlib.pyplot as plt
-from matplotlib.lines import Line2D
-from matplotlib.artist import Artist
-from matplotlib.mlab import dist_point_to_segment
-from scipy.interpolate import interp1d
-
 ###################################################################################################
 
 #Defining the baseline_correction function for GUI button
-#Values:
-#These 2 values are used when guessing the baseline:
-PPS = 5         #points around the value to average
-NUM_POINTS = 18
-baseline=None
-
-def ReadBase(fname):
-    #open file and skip sharps
-    interpol='cubic'
-    wl, cnt = [],[]
-    f = open('DATA/' + fname + '.base')
-    for line in f:
-        if line[0] == '#':
-            if line.find('INTERP')==1:
-                interpol = line.split('=')[-1].strip('\n')
-            continue
-        else:
-            x, y, = line.split()
-            wl.append(float(x))
-            cnt.append(float(y))
-    
-    f.close()
-    return np.array(wl), np.array(cnt), interpol
-
-def felix_read_file(fname):
-    """
-    Reads data from felix meassurement file
-    Input: filename
-    Output: data[0,1]   0 - wavenumber, 1 - intensity
-    """
-    
-    sa_factor = 1.0
-    #open file and skip sharps
-    wl, cnt, sa = [],[],[]
-    f = open('DATA/' + fname + '.felix')
-    for line in f:
-        if line[0] == '#':
-            if line.find("3HARM")==1:
-                sa_factor=2.0
-            continue
-        else:
-            if len(line.split()) < 4: continue
-            x, y, z, q, *rest = line.split()
-            wl.append(float(x))
-            cnt.append(float(z))
-            sa.append(float(q)*sa_factor)
-    
-    f.close()
-    data = np.array([wl, cnt, sa])
-
-    indices = data[0].argsort()
-    wl_min_f = data[0][indices[0]]
-    wl_max_f = data[0][indices[-1]]
-    print("--------------------------------------------------------------------------------")
-    print('FILE: ', fname, '\tWavelength in file:' , wl_min_f, '-', wl_max_f, 'PONTS: ', len(data[0][:]))
-    
-    res = np.take(data, indices, 1)
-    return res
-
-def GuessBaseLine(data):
-    """
-    Guesses the baseline according to real points in the datafile.
-    makes NUM_POINTS baseline defining points 
-    """
-    max_n = len(data[0]) - PPS
-    Bx, By = [data[0][0]-0.1], [data[1][0]]             #NOTE teh 0.1 is here to be 
-    #sure all the frequencies are in baseline calib. range
-    for i in range(0, max_n, int(max_n/NUM_POINTS)):
-        x = data[0][i:i+PPS].mean()
-        y = data[1][i:i+PPS].mean()
-        Bx.append(x)
-        By.append(y)
-    Bx.append(data[0][-1]+0.1)
-    By.append(data[1][-1])
-
-    return np.array(Bx), np.array(By)
-
-def SaveBase(fname, baseline):
-    b = np.asarray(baseline)
-    f = open('DATA/' + fname + '.base','w')
-    f.write("#Baseline generated for " + fname + ".felix data file!\n")
-    f.write("#BTYPE=cubic\n")
-    for i in range(len(b[0])):
-        f.write("{:8.3f}\t{:8.2f}\n".format(b[0][i], b[1][i]))
-    f.close()
-    return f, fname, baseline
 def baseline_correction(event, fname=""):
     my_path = os.getcwd()
     if fname == "":
