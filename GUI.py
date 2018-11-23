@@ -192,6 +192,7 @@ content.set("Welcome!")
 #grid points for (location) label and entry column
 user_input_label.grid(row = 0, column = 0, padx=2, pady=20, ipady=5)
 user_input.grid(row = 0, column = 1, padx=2, pady=20, ipady=5)
+
 #Button for testing commands:
 def test(event):
     print(content.set())
