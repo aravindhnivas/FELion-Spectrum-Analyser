@@ -2,7 +2,7 @@
 
 #Importing all the required definitions from various functions
 from tkinter import *
-from FELion_baseline import *
+#from FELion_baseline import *
 from FELion_normline import *
 from FELion_avgSpec import *
 
@@ -10,9 +10,26 @@ from FELion_avgSpec import *
 import os
 import shutil
 
+import sys
+import copy
+import matplotlib
+matplotlib.use('TkAgg')
+import numpy as np
+import pylab as P
+import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
+from matplotlib.artist import Artist
+from matplotlib.mlab import dist_point_to_segment
+from scipy.interpolate import interp1d
+
 ###################################################################################################
 
 #Defining the baseline_correction function for GUI button
+#Values:
+#These 2 values are used when guessing the baseline:
+PPS = 5         #points around the value to average
+NUM_POINTS = 18
+baseline=None
 
 def ReadBase(fname):
     #open file and skip sharps
@@ -300,14 +317,14 @@ avg_button = Button(bottomFrame, text="Avg_spectrum", width=20, height=1)
 avg_button.bind("<Button-1>", a)
 avg_button.pack(side = TOP, padx=2, pady=2)
 
-#Save Button
+'''#Save Button
 def save(event):
     global root
     root.quit()
 
 saveButton = Button(bottomFrame, text="Save", fg = "green", width=10, height=1)
 saveButton.bind("Button-1", save)
-saveButton.pack()
+saveButton.pack()'''
 
 #Quit Button
 def destroy():
