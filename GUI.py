@@ -184,11 +184,25 @@ user_input_label = Label(middleFrame, text = " Enter filename (w/o .felix): ",\
                             font=("Courier", 10))
 user_input_label.pack(side = LEFT, padx=2, pady=5, ipady=1, ipadx = 5)
 #Text Entry Box;
-user_input = Entry(middleFrame, bg = "white", bd = 5)
+content = StringVar()
+user_input = Entry(middleFrame, bg = "white", bd = 5, textvariable=content)
 user_input.pack(side = LEFT, padx=2, pady=20, ipady=5)
 
-#entryBox_input = ""
-entryBox_input = user_input.get()
+text = content.set("Welcome!")
+content.set(text)
+
+#Button for testing commands:
+def test(event):
+    global text
+    print(text)
+    return
+
+test_button = Button(bottomFrame, text="Test Button")
+test_button.config(relief=RAISED, width=20, height=1, command=test)
+test_button.pack(side = TOP, padx=2, pady=2, ipady=5)
+
+#user_input.focus_set() # Sets focus so that all keyboard events for the application are sent to wuser_input.
+
 
 #Defining buttons:
 #Defining input file name:
@@ -217,37 +231,33 @@ textBox=Text(bottomFrame, width=10, height=2)
 textBox.pack(side = RIGHT)'''
 
 #Baseline
-baseline_button = Button(bottomFrame, text="Baseline", width=20, height=1)
+baseline_button = Button(bottomFrame, text="Baseline")
+baseline_button.config(relief=RAISED, width=20, height=1, command=test)
 baseline_button.bind("<Button-1>", b)
 baseline_button.pack(side = TOP, padx=2, pady=2, ipady=5)
 
 #Normline
-normline_button = Button(bottomFrame, text="Normline", width=20, height=1)
+normline_button = Button(bottomFrame, text="Normline")
+normline_button.config(relief=RAISED, width=20, height=1, command=test)
 normline_button.bind("<Button-1>", n)
 normline_button.pack(side = TOP, padx=2, pady=2, ipady=5)
 
 #Avg_Spectrum
-avg_button = Button(bottomFrame, text="Avg_spectrum", width=20, height=1)
+avg_button = Button(bottomFrame, text="Avg_spectrum")
+avg_button.config(relief=RAISED, width=20, height=1, command=test)
 avg_button.bind("<Button-1>", a)
 avg_button.pack(side = TOP, padx=2, pady=2, ipady=5)
 
-#Button for testing commands:
-def test(event):
-    global entryBox_input
-    if entryBox_input != "":
-        print(entryBox_input)
-    return
-
-test_button = Button(bottomFrame, text="Test Button", width=20, height=1)
-test_button.bind("<Button-1>", test)
-test_button.pack(side = TOP, padx=2, pady=2, ipady=5)
 
 #Quit Button
 def destroy():
     global root
     root.destroy()
+    return
 
-quitButton = Button(bottomFrame, text="Quit", fg = "red", command=destroy).pack(padx=5, pady=20, ipady=2)
+quitButton = Button(bottomFrame)
+quitButton.config(text="Quit", fg = "red", command=destroy)
+quitButton.pack(padx=5, pady=20, ipady=2)
 
 #Root mainloop
 root.mainloop()
