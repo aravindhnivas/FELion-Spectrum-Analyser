@@ -187,18 +187,18 @@ user_input_label.pack(side = LEFT, padx=2, pady=5, ipady=1, ipadx = 5)
 content = StringVar()
 user_input = Entry(middleFrame, bg = "white", bd = 5, textvariable=content)
 user_input.pack(side = LEFT, padx=2, pady=20, ipady=5)
+user_input.focus_set()
 
-text = content.set("Welcome!")
-content.set(text)
+content.set("Welcome!")
 
 #Button for testing commands:
 def test(event):
-    global text
-    print(text)
+    print(content.set())
     return
 
-test_button = Button(bottomFrame, text="Test Button")
-test_button.config(relief=RAISED, width=20, height=1, command=test)
+test_button = Button(bottomFrame)
+test_button.config(text="Test Button", relief=RAISED, width=20, height=1, command=test)
+test_button.bind("<Button-1>", test)
 test_button.pack(side = TOP, padx=2, pady=2, ipady=5)
 
 #user_input.focus_set() # Sets focus so that all keyboard events for the application are sent to wuser_input.
