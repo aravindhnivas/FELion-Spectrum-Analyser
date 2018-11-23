@@ -161,20 +161,33 @@ root = Tk()
 
 # Defining frames
 topFrame = Frame(root, bg = "white", width=300, height=200)
+topFrame.pack(fill = X)
+
+middleFrame = Frame(root, bg = "green", width=300, height=200)
+middleFrame.pack(fill = X)
+
 bottomFrame = Frame(root, bg = "green")
-label = Label(topFrame,\
+bottomFrame.pack(side = BOTTOM,fill=X)
+
+#TITLE:
+title = Label(topFrame,\
               text = "FELion Spectrum Analyser",\
               bg = "green",\
               width=30, height=1,\
-              font=("Courier", 30))
+              font=("Courier", 30)).pack()
 
-#Packing franes
-topFrame.pack(fill = X)
-bottomFrame.pack(side = BOTTOM,fill=X)
-label.pack()
+
+#Entry Box label:
+user_input_label = Label(middleFrame, text = " Enter filename (w/o .felix): ",\
+                            width=30, height=1,\
+                            bg = "white",\
+                            font=("Courier", 10))
+user_input_label.pack(side = LEFT, padx=2, pady=5, ipady=1, ipadx = 5)
+#Text Entry Box;
+user_input = Entry(middleFrame, bg = "white")
+user_input.pack(side = LEFT, padx=2, pady=20, ipady=5)
 
 #Defining buttons:
-
 #Defining input file name:
 def retrieve_input():
     inputValue=textBox.get("1.0","end-1c")
@@ -191,13 +204,14 @@ def retrieve_input():
         print("###############################################################")
     return file
 
-buttonInput=Button(bottomFrame,\
+#Submit Button
+'''buttonInput=Button(bottomFrame,\
                    height=1, width=10,\
                    text="Submit",\
                    command = retrieve_input)
 buttonInput.pack(side = RIGHT, padx=2, pady=2)
 textBox=Text(bottomFrame, width=10, height=2)
-textBox.pack(side = RIGHT)
+textBox.pack(side = RIGHT)'''
 
 #Baseline
 baseline_button = Button(bottomFrame, text="Baseline", width=20, height=1)
@@ -213,11 +227,6 @@ normline_button.pack(side = TOP, padx=2, pady=2, ipady=5)
 avg_button = Button(bottomFrame, text="Avg_spectrum", width=20, height=1)
 avg_button.bind("<Button-1>", a)
 avg_button.pack(side = TOP, padx=2, pady=2, ipady=5)
-
-
-#Text Entry Box;
-user_input = Entry(bottomFrame)
-user_input.pack(side = RIGHT)
 
 #Quit Button
 def destroy():
