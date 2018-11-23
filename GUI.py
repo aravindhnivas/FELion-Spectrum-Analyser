@@ -10,34 +10,7 @@ from FELion_avgSpec import *
 import os
 import shutil
 
-#Recreating the FELion_baseline module here.
-#custom import modules for Felion_baseline
-import sys
-import copy 
-import matplotlib
-matplotlib.use('TkAgg')
-import numpy as np
-import pylab as P
-import matplotlib.pyplot as plt
-from matplotlib.lines import Line2D
-from matplotlib.artist import Artist
-from matplotlib.mlab import dist_point_to_segment
-from scipy.interpolate import interp1d
-
-#These 2 values are used when guessing the baseline:
-PPS = 5         #points around the value to average
-NUM_POINTS = 18
-baseline=None
-
-def SaveBase(fname, baseline):
-    b = np.asarray(baseline)
-    f = open('DATA/' + fname + '.base','w')
-    f.write("#Baseline generated for " + fname + ".felix data file!\n")
-    f.write("#BTYPE=cubic\n")
-    for i in range(len(b[0])):
-        f.write("{:8.3f}\t{:8.2f}\n".format(b[0][i], b[1][i]))
-    return
-
+#Defining the baseline_correction function for GUI button
 def baseline_correction(event, fname=""):
     if fname == "":
         fname = retrieve_input()
