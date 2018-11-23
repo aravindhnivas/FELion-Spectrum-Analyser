@@ -202,17 +202,17 @@ textBox.pack(side = RIGHT)
 #Baseline
 baseline_button = Button(bottomFrame, text="Baseline", width=20, height=1)
 baseline_button.bind("<Button-1>", b)
-baseline_button.pack(side = TOP, padx=2, pady=2)
+baseline_button.pack(side = TOP, padx=2, pady=2, ipady=5)
 
 #Normline
 normline_button = Button(bottomFrame, text="Normline", width=20, height=1)
 normline_button.bind("<Button-1>", n)
-normline_button.pack(side = TOP, padx=2, pady=2)
+normline_button.pack(side = TOP, padx=2, pady=2, ipady=5)
 
 #Avg_Spectrum
 avg_button = Button(bottomFrame, text="Avg_spectrum", width=20, height=1)
 avg_button.bind("<Button-1>", a)
-avg_button.pack(side = TOP, padx=2, pady=2)
+avg_button.pack(side = TOP, padx=2, pady=2, ipady=5)
 
 '''#Save Button
 def save(event):
@@ -228,7 +228,7 @@ def destroy():
     global root
     root.destroy()
 
-quitButton = Button(bottomFrame, text="Quit", fg = "red", command=destroy).pack()
+quitButton = Button(bottomFrame, text="Quit", fg = "red", command=destroy).pack(padx=5, pady=20, ipady=2)
 
 #Root mainloop
 root.mainloop()
