@@ -170,12 +170,12 @@ bottomFrame = Frame(root, bg = "green")
 bottomFrame.pack(side = BOTTOM,fill=X)
 
 #TITLE:
-title = Label(topFrame,\
-              text = "FELion Spectrum Analyser",\
-              bg = "green",\
-              width=30, height=1,\
-              font=("Courier", 30)).pack()
-
+title_text = "FELion Spectrum Analyser"
+title_var = StringVar()
+title_var.set(title_text)
+title = Label(topFrame, relief = SOLID)
+title.config(textvariable = title_var, bg = "white", width=30, height=1, font="Times 22 bold")
+title.pack()
 
 #Entry Box label:
 user_input_label = Label(middleFrame, text = " Enter filename (w/o .felix): ",\
