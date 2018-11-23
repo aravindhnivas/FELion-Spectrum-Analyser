@@ -256,7 +256,7 @@ def SaveBase(fname, baseline):
     for i in range(len(b[0])):
         f.write("{:8.3f}\t{:8.2f}\n".format(b[0][i], b[1][i]))
 
-def main(event):
+def main(fname = ""):
     my_path = os.getcwd()
 
     if os.path.isdir('EXPORT'):
@@ -276,10 +276,11 @@ def main(event):
     else:
         os.mkdir('DATA')
         print("DATA folder created.")
-    fname = ""
+        
     if fname == "":
         fname = input("Please enter the file name: ")
         filename = fname + ".felix"
+        powerfile = fname + ".pow"
 
     if os.path.isfile(filename):
         print("File exist, Copying to the DATA folder to process.")
@@ -330,5 +331,5 @@ def main(event):
         SaveBase(fname, baseline)
 
 
-#if __name__ == "__main__":
-#   main()  
+if __name__ == "__main__":
+   main()  
