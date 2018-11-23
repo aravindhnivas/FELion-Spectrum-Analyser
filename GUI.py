@@ -15,7 +15,6 @@ def baseline_correction(event, fname=""):
     if fname == "":
         fname = retrieve_input()
     my_path = os.getcwd()
-    #print(my_path)
 
     if os.path.isdir('EXPORT'):
         print("EXPORT folder exist")
@@ -35,21 +34,16 @@ def baseline_correction(event, fname=""):
         os.mkdir('DATA')
         print("DATA folder created.")
 
-    #raw_filename = str(input("Enter the file name (without .felix): "))
     filename = fname + ".felix"
-    #powerfile = raw_filename + ".pow"
-    powerfile = fname + ".pow"
 
     if os.path.isfile(filename):
         print("File exist, Copying to the DATA folder to process.")
         shutil.copyfile(my_path + r"\{}".format(filename), my_path + r"\DATA\{}".format(filename))
-    #else:
-     #   print("No file found named " + filename + " found")
 
-    #fname = raw_filename
     data = felix_read_file(fname)
+
     #Check wether the baslien file exists
-    if not os.path.isfile('DATA/'+fname+'.base'): #or args.newbase:
+    if not os.path.isfile('DATA/'+fname+'.base'):
         print("Guessing baseline from .felix file!")
         xs, ys = GuessBaseLine(data)
     else:
@@ -70,18 +64,21 @@ def baseline_correction(event, fname=""):
 
     ax.set_title('BASELINE points are drag-able!')
     ax.set_xlim((data[0][0]-70, data[0][-1]+70))
-    ax.set_xlabel("wn (cm-1)")
-    ax.set_ylabel("cnts")
-    #ax.set_ylim((0, 20))
+    ax.set_xlabel("wavenumber (cm-1)")
+    ax.set_ylabel("Counts")
     plt.show()
     
+    #Powerfile check
+    powerfile = fname + ".pow"
     if not os.path.isfile(powerfile):
         print("NOTE: You don't have .pow file so you can't plot the data yet but you can make the baseline.")
     elif os.path.isfile(powerfile):
         shutil.copyfile(my_path + r"\{}".format(powerfile), my_path + r"\DATA\{}".format(powerfile))
+        print("Powerfile is copied to the DATA folder")
 
     if baseline != None:
         SaveBase(fname, baseline)
+    return
 
 #Defining Button Actions
 def normline(event, fname="",s = True, plotShow = False):
@@ -104,8 +101,13 @@ def normline(event, fname="",s = True, plotShow = False):
     print("Process Completed.")
     print()
     print()
+    return
+    
 
-def avgSpec(event, t="Title", ts=10, lgs=5, minor=5, major=50, majorTickSize=8, xmin=1000, xmax=2000):
+def avgSpec(event, t="Title", ts=10, lgs=5, \
+        minor=5, major=50, majorTickSize=8, \
+        xmin=1000, xmax=2000):
+
     fig = plt.subplot(1,1,1)
     plt.rcParams['figure.figsize'] = [6,4]
     plt.rcParams['figure.dpi'] = 80
@@ -158,6 +160,7 @@ def avgSpec(event, t="Title", ts=10, lgs=5, minor=5, major=50, majorTickSize=8, 
     print()
     print("Completed.")
     print()
+    return
     
 #Defining the spectrum functions:
 b = baseline_correction
@@ -222,6 +225,26 @@ avg_button = Button(bottomFrame, text="Avg_spectrum", width=20, height=1)
 avg_button.bind("<Button-1>", a)
 avg_button.pack(side = TOP, padx=2, pady=2)
 
+#Save Button
+def save(event):
+    global root
+    root.quit()
 
-#Creating a stable window to stat untill closed
+saveButton = Button(bottomFrame, text="Save", fg = "green", width=10, height=1)
+saveButton.bind("Button-1", save)
+saveButton.pack()
+
+#Quit Button
+def destroy():
+    global root
+    root.destroy()
+
+quitButton = Button(bottomFrame, text="Quit", fg = "red", command=destroy).pack()
+
+#Root mainloop
 root.mainloop()
+
+print("###############################################################")
+print("\n\nProgram closed.\n\n")
+print("###############################################################")
+#EXIT

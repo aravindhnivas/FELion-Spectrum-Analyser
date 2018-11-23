@@ -254,4 +254,5 @@ def SaveBase(fname, baseline):
     f.write("#BTYPE=cubic\n")
     for i in range(len(b[0])):
         f.write("{:8.3f}\t{:8.2f}\n".format(b[0][i], b[1][i]))
-    return fname, baseline
+    f.close()
+    return f, fname, baseline
