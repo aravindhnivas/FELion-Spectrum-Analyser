@@ -178,19 +178,20 @@ title.config(textvariable = title_var, bg = "white", width=30, height=1, font="T
 title.pack()
 
 #Entry Box label:
-user_input_label = Label(middleFrame, text = " Enter filename (w/o .felix): ",\
-                            width=30, height=1,\
-                            bg = "white",\
-                            font=("Courier", 10))
-user_input_label.pack(side = LEFT, padx=2, pady=5, ipady=1, ipadx = 5)
+user_input_label = Label(middleFrame)
+user_input_label.config(text = " Enter filename (w/o .felix): ", width=30, height=1,bg = "white",font=("Courier", 10))
+#user_input_label.pack(side = LEFT, padx=2, pady=5, ipady=1, ipadx = 5)
+
 #Text Entry Box;
 content = StringVar()
 user_input = Entry(middleFrame, bg = "white", bd = 5, textvariable=content)
-user_input.pack(side = LEFT, padx=2, pady=20, ipady=5)
 user_input.focus_set()
-
 content.set("Welcome!")
+#user_input.pack(side = LEFT, padx=2, pady=20, ipady=5)
 
+#grid points for (location) label and entry column
+user_input_label.grid(row = 0, column = 0, padx=2, pady=20, ipady=5)
+user_input.grid(row = 0, column = 1, padx=2, pady=20, ipady=5)
 #Button for testing commands:
 def test(event):
     print(content.set())
