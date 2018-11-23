@@ -2,7 +2,6 @@
 import sys
 import copy
 import os 
-#from os import path
 import matplotlib
 matplotlib.use('TkAgg')
 import numpy as np
