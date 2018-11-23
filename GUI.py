@@ -214,14 +214,10 @@ avg_button = Button(bottomFrame, text="Avg_spectrum", width=20, height=1)
 avg_button.bind("<Button-1>", a)
 avg_button.pack(side = TOP, padx=2, pady=2, ipady=5)
 
-'''#Save Button
-def save(event):
-    global root
-    root.quit()
 
-saveButton = Button(bottomFrame, text="Save", fg = "green", width=10, height=1)
-saveButton.bind("Button-1", save)
-saveButton.pack()'''
+#Text Entry Box;
+user_input = Entry(bottomFrame)
+user_input.pack(side = RIGHT)
 
 #Quit Button
 def destroy():
