@@ -174,9 +174,19 @@ bottomFrame.pack(side = BOTTOM,fill=X)
 title_text = "FELion Spectrum Analyser"
 title_var = StringVar()
 title_var.set(title_text)
-title = Label(topFrame, relief = SOLID)
-title.config(textvariable = title_var, bg = "white", width=30, height=1, font="Times 22 bold")
+title = Label(topFrame, relief = RAISED)
+title.config(textvariable = title_var, bg = "white", width=45, height=1, font="Times 22 bold")
+
+version_info_text = "Version 1.0 (alpha)\n\
+    Analysing FELIX data for FELion Instrument\n\
+    Developed by Sandra's group (Aravindh) at FELIX"
+version_info =  Label(topFrame)
+version_info.config(text = version_info_text, bg = "white", width=50, height=3, \
+    font="Times 10 italic")
+
+#Title grids:
 title.grid(row = 0, column = 0, padx=2, pady=20, ipady=5)
+version_info.grid(row = 1, column = 0, sticky = E, padx=2, pady=1, ipady=1)
 
 #MIDDLE FRAME:
 #Middle frame definitions:
@@ -188,13 +198,15 @@ def input_file(*args):
 
 #Label Entry Box;
 user_input_label = Label(middleFrame)
-user_input_label.config(text = " Enter filename (w/o .felix): ", width=30, height=1,bg = "white",font=("Courier", 10))
+user_input_label.config(text = " Enter filename\n(w/o .felix): ", \
+                            width=15, height=2,bg = "white",\
+                            font=("Times", 10, "bold"))
 
 #Text Entry Box;
 init_msg = "Enter here" #initialising message
 content = StringVar()   #defining Stringvari()
 user_input = Entry(middleFrame, bg = "white", bd = 5, textvariable=content)
-user_input.config(font = "Times 10 bold")
+user_input.config(font=("Times", 12, "italic"))
 user_input.focus_set()
 content.set(init_msg)
 file_name = user_input.get() #storing user input value in filename
@@ -202,49 +214,52 @@ file_name = user_input.get() #storing user input value in filename
 #Button Entry Box;
 #Button for submitting:
 Submit = Button(middleFrame)
-Submit.config(text="Submit", relief=RAISED, width=20, height=1, command = input_file)
+Submit.config(text="Submit", relief=RAISED, width=20, height=1, command = input_file,\
+    font=("Times", 12, "bold"))
 
 #To view the currently running file: Label
-user_input_view = Label(middleFrame)
-user_input_view.config(textvariable = content, bg = "white")
+#user_input_view = Label(middleFrame)
+#user_input_view.config(textvariable = content, bg = "white")
 
 
 #grid points for middleframe(location) label and entry column
 user_input_label.grid(row = 0, column = 0, padx=2, pady=20, ipady=5)
-user_input.grid(row = 0, column = 1, padx=2, pady=20, ipady=5)
+user_input.grid(row = 0, column = 1,padx=2, pady=20, ipady=5)
 Submit.grid(row = 0, column = 2, padx=2, pady=20, ipady=5)
-user_input_view.grid(row = 1, column = 2, padx=2, pady=5, ipady=5)
+#user_input_view.grid(row = 1, column = 2, padx=2, pady=5, ipady=5)
 
 
 #BOTTOM FRAME:
 #Baseline
 baseline_button = Button(bottomFrame, text="Baseline")
-baseline_button.config(relief=RAISED, width=20, height=1, command=b)
-#baseline_button.bind("<Button-1>", b)
+baseline_button.config(relief=RAISED, width=20, height=1, command=b,\
+    font=("Times", 12, "bold"))
 
 #Normline
 normline_button = Button(bottomFrame, text="Normline")
-normline_button.config(relief=RAISED, width=20, height=1, command=n)
-#normline_button.bind("<Button-1>", n)
+normline_button.config(relief=RAISED, width=20, height=1, command=n,\
+    font=("Times", 12, "bold"))
 
 #Avg_Spectrum
 avg_button = Button(bottomFrame, text="Avg_spectrum")
-avg_button.config(relief=RAISED, width=20, height=1, command=a)
-#avg_button.bind("<Button-1>", a)
+avg_button.config(relief=RAISED, width=20, height=1, command=a,\
+    font=("Times", 12, "bold"))
 
 #Quit Button
 quitButton = Button(bottomFrame)
-quitButton.config(text="Quit", fg = "red", command=root.destroy)
+quitButton.config(text="Quit", fg = "red", command=root.destroy,\
+    font=("Times", 12, "bold"), width=20, height=1)
 
 #End progm button
 endButton = Button(bottomFrame)
-endButton.config(text="End", fg = "red", command=root.quit)
+endButton.config(text="End", fg = "red", command=root.quit,\
+    font=("Times", 12, "bold"), width=20, height=1)
 
 #bottom frame grid location:
 baseline_button.grid(row = 0, column = 0, padx=2, pady=2, ipady=5)
 normline_button.grid(row = 0, column = 1, padx=2, pady=2, ipady=5)
 avg_button.grid(row = 0, column = 2, padx=2, pady=2, ipady=5)
-quitButton.grid(row = 1, columnspan = 4, padx=5, pady=20, ipady=2)
+quitButton.grid(row = 1, columnspan = 5, padx=5, pady=20, ipady=2)
 endButton.grid(row = 0, column = 4, padx=2, pady=2, ipady=5)
 
 
