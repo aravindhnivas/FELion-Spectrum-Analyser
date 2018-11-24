@@ -152,6 +152,21 @@ def main(s=True, plotShow=False):
     a,b = norm_line_felix(fname, save=s, show=plotShow)
     print("\nProcess Completed.\n")
 
+def normline(*args ,s = True, plotShow = False):
+    my_path = os.getcwd()
+    fname = args[0]
+    #print(fname, type(fname))
+    full_fname = fname + ".felix"
+    powerfile = fname + ".pow"
+    if os.path.isfile(powerfile):
+        shutil.copyfile(my_path + r"\{}".format(powerfile), my_path + r"\DATA\{}".format(powerfile))
+        print("Powerfile copied to the DATA folder.")
+    else:
+        print("\nCAUTION:You don't have the powerfile(.pow)\n")
+
+    a,b = norm_line_felix(fname, save=s, show=plotShow)
+    print("\nProcess Completed.\n")
+    #return
 
 def help():
     print()
@@ -171,6 +186,3 @@ def help():
 if __name__ == "__main__":
     main()
     help()
-
-#if __name__ == "FELion_normline":
-    #help()
