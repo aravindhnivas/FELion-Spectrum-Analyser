@@ -180,8 +180,7 @@ title.grid(row = 0, column = 0, padx=2, pady=20, ipady=5)
 
 #MIDDLE FRAME:
 #Middle frame definitions:
-def input_file():
-    global file_name
+def input_file(*args):
     content.set(user_input.get())
     file_name = user_input.get()
     print(file_name)
@@ -190,18 +189,15 @@ def input_file():
 #Label Entry Box;
 user_input_label = Label(middleFrame)
 user_input_label.config(text = " Enter filename (w/o .felix): ", width=30, height=1,bg = "white",font=("Courier", 10))
-#user_input_label.pack(side = LEFT, padx=2, pady=5, ipady=1, ipadx = 5)
 
 #Text Entry Box;
-init_msg = "Welcome!" #initialising message
+init_msg = "Enter here" #initialising message
 content = StringVar()   #defining Stringvari()
 user_input = Entry(middleFrame, bg = "white", bd = 5, textvariable=content)
+user_input.config(font = "Times 10 bold")
 user_input.focus_set()
 content.set(init_msg)
 file_name = user_input.get() #storing user input value in filename
-print(file_name)
-file_name = input_file()
-print(file_name)
 
 #Button Entry Box;
 #Button for submitting:
@@ -251,10 +247,10 @@ avg_button.grid(row = 0, column = 2, padx=2, pady=2, ipady=5)
 quitButton.grid(row = 1, columnspan = 4, padx=5, pady=20, ipady=2)
 endButton.grid(row = 0, column = 4, padx=2, pady=2, ipady=5)
 
-print(file_name)
+
 #Root mainloop
 root.mainloop()
-print(file_name)
+
 print("\n####################################     PROGRAM CLOSED     ####################################")
 #EXIT
 ####################
