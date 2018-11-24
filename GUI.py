@@ -158,6 +158,17 @@ a = avgSpec
 
 #Defining root frame window
 root = Tk()
+root.title("FELion SPectrum Analyser")
+# You can't drag the windows corner's to maximize or minimize the window
+width_window = 775
+height_window = 318
+root.resizable(width=FALSE, height=FALSE)
+#To make the window appear in the center:
+your_computer_screen_width = root.winfo_screenwidth()
+your_computer_screen_height = root.winfo_screenheight()
+x_coordinate = (your_computer_screen_width/2) - (width_window/2) 
+y_coordinate = (your_computer_screen_height/2) - (height_window/2)
+root.geometry("%dx%d+%d+%d" %(width_window, height_window, x_coordinate, y_coordinate))
 
 #Definitions:
 def input_file(*args):
@@ -173,41 +184,51 @@ bottomFrame = Frame(root, bg = "green", width=300, height=200)
 
 #Frame grids:
 #Defining variables for geometry of frames padding:
-xpad, ypad, ixpad, iypad = (0, 0, 5, 5)
+xpad, ypad, ixpad, iypad = (0, 0, 0, 0)
 topFrame.grid(row = 0, column = 0, padx=xpad, pady=ypad, ipadx=ixpad, ipady=iypad)
 middleFrame.grid(row = 1, column = 0, padx=xpad, pady=ypad, ipadx=ixpad, ipady=iypad)
 bottomFrame.grid(row = 2, column = 0, padx=xpad, pady=ypad, ipadx=ixpad, ipady=iypad)
+
+#grid configure:
+# "nsew" indicates - Noth, south, east and west. Making the row fill all the spot available.
+topFrame.grid_configure(sticky = "nsew")
+middleFrame.grid_configure(sticky = "nsew")
+bottomFrame.grid_configure(sticky = "nsew")
 
 #TOP Frames:
 #TITLE:
 title_text = "FELion Spectrum Analyser"
 title_var = StringVar()
 title_var.set(title_text)
-title = Label(topFrame, relief = RAISED)
-title.config(textvariable = title_var, bg = "white", width=45, height=1, font="Times 22 bold")
+title = Label(topFrame, relief = RAISED, bd = 2)
+title.config(textvariable = title_var, bg = "white", \
+    width=45, height=1, \
+    font="Times 22 bold", \
+    justify = CENTER, anchor = CENTER)
 
-version_info_text = "Version 1.0 (alpha)\n\
-    Analysing FELIX data for FELion Instrument\n\
-    Developed by Sandra's group (Aravindh) at FELIX"
+version_info_text = "For Analysing FELIX data for FELion Instrument"
 version_info =  Label(topFrame)
-version_info.config(text = version_info_text, bg = "white", width=50, height=3, \
-    font="Times 10 italic")
+version_info.config(text = version_info_text, bg = "white", width=45, height=1, \
+    font="Times 12 italic")
 
 #Title grids:
-title.grid(row = 0, column = 0, padx=2, pady=20, ipady=5)
-version_info.grid(row = 1, column = 0, sticky = E, padx=2, pady=1, ipady=1)
+title.grid(row = 0, column = 0, padx=1, pady=1, ipady=5)
+version_info.grid(row = 1, column = 0, sticky = E, padx=1, pady=1, ipady=1)
 
 #MIDDLE FRAME:
 #Label Entry Box;
 user_input_label = Label(middleFrame)
 user_input_label.config(text = " Enter filename\n(w/o .felix): ", \
                             width=15, height=2,\
-                            font=("Times", 12, "bold"))
+                            font=("Times", 12, "bold"),
+                            justify = CENTER,
+                            anchor = CENTER)
 
 #Text Entry Box;
 init_msg = "Enter here" #initialising message
 content = StringVar()   #defining Stringvar()
-user_input = Entry(middleFrame, bg = "white", bd = 5, textvariable=content)
+user_input = Entry(middleFrame, bg = "white", bd = 5, \
+    textvariable=content, justify = LEFT)
 user_input.config(font=("Times", 12, "italic"))
 user_input.focus_set()
 content.set(init_msg)
@@ -219,17 +240,10 @@ Submit = Button(middleFrame)
 Submit.config(text="Submit", relief=RAISED, width=20, height=1, command = input_file,\
     font=("Times", 12, "bold"))
 
-#To view the currently running file: Label
-#user_input_view = Label(middleFrame)
-#user_input_view.config(textvariable = content, bg = "white")
-
-
 #grid points for middleframe(location) label and entry column
 user_input_label.grid(row = 0, column = 0, padx=2, pady=20, ipady=5)
 user_input.grid(row = 0, column = 1,padx=2, pady=20, ipady=5)
 Submit.grid(row = 0, column = 2, padx=2, pady=20, ipady=5)
-#user_input_view.grid(row = 1, column = 2, padx=2, pady=5, ipady=5)
-
 
 #BOTTOM FRAME:
 #Baseline
@@ -257,13 +271,21 @@ endButton = Button(bottomFrame)
 endButton.config(text="End", fg = "red", command=root.quit,\
     font=("Times", 12, "bold"), width=20, height=1)
 
+#Status bar:
+statusBar_text = "Version 1.0 (alpha): Developed by Sandra's group (Aravindh) at FELIX"
+statusLabel = Label(bottomFrame)
+statusLabel.config(text = statusBar_text, \
+    relief = SUNKEN, bg = "grey", \
+    bd = 2, justify = LEFT, anchor = SE,\
+    width = 110, height = 1)
+
 #bottom frame grid location:
 baseline_button.grid(row = 0, column = 0, padx=2, pady=2, ipady=5)
 normline_button.grid(row = 0, column = 1, padx=2, pady=2, ipady=5)
 avg_button.grid(row = 0, column = 2, padx=2, pady=2, ipady=5)
-quitButton.grid(row = 1, columnspan = 5, padx=5, pady=20, ipady=2)
 endButton.grid(row = 0, column = 4, padx=2, pady=2, ipady=5)
-
+quitButton.grid(row = 1, columnspan = 5, padx=5, pady=20, ipady=2)
+statusLabel.grid(row = 2, columnspan = 6, sticky = "E")
 
 #Root mainloop
 root.mainloop()
@@ -271,7 +293,7 @@ root.mainloop()
 print("\n####################################     PROGRAM CLOSED     ####################################")
 #EXIT
 ####################
-#Unwanted definitions:
+#Unused definitions:
 '''
 #Defining buttons:
 #Defining input file name:
