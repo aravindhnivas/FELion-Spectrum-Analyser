@@ -204,7 +204,7 @@ user_input_label.config(text = " Enter filename\n(w/o .felix): ", \
 
 #Text Entry Box;
 init_msg = "Enter here" #initialising message
-content = StringVar()   #defining Stringvari()
+content = StringVar()   #defining Stringvar()
 user_input = Entry(middleFrame, bg = "white", bd = 5, textvariable=content)
 user_input.config(font=("Times", 12, "italic"))
 user_input.focus_set()
