@@ -7,12 +7,22 @@ from FELion_normline import *
 from FELion_avgSpec import *
 ###################################################################################################
 
+#Custom definition:
+#Definitions:
+def input_file(*args):
+    content.set(user_input.get())
+    file_name = user_input.get()
+    print(file_name)
+    return file_name
+
 #Defining Button Actions
 #Defining the baseline_correction function for GUI button
-def baseline_correction(fname=""):
+def baseline_correction(fname = ""):
     my_path = os.getcwd()
     if fname == "":
-        fname = retrieve_input()
+        fname = user_input.get()
+    #if fname == "":
+        #fname = retrieve_input()
     if os.path.isdir('EXPORT'):
         print("EXPORT folder exist")
     else:
@@ -169,13 +179,6 @@ your_computer_screen_height = root.winfo_screenheight()
 x_coordinate = (your_computer_screen_width/2) - (width_window/2) 
 y_coordinate = (your_computer_screen_height/2) - (height_window/2)
 root.geometry("%dx%d+%d+%d" %(width_window, height_window, x_coordinate, y_coordinate))
-
-#Definitions:
-def input_file(*args):
-    content.set(user_input.get())
-    file_name = user_input.get()
-    print(file_name)
-    return file_name
 
 # Defining frames
 topFrame = Frame(root, bg = "white", width=300, height=200)
