@@ -9,7 +9,7 @@ from FELion_avgSpec import *
 
 #Defining Button Actions
 #Defining the baseline_correction function for GUI button
-def baseline_correction(event, fname=""):
+def baseline_correction(fname=""):
     my_path = os.getcwd()
     if fname == "":
         fname = retrieve_input()
@@ -76,7 +76,7 @@ def baseline_correction(event, fname=""):
     return
 
 #Defining Normline
-def normline(event, fname="",s = True, plotShow = False):
+def normline(fname="",s = True, plotShow = False):
     my_path = os.getcwd()
     if fname == "":
         fname = retrieve_input()
@@ -93,7 +93,7 @@ def normline(event, fname="",s = True, plotShow = False):
     return
 
 #Defining Average Spectrum function
-def avgSpec(event, t="Title", ts=10, lgs=5, \
+def avgSpec(t="Title", ts=10, lgs=5, \
         minor=5, major=50, majorTickSize=8, \
         xmin=1000, xmax=2000):
 
@@ -169,13 +169,23 @@ middleFrame.pack(fill = X)
 bottomFrame = Frame(root, bg = "green")
 bottomFrame.pack(side = BOTTOM,fill=X)
 
+#TOP Frames:
 #TITLE:
 title_text = "FELion Spectrum Analyser"
 title_var = StringVar()
 title_var.set(title_text)
 title = Label(topFrame, relief = SOLID)
 title.config(textvariable = title_var, bg = "white", width=30, height=1, font="Times 22 bold")
-title.pack()
+title.grid(row = 0, column = 0, padx=2, pady=20, ipady=5)
+
+#MIDDLE FRAME:
+#Middle frame definitions:
+def input_file():
+    global file_name
+    content.set(user_input.get())
+    file_name = user_input.get()
+    print(file_name)
+    return file_name
 
 #Label Entry Box;
 user_input_label = Label(middleFrame)
@@ -189,25 +199,67 @@ user_input = Entry(middleFrame, bg = "white", bd = 5, textvariable=content)
 user_input.focus_set()
 content.set(init_msg)
 file_name = user_input.get() #storing user input value in filename
+print(file_name)
+file_name = input_file()
+print(file_name)
 
 #Button Entry Box;
 #Button for submitting:
-def input_file():
-    tmp = content.set(user_input.get())
-    file_name = user_input.get()
-    print(file_name)
-    return file_name
 Submit = Button(middleFrame)
-Submit.config(text="Submit", relief=RAISED, width=20, height=1, command=input_file)
+Submit.config(text="Submit", relief=RAISED, width=20, height=1, command = input_file)
 
-#grid points for (location) label and entry column
+#To view the currently running file: Label
+user_input_view = Label(middleFrame)
+user_input_view.config(textvariable = content, bg = "white")
+
+
+#grid points for middleframe(location) label and entry column
 user_input_label.grid(row = 0, column = 0, padx=2, pady=20, ipady=5)
 user_input.grid(row = 0, column = 1, padx=2, pady=20, ipady=5)
 Submit.grid(row = 0, column = 2, padx=2, pady=20, ipady=5)
+user_input_view.grid(row = 1, column = 2, padx=2, pady=5, ipady=5)
 
 
+#BOTTOM FRAME:
+#Baseline
+baseline_button = Button(bottomFrame, text="Baseline")
+baseline_button.config(relief=RAISED, width=20, height=1, command=b)
+#baseline_button.bind("<Button-1>", b)
 
+#Normline
+normline_button = Button(bottomFrame, text="Normline")
+normline_button.config(relief=RAISED, width=20, height=1, command=n)
+#normline_button.bind("<Button-1>", n)
 
+#Avg_Spectrum
+avg_button = Button(bottomFrame, text="Avg_spectrum")
+avg_button.config(relief=RAISED, width=20, height=1, command=a)
+#avg_button.bind("<Button-1>", a)
+
+#Quit Button
+quitButton = Button(bottomFrame)
+quitButton.config(text="Quit", fg = "red", command=root.destroy)
+
+#End progm button
+endButton = Button(bottomFrame)
+endButton.config(text="End", fg = "red", command=root.quit)
+
+#bottom frame grid location:
+baseline_button.grid(row = 0, column = 0, padx=2, pady=2, ipady=5)
+normline_button.grid(row = 0, column = 1, padx=2, pady=2, ipady=5)
+avg_button.grid(row = 0, column = 2, padx=2, pady=2, ipady=5)
+quitButton.grid(row = 1, columnspan = 4, padx=5, pady=20, ipady=2)
+endButton.grid(row = 0, column = 4, padx=2, pady=2, ipady=5)
+
+print(file_name)
+#Root mainloop
+root.mainloop()
+print(file_name)
+print("\n####################################     PROGRAM CLOSED     ####################################")
+#EXIT
+####################
+#Unwanted definitions:
+'''
 #Defining buttons:
 #Defining input file name:
 def retrieve_input():
@@ -226,45 +278,11 @@ def retrieve_input():
     return file
 
 #Submit Button
-'''buttonInput=Button(bottomFrame,\
+buttonInput=Button(bottomFrame,\
                    height=1, width=10,\
                    text="Submit",\
                    command = retrieve_input)
 buttonInput.pack(side = RIGHT, padx=2, pady=2)
 textBox=Text(bottomFrame, width=10, height=2)
-textBox.pack(side = RIGHT)'''
-
-#Baseline
-baseline_button = Button(bottomFrame, text="Baseline")
-baseline_button.config(relief=RAISED, width=20, height=1, command=b)
-baseline_button.bind("<Button-1>", b)
-baseline_button.pack(side = TOP, padx=2, pady=2, ipady=5)
-
-#Normline
-normline_button = Button(bottomFrame, text="Normline")
-normline_button.config(relief=RAISED, width=20, height=1, command=n)
-normline_button.bind("<Button-1>", n)
-normline_button.pack(side = TOP, padx=2, pady=2, ipady=5)
-
-#Avg_Spectrum
-avg_button = Button(bottomFrame, text="Avg_spectrum")
-avg_button.config(relief=RAISED, width=20, height=1, command=a)
-avg_button.bind("<Button-1>", a)
-avg_button.pack(side = TOP, padx=2, pady=2, ipady=5)
-
-
-#Quit Button
-def destroy():
-    global root
-    root.destroy()
-    return
-
-quitButton = Button(bottomFrame)
-quitButton.config(text="Quit", fg = "red", command=destroy)
-quitButton.pack(padx=5, pady=20, ipady=2)
-
-#Root mainloop
-root.mainloop()
-
-print("\n####################################     PROGRAM CLOSED     ####################################")
-#EXIT
+textBox.pack(side = RIGHT)
+'''
