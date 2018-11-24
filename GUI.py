@@ -200,7 +200,7 @@ def input_file(*args):
 user_input_label = Label(middleFrame)
 user_input_label.config(text = " Enter filename\n(w/o .felix): ", \
                             width=15, height=2,bg = "white",\
-                            font=("Times", 10, "bold"))
+                            font=("Times", 12, "bold"))
 
 #Text Entry Box;
 init_msg = "Enter here" #initialising message
