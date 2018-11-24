@@ -126,12 +126,19 @@ saveButton.config(text="Click to save baseline", fg = "green", command=root.quit
     font=("Times", 12, "bold"), width=20, height=1)
 
 #Status bar:
-statusBar_text = "Version 1.0 (alpha): Developed by Sandra's group (Aravindh) at FELIX"
-statusLabel = Label(bottomFrame)
-statusLabel.config(text = statusBar_text, \
+statusBar_text1 = "Version 1.0 (alpha)"
+statusLabel_1 = Label(bottomFrame)
+statusLabel_1.config(text = statusBar_text1, \
+    relief = SUNKEN, bg = "grey", \
+    bd = 2, justify = LEFT, anchor = SW,\
+    width = 20, height = 1)
+
+statusBar_text2 = "Developed by Sandra's group (Aravindh) at FELIX"
+statusLabel_2 = Label(bottomFrame)
+statusLabel_2.config(text = statusBar_text2, \
     relief = SUNKEN, bg = "grey", \
     bd = 2, justify = LEFT, anchor = SE,\
-    width = 110, height = 1)
+    width = 25, height = 1)
 
 #bottom frame grid location:
 baseline_button.grid(row = 0, column = 0, padx=2, pady=2, ipady=5)
@@ -139,7 +146,8 @@ normline_button.grid(row = 0, column = 1, padx=2, pady=2, ipady=5)
 avg_button.grid(row = 0, column = 2, padx=2, pady=2, ipady=5)
 saveButton.grid(row = 1, column = 0, padx=2, pady=2, ipady=5)
 quitButton.grid(row = 1, column = 4, padx=5, pady=20, ipady=2)
-statusLabel.grid(row = 2, columnspan = 6, sticky = "E")
+statusLabel_1.grid(row = 2, column = 0, padx=5, pady=1, ipady=1)
+statusLabel_2.grid(row = 2, column = 4, padx=5, pady=1, ipady=1)
 
 #Root mainloop
 root.mainloop()
