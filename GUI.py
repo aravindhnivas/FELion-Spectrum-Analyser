@@ -159,22 +159,24 @@ a = avgSpec
 #Defining root frame window
 root = Tk()
 
+#Definitions:
+def input_file(*args):
+    content.set(user_input.get())
+    file_name = user_input.get()
+    print(file_name)
+    return file_name
+
 # Defining frames
 topFrame = Frame(root, bg = "white", width=300, height=200)
-#topFrame.config(fill = X)
-topFrame.grid(row = 0, column = 0, padx=2, pady=20, ipady=5, ipadx=5)
-#topFrame.pack(fill = X)
-
 middleFrame = Frame(root, bg = "green", width=300, height=200)
-#middleFrame.pack(fill = X)
-#middleFrame.config(fill = X)
-middleFrame.grid(row = 1, column = 0, padx=2, pady=20, ipady=5, ipadx=5)
-
-
 bottomFrame = Frame(root, bg = "green", width=300, height=200)
-#bottomFrame.pack(side = BOTTOM,fill=X)
-#bottomFrame.config(fill = X)
-bottomFrame.grid(row = 2, column = 0, padx=2, pady=20, ipady=5, ipadx=5)
+
+#Frame grids:
+#Defining variables for geometry of frames padding:
+xpad, ypad, ixpad, iypad = (0, 0, 5, 5)
+topFrame.grid(row = 0, column = 0, padx=xpad, pady=ypad, ipadx=ixpad, ipady=iypad)
+middleFrame.grid(row = 1, column = 0, padx=xpad, pady=ypad, ipadx=ixpad, ipady=iypad)
+bottomFrame.grid(row = 2, column = 0, padx=xpad, pady=ypad, ipadx=ixpad, ipady=iypad)
 
 #TOP Frames:
 #TITLE:
@@ -196,17 +198,10 @@ title.grid(row = 0, column = 0, padx=2, pady=20, ipady=5)
 version_info.grid(row = 1, column = 0, sticky = E, padx=2, pady=1, ipady=1)
 
 #MIDDLE FRAME:
-#Middle frame definitions:
-def input_file(*args):
-    content.set(user_input.get())
-    file_name = user_input.get()
-    print(file_name)
-    return file_name
-
 #Label Entry Box;
 user_input_label = Label(middleFrame)
 user_input_label.config(text = " Enter filename\n(w/o .felix): ", \
-                            width=15, height=2,bg = "white",\
+                            width=15, height=2,\
                             font=("Times", 12, "bold"))
 
 #Text Entry Box;
