@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-
 #Importing all the required definitions from various functions
 from tkinter import *
 from FELion_baseline import *
@@ -14,7 +13,6 @@ def input_file(*args):
     file_name = user_input.get()
     print(file_name)
     return file_name
-
 
 #Defining root frame window
 root = Tk()
