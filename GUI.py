@@ -161,13 +161,20 @@ root = Tk()
 
 # Defining frames
 topFrame = Frame(root, bg = "white", width=300, height=200)
-topFrame.pack(fill = X)
+#topFrame.config(fill = X)
+topFrame.grid(row = 0, column = 0, padx=2, pady=20, ipady=5, ipadx=5)
+#topFrame.pack(fill = X)
 
 middleFrame = Frame(root, bg = "green", width=300, height=200)
-middleFrame.pack(fill = X)
+#middleFrame.pack(fill = X)
+#middleFrame.config(fill = X)
+middleFrame.grid(row = 1, column = 0, padx=2, pady=20, ipady=5, ipadx=5)
 
-bottomFrame = Frame(root, bg = "green")
-bottomFrame.pack(side = BOTTOM,fill=X)
+
+bottomFrame = Frame(root, bg = "green", width=300, height=200)
+#bottomFrame.pack(side = BOTTOM,fill=X)
+#bottomFrame.config(fill = X)
+bottomFrame.grid(row = 2, column = 0, padx=2, pady=20, ipady=5, ipadx=5)
 
 #TOP Frames:
 #TITLE:
