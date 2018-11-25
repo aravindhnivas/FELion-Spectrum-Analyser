@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 #Importing all the required definitions from various functions
 from tkinter import *
+from tkinter import messagebox
 from FELion_baseline import *
 from FELion_normline import *
 from FELion_avgSpec import *
@@ -13,6 +14,11 @@ def input_file(*args):
     file_name = user_input.get()
     print(file_name)
     return file_name
+
+
+def on_closing():
+    if messagebox.askokcancel("Quit", "Do you want to quit?"):
+        root.destroy()
 
 #Defining root frame window
 root = Tk()
@@ -117,7 +123,7 @@ avg_button.config(relief=RAISED, width=20, height=1,\
 
 #Quit Button
 quitButton = Button(bottomFrame)
-quitButton.config(text="Quit", fg = "red", command=root.destroy,\
+quitButton.config(text="Quit", fg = "red", command=on_closing,\
     font=("Times", 12, "bold"), width=20, height=1)
 
 #Save progm button
@@ -126,11 +132,11 @@ saveButton.config(text="Click to save baseline", fg = "green", command=root.quit
     font=("Times", 12, "bold"), width=20, height=1)
 
 #Status bar:
+statusBar_full = Label(bottomFrame, bg = "grey", relief = SUNKEN, bd = 2)
 statusBar_text1 = "Version 1.0 (alpha)"
 statusLabel_1 = Label(bottomFrame)
-statusLabel_1.config(text = statusBar_text1, \
-    relief = SUNKEN, bg = "grey", \
-    bd = 2, justify = LEFT, anchor = SW,\
+statusLabel_1.config(text = statusBar_text1, bg = "grey",\
+    justify = LEFT, anchor = SW,\
     width = 20, height = 1)
 
 statusBar_text2 = "Developed by Sandra's group (Aravindh) at FELIX"
@@ -146,9 +152,11 @@ normline_button.grid(row = 0, column = 1, padx=2, pady=2, ipady=5)
 avg_button.grid(row = 0, column = 2, padx=2, pady=2, ipady=5)
 saveButton.grid(row = 1, column = 0, padx=2, pady=2, ipady=5)
 quitButton.grid(row = 1, column = 4, padx=5, pady=20, ipady=2)
+statusBar_full.grid(row = 2, columnspan = 5, sticky = "nsew")
 statusLabel_1.grid(row = 2, column = 0, padx=5, pady=1, ipady=1)
 statusLabel_2.grid(row = 2, column = 4, padx=5, pady=1, ipady=1)
 
+#root.protocol("WM_DELETE_WINDOW", on_closing)
 #Root mainloop
 root.mainloop()
 
