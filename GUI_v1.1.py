@@ -51,7 +51,7 @@ topFrame.grid_columnconfigure(0, weight = 1)
 
 #bottom frames
 bottomFrame = Frame(root)
-bottomFrame.config(bg = "white")
+bottomFrame.config(bg = "sea green")
 bottomFrame.pack(side = "top", fill = "both", expand = True)
 bottomFrame.grid_rowconfigure(0, weight = 1)
 bottomFrame.grid_columnconfigure(0, weight = 1)
@@ -74,13 +74,13 @@ StatusBarFrame.grid_columnconfigure(0, weight = 1)
 # Title: Labels on topframes:
 title_text = "FELion Spectrum Analyser"
 title = Label(topFrame)
-title.config(text = title_text, relief = SOLID, bd = 1, bg = "white",\
+title.config(text = title_text, relief = SOLID, bd = 1, bg = "sea green",\
   font = "Times 15 bold", pady = 5)
 title.pack(side = "top", fill = "both", expand = True)
 
 sub_title_text = "Analysing FELIX data for FELion Instrument"
 sub_title = Label(topFrame)
-sub_title.config(text = sub_title_text, relief = FLAT, bg = "white",\
+sub_title.config(text = sub_title_text, relief = FLAT, bg = "sea green",\
   font = "Times 12 italic", pady = 5, anchor = "e")
 sub_title.pack(fill = "both", expand = True)
 
