@@ -7,9 +7,6 @@ from FELion_baseline import baseline_correction
 from FELion_normline import normline
 from FELion_avgSpec import avgSpec
 
-'''from FELion_avgSpec import *
-from FELion_baseline import *
-from FELion_normline import *'''
 ###################################################################################################
 
 #Custom definition:
