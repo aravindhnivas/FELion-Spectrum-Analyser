@@ -34,9 +34,6 @@ root.geometry("%dx%d+%d+%d" %(width_window, height_window, x_coordinate, y_coord
 #Defining the window titile
 root.title("FELion Spectrum Analyser")
 
-#Configuring window
-root.config()
-
 ###########################################################################################
 ###########################################################################################
 
@@ -78,6 +75,8 @@ sub_title = Label(topFrame)
 sub_title.config(text = sub_title_text, relief = FLAT, bg = "sea green",\
   font = "Times 12 italic", pady = 5, anchor = "e")
 sub_title.pack(fill = "both", expand = True)
+###########################################################################################
+###########################################################################################
 
 #Buttons:
 #Label for Entry Box;
@@ -93,6 +92,8 @@ user_input = Entry(bottomFrame, bg = "white", bd = 5, \
 user_input.config(font=("Times", 12, "italic"))
 user_input.focus_set()
 content.set(init_msg)
+###########################################################################################
+###########################################################################################
 
 #Baseline
 baseline_button = ttk.Button(bottomFrame, text="Baseline")
@@ -110,9 +111,14 @@ normline_button.config(command = lambda: normline(user_input.get()))
 avg_button = ttk.Button(bottomFrame, text="Avg_spectrum")
 avg_button.config(command = lambda: avgSpec(user_input.get()))
 
+###########################################################################################
+###########################################################################################
+
 #Quit Button
 quitButton = ttk.Button(bottomFrame, text = "quit")
 quitButton.config(command = root.destroy)
+###########################################################################################
+###########################################################################################
 
 #Placing the labels and buttons in bottom frame using place(), relx/y is relative to parent frame pixels
 user_input_label.place(relx = 0.1,  rely = 0.1, width = 100, height = 40)
@@ -122,6 +128,9 @@ saveButton.place(relx = 0.1,  rely = 0.5, width = 100, height = 40)
 normline_button.place(relx = 0.3,  rely = 0.3, width = 100, height = 40)
 avg_button.place(relx = 0.5,  rely = 0.3, width = 100, height = 40)
 quitButton.place(relx = 0.3,  rely = 0.7, width = 100, height = 40)
+
+###########################################################################################
+###########################################################################################
 
 #Status Bar: Labels on status bar frames:
 statusBar_left_text = "Version 1.0"
@@ -135,10 +144,10 @@ statusBar_right = Label(StatusBarFrame)
 statusBar_right.config(text = statusBar_right_text, \
   relief = SUNKEN, bd = 2, font = "Times 10 italic", pady = 5, anchor = "e")
 statusBar_right.pack(side = "top", fill = "both", expand = True)
-
+###########################################################################################
+###########################################################################################
 
 root.protocol("WM_DELETE_WINDOW", on_closing)
 root.mainloop()
-
 ###########################################################################################
 ###########################################################################################
