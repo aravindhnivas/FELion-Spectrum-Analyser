@@ -81,14 +81,12 @@ sub_title.pack(fill = "both", expand = True)
 #Buttons:
 #Label for Entry Box;
 user_input_label = Label(bottomFrame)
-user_input_label.config(text = " Enter filename\n(w/o .felix): ", \
-  font=("Times", 10, "bold"))
+user_input_label.config(text = " Enter filename\n(w/o .felix): ", font=("Times", 10, "bold"))
 
 #Entry Box;
 init_msg = "Enter here" #initialising message
 content = StringVar()   #defining Stringvar()
-user_input = Entry(bottomFrame, bg = "white", bd = 5, \
-    textvariable=content, justify = LEFT)
+user_input = Entry(bottomFrame, bg = "white", bd = 5, textvariable=content, justify = LEFT)
 user_input.config(font=("Times", 12, "italic"))
 user_input.focus_set()
 content.set(init_msg)
