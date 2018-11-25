@@ -166,7 +166,7 @@ def normline(*args ,s = True, plotShow = False):
 
     a,b = norm_line_felix(fname, save=s, show=plotShow)
     print("\nProcess Completed.\n")
-    #return
+    return
 
 def help():
     print()
