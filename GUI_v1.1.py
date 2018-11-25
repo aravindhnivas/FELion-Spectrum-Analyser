@@ -12,7 +12,7 @@ def on_closing():
 class FELion(Tk):
 
   def __init__(self, *args, **kwargs):
-    #First let us take the initialsing parameters from the inherited class Tk() from tkinter:
+    #Initialsing parameters from the inherited class Tk() from tkinter:
     Tk.__init__(self, *args, **kwargs)
     pass
 
