@@ -93,7 +93,7 @@ user_input = Entry(middleFrame, bg = "white", bd = 5, \
 user_input.config(font=("Times", 12, "italic"))
 user_input.focus_set()
 content.set(init_msg)
-file_name = user_input.get() #storing user input value in filename
+#file_name = user_input.get() #storing user input value in filename
 
 #Button Entry Box;
 #Button for submitting:
