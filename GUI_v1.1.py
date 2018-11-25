@@ -14,8 +14,16 @@ class FELion(Tk):
   def __init__(self, *args, **kwargs):
     #Initialsing parameters from the inherited class Tk() from tkinter:
     Tk.__init__(self, *args, **kwargs)
+    container = Frame(self)
+    container.pack(side = "top", fill = "both", expand = True)
     pass
 
+root = FELion()
+
+root.mainloop()
+
+##TEMP
+'''
 root = Tk()
 #Defining the main window's dimensions:
 width_window = 700
@@ -30,8 +38,4 @@ root.geometry("%dx%d+%d+%d" %(width_window, height_window, x_coordinate, y_coord
 root.title("FELion Spectrum Analyser")
 #Configuring window
 root.config()
-
-
-######################## TOP ########################
-
-root.mainloop()
+'''
