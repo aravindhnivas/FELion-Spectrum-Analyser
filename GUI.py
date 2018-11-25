@@ -2,6 +2,7 @@
 #Importing all the required definitions from various functions
 from tkinter import *
 from tkinter import messagebox
+from tkinter import ttk
 from FELion_baseline import baseline_correction
 from FELion_normline import normline
 from FELion_avgSpec import avgSpec
