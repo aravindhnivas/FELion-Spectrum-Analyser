@@ -133,7 +133,7 @@ def avgSpec(*args, t="Title", ts=10, lgs=5, \
     print()
     print("Completed.")
     print()
-    return
+    #return
 
 def help():
     print()
