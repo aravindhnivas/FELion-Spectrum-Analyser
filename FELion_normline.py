@@ -22,10 +22,10 @@ def export_file(fname, wn, inten):
     f.write("#wn (cm-1)       intensity\n")
     for i in range(len(wn)):
         f.write("{:8.3f}\t{:8.2f}\n".format(wn[i], inten[i]))
-    f.close()
+    #f.close()
 
 
-def norm_line_felix(fname, save=True, show=False, PD=True):
+def norm_line_felix(fname, save=True, show=True, PD=True):
     """
     Reads data from felix meassurement file and 
     calculates the calibrated wavenumber and calibrated/normalised
@@ -152,7 +152,7 @@ def main(s=True, plotShow=False):
     a,b = norm_line_felix(fname, save=s, show=plotShow)
     print("\nProcess Completed.\n")
 
-def normline(*args ,s = True, plotShow = False):
+def normline_correction(*args ,s = True, plotShow = False):
     my_path = os.getcwd()
     fname = args[0]
     full_fname = fname + ".felix"

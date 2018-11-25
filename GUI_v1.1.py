@@ -5,8 +5,8 @@ from tkinter import messagebox
 from tkinter import ttk
 #Importing definitions from FELion python modules:
 from FELion_baseline import baseline_correction
-from FELion_normline import normline
-from FELion_avgSpec import avgSpec
+from FELion_normline import normline_correction
+from FELion_avgSpec import avgSpec_plot
 
 # User defined definitions:
 def on_closing():
@@ -103,11 +103,11 @@ saveButton.config(command = root.quit)
 
 #Normline
 normline_button = ttk.Button(bottomFrame, text="Normline")
-normline_button.config(command = lambda: normline(user_input.get()))
+normline_button.config(command = lambda: normline_correction(user_input.get()))
 
 #Avg_Spectrum
 avg_button = ttk.Button(bottomFrame, text="Avg_spectrum")
-avg_button.config(command = lambda: avgSpec(user_input.get()))
+avg_button.config(command = lambda: avgSpec_plot(user_input.get()))
 
 ###########################################################################################
 ###########################################################################################

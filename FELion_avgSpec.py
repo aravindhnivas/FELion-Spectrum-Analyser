@@ -10,8 +10,6 @@ from FELion_normline import norm_line_felix
 from FELion_normline import felix_binning
 from matplotlib.ticker import MultipleLocator, FormatStrFormatter, NullFormatter, NullLocator
 import matplotlib.pyplot as plt
-import warnings
-warnings.filterwarnings("ignore")
 
 DELTA=2.0
 
@@ -21,7 +19,7 @@ def export_file(fname, wn, inten):
     f.write("#wn (cm-1)       intensity\n")
     for i in range(len(wn)):
         f.write("{:8.3f}\t{:8.2f}\n".format(wn[i], inten[i]))
-    f.close()
+    #f.close()
 
 def main(t="Title", ts=10, lgs=5, minor=5, major=50, majorTickSize=8, xmin=1000, xmax=2000):
     fig = plt.subplot(1,1,1)
@@ -77,10 +75,15 @@ def main(t="Title", ts=10, lgs=5, minor=5, major=50, majorTickSize=8, xmin=1000,
     print("Completed.")
     print()
 
-def avgSpec(*args, t="Title", ts=10, lgs=5, \
-        minor=5, major=50, majorTickSize=8, \
-        xmin=1000, xmax=2000):
-
+def avgSpec_plot(*args, **kwargs):
+    t="Title" 
+    ts=10
+    lgs=5
+    minor=5
+    major=50
+    majorTickSize=8
+    xmin=1000
+    xmax=2000
     fig = plt.subplot(1,1,1)
     plt.rcParams['figure.figsize'] = [6,4]
     plt.rcParams['figure.dpi'] = 80
@@ -129,6 +132,7 @@ def avgSpec(*args, t="Title", ts=10, lgs=5, \
     fig.xaxis.set_minor_locator(MultipleLocator(minor))
     fig.xaxis.set_major_locator(MultipleLocator(major))
     plt.savefig(F)
+    plt.show()
     plt.close()
     print()
     print("Completed.")
