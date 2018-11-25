@@ -155,7 +155,6 @@ def main(s=True, plotShow=False):
 def normline(*args ,s = True, plotShow = False):
     my_path = os.getcwd()
     fname = args[0]
-    #print(fname, type(fname))
     full_fname = fname + ".felix"
     powerfile = fname + ".pow"
     if os.path.isfile(powerfile):

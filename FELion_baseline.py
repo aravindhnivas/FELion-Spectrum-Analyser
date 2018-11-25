@@ -322,7 +322,6 @@ def main(fname=""):
 
 def baseline_correction(*args, **kwargs):
     fname = args[0]
-    #print(fname, type(fname))
     my_path = os.getcwd()
 
     if os.path.isdir('EXPORT'):
