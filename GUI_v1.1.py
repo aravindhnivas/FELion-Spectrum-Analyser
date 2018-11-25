@@ -21,8 +21,8 @@ def on_closing():
 root = Tk()
 
 #Defining the main window's dimensions:
-width_window = 700
-height_window = 500
+width_window = 600
+height_window = 400
 
 #Making window appear at the center of your computer screen:
 your_computer_screen_width = root.winfo_screenwidth()
@@ -46,21 +46,17 @@ root.config()
 
 height_topFrame = 100
 height_StatusBarFrame = 15
-#height_bottomFrame = 100
 
 #top frames:
-topFrame = Frame(root)
-topFrame.config(height = height_topFrame)
+topFrame = Frame(root, height = height_topFrame)
 topFrame.pack(side = "top", fill = "both", expand = False)
 
 #bottom frames
-bottomFrame = Frame(root)
-bottomFrame.config(bg = "coral1")#, height = height_bottomFrame)
+bottomFrame = Frame(root, bg = "sea green")
 bottomFrame.pack(side = "top", fill = "both", expand = True)
 
 #StatusBar Frame:
-StatusBarFrame = Frame(root)
-StatusBarFrame.config(height = height_StatusBarFrame)
+StatusBarFrame = Frame(root, height = height_StatusBarFrame)
 StatusBarFrame.pack(side = "bottom", fill = "both", expand = False)
 ###########################################################################################
 ###########################################################################################
@@ -83,16 +79,13 @@ sub_title.config(text = sub_title_text, relief = FLAT, bg = "sea green",\
   font = "Times 12 italic", pady = 5, anchor = "e")
 sub_title.pack(fill = "both", expand = True)
 
-
 #Buttons:
-MAX_ROW = 5
-MAX_COLUMN = 6
-#Label Entry Box;
+#Label for Entry Box;
 user_input_label = Label(bottomFrame)
 user_input_label.config(text = " Enter filename\n(w/o .felix): ", \
-  font=("Times", 12, "bold"))
+  font=("Times", 10, "bold"))
 
-#Text Entry Box;
+#Entry Box;
 init_msg = "Enter here" #initialising message
 content = StringVar()   #defining Stringvar()
 user_input = Entry(bottomFrame, bg = "white", bd = 5, \
@@ -101,16 +94,34 @@ user_input.config(font=("Times", 12, "italic"))
 user_input.focus_set()
 content.set(init_msg)
 
+#Baseline
+baseline_button = ttk.Button(bottomFrame, text="Baseline")
+baseline_button.config(command = lambda: baseline_correction(user_input.get()))
+
+#Save progm button
+saveButton = ttk.Button(bottomFrame, text = "Save Baseline")
+saveButton.config(command = root.quit)
+
+#Normline
+normline_button = ttk.Button(bottomFrame, text="Normline")
+normline_button.config(command = lambda: normline(user_input.get()))
+
+#Avg_Spectrum
+avg_button = ttk.Button(bottomFrame, text="Avg_spectrum")
+avg_button.config(command = lambda: avgSpec(user_input.get()))
+
+#Quit Button
+quitButton = ttk.Button(bottomFrame, text = "quit")
+quitButton.config(command = root.destroy)
 
 #Placing the labels and buttons in bottom frame using place(), relx/y is relative to parent frame pixels
-user_input_label.place(relx = 0.3,  rely = 0.1, width = 120, height = 50)
-user_input.place(relx = 0.5,  rely = 0.1, width = 120, height = 50)
-
-
-
-
-
-
+user_input_label.place(relx = 0.1,  rely = 0.1, width = 100, height = 40)
+user_input.place(relx = 0.3,  rely = 0.1, width = 100, height = 40)
+baseline_button.place(relx = 0.1,  rely = 0.3, width = 100, height = 40)
+saveButton.place(relx = 0.1,  rely = 0.5, width = 100, height = 40)
+normline_button.place(relx = 0.3,  rely = 0.3, width = 100, height = 40)
+avg_button.place(relx = 0.5,  rely = 0.3, width = 100, height = 40)
+quitButton.place(relx = 0.3,  rely = 0.7, width = 100, height = 40)
 
 #Status Bar: Labels on status bar frames:
 statusBar_left_text = "Version 1.0"
@@ -126,6 +137,7 @@ statusBar_right.config(text = statusBar_right_text, \
 statusBar_right.pack(side = "top", fill = "both", expand = True)
 
 
+root.protocol("WM_DELETE_WINDOW", on_closing)
 root.mainloop()
 
 ###########################################################################################
