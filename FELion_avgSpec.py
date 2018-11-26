@@ -21,7 +21,16 @@ def export_file(fname, wn, inten):
         f.write("{:8.3f}\t{:8.2f}\n".format(wn[i], inten[i]))
     #f.close()
 
-def main(t="Title", ts=10, lgs=5, minor=5, major=50, majorTickSize=8, xmin=1000, xmax=2000):
+def main(**kwargs):
+    t="Title"
+    ts=10
+    lgs=5
+    minor=5
+    major=50
+    majorTickSize=8
+    xmin=1000
+    xmax=2000
+
     fig = plt.subplot(1,1,1)
     plt.rcParams['figure.figsize'] = [6,4]
     plt.rcParams['figure.dpi'] = 80
@@ -75,7 +84,7 @@ def main(t="Title", ts=10, lgs=5, minor=5, major=50, majorTickSize=8, xmin=1000,
     print("Completed.")
     print()
 
-def avgSpec_plot(*args, **kwargs):
+def avgSpec_plot(**kwargs):
     t="Title" 
     ts=10
     lgs=5
@@ -84,6 +93,7 @@ def avgSpec_plot(*args, **kwargs):
     majorTickSize=8
     xmin=1000
     xmax=2000
+
     fig = plt.subplot(1,1,1)
     plt.rcParams['figure.figsize'] = [6,4]
     plt.rcParams['figure.dpi'] = 80
@@ -94,14 +104,10 @@ def avgSpec_plot(*args, **kwargs):
     my_path = os.getcwd() # getting current directory
     pwd = os.listdir(my_path + r"\DATA") # going into the data folder to fetch all the available data filename.
     fileNameList = [] # creating a varaiable list : Don't add any data here. You can use the script as it is since it automatically takes the data in the DATA folder
-    for p in pwd:
-        if p.endswith(".felix"): # finding the files only with .felix extension
-            filename = os.path.basename(p) # getting the name of the file
-            file = os.path.splitext(filename)[0] # printing only the file name without the extension .felix
-            fileNameList.append([file]) # saving all the file names in the variable list fileNameList
-        else:
-            continue
-            
+    for f in pwd:
+        if f.find(".felix")>=0:
+            fileNameList.append(f.split(".felix")[0])
+
     xs = np.array([],dtype='double')
     ys = np.array([],dtype='double')
 
