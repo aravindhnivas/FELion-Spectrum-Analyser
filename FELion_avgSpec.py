@@ -132,7 +132,6 @@ def avgSpec_plot(*args, **kwargs):
     fig.xaxis.set_minor_locator(MultipleLocator(minor))
     fig.xaxis.set_major_locator(MultipleLocator(major))
     plt.savefig(F)
-    plt.show()
     plt.close()
     print()
     print("Completed.")

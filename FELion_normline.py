@@ -25,7 +25,7 @@ def export_file(fname, wn, inten):
     #f.close()
 
 
-def norm_line_felix(fname, save=True, show=True, PD=True):
+def norm_line_felix(fname, save=True, show=False, PD=True):
     """
     Reads data from felix meassurement file and 
     calculates the calibrated wavenumber and calibrated/normalised
