@@ -253,7 +253,9 @@ def SaveBase(fname, baseline):
 def main(fname=""):
     if fname == "":
         fname = input("Please enter the file name (without .felix): ")
-
+    if(fname.find('felix')):
+        fname = fname.split('.')[0]
+    
     my_path = os.getcwd()
 
     if os.path.isdir('EXPORT'):
@@ -320,9 +322,11 @@ def main(fname=""):
         SaveBase(fname, baseline)
     return
 
-def baseline_correction(*args, **kwargs):
-    fname = args[0]
+def baseline_correction(fname):
     my_path = os.getcwd()
+
+    if(fname.find('felix')>=0):
+        fname = fname.split('.')[0]
 
     if os.path.isdir('EXPORT'):
         print("EXPORT folder exist")
@@ -382,8 +386,9 @@ def baseline_correction(*args, **kwargs):
         print("NOTE: You don't have .pow file so you can't plot the data yet but you can make the baseline.")
     elif os.path.isfile(powerfile):
         shutil.copyfile(my_path + r"\{}".format(powerfile), my_path + r"\DATA\{}".format(powerfile))
-        print("Powerfile is copied to the DATA folder")
+        print("{} Powerfile copied to the DATA folder.".format(powerfile))
 
+    print("\n{}.base Baseline Saved.".format(fname))
     if baseline != None:
         SaveBase(fname, baseline)
     return

@@ -11,10 +11,19 @@ from FELion_normline import normline_correction
 from FELion_avgSpec import avgSpec_plot
 
 # User defined definitions:
+###########################################################################################
+###########################################################################################
 def on_closing():
   if messagebox.askokcancel("Quit", "Do you want to quit?"):
     root.destroy()
 
+def save_on():
+  return root.quit()
+    
+def end_prgm():
+  return root.destroy()
+###########################################################################################
+###########################################################################################
 
 
 #Main configuration:
@@ -83,7 +92,7 @@ sub_title.pack(fill = "both", expand = True)
 #Buttons:
 #Label for Entry Box;
 user_input_label = Label(bottomFrame)
-user_input_label.config(text = " Enter filename\n(w/o .felix): ", font=("Times", 10, "bold"))
+user_input_label.config(text = " Filename:", font=("Times", 10, "bold"))
 
 #Entry Box;
 init_msg = "Enter here" #initialising message
@@ -101,7 +110,7 @@ baseline_button.config(command = lambda: baseline_correction(user_input.get()))
 
 #Save progm button
 saveButton = ttk.Button(bottomFrame, text = "Save Baseline")
-saveButton.config(command = root.quit)
+saveButton.config(command = lambda: save_on())
 
 #Normline
 normline_button = ttk.Button(bottomFrame, text="Normline")
@@ -109,14 +118,14 @@ normline_button.config(command = lambda: normline_correction(user_input.get()))
 
 #Avg_Spectrum
 avg_button = ttk.Button(bottomFrame, text="Avg_spectrum")
-avg_button.config(command = lambda: avgSpec_plot(user_input.get()))
+avg_button.config(command = lambda: avgSpec_plot())
 
 ###########################################################################################
 ###########################################################################################
 
 #Quit Button
 quitButton = ttk.Button(bottomFrame, text = "quit")
-quitButton.config(command = root.destroy)
+quitButton.config(command = lambda: end_prgm())
 ###########################################################################################
 ###########################################################################################
 

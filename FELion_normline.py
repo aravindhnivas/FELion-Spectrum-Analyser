@@ -25,7 +25,7 @@ def export_file(fname, wn, inten):
     #f.close()
 
 
-def norm_line_felix(fname, save=True, show=False, PD=True):
+def norm_line_felix(fname):
     """
     Reads data from felix meassurement file and 
     calculates the calibrated wavenumber and calibrated/normalised
@@ -35,6 +35,10 @@ def norm_line_felix(fname, save=True, show=False, PD=True):
     Input: filename       save = False by default (produce output pdf file)
     Output: data[0,1]     0 - wavenumber, 1 - intensity
     """
+    save=True
+    show=False
+    PD=True
+
     fig = P.figure(figsize=(8,10))
     ax = fig.add_subplot(3,1,1)
     bx = fig.add_subplot(3,1,2)
@@ -149,23 +153,22 @@ def main(s=True, plotShow=False):
     else:
         print("\nCAUTION:You don't have the powerfile(.pow)\n")
 
-    a,b = norm_line_felix(fname, save=s, show=plotShow)
+    a,b = norm_line_felix(fname)
+    print(a, b)
     print("\nProcess Completed.\n")
 
-def normline_correction(*args ,s = True, plotShow = False):
+def normline_correction(fname):
     my_path = os.getcwd()
-    fname = args[0]
-    full_fname = fname + ".felix"
     powerfile = fname + ".pow"
     if os.path.isfile(powerfile):
         shutil.copyfile(my_path + r"\{}".format(powerfile), my_path + r"\DATA\{}".format(powerfile))
-        print("Powerfile copied to the DATA folder.")
+        print("{} Powerfile copied to the DATA folder.".format(powerfile))
     else:
-        print("\nCAUTION:You don't have the powerfile(.pow)\n")
-
-    a,b = norm_line_felix(fname, save=s, show=plotShow)
+        print("\nCAUTION:You don't have the {} powerfile(.pow)\n".format(powerfile))
+  
+    a,b = norm_line_felix(fname)
     print("\nProcess Completed.\n")
-    return
+    print("DONE")
 
 def help():
     print()
@@ -183,5 +186,5 @@ def help():
     print()
 
 if __name__ == "__main__":
-    main()
     help()
+    main()

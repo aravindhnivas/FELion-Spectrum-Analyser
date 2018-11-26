@@ -76,7 +76,7 @@ def main():
         fname = args.fname.split('/')[-1]
     else:
         fname = args.fname
-
+        
     if(fname.find('felix')>=0):
         fname = fname.split('.')[0]
         
