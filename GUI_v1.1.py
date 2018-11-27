@@ -101,6 +101,17 @@ user_input = Entry(bottomFrame, bg = "white", bd = 5, textvariable=content, just
 user_input.config(font=("Times", 12, "italic"))
 user_input.focus_set()
 content.set(init_msg)
+
+
+###########################################################################################
+###########################################################################################
+
+#Quit Button
+quitButton = ttk.Button(bottomFrame, text = "quit")
+quitButton.config(command = lambda: end_prgm())
+###########################################################################################
+###########################################################################################
+
 ###########################################################################################
 ###########################################################################################
 
@@ -120,14 +131,6 @@ normline_button.config(command = lambda: normline_correction(user_input.get()))
 avg_button = ttk.Button(bottomFrame, text="Avg_spectrum")
 avg_button.config(command = lambda: avgSpec_plot())
 
-###########################################################################################
-###########################################################################################
-
-#Quit Button
-quitButton = ttk.Button(bottomFrame, text = "quit")
-quitButton.config(command = lambda: end_prgm())
-###########################################################################################
-###########################################################################################
 
 #Placing the labels and buttons in bottom frame using place(), relx/y is relative to parent frame pixels
 user_input_label.place(relx = 0.1,  rely = 0.1, width = 100, height = 40)
