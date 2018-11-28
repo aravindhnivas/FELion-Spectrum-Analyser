@@ -6,7 +6,7 @@ from tkinter import *
 from tkinter import messagebox
 from tkinter import ttk
 #Importing definitions from FELion python modules:
-from FELion_baseline import baseline_correction
+from FELion_base import baseline_correction
 from FELion_normline import normline_correction
 from FELion_avgSpec import avgSpec_plot
 
