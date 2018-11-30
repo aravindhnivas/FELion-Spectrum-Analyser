@@ -322,7 +322,7 @@ def main(fname=""):
         SaveBase(fname, baseline)
     return
 
-def baseline_correction(fname):
+def f_baseline_correction(fname):
     my_path = os.getcwd()
 
     if(fname.find('felix')>=0):
@@ -393,5 +393,5 @@ def baseline_correction(fname):
         SaveBase(fname, baseline)
     return
 
-if __name__ == "__main__":
-    main()
+#if __name__ == "__main__":
+#    main()

@@ -239,7 +239,6 @@ def GuessBaseLine(data):
 
     return np.array(Bx), np.array(By)
 
-
 def SaveBase(fname, baseline):
     b = np.asarray(baseline)
     f = open('DATA/' + fname + '.base','w')
