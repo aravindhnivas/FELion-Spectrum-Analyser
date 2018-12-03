@@ -91,8 +91,7 @@ sub_title.pack(fill = "both", expand = True)
 
 #Buttons:
 #Label for Entry Box;
-user_input_label = Label(bottomFrame)
-user_input_label.config(text = " Filename:", font=("Times", 10, "bold"))
+user_input_label = Label(bottomFrame, text = " Filename:", font=("Times", 10, "bold"))
 
 #Entry Box;
 init_msg = "Enter here" #initialising message
@@ -101,8 +100,6 @@ user_input = Entry(bottomFrame, bg = "white", bd = 5, textvariable=content, just
 user_input.config(font=("Times", 12, "italic"))
 user_input.focus_set()
 content.set(init_msg)
-
-
 ###########################################################################################
 ###########################################################################################
 
@@ -117,7 +114,7 @@ quitButton.config(command = lambda: end_prgm())
 
 #Baseline
 baseline_button = ttk.Button(bottomFrame, text="Baseline")
-baseline_button.config(command = lambda: f_baseline_correction(user_input.get()))
+baseline_button.config(command = lambda: f_baseline_correction(content.get()))
 
 #Save progm button
 saveButton = ttk.Button(bottomFrame, text = "Save Baseline")
@@ -125,7 +122,7 @@ saveButton.config(command = lambda: save_on())
 
 #Normline
 normline_button = ttk.Button(bottomFrame, text="Normline")
-normline_button.config(command = lambda: normline_correction(user_input.get()))
+normline_button.config(command = lambda: normline_correction(content.get()))
 
 #Avg_Spectrum
 avg_button = ttk.Button(bottomFrame, text="Avg_spectrum")
@@ -151,7 +148,7 @@ statusBar_left.config(text = statusBar_left_text, \
   relief = SUNKEN, bd = 2, font = "Times 10 italic", pady = 5, anchor = "w")
 statusBar_left.pack(side = "top", fill = "both", expand = True)
 
-statusBar_right_text = "Developed by Sandra's group (Aravindh) at FELIX"
+statusBar_right_text = "Developed at FELIX"
 statusBar_right = Label(StatusBarFrame)
 statusBar_right.config(text = statusBar_right_text, \
   relief = SUNKEN, bd = 2, font = "Times 10 italic", pady = 5, anchor = "e")
