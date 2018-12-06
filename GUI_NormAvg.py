@@ -1,41 +1,27 @@
 #!/usr/bin/python3
 ## A simple GUI program for FELion Instrument:
-
 from tkinter import *
 from tkinter import messagebox
 from tkinter import ttk
-#Importing definitions from FELion python modules:
+#Importing FELion Modules:
 from FELion_normline import normline_correction
 from FELion_avgSpec import avgSpec_plot
 
-def gui_norm_avg():
+def gui_normline():
     # User defined definitions:
+    ###########################################################################################
+    ###########################################################################################
     def on_closing():
         if messagebox.askokcancel("Quit", "Do you want to quit?"):
             root.destroy()
-
-    #Main configuration:
-    ###########################################################################################
-    ###########################################################################################
+    
     root = Tk()
 
     #Defining the main window's dimensions:
     width_window = 600
     height_window = 400
-
-    #Making window appear at the center of your computer screen:
-    your_computer_screen_width = root.winfo_screenwidth()
-    your_computer_screen_height = root.winfo_screenheight()
-    x_coordinate = (your_computer_screen_width/2) - (width_window/2)
-    y_coordinate = (your_computer_screen_height/2) - (height_window/2)
-    root.geometry("%dx%d+%d+%d" %(width_window, height_window, x_coordinate, y_coordinate))
     root.geometry("{}x{}".format(width_window, height_window))
-
-    #Defining the window titile
     root.title("FELion Spectrum Analyser")
-
-    ###########################################################################################
-    ###########################################################################################
 
     #Frames:
     ###########################################################################################
@@ -64,7 +50,7 @@ def gui_norm_avg():
     ###########################################################################################
 
     # Title: Labels on topframes:
-    title_text = "Normline and Average Spectrum"
+    title_text = "Normline and Average"
     title = Label(topFrame)
     title.config(text = title_text, relief = SOLID, bd = 1, bg = "sea green",\
     font = "Times 15 bold", pady = 5)
@@ -85,26 +71,27 @@ def gui_norm_avg():
     #Entry Box;
     init_msg = "Enter here" #initialising message
     content = StringVar()   #defining Stringvar()
-    user_input = Entry(bottomFrame, bg = "white", bd = 5, justify = LEFT,\
-        textvariable=content)
+    user_input = Entry(bottomFrame, bg = "white", bd = 5, textvariable=content, justify = LEFT)
     user_input.config(font=("Times", 12, "italic"))
     user_input.focus_set()
     content.set(init_msg)
-
     ###########################################################################################
     ###########################################################################################
-
-    #Normline
-    normline_button = ttk.Button(bottomFrame, text="Normline")
-    normline_button.config(command = lambda: normline_correction(user_input.get()))
-
-    #Avg_Spectrum
-    avg_button = ttk.Button(bottomFrame, text="Avg_spectrum")
-    avg_button.config(command = lambda: avgSpec_plot())
 
     #Quit Button
     quitButton = ttk.Button(bottomFrame, text = "quit")
     quitButton.config(command = lambda: on_closing())
+    ###########################################################################################
+    ###########################################################################################
+
+    ###########################################################################################
+    #Normline
+    normline_button = ttk.Button(bottomFrame, text="Normline")
+    normline_button.config(command = lambda: normline_correction(content.get()))
+
+    #Avg_Spectrum
+    avg_button = ttk.Button(bottomFrame, text="Avg_spectrum")
+    avg_button.config(command = lambda: avgSpec_plot())
 
 
     #Placing the labels and buttons in bottom frame using place(), relx/y is relative to parent frame pixels
@@ -135,8 +122,6 @@ def gui_norm_avg():
     root.protocol("WM_DELETE_WINDOW", on_closing)
     root.mainloop()
     return
-    ###########################################################################################
-    ###########################################################################################
 
 if __name__ == "__main__":
-    gui_norm_avg()
+    gui_normline()
