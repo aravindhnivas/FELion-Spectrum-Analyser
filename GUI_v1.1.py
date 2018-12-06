@@ -6,7 +6,7 @@ from tkinter import *
 from tkinter import messagebox
 from tkinter import ttk
 #Importing definitions from FELion python modules:
-from f_baseline import f_baseline_correction
+from FELion_baseline import baseline_correction
 from FELion_normline import normline_correction
 from FELion_avgSpec import avgSpec_plot
 
@@ -114,7 +114,7 @@ quitButton.config(command = lambda: end_prgm())
 
 #Baseline
 baseline_button = ttk.Button(bottomFrame, text="Baseline")
-baseline_button.config(command = lambda: f_baseline_correction(content.get()))
+baseline_button.config(command = lambda: baseline_correction(content.get()))
 
 #Save progm button
 saveButton = ttk.Button(bottomFrame, text = "Save Baseline")
