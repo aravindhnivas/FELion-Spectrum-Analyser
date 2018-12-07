@@ -2,6 +2,7 @@
 import numpy as np
 import pylab as P
 import sys
+import os
 from os import path
 import matplotlib.pyplot as plt
 from scipy.interpolate import interp1d
@@ -94,6 +95,32 @@ def main():
     ax.plot(X, powerWN.power(X), ls='-', c='m')
 
     ax.set_title('Power and Number of shots in the .pow file')
+    ax.set_xlim((xc.min()-70, xc.max()+70))
+    ax.set_ylim((0, yc.max()*1.1))
+    ax.set_xlabel("wn (cm-1)")
+    ax.set_ylabel("power (mJ)")
+    bx.set_ylabel("n shots")
+    plt.show()
+
+def FELion_Power(fname):
+    #my_path = os.getcwd()
+    if(fname.find('felix')>=0):
+        fname = fname.split('.')[0]
+        
+    #x, y, n_shots = ReadPower(fname)
+    powerWN = PowerCalibrator(fname)
+    xc, yc, n_shots = powerWN.GetCalibData()
+    X = np.arange(xc.min(),xc.max(), 1)
+
+    fig, ax = plt.subplots()
+    bx = ax.twinx()
+    ax.plot(xc, yc, ls='', marker='o', ms=5, markeredgecolor='r', c='r')
+    bx.plot(xc, powerWN.shots(xc), ls='-', marker='o', ms=3, markeredgecolor='b', c='b')
+
+    #plot the power calibration line:
+    ax.plot(X, powerWN.power(X), ls='-', c='m')
+
+    ax.set_title('Power and Number of shots in the {}.pow file'.format(fname))
     ax.set_xlim((xc.min()-70, xc.max()+70))
     ax.set_ylim((0, yc.max()*1.1))
     ax.set_xlabel("wn (cm-1)")
