@@ -84,15 +84,16 @@ def main(**kwargs):
     print("Completed.")
     print()
 
-def avgSpec_plot(**kwargs):
-    t="Title" 
-    ts=10
-    lgs=5
-    minor=5
-    major=50
-    majorTickSize=8
-    xmin=1000
+def avgSpec_plot(t="Title",\
+    ts=10,\
+    lgs=5,\
+    minor=5,\
+    major=50,\
+    majorTickSize=8,\
+    xmin=1000,\
     xmax=2000
+    ):
+    
 
     fig = plt.subplot(1,1,1)
     plt.rcParams['figure.figsize'] = [6,4]
@@ -142,7 +143,7 @@ def avgSpec_plot(**kwargs):
     print()
     print("Completed.")
     print()
-    #return
+    return
 
 def help():
     print()
