@@ -3,6 +3,7 @@ import numpy as np
 import pylab as P
 import sys
 import copy 
+import os
 from os import path
 import matplotlib.pyplot as plt
 from scipy.optimize import leastsq
@@ -103,6 +104,24 @@ def main():
     saCalibrator.plot(ax)
 
     ax.set_title('Spectrum analyser calibration from .felix file')
+    #ax.set_xlim((wn.min()-70, wn.max()+70))
+    #ax.set_ylim((0, 30))
+    ax.set_xlabel("wn set (cm-1)")
+    ax.set_ylabel("wn SA (cm-1)")
+    plt.show()
+
+def FELion_Sa(fname):
+    #my_path = os.getcwd()
+    if(fname.find('felix')>=0):
+        fname = fname.split('.')[0]
+        
+    saCalibrator = SpectrumAnalyserCalibrator(fname, fit='cubic')
+    
+    fig, ax = plt.subplots()
+    #plot the spectrum analyser calibration
+    saCalibrator.plot(ax)
+
+    ax.set_title('Spectrum analyser calibration from {}.felix file'.format(fname))
     #ax.set_xlim((wn.min()-70, wn.max()+70))
     #ax.set_ylim((0, 30))
     ax.set_xlabel("wn set (cm-1)")
