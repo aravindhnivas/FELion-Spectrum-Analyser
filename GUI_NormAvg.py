@@ -258,7 +258,7 @@ def gui_normline():
     #Placing mass spec:
     massSpec_label.place(relx = 0.7,  rely = 0.1, width = 100, height = 40)
     massSpec_input.place(relx = 0.8,  rely = 0.1, width = 100, height = 40)
-    mass_button.place(relx = 0.75,  rely = 0.4, width = 100, height = 40)
+    mass_button.place(relx = 0.75,  rely = 0.6, width = 100, height = 40)
 
     # Mass Spec labels:
     mass_range_label = Label(bottomFrame, text = "Range(u):", font=("Times", 10, "bold"))
@@ -286,6 +286,22 @@ def gui_normline():
     mass_figsize.place(relx = 0.7,  rely = 0.3, width = 100, height = 40)
     mass_figWidth.place(relx = 0.8,  rely = 0.3, width = 50, height = 40)
     mass_figHeight.place(relx = 0.85,  rely = 0.3, width = 50, height = 40)
+
+    #Combine Mass spec:
+
+    def combine_func(var):
+        pass
+        return
+
+    combine_value = IntVar()
+    combine_true = ttk.Radiobutton(bottomFrame, text = "Single: ", variable = combine_value, value = 0, command = lambda: combine_func(combine_value.get()))
+    combine_false = ttk.Radiobutton(bottomFrame, text = "Combine: ", variable = combine_value, value = 1, command = lambda: combine_func(combine_value.get()))
+
+
+    combine_true.place(relx = 0.7,  rely = 0.4, width = 100, height = 40)
+    combine_false.place(relx = 0.8,  rely = 0.4, width = 100, height = 40)
+
+
     ###########################################################################################
     ###########################################################################################
 
