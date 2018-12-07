@@ -121,7 +121,6 @@ def gui_baseline():
   user_input.place(relx = 0.3,  rely = 0.1, width = 100, height = 40)
   baseline_button.place(relx = 0.1,  rely = 0.3, width = 100, height = 40)
   saveButton.place(relx = 0.1,  rely = 0.5, width = 100, height = 40)
-  #norm_avg_Button.place(relx = 0.3,  rely = 0.3, width = 100, height = 40)
   quitButton.place(relx = 0.3,  rely = 0.7, width = 100, height = 40)
 
   ###########################################################################################
