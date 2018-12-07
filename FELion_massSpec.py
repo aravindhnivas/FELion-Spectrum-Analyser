@@ -154,8 +154,6 @@ def massSpec(fname, mname, temp, bwidth, ie, xmin, xmax, fig_width, fig_height, 
                     x[index] = float(a[0])
                     y[index] = float(a[1])
 
-            name = f.name[:8].replace('_', '-')
-
             plt.semilogy(x, y, label= input('legenda input: '))
             plt.legend()
 

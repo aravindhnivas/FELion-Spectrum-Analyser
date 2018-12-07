@@ -258,7 +258,7 @@ def gui_normline():
     #Placing mass spec:
     massSpec_label.place(relx = 0.7,  rely = 0.1, width = 100, height = 40)
     massSpec_input.place(relx = 0.8,  rely = 0.1, width = 100, height = 40)
-    mass_button.place(relx = 0.75,  rely = 0.6, width = 100, height = 40)
+    mass_button.place(relx = 0.9,  rely = 0.4, width = 100, height = 40)
 
     # Mass Spec labels:
     mass_range_label = Label(bottomFrame, text = "Range(u):", font=("Times", 10, "bold"))
@@ -287,20 +287,46 @@ def gui_normline():
     mass_figWidth.place(relx = 0.8,  rely = 0.3, width = 50, height = 40)
     mass_figHeight.place(relx = 0.85,  rely = 0.3, width = 50, height = 40)
 
+    def test(test):
+        print(test)
+        
     #Combine Mass spec:
+    def combine_func(combine):
+        display_label = Label(bottomFrame, font=("Times", 10, "italic"))
 
-    def combine_func(var):
-        pass
-        return
+        if not combine:
+            display_label.config(text = "Single mode active:")
+            display_label.place(relx = 0.7,  rely = 0.5, relwidth = 0.2, height = 40)
 
-    combine_value = IntVar()
-    combine_true = ttk.Radiobutton(bottomFrame, text = "Single: ", variable = combine_value, value = 0, command = lambda: combine_func(combine_value.get()))
-    combine_false = ttk.Radiobutton(bottomFrame, text = "Combine: ", variable = combine_value, value = 1, command = lambda: combine_func(combine_value.get()))
+        if combine:
+            display_label.config(text = "Combine mode active:")
+            display_label.place(relx = 0.7,  rely = 0.5, relwidth = 0.2, height = 40)
+
+            combine_entry_values = StringVar()
+            combine_entry_values.set("Enter here")
+
+            combine_entry = Entry(bottomFrame, bg = "white", bd = 5, textvariable=combine_entry_values, justify = LEFT, font=("Times", 10, "bold"))
+            combine_entry.focus_set()
+            combine_entry.place(relx = 0.7,  rely = 0.6, relwidth = 0.2, height = 50)
+
+            test(combine_entry_values.get())
+            
 
 
-    combine_true.place(relx = 0.7,  rely = 0.4, width = 100, height = 40)
-    combine_false.place(relx = 0.8,  rely = 0.4, width = 100, height = 40)
+    mass_method_value = BooleanVar()
+    single_mass = ttk.Radiobutton(bottomFrame, text = "Single: ", variable = mass_method_value, value = False, command = lambda: combine_func(mass_method_value.get()))
+    combine_mass = ttk.Radiobutton(bottomFrame, text = "Combine: ", variable = mass_method_value, value = True, command = lambda: combine_func(mass_method_value.get()))
+    single_mass.place(relx = 0.7,  rely = 0.4, width = 100, height = 40)
+    combine_mass.place(relx = 0.8,  rely = 0.4, width = 100, height = 40)
+        
 
+    
+
+    
+    
+    
+    
+    
 
     ###########################################################################################
     ###########################################################################################
