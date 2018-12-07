@@ -19,7 +19,7 @@ def export_file(fname, wn, inten):
     f.write("#wn (cm-1)       intensity\n")
     for i in range(len(wn)):
         f.write("{:8.3f}\t{:8.2f}\n".format(wn[i], inten[i]))
-    #f.close()
+    f.close()
 
 def main(**kwargs):
     t="Title"
@@ -94,6 +94,10 @@ def avgSpec_plot(
                 xmin=1000,\
                 xmax=2000,\
                 outFilename="average",\
+                mname="Molecule",\
+                temp = 4,\
+                bwidth = 100,\
+                ie = 20,\
                 specificFiles = False,
                 allFiles = True
                 ):
@@ -118,7 +122,7 @@ def avgSpec_plot(
 
     if all and not specificFiles:
         for l in fileNameList:
-            a,b = norm_line_felix(l[0])
+            a,b = norm_line_felix(l[0], mname, temp, bwidth, ie)
             fig.plot(a, b, ls='', marker='o', ms=1, label=l[0])
             xs = np.append(xs,a)
             ys = np.append(ys,b)

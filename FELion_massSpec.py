@@ -85,6 +85,10 @@ def main(date):
 
 def massSpec(fname, mname, temp, bwidth, ie):
 
+    plt.rcParams['figure.figsize'] = [6,4]
+    plt.rcParams['figure.dpi'] = 80
+    plt.rcParams['savefig.dpi'] = 100
+    
     my_path = os.getcwd()
     if fname.find(".felix")>0:
         fname = fname.split(".")[0]

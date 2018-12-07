@@ -187,6 +187,7 @@ def gui_normline():
                                                             i_avg_xmin.get(), \
                                                             i_avg_xmax.get(),\
                                                             output_filename.get(),\
+                                                            mname.get(), temp.get(), bwidth.get(), ie.get(),\
                                                             specificFiles=specificFiles_status,\
                                                             allFiles=allFiles_status),\
                                                             )
