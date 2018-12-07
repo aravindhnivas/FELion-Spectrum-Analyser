@@ -122,8 +122,8 @@ def avgSpec_plot(
             fig.plot(a, b, ls='', marker='o', ms=1, label=l[0])
             xs = np.append(xs,a)
             ys = np.append(ys,b)
-    fig.legend(title=t) #Set the fontsize for each label
 
+    fig.legend(title=t) #Set the fontsize for each label
     #Binning
     binns, inten = felix_binning(xs, ys, delta=DELTA)
     fig.plot(binns, inten, ls='-', marker='', c='k')
