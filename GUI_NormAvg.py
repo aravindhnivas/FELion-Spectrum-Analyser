@@ -7,7 +7,8 @@ from tkinter import ttk
 #Importing FELion Modules:
 from FELion_normline import normline_correction
 from FELion_avgSpec import avgSpec_plot
-
+from FELion_sa import FELion_Sa
+from FELion_power import FELion_Power
 
 def avg_buttons():
     pass
@@ -150,6 +151,7 @@ def gui_normline():
     
     specificFiles_status = False
     allFiles_status = True
+
     #Avg_Spectrum Button
     avg_button = ttk.Button(bottomFrame, text="Avg_spectrum")
     avg_button.config(command = lambda: avgSpec_plot(i_avg_title.get(), \
@@ -164,6 +166,10 @@ def gui_normline():
                                                             specificFiles=specificFiles_status,\
                                                             allFiles=allFiles_status),\
                                                             )
+
+    # Spectrum Analyzer and power Analyzer Buttons:
+    sa_button = ttk.Button(bottomFrame, text="SA", command = lambda: FELion_Sa(content.get()))
+    power_button = ttk.Button(bottomFrame, text = "Power", command = lambda: FELion_Power(content.get()))
 
     # Placing the avg_labels and Entry widgets:
     avg_title.place(relx = 0.5,  rely = 0.1, width = 100, height = 40)
@@ -184,15 +190,20 @@ def gui_normline():
     avg_xmin_Entry.place(relx = 0.7,  rely = 0.7, width = 100, height = 40)
     avg_xmax_Entry.place(relx = 0.7,  rely = 0.8, width = 100, height = 40)
 
-    avg_outputFilename.place(relx = 0.1,  rely = 0.3, width = 110, height = 40)
-    avg_outputFilename_entry.place(relx = 0.25,  rely = 0.3, width = 100, height = 40)
-
     #Placing the labels and buttons in bottom frame using place(), relx/y is relative to parent frame pixels
     user_input_label.place(relx = 0.1,  rely = 0.1, width = 100, height = 40)
     user_input.place(relx = 0.3,  rely = 0.1, width = 100, height = 40)
     normline_button.place(relx = 0.1,  rely = 0.2, width = 100, height = 40)
     avg_button.place(relx = 0.3,  rely = 0.2, width = 100, height = 40)
     quitButton.place(relx = 0.2,  rely = 0.9, width = 100, height = 40)
+
+    # Placing SA and power buttons:
+    sa_button.place(relx = 0.1,  rely = 0.3, width = 100, height = 40)
+    power_button.place(relx = 0.3,  rely = 0.3, width = 100, height = 40)
+
+    # Placing avg_out filename labels and entry
+    avg_outputFilename.place(relx = 0.1,  rely = 0.4, width = 110, height = 40)
+    avg_outputFilename_entry.place(relx = 0.25,  rely = 0.4, width = 100, height = 40)
     ###########################################################################################
     ###########################################################################################
 
