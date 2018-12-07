@@ -83,12 +83,12 @@ def main(date):
 
         plt.show()
 
-def massSpec(fname, mname, temp, bwidth, ie):
+def massSpec(fname, mname, temp, bwidth, ie, xmin, xmax, fig_width, fig_height):
 
-    plt.rcParams['figure.figsize'] = [6,4]
+    plt.rcParams['figure.figsize'] = [fig_width,fig_height]
     plt.rcParams['figure.dpi'] = 80
     plt.rcParams['savefig.dpi'] = 100
-    
+
     my_path = os.getcwd()
     if fname.find(".felix")>0:
         fname = fname.split(".")[0]
@@ -121,6 +121,7 @@ def massSpec(fname, mname, temp, bwidth, ie):
     plt.xlabel('Mass [u]')
     plt.ylabel('Ion counts /{} ms'.format(b0))
     plt.grid(True)
+    plt.xlim([xmin,xmax])
     plt.ylim(1)
     plt.title("Filename: {}, for {}, at temp: {}K, B0: {}ms and IE(eV): {}".format(fname, mname, temp, bwidth, ie))
     plt.savefig(my_path + r"\MassSpec_DATA\{}.png".format(fname))
