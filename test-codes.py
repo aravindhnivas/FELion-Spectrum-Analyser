@@ -1,31 +1,13 @@
-#!/usr/bin/python3
+import tkinter
+from tkinterDnD2 import *
 
-from tkinter import *
-from FELion_avgSpec import avgSpec_plot
-from FELion_baseline import baseline_correction
-from FELion_normline import normline_correction
+def drop(event):
+    entry_sv.set(event.data)
 
-root = Tk()
-root.geometry("500x500")
-
-topFrame = Frame(root, height = 50)
-topFrame.pack(fill = "both", expand = False)
-
-
-frame = Frame(root, bg = "sea green")
-frame.pack(fill = "both", expand = True)
-
-content = StringVar()
-user_input = Entry(frame, textvariable = content)
-content.set("Enter")
-user_input.focus()
-user_input.pack(pady = 10)
-
-
-avg = Button(frame, text = "avg", command = lambda: avgSpec_plot())
-avg.pack(pady = 10)
-
-norm = Button(frame, text = "norm", command = lambda: normline_correction(user_input.get()))
-norm.pack(pady = 10)
-
+root = tkinterDnD.Tk()
+entry_sv = tkinter.StringVar()
+entry = tkinter.Entry(root, textvar=entry_sv, width=80)
+entry.pack(fill=tkinter.X)
+entry.drop_target_register(DND_FILES)
+entry.dnd_bind('<<Drop>>', drop)
 root.mainloop()
