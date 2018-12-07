@@ -1,0 +1,20 @@
+Readme Massspec.py
+
+Massspec.py is a program who designs graphs for your messured mass spectra.
+
+The program has two uses. first of all, a quick and easy scan:
+
+python3 Massspec.py (date)-(number) will give you the spectrum of that date and number for example:
+
+python3 Massspec.py 25_05_18-3 will give that spectrum
+
+
+The second part is too overlay some spectra. this can be done by:
+
+python3 Massspec.py (date)-(number) -a (number for the amount of spectra)
+
+for example
+
+python3 Masspec.py 25_05_18-2 -a 3 
+
+will ask you for 3 spectra which will be stacked on top of each other via a user prompt. If you want to stack graphs from the same day, only the serie number is enough in the user prompt. It also asks for a legenda and some physical parameters for in the title which can be skip just by pressing enter.
