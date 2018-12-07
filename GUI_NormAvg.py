@@ -250,10 +250,14 @@ def gui_normline():
     massSpec_label = Label(bottomFrame, text = "Mass_file: ", font=("Times", 10, "bold"))
     massSpec_input = Entry(bottomFrame, bg = "white", bd = 5, textvariable=mass, justify = LEFT, font=("Times", 10, "bold"))
     mass_button = ttk.Button(bottomFrame, text="MassSpec", \
-        command = lambda: massSpec(\
-            mass.get(), mname.get(), temp.get(), bwidth.get(), ie.get(),\
-            mass_xmin.get(), mass_xmax.get(), m_figwidth.get(), m_figheight.get())
-            )
+                                command = lambda: massSpec(\
+                                    mass.get(), mname.get(), temp.get(), bwidth.get(), ie.get(),\
+                                    mass_xmin.get(), mass_xmax.get(), m_figwidth.get(), m_figheight.get(),\
+                                    combine_entry_values.get(),\
+                                    output_filename.get(),\
+                                    mass_method_value.get()
+                                    )
+                            )
 
     #Placing mass spec:
     massSpec_label.place(relx = 0.7,  rely = 0.1, width = 100, height = 40)
@@ -287,8 +291,7 @@ def gui_normline():
     mass_figWidth.place(relx = 0.8,  rely = 0.3, width = 50, height = 40)
     mass_figHeight.place(relx = 0.85,  rely = 0.3, width = 50, height = 40)
 
-    def test(test):
-        print(test)
+    
         
     #Combine Mass spec:
     def combine_func(combine):
@@ -301,15 +304,6 @@ def gui_normline():
         if combine:
             display_label.config(text = "Combine mode active:")
             display_label.place(relx = 0.7,  rely = 0.5, relwidth = 0.2, height = 40)
-
-            combine_entry_values = StringVar()
-            combine_entry_values.set("Enter here")
-
-            combine_entry = Entry(bottomFrame, bg = "white", bd = 5, textvariable=combine_entry_values, justify = LEFT, font=("Times", 10, "bold"))
-            combine_entry.focus_set()
-            combine_entry.place(relx = 0.7,  rely = 0.6, relwidth = 0.2, height = 50)
-
-            test(combine_entry_values.get())
             
 
 
@@ -320,13 +314,14 @@ def gui_normline():
     combine_mass.place(relx = 0.8,  rely = 0.4, width = 100, height = 40)
         
 
-    
+    combine_entry_values = StringVar()
+    combine_entry_values.set("If combine mode: Enter files")
 
-    
-    
-    
-    
-    
+    combine_entry = Entry(bottomFrame, bg = "white", bd = 5, textvariable=combine_entry_values, justify = LEFT, font=("Times", 10, "bold"))
+    combine_entry.place(relx = 0.7,  rely = 0.6, relwidth = 0.15, height = 50)
+
+
+
 
     ###########################################################################################
     ###########################################################################################
