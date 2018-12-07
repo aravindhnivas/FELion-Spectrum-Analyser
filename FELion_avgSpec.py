@@ -84,15 +84,19 @@ def main(**kwargs):
     print("Completed.")
     print()
 
-def avgSpec_plot(t="Title",\
-    ts=10,\
-    lgs=5,\
-    minor=5,\
-    major=50,\
-    majorTickSize=8,\
-    xmin=1000,\
-    xmax=2000
-    ):
+def avgSpec_plot(
+                t="Title",\
+                ts=10,\
+                lgs=5,\
+                minor=5,\
+                major=50,\
+                majorTickSize=8,\
+                xmin=1000,\
+                xmax=2000,\
+                outFilename="average",\
+                specificFiles = False,
+                allFiles = True
+                ):
     
 
     fig = plt.subplot(1,1,1)
@@ -112,11 +116,12 @@ def avgSpec_plot(t="Title",\
     xs = np.array([],dtype='double')
     ys = np.array([],dtype='double')
 
-    for l in fileNameList:
-        a,b = norm_line_felix(l[0])
-        fig.plot(a, b, ls='', marker='o', ms=1, label=l[0])
-        xs = np.append(xs,a)
-        ys = np.append(ys,b)
+    if all and not specificFiles:
+        for l in fileNameList:
+            a,b = norm_line_felix(l[0])
+            fig.plot(a, b, ls='', marker='o', ms=1, label=l[0])
+            xs = np.append(xs,a)
+            ys = np.append(ys,b)
     fig.legend(title=t) #Set the fontsize for each label
 
     #Binning
@@ -124,7 +129,7 @@ def avgSpec_plot(t="Title",\
     fig.plot(binns, inten, ls='-', marker='', c='k')
 
     #Exporting the Binned file.
-    F = 'OUT/average_Spectrum.pdf'
+    F = 'OUT/%s.pdf'%(outFilename)
     export_file(F, binns, inten)
 
     #Set the Xlim values and fontsizes.
