@@ -23,9 +23,16 @@ def gui_normline():
     root = Tk()
 
     #Defining the main window's dimensions:
-    width_window = 700
+    width_window = 900
     height_window = 700
-    root.geometry("{}x{}".format(width_window, height_window))
+
+    #Making window appear at the center of your computer screen:
+    your_computer_screen_width = root.winfo_screenwidth()
+    your_computer_screen_height = root.winfo_screenheight()
+    x_coordinate = (your_computer_screen_width/2) - (width_window/2)
+    y_coordinate = (your_computer_screen_height/2) - (height_window/2)
+    root.geometry("%dx%d+%d+%d" %(width_window, height_window, x_coordinate, y_coordinate))
+
     root.title("FELion Spectrum Analyser")
 
     #Frames:
@@ -94,8 +101,6 @@ def gui_normline():
     normline_button = ttk.Button(bottomFrame, text="Normline")
     normline_button.config(command = lambda: normline_correction(content.get()))
 
-    
-
     # Avg_Spectrum Labels:
     avg_title = Label(bottomFrame, text = "Title:", font=("Times", 10, "bold"))
     avg_ts = Label(bottomFrame, text = "Title\nsize:", font=("Times", 10, "bold"))
@@ -105,6 +110,15 @@ def gui_normline():
     avg_majorTick = Label(bottomFrame, text = "Major\nTickSz:", font=("Times", 10, "bold"))
     avg_xmin = Label(bottomFrame, text = "X-min:", font=("Times", 10, "bold"))
     avg_xmax = Label(bottomFrame, text = "X-max:", font=("Times", 10, "bold"))
+
+    # avg spectrum output filename:
+    output_filename = StringVar()
+    output_filename.set("average")
+    avg_outputFilename = Label(bottomFrame, \
+        text = "Average Spectrum\nFilename:", font=("Times", 10, "bold"))
+    avg_outputFilename_entry = Entry(bottomFrame, bg = "white", bd = 5, \
+        textvariable=output_filename, justify = LEFT, font=("Times", 10, "bold"))
+    
 
     # avg_label's Entry widget:
     i_avg_title = StringVar()
@@ -134,6 +148,23 @@ def gui_normline():
     avg_xmin_Entry = Entry(bottomFrame, bg = "white", bd = 5, textvariable=i_avg_xmin, justify = LEFT, font=("Times", 10, "bold"))
     avg_xmax_Entry = Entry(bottomFrame, bg = "white", bd = 5, textvariable=i_avg_xmax, justify = LEFT, font=("Times", 10, "bold"))
     
+    specificFiles_status = False
+    allFiles_status = True
+    #Avg_Spectrum Button
+    avg_button = ttk.Button(bottomFrame, text="Avg_spectrum")
+    avg_button.config(command = lambda: avgSpec_plot(i_avg_title.get(), \
+                                                            i_avg_ts.get(), \
+                                                            i_avg_lgs.get(), \
+                                                            i_avg_minor.get(), \
+                                                            i_avg_major.get(), \
+                                                            i_avg_majorTick.get(), \
+                                                            i_avg_xmin.get(), \
+                                                            i_avg_xmax.get(),\
+                                                            output_filename.get(),\
+                                                            specificFiles=specificFiles_status,\
+                                                            allFiles=allFiles_status),\
+                                                            )
+
     # Placing the avg_labels and Entry widgets:
     avg_title.place(relx = 0.5,  rely = 0.1, width = 100, height = 40)
     avg_ts.place(relx = 0.5,  rely = 0.2, width = 100, height = 40)
@@ -153,27 +184,15 @@ def gui_normline():
     avg_xmin_Entry.place(relx = 0.7,  rely = 0.7, width = 100, height = 40)
     avg_xmax_Entry.place(relx = 0.7,  rely = 0.8, width = 100, height = 40)
 
-    #Avg_Spectrum
-    avg_button = ttk.Button(bottomFrame, text="Avg_spectrum")
-    avg_button.config(command = lambda: avgSpec_plot(i_avg_title.get(), \
-                                                            i_avg_ts.get(), \
-                                                            i_avg_lgs.get(), \
-                                                            i_avg_minor.get(), \
-                                                            i_avg_major.get(), \
-                                                            i_avg_majorTick.get(), \
-                                                            i_avg_xmin.get(), \
-                                                            i_avg_xmax.get())
-                                                            )
+    avg_outputFilename.place(relx = 0.1,  rely = 0.3, width = 110, height = 40)
+    avg_outputFilename_entry.place(relx = 0.25,  rely = 0.3, width = 100, height = 40)
 
     #Placing the labels and buttons in bottom frame using place(), relx/y is relative to parent frame pixels
     user_input_label.place(relx = 0.1,  rely = 0.1, width = 100, height = 40)
     user_input.place(relx = 0.3,  rely = 0.1, width = 100, height = 40)
-    normline_button.place(relx = 0.1,  rely = 0.3, width = 100, height = 40)
-    avg_button.place(relx = 0.3,  rely = 0.3, width = 100, height = 40)
+    normline_button.place(relx = 0.1,  rely = 0.2, width = 100, height = 40)
+    avg_button.place(relx = 0.3,  rely = 0.2, width = 100, height = 40)
     quitButton.place(relx = 0.2,  rely = 0.9, width = 100, height = 40)
-
-    
-
     ###########################################################################################
     ###########################################################################################
 
