@@ -240,22 +240,52 @@ def gui_normline():
     ion_enrg.place(relx = 0.2,  rely = 0.4, width = 100, height = 40)
 
     # Mass Spectrum:
+    
+    # Initial Setting label:
+    mass_init_label = Label(bottomFrame, text = "For MassSpectrum", font=("Times", 12, "italic"))
+    mass_init_label.place(relx = 0.7,  rely = 0, relwidth = 0.2, height = 40)
 
     mass = StringVar()
     mass.set("Enter here")
     massSpec_label = Label(bottomFrame, text = "Mass_file: ", font=("Times", 10, "bold"))
     massSpec_input = Entry(bottomFrame, bg = "white", bd = 5, textvariable=mass, justify = LEFT, font=("Times", 10, "bold"))
-    mass_button = ttk.Button(bottomFrame, text="MassSpec", command = lambda: massSpec(mass.get(), mname.get(), temp.get(), bwidth.get(), ie.get()))
+    mass_button = ttk.Button(bottomFrame, text="MassSpec", \
+        command = lambda: massSpec(\
+            mass.get(), mname.get(), temp.get(), bwidth.get(), ie.get(),\
+            mass_xmin.get(), mass_xmax.get(), m_figwidth.get(), m_figheight.get())
+            )
 
     #Placing mass spec:
     massSpec_label.place(relx = 0.7,  rely = 0.1, width = 100, height = 40)
     massSpec_input.place(relx = 0.8,  rely = 0.1, width = 100, height = 40)
-    mass_button.place(relx = 0.75,  rely = 0.2, width = 100, height = 40)
+    mass_button.place(relx = 0.75,  rely = 0.4, width = 100, height = 40)
 
-    # Initial Setting label:
+    # Mass Spec labels:
+    mass_range_label = Label(bottomFrame, text = "Range(u):", font=("Times", 10, "bold"))
 
-    mass_init_label = Label(bottomFrame, text = "For MassSpectrum", font=("Times", 12, "italic"))
-    mass_init_label.place(relx = 0.7,  rely = 0, relwidth = 0.2, height = 40)
+    mass_xmin = IntVar()
+    mass_xmax = IntVar()
+    mass_xmin.set(0)
+    mass_xmax.set(80)
+    mass_xmin_Entry = Entry(bottomFrame, bg = "white", bd = 5, textvariable=mass_xmin, justify = LEFT, font=("Times", 10, "bold"))
+    mass_xmax_Entry = Entry(bottomFrame, bg = "white", bd = 5, textvariable=mass_xmax, justify = LEFT, font=("Times", 10, "bold"))
+
+    mass_figsize = Label(bottomFrame, text = "FigSize:", font=("Times", 10, "bold"))
+
+    m_figwidth = IntVar()
+    m_figheight = IntVar()
+
+    m_figwidth.set(7)
+    m_figheight.set(5)
+    mass_figWidth = Entry(bottomFrame, bg = "white", bd = 5, textvariable=m_figwidth, justify = LEFT, font=("Times", 10, "bold"))
+    mass_figHeight = Entry(bottomFrame, bg = "white", bd = 5, textvariable=m_figheight, justify = LEFT, font=("Times", 10, "bold"))
+
+    mass_range_label.place(relx = 0.7,  rely = 0.2, width = 100, height = 40)
+    mass_xmin_Entry.place(relx = 0.8,  rely = 0.2, width = 50, height = 40)
+    mass_xmax_Entry.place(relx = 0.85,  rely = 0.2, width = 50, height = 40)
+    mass_figsize.place(relx = 0.7,  rely = 0.3, width = 100, height = 40)
+    mass_figWidth.place(relx = 0.8,  rely = 0.3, width = 50, height = 40)
+    mass_figHeight.place(relx = 0.85,  rely = 0.3, width = 50, height = 40)
     ###########################################################################################
     ###########################################################################################
 
