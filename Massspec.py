@@ -57,16 +57,6 @@ def main(date):
 
         plt.show()
 
-
-
-
-
-
-
-
-
-
-
     else:
         date= date + '.mass'
         with open(date) as f:
