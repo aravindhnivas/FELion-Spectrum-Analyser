@@ -12,6 +12,8 @@ import os
 import shutil
 
 
+# Custom inport:
+import matplotlib.pyplot as plt
 # 1cm-1 = 30GHz  ,  0.001cm-1=30MHz
 
 ################################################################################
@@ -25,7 +27,7 @@ def export_file(fname, wn, inten):
     #f.close()
 
 
-def norm_line_felix(fname):
+def norm_line_felix(fname, mname, temp, bwidth, ie):
     """
     Reads data from felix meassurement file and 
     calculates the calibrated wavenumber and calibrated/normalised
@@ -39,7 +41,7 @@ def norm_line_felix(fname):
     show=False
     PD=True
 
-    fig = P.figure(figsize=(8,10))
+    fig = plt.figure(figsize=(8,10))
     ax = fig.add_subplot(3,1,1)
     bx = fig.add_subplot(3,1,2)
     cx = fig.add_subplot(3,1,3)
@@ -84,16 +86,18 @@ def norm_line_felix(fname):
 
     cx.plot(wavelength, intensity, ls='-', marker='o', ms=2, c='r', markeredgecolor='k', markerfacecolor='k')
     cx.set_xlabel("wn (cm-1)")
+    
+    ax.set_title("Filename: {}, for {}, at temp: {}K, B0: {}ms and IE(eV): {}".format(fname, mname, temp, bwidth, ie))
 
     if save:
         fname = fname.replace('.','_')
-        P.savefig('OUT/'+fname+'.pdf')
+        plt.savefig('OUT/'+fname+'.pdf')
         export_file(fname, wavelength, intensity)
 
     if show:
-        P.show()
+        plt.show()
 
-    P.close()
+    plt.close()
 
     return wavelength, intensity
 
@@ -157,8 +161,14 @@ def main(s=True, plotShow=False):
     print(a, b)
     print("\nProcess Completed.\n")
 
-def normline_correction(fname):
+def normline_correction(fname, location, mname, temp, bwidth, ie):
+    
+    os.chdir(location)
     my_path = os.getcwd()
+
+    if(fname.find('felix')>=0):
+        fname = fname.split('.')[0]
+
     powerfile = fname + ".pow"
     if os.path.isfile(powerfile):
         shutil.copyfile(my_path + r"\{}".format(powerfile), my_path + r"\DATA\{}".format(powerfile))
@@ -166,7 +176,8 @@ def normline_correction(fname):
     else:
         print("\nCAUTION:You don't have the {} powerfile(.pow)\n".format(powerfile))
   
-    a,b = norm_line_felix(fname)
+    a,b = norm_line_felix(fname, mname, temp, bwidth, ie)
+    
     print("\nProcess Completed.\n")
     print("DONE")
 

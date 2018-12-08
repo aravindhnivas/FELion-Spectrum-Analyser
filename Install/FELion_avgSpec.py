@@ -19,7 +19,7 @@ def export_file(fname, wn, inten):
     f.write("#wn (cm-1)       intensity\n")
     for i in range(len(wn)):
         f.write("{:8.3f}\t{:8.2f}\n".format(wn[i], inten[i]))
-    #f.close()
+    f.close()
 
 def main(**kwargs):
     t="Title"
@@ -84,15 +84,12 @@ def main(**kwargs):
     print("Completed.")
     print()
 
-def avgSpec_plot(**kwargs):
-    t="Title" 
-    ts=10
-    lgs=5
-    minor=5
-    major=50
-    majorTickSize=8
-    xmin=1000
-    xmax=2000
+def avgSpec_plot(t, ts, lgs, minor, major, majorTickSize, xmin, xmax, outFilename,\
+                location, mname, temp, bwidth, ie,\
+                specificFiles, allFiles
+                ):
+    os.chdir(location)
+    my_path = os.getcwd()
 
     fig = plt.subplot(1,1,1)
     plt.rcParams['figure.figsize'] = [6,4]
@@ -101,7 +98,6 @@ def avgSpec_plot(**kwargs):
     plt.rcParams['font.size'] = ts # Title Size
     plt.rcParams['legend.fontsize'] = lgs # Legend Size
 
-    my_path = os.getcwd() # getting current directory
     pwd = os.listdir(my_path + r"\DATA") # going into the data folder to fetch all the available data filename.
     fileNameList = [] # creating a varaiable list : Don't add any data here. You can use the script as it is since it automatically takes the data in the DATA folder
     for f in pwd:
@@ -111,19 +107,20 @@ def avgSpec_plot(**kwargs):
     xs = np.array([],dtype='double')
     ys = np.array([],dtype='double')
 
-    for l in fileNameList:
-        a,b = norm_line_felix(l[0])
-        fig.plot(a, b, ls='', marker='o', ms=1, label=l[0])
-        xs = np.append(xs,a)
-        ys = np.append(ys,b)
-    fig.legend(title=t) #Set the fontsize for each label
+    if all and not specificFiles:
+        for l in fileNameList:
+            a,b = norm_line_felix(l[0], mname, temp, bwidth, ie)
+            fig.plot(a, b, ls='', marker='o', ms=1, label=l[0])
+            xs = np.append(xs,a)
+            ys = np.append(ys,b)
 
+    fig.legend(title=t) #Set the fontsize for each label
     #Binning
     binns, inten = felix_binning(xs, ys, delta=DELTA)
     fig.plot(binns, inten, ls='-', marker='', c='k')
 
     #Exporting the Binned file.
-    F = 'OUT/average_Spectrum.pdf'
+    F = 'OUT/%s.pdf'%(outFilename)
     export_file(F, binns, inten)
 
     #Set the Xlim values and fontsizes.
@@ -142,7 +139,7 @@ def avgSpec_plot(**kwargs):
     print()
     print("Completed.")
     print()
-    #return
+    return
 
 def help():
     print()

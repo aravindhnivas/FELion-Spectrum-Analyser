@@ -321,7 +321,9 @@ def main(fname=""):
         SaveBase(fname, baseline)
     return
 
-def baseline_correction(fname):
+def baseline_correction(fname, location):
+
+    os.chdir(location)
     my_path = os.getcwd()
 
     if(fname.find('felix')>=0):
