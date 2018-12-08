@@ -279,7 +279,7 @@ def gui_normline():
     #Placing mass spec:
     massSpec_label.place(relx = 0.7,  rely = 0.1, width = 100, height = 40)
     massSpec_input.place(relx = 0.8,  rely = 0.1, width = 100, height = 40)
-    mass_button.place(relx = 0.8,  rely = 0.7, width = 100, height = 40)
+    mass_button.place(relx = 0.75,  rely = 0.7, width = 100, height = 40)
 
     # Mass Spec labels:
     mass_range_label = Label(bottomFrame, text = "Range(u):", font=("Times", 10, "bold"))
