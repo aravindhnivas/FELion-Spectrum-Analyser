@@ -18,7 +18,7 @@ def gui_normline():
     def on_closing():
         if messagebox.askokcancel("Quit", "Do you want to quit?"):
             root.destroy()
-    
+
     root = Tk()
     root.title("FELion Spectrum Analyser")
 
@@ -157,7 +157,7 @@ def gui_normline():
     i_avg_xmin.set(1000)
     i_avg_xmax.set(2000)
 
-    avg_title_Entry = Entry(bottomFrame, bg = "white", bd = 5, textvariable=i_avg_title, justify = LEFT, font=("Times", 10, "bold"))
+    avg_title_Entry = Entry(bottomFrame, bg = "white", bd = 5, textvariable=i_avg_title, justify = LEFT, font=("Times", 12, "italic"))
     avg_ts_Entry = Entry(bottomFrame, bg = "white", bd = 5, textvariable=i_avg_ts, justify = LEFT, font=("Times", 10, "bold"))
     avg_lgs_Entry = Entry(bottomFrame, bg = "white", bd = 5, textvariable=i_avg_lgs, justify = LEFT, font=("Times", 10, "bold"))
     avg_minor_Entry = Entry(bottomFrame, bg = "white", bd = 5, textvariable=i_avg_minor, justify = LEFT, font=("Times", 10, "bold"))
@@ -165,7 +165,7 @@ def gui_normline():
     avg_majorTick_Entry = Entry(bottomFrame, bg = "white", bd = 5, textvariable=i_avg_majorTick, justify = LEFT, font=("Times", 10, "bold"))
     avg_xmin_Entry = Entry(bottomFrame, bg = "white", bd = 5, textvariable=i_avg_xmin, justify = LEFT, font=("Times", 10, "bold"))
     avg_xmax_Entry = Entry(bottomFrame, bg = "white", bd = 5, textvariable=i_avg_xmax, justify = LEFT, font=("Times", 10, "bold"))
-    
+
     # Placing the avg_entry widgets:
     avg_title_Entry.place(relx = 0.5,  rely = 0.1, width = 100, height = 40)
     avg_ts_Entry.place(relx = 0.5,  rely = 0.2, width = 50, height = 40)
@@ -238,16 +238,16 @@ def gui_normline():
     temp = StringVar()
     bwidth = StringVar()
     ie = StringVar()
-    
+
     mname.set("Molecule")
     temp.set("-")
     bwidth.set("-")
     ie.set("-")
 
-    molecule_name = Entry(bottomFrame, bg = "white", bd = 5, textvariable=mname, justify = LEFT, font=("Times", 10, "bold"))
-    temperature = Entry(bottomFrame, bg = "white", bd = 5, textvariable=temp, justify = LEFT, font=("Times", 10, "bold"))
-    bo_Width = Entry(bottomFrame, bg = "white", bd = 5, textvariable=bwidth, justify = LEFT, font=("Times", 10, "bold"))
-    ion_enrg = Entry(bottomFrame, bg = "white", bd = 5, textvariable=ie, justify = LEFT, font=("Times", 10, "bold"))
+    molecule_name = Entry(bottomFrame, bg = "white", bd = 5, textvariable=mname, justify = LEFT, font=("Times", 12, "italic"))
+    temperature = Entry(bottomFrame, bg = "white", bd = 5, textvariable=temp, justify = LEFT, font=("Times", 12, "italic"))
+    bo_Width = Entry(bottomFrame, bg = "white", bd = 5, textvariable=bwidth, justify = LEFT, font=("Times", 12, "italic"))
+    ion_enrg = Entry(bottomFrame, bg = "white", bd = 5, textvariable=ie, justify = LEFT, font=("Times", 12, "italic"))
 
     molecule_name.place(relx = 0.2,  rely = 0.1, width = 100, height = 40)
     temperature.place(relx = 0.2,  rely = 0.2, width = 100, height = 40)
@@ -255,15 +255,19 @@ def gui_normline():
     ion_enrg.place(relx = 0.2,  rely = 0.4, width = 100, height = 40)
 
     # Mass Spectrum:
-    
+
     # Initial Setting label:
-    mass_init_label = Label(bottomFrame, text = "For MassSpectrum", font=("Times", 12, "italic"))
+    mass_init_label = Label(bottomFrame, text = "For MassSpectrum", \
+                                font=("Times", 12, "italic"))
     mass_init_label.place(relx = 0.7,  rely = 0, relwidth = 0.2, height = 40)
+
+    massSpec_label = Label(bottomFrame, text = "Mass_file: ", font=("Times", 10, "bold"))
 
     mass = StringVar()
     mass.set("Enter here")
-    massSpec_label = Label(bottomFrame, text = "Mass_file: ", font=("Times", 10, "bold"))
-    massSpec_input = Entry(bottomFrame, bg = "white", bd = 5, textvariable=mass, justify = LEFT, font=("Times", 10, "bold"))
+    massSpec_input = Entry(bottomFrame, bg = "white", bd = 5, \
+        textvariable=mass, justify = LEFT, font=("Times", 12, "italic"))
+        
     mass_button = ttk.Button(bottomFrame, text="MassSpec", \
                                 command = lambda: massSpec(\
                                     mass.get(), mname.get(), temp.get(), bwidth.get(), ie.get(),\
@@ -310,7 +314,7 @@ def gui_normline():
     mass_figWidth.place(relx = 0.8,  rely = 0.3, width = 50, height = 40)
     mass_figHeight.place(relx = 0.85,  rely = 0.3, width = 50, height = 40)
 
-    
+
         
     #Combine Mass spec:
     def combine_func(combine):
