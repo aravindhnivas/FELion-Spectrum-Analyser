@@ -161,8 +161,14 @@ def main(s=True, plotShow=False):
     print(a, b)
     print("\nProcess Completed.\n")
 
-def normline_correction(fname, mname, temp, bwidth, ie):
+def normline_correction(fname, location, mname, temp, bwidth, ie):
+    
+    os.chdir(location)
     my_path = os.getcwd()
+
+    if(fname.find('felix')>=0):
+        fname = fname.split('.')[0]
+
     powerfile = fname + ".pow"
     if os.path.isfile(powerfile):
         shutil.copyfile(my_path + r"\{}".format(powerfile), my_path + r"\DATA\{}".format(powerfile))
@@ -171,6 +177,7 @@ def normline_correction(fname, mname, temp, bwidth, ie):
         print("\nCAUTION:You don't have the {} powerfile(.pow)\n".format(powerfile))
   
     a,b = norm_line_felix(fname, mname, temp, bwidth, ie)
+    
     print("\nProcess Completed.\n")
     print("DONE")
 

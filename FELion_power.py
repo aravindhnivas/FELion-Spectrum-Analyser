@@ -102,8 +102,9 @@ def main():
     bx.set_ylabel("n shots")
     plt.show()
 
-def FELion_Power(fname):
-    #my_path = os.getcwd()
+def FELion_Power(fname, location):
+
+    os.chdir(location)
     if(fname.find('felix')>=0):
         fname = fname.split('.')[0]
         

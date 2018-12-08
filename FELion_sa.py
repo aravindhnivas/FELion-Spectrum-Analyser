@@ -110,8 +110,9 @@ def main():
     ax.set_ylabel("wn SA (cm-1)")
     plt.show()
 
-def FELion_Sa(fname):
-    #my_path = os.getcwd()
+def FELion_Sa(fname, location):
+    
+    os.chdir(location)
     if(fname.find('felix')>=0):
         fname = fname.split('.')[0]
         

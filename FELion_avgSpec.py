@@ -84,24 +84,12 @@ def main(**kwargs):
     print("Completed.")
     print()
 
-def avgSpec_plot(
-                t="Title",\
-                ts=10,\
-                lgs=5,\
-                minor=5,\
-                major=50,\
-                majorTickSize=8,\
-                xmin=1000,\
-                xmax=2000,\
-                outFilename="average",\
-                mname="Molecule",\
-                temp = 4,\
-                bwidth = 100,\
-                ie = 20,\
-                specificFiles = False,
-                allFiles = True
+def avgSpec_plot(t, ts, lgs, minor, major, majorTickSize, xmin, xmax, outFilename,\
+                location, mname, temp, bwidth, ie,\
+                specificFiles, allFiles
                 ):
-    
+    os.chdir(location)
+    my_path = os.getcwd()
 
     fig = plt.subplot(1,1,1)
     plt.rcParams['figure.figsize'] = [6,4]
@@ -110,7 +98,6 @@ def avgSpec_plot(
     plt.rcParams['font.size'] = ts # Title Size
     plt.rcParams['legend.fontsize'] = lgs # Legend Size
 
-    my_path = os.getcwd() # getting current directory
     pwd = os.listdir(my_path + r"\DATA") # going into the data folder to fetch all the available data filename.
     fileNameList = [] # creating a varaiable list : Don't add any data here. You can use the script as it is since it automatically takes the data in the DATA folder
     for f in pwd:

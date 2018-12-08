@@ -83,15 +83,22 @@ def main(date):
 
         plt.show()
 
-def massSpec(fname, mname, temp, bwidth, ie, xmin, xmax, fig_width, fig_height, filelist, avgname, combine):
+def massSpec(fname, mname, temp, bwidth, ie, xmin, xmax, location,\
+            fig_width, fig_height, filelist, avgname, combine):
+
+
+    if fname.find(".mass")>0:
+        fname = fname.split(".")[0]
+
+    os.chdir(location)
     my_path = os.getcwd()
+
     plt.rcParams['figure.figsize'] = [fig_width,fig_height]
     plt.rcParams['figure.dpi'] = 80
     plt.rcParams['savefig.dpi'] = 100
 
     if not combine:
-        if fname.find(".felix")>0:
-            fname = fname.split(".")[0]
+        
         filename = fname + ".mass"
 
         if not os.path.isdir("MassSpec_DATA"):
@@ -129,7 +136,12 @@ def massSpec(fname, mname, temp, bwidth, ie, xmin, xmax, fig_width, fig_height, 
 
     if combine:
         filelist = filelist.split(",")
+
         for file in filelist:
+            file = file.strip()
+            if file.find("mass")>=0:
+                file = file.split(".")[0]
+                
             if len(file) <2:
                 file= fname[0:9] + file +'.mass'
             else:

@@ -85,7 +85,21 @@ def gui_baseline():
   ###########################################################################################
   ###########################################################################################
 
-  #Buttons:
+  # Labels and buttons:
+
+  # Location:
+  location_label = Label(bottomFrame, text = "Location:", font=("Times", 10, "bold"))
+
+  location = StringVar()
+  location.set("Enter file lcoation here")
+  location_entry = Entry(bottomFrame, bg = "white", bd = 5,\
+                            textvariable=location, justify = LEFT,\
+                            font=("Times", 12, "italic"))
+
+
+  location_label.place(relx = 0.1,  rely = 0.1, width = 100, height = 40)
+  location_entry.place(relx = 0.3,  rely = 0.1, relwidth = 0.5, height = 40)
+
   #Label for Entry Box;
   user_input_label = Label(bottomFrame, text = " Filename:", font=("Times", 10, "bold"))
 
@@ -110,18 +124,19 @@ def gui_baseline():
 
   #Baseline
   baseline_button = ttk.Button(bottomFrame, text="Baseline")
-  baseline_button.config(command = lambda: baseline_correction(content.get()))
+  baseline_button.config(command = lambda: baseline_correction(content.get(), location.get()))
 
   #Save progm button
   saveButton = ttk.Button(bottomFrame, text = "Save Baseline")
   saveButton.config(command = lambda: save_on())
 
   #Placing the labels and buttons in bottom frame using place(), relx/y is relative to parent frame pixels
-  user_input_label.place(relx = 0.1,  rely = 0.1, width = 100, height = 40)
-  user_input.place(relx = 0.3,  rely = 0.1, width = 100, height = 40)
-  baseline_button.place(relx = 0.1,  rely = 0.3, width = 100, height = 40)
-  saveButton.place(relx = 0.1,  rely = 0.5, width = 100, height = 40)
-  quitButton.place(relx = 0.3,  rely = 0.7, width = 100, height = 40)
+  user_input_label.place(relx = 0.1,  rely = 0.3, width = 100, height = 40)
+  user_input.place(relx = 0.3,  rely = 0.3, width = 100, height = 40)
+  baseline_button.place(relx = 0.1,  rely = 0.5, width = 100, height = 40)
+  saveButton.place(relx = 0.3,  rely = 0.5, width = 100, height = 40)
+
+  quitButton.place(relx = 0.3,  rely = 0.8, width = 100, height = 40)
 
   ###########################################################################################
   ###########################################################################################
