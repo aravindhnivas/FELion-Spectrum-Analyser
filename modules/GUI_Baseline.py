@@ -18,7 +18,9 @@ def gui_baseline():
       root.destroy()
 
   def save_on():
-    return root.quit()
+    if messagebox.askokcancel("SAVE","Save the file?"):
+        root.quit()
+    return
     
   ###########################################################################################
   ###########################################################################################
@@ -163,4 +165,7 @@ def gui_baseline():
   return
 
 if __name__ == "__main__":
+  gui_baseline()
+
+if __name__ == "GUI_Baseline":
   gui_baseline()
