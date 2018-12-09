@@ -1,4 +1,6 @@
 #!/usr/bin/python3
+
+
 import numpy as np
 import pylab as P
 import sys
@@ -12,9 +14,10 @@ import os
 import shutil
 
 
+
 # Custom inport:
 import matplotlib.pyplot as plt
-# 1cm-1 = 30GHz  ,  0.001cm-1=30MHz
+from tkinter import Tk, Label, Frame, Button, ttk
 
 ################################################################################
 
@@ -179,22 +182,27 @@ def normline_correction(fname, location, mname, temp, bwidth, ie):
     a,b = norm_line_felix(fname, mname, temp, bwidth, ie)
     
     print("\nProcess Completed.\n")
-    print("DONE")
 
-def help():
-    print()
-    print()
-    print("Nomaline Module succesfully loaded.")
-    print()
-    print()
-    print("Available arguments (optional):\n\
-            s: To save the output (default is True)\n\
-            plotShow: To show the output plot window (default is False)\n")
-    print()
-    print("Usage:\n\
-            normline.main(): Recommended.\n\
-            normline.main(s=False): If you don't want to save the output.\n")
-    print()
+    def filesaved():
+        if os.path.isfile(my_path+r"\OUT\{}.pdf".format(fname)):
+            saved = Tk()
+            saved.geometry("400x200")
+
+            frame1 = Frame(saved, bg = "sea green")
+            frame1.pack(side = "top", expand = True, fill = "both")
+
+            label1 = Label(frame1, bg = "sea green", \
+                text = "Completed: {}.pdf \nfile saved in OUT directory".format(fname))
+            label1.pack(pady = 10)
+
+            button1 = ttk.Button(frame1, text = "Okay.",\
+                command = lambda: saved.destroy())
+            button1.pack(pady = 10)
+
+            saved.mainloop()
+    filesaved()
+
+    print("DONE")
 
 if __name__ == "__main__":
     help()
