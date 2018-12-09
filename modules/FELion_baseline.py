@@ -13,7 +13,7 @@ from scipy.interpolate import interp1d
 
 import os 
 import shutil
-from tkinter import Tk, Label, Frame, Button, ttk
+from tkinter import Tk, messagebox
 
 #These 2 values are used when guessing the baseline:
 PPS = 5         #points around the value to average
@@ -329,21 +329,12 @@ def baseline_correction(fname, location):
 
     # Custom definitions:
     def filenotfound():
+
         root = Tk()
-        root.geometry("400x200")
+        root.withdraw()
+        messagebox.showerror("Error", "FILE NOT FOUND")
+        root.destroy()
 
-        frame1 = Frame(root, bg = "red")
-        frame1.pack(side = "top", expand = True, fill = "both")
-
-        label1 = Label(frame1, bg = "red", \
-            text = "File NOT Found")
-        label1.pack(pady = 10)
-
-        button1 = ttk.Button(frame1, text = "Okay.",\
-            command = lambda: root.destroy())
-        button1.pack(pady = 10)
-
-        root.mainloop()
         return
 
     try:

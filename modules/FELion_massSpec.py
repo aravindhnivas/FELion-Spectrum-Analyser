@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import os
 import shutil
 
+from tkinter import Tk, messagebox
 def main(date):
     """  """
     if args.amount:
@@ -86,67 +87,41 @@ def main(date):
 def massSpec(fname, mname, temp, bwidth, ie, xmin, xmax, location,\
             fig_width, fig_height, filelist, avgname, combine):
 
-
-    if fname.find(".mass")>0:
-        fname = fname.split(".")[0]
-
     os.chdir(location)
     my_path = os.getcwd()
 
-    plt.rcParams['figure.figsize'] = [fig_width,fig_height]
-    plt.rcParams['figure.dpi'] = 80
-    plt.rcParams['savefig.dpi'] = 100
+    def filesaved():
+        if os.path.isfile(my_path+r"\MassSpec_DATA\{}.png".format(fname)):
+            root = Tk()
+            root.withdraw()
+            messagebox.showinfo("Information", "File {}.png SAVED \nin MassSpec_DATA directory".format(fname))
+            root.destroy()
 
-    if not combine:
-        
-        filename = fname + ".mass"
+    def filenotfound():
+        root = Tk()
+        root.withdraw()
+        messagebox.showerror("Error", "FILE {}.mass NOT FOUND".format(fname))
+        root.destroy()
 
-        if not os.path.isdir("MassSpec_DATA"):
-            os.mkdir("MassSpec_DATA")
-            shutil.copyfile(my_path + r"\{}".format(filename), my_path + r"\MassSpec_DATA\{}".format(filename))
-        else:
-            shutil.copyfile(my_path + r"\{}".format(filename), my_path + r"\MassSpec_DATA\{}".format(filename))
+    try:
+        if fname.find(".mass")>0:
+            fname = fname.split(".")[0]
 
-        with open(filename) as f:
-            data = f.read()
+        plt.rcParams['figure.figsize'] = [fig_width,fig_height]
+        plt.rcParams['figure.dpi'] = 80
+        plt.rcParams['savefig.dpi'] = 100
 
-        data = data.split('\n')
+        if not combine:
+            
+            filename = fname + ".mass"
 
-        x = -np.ones(len(data))
-        y = -np.ones(len(data))
-
-        for index, a in enumerate(data):
-            if '#' in a or len(a) < 1:
-                if '# m03_ao09_width' in a:
-                    a = a.split('\t\t#')
-                    b0 = "%.0f" % (int(a[3])/1000)
+            if not os.path.isdir("MassSpec_DATA"):
+                os.mkdir("MassSpec_DATA")
+                shutil.copyfile(my_path + r"\{}".format(filename), my_path + r"\MassSpec_DATA\{}".format(filename))
             else:
-                a = a.split('\t')
-                x[index] = float(a[0])
-                y[index] = float(a[1])
-        plt.semilogy(x, y)
-        plt.xlabel('Mass [u]')
-        plt.ylabel('Ion counts /{} ms'.format(b0))
-        plt.grid(True)
-        plt.xlim([xmin,xmax])
-        plt.ylim(1)
-        plt.title("Filename: {}, for {}, at temp: {}K, B0: {}ms and IE(eV): {}".format(fname, mname, temp, bwidth, ie))
-        plt.savefig(my_path + r"\MassSpec_DATA\{}.png".format(fname))
-        plt.show()
+                shutil.copyfile(my_path + r"\{}".format(filename), my_path + r"\MassSpec_DATA\{}".format(filename))
 
-    if combine:
-        filelist = filelist.split(",")
-
-        for file in filelist:
-            file = file.strip()
-            if file.find("mass")>=0:
-                file = file.split(".")[0]
-                
-            if len(file) <2:
-                file= fname[0:9] + file +'.mass'
-            else:
-                file = file + '.mass'
-            with open(file) as f:
+            with open(filename) as f:
                 data = f.read()
 
             data = data.split('\n')
@@ -155,24 +130,68 @@ def massSpec(fname, mname, temp, bwidth, ie, xmin, xmax, location,\
             y = -np.ones(len(data))
 
             for index, a in enumerate(data):
-
                 if '#' in a or len(a) < 1:
                     if '# m03_ao09_width' in a:
                         a = a.split('\t\t#')
-                        b0 = "%.0f" % (int(a[3]) / 1000)
+                        b0 = "%.0f" % (int(a[3])/1000)
                 else:
                     a = a.split('\t')
                     x[index] = float(a[0])
                     y[index] = float(a[1])
+            plt.semilogy(x, y)
+            plt.xlabel('Mass [u]')
+            plt.ylabel('Ion counts /{} ms'.format(b0))
+            plt.grid(True)
+            plt.xlim([xmin,xmax])
+            plt.ylim(1)
+            plt.title("Filename: {}, for {}, at temp: {}K, B0: {}ms and IE(eV): {}".format(fname, mname, temp, bwidth, ie))
+            plt.savefig(my_path + r"\MassSpec_DATA\{}.png".format(fname))
+            plt.show()
+            filesaved()
 
-            plt.semilogy(x, y, label=file)
-            plt.legend()
+        if combine:
+            filelist = filelist.split(",")
 
-        plt.xlabel('mass [u]')
-        plt.ylabel('ion counts /{} ms'.format(b0))
-        plt.grid(True)
-        plt.ylim(1)
-        plt.xlim([xmin,xmax])
-        plt.title("Filename: {}, for {}, at temp: {}K, B0: {}ms and IE(eV): {}".format(fname, mname, temp, bwidth, ie))
-        plt.savefig(my_path + r"\MassSpec_DATA\{}.png".format(avgname))
-        plt.show()
+            for file in filelist:
+                file = file.strip()
+                if file.find("mass")>=0:
+                    file = file.split(".")[0]
+                    
+                if len(file) <2:
+                    file= fname[0:9] + file +'.mass'
+                else:
+                    file = file + '.mass'
+                with open(file) as f:
+                    data = f.read()
+
+                data = data.split('\n')
+
+                x = -np.ones(len(data))
+                y = -np.ones(len(data))
+
+                for index, a in enumerate(data):
+
+                    if '#' in a or len(a) < 1:
+                        if '# m03_ao09_width' in a:
+                            a = a.split('\t\t#')
+                            b0 = "%.0f" % (int(a[3]) / 1000)
+                    else:
+                        a = a.split('\t')
+                        x[index] = float(a[0])
+                        y[index] = float(a[1])
+
+                plt.semilogy(x, y, label=file)
+                plt.legend()
+
+            plt.xlabel('mass [u]')
+            plt.ylabel('ion counts /{} ms'.format(b0))
+            plt.grid(True)
+            plt.ylim(1)
+            plt.xlim([xmin,xmax])
+            plt.title("Filename: {}, for {}, at temp: {}K, B0: {}ms and IE(eV): {}".format(fname, mname, temp, bwidth, ie))
+            plt.savefig(my_path + r"\MassSpec_DATA\{}.png".format(avgname))
+            plt.show()
+            filesaved()
+            
+    except:
+        filenotfound()

@@ -11,6 +11,8 @@ from scipy.interpolate import interp1d
 from FELion_baseline import felix_read_file
 
 
+from tkinter import Tk, messagebox
+
 ################################################################################
 
 class SpectrumAnalyserCalibrator(object):
@@ -113,21 +115,32 @@ def main():
 def FELion_Sa(fname, location):
     
     os.chdir(location)
-    if(fname.find('felix')>=0):
-        fname = fname.split('.')[0]
-        
-    saCalibrator = SpectrumAnalyserCalibrator(fname, fit='cubic')
-    
-    fig, ax = plt.subplots()
-    #plot the spectrum analyser calibration
-    saCalibrator.plot(ax)
 
-    ax.set_title('Spectrum analyser calibration from {}.felix file'.format(fname))
-    #ax.set_xlim((wn.min()-70, wn.max()+70))
-    #ax.set_ylim((0, 30))
-    ax.set_xlabel("wn set (cm-1)")
-    ax.set_ylabel("wn SA (cm-1)")
-    plt.show()
+    def filenotfound():
+        root = Tk()
+        root.withdraw()
+        messagebox.showerror("Error", "FILE {}.felix NOT FOUND".format(fname))
+        root.destroy()
+
+    try:
+        if(fname.find('felix')>=0):
+            fname = fname.split('.')[0]
+            
+        saCalibrator = SpectrumAnalyserCalibrator(fname, fit='cubic')
+        
+        fig, ax = plt.subplots()
+        #plot the spectrum analyser calibration
+        saCalibrator.plot(ax)
+
+        ax.set_title('Spectrum analyser calibration from {}.felix file'.format(fname))
+        #ax.set_xlim((wn.min()-70, wn.max()+70))
+        #ax.set_ylim((0, 30))
+        ax.set_xlabel("wn set (cm-1)")
+        ax.set_ylabel("wn SA (cm-1)")
+        plt.show()
+    except:
+        filenotfound()
+
 #----------------------------------------
 #ENTRY POINT:
 if __name__ == "__main__":

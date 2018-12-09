@@ -17,7 +17,7 @@ import shutil
 
 # Custom inport:
 import matplotlib.pyplot as plt
-from tkinter import Tk, Label, Frame, Button, ttk
+from tkinter import Tk, messagebox
 
 ################################################################################
 
@@ -170,40 +170,16 @@ def normline_correction(fname, location, mname, temp, bwidth, ie):
     # Custom definitions:
     def filesaved():
         if os.path.isfile(my_path+r"\OUT\{}.pdf".format(fname)):
-            saved = Tk()
-            saved.geometry("400x200")
-
-            frame1 = Frame(saved, bg = "sea green")
-            frame1.pack(side = "top", expand = True, fill = "both")
-
-            label1 = Label(frame1, bg = "sea green", \
-                text = "Completed: {}.pdf \nfile saved in OUT directory".format(fname))
-            label1.pack(pady = 10)
-
-            button1 = ttk.Button(frame1, text = "Okay.",\
-                command = lambda: saved.destroy())
-            button1.pack(pady = 10)
-
-            saved.mainloop()
-        return
+            root = Tk()
+            root.withdraw()
+            messagebox.showinfo("Information", "File '{}.felix' Saved".format(fname))
+            root.destroy()
 
     def filenotfound():
         root = Tk()
-        root.geometry("400x200")
-
-        frame1 = Frame(root, bg = "red")
-        frame1.pack(side = "top", expand = True, fill = "both")
-
-        label1 = Label(frame1, bg = "red", \
-            text = "File NOT Found")
-        label1.pack(pady = 10)
-
-        button1 = ttk.Button(frame1, text = "Okay.",\
-            command = lambda: root.destroy())
-        button1.pack(pady = 10)
-
-        root.mainloop()
-        return
+        root.withdraw()
+        messagebox.showerror("Error", "FILE '{}.felix' NOT FOUND".format(fname))
+        root.destroy()
     
     os.chdir(location)
     my_path = os.getcwd()

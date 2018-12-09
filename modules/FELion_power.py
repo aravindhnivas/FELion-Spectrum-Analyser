@@ -7,7 +7,7 @@ from os import path
 import matplotlib.pyplot as plt
 from scipy.interpolate import interp1d
 
-
+from tkinter import Tk, messagebox
 ################################################################################
 class PowerCalibrator(object):
     """
@@ -105,29 +105,39 @@ def main():
 def FELion_Power(fname, location):
 
     os.chdir(location)
-    if(fname.find('felix')>=0):
-        fname = fname.split('.')[0]
-        
-    #x, y, n_shots = ReadPower(fname)
-    powerWN = PowerCalibrator(fname)
-    xc, yc, n_shots = powerWN.GetCalibData()
-    X = np.arange(xc.min(),xc.max(), 1)
 
-    fig, ax = plt.subplots()
-    bx = ax.twinx()
-    ax.plot(xc, yc, ls='', marker='o', ms=5, markeredgecolor='r', c='r')
-    bx.plot(xc, powerWN.shots(xc), ls='-', marker='o', ms=3, markeredgecolor='b', c='b')
+    def filenotfound():
+        root = Tk()
+        root.withdraw()
+        messagebox.showerror("Error", "FILE {}.felix NOT FOUND".format(fname))
+        root.destroy()
 
-    #plot the power calibration line:
-    ax.plot(X, powerWN.power(X), ls='-', c='m')
+    try:
+        if(fname.find('felix')>=0):
+            fname = fname.split('.')[0]
+            
+        #x, y, n_shots = ReadPower(fname)
+        powerWN = PowerCalibrator(fname)
+        xc, yc, n_shots = powerWN.GetCalibData()
+        X = np.arange(xc.min(),xc.max(), 1)
 
-    ax.set_title('Power and Number of shots in the {}.pow file'.format(fname))
-    ax.set_xlim((xc.min()-70, xc.max()+70))
-    ax.set_ylim((0, yc.max()*1.1))
-    ax.set_xlabel("wn (cm-1)")
-    ax.set_ylabel("power (mJ)")
-    bx.set_ylabel("n shots")
-    plt.show()
+        fig, ax = plt.subplots()
+        bx = ax.twinx()
+        ax.plot(xc, yc, ls='', marker='o', ms=5, markeredgecolor='r', c='r')
+        bx.plot(xc, powerWN.shots(xc), ls='-', marker='o', ms=3, markeredgecolor='b', c='b')
+
+        #plot the power calibration line:
+        ax.plot(X, powerWN.power(X), ls='-', c='m')
+
+        ax.set_title('Power and Number of shots in the {}.pow file'.format(fname))
+        ax.set_xlim((xc.min()-70, xc.max()+70))
+        ax.set_ylim((0, yc.max()*1.1))
+        ax.set_xlabel("wn (cm-1)")
+        ax.set_ylabel("power (mJ)")
+        bx.set_ylabel("n shots")
+        plt.show()
+    except:
+        filenotfound()
 #----------------------------------------
 #ENTRY POINT:
 if __name__ == "__main__":
