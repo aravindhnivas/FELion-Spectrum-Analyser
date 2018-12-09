@@ -12,8 +12,8 @@ from matplotlib.ticker import MultipleLocator, FormatStrFormatter, NullFormatter
 import matplotlib.pyplot as plt
 
 ## modules
-from os import isfile
-from tkinter import Tk, Label
+import os
+from tkinter import Tk, Label, Frame, Button, ttk
 
 DELTA=2.0
 
@@ -148,12 +148,22 @@ def avgSpec_plot(t, ts, lgs, minor, major, \
     print("Completed.")
     print()
     def filesaved():
-        if isfile(my_path+r"\OUT\outFilename.pdf"):
-            root = Tk()
-            root.geometry("100x100")
-            label1 = Label(text = "Completed: {}.pdf file saved in OUT directory".format(outFilename))
-            label1.pack()
-            root.mainloop()
+        if os.path.isfile(my_path+r"\OUT\{}.pdf".format(outFilename)):
+            saved = Tk()
+            saved.geometry("400x200")
+
+            frame1 = Frame(saved, bg = "sea green")
+            frame1.pack(side = "top", expand = True, fill = "both")
+
+            label1 = Label(frame1, bg = "sea green", \
+                text = "Completed: {}.pdf \nfile saved in OUT directory".format(outFilename))
+            label1.pack(pady = 10)
+
+            button1 = ttk.Button(frame1, text = "Okay.",\
+                command = lambda: saved.destroy())
+            button1.pack(pady = 10)
+
+            saved.mainloop()
     filesaved()
     return
 
