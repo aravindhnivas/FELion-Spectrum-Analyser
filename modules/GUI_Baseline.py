@@ -7,6 +7,7 @@ from tkinter import messagebox
 from tkinter import ttk
 #Importing definitions from FELion python modules:
 from FELion_baseline import baseline_correction
+import os
 
 def gui_baseline():
   # User defined definitions:
@@ -18,6 +19,7 @@ def gui_baseline():
 
   def save_on():
     return root.quit()
+    
   ###########################################################################################
   ###########################################################################################
 

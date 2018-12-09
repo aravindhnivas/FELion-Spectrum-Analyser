@@ -187,11 +187,10 @@ def avgSpec_plot(t, ts, lgs, minor, major, \
         print()
         print("Completed.")
         print()
+        
+        filesaved()
 
-    except WindowsError:
+    except:
         filenotfound()
-
-    
-    filesaved()
     return
 

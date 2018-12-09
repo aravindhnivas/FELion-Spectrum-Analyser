@@ -13,6 +13,7 @@ from scipy.interpolate import interp1d
 
 import os 
 import shutil
+from tkinter import Tk, Label, Frame, Button, ttk
 
 #These 2 values are used when guessing the baseline:
 PPS = 5         #points around the value to average
@@ -326,72 +327,96 @@ def baseline_correction(fname, location):
     os.chdir(location)
     my_path = os.getcwd()
 
-    if(fname.find('felix')>=0):
-        fname = fname.split('.')[0]
+    # Custom definitions:
+    def filenotfound():
+        root = Tk()
+        root.geometry("400x200")
 
-    if os.path.isdir('EXPORT'):
-        print("EXPORT folder exist")
-    else:
-        os.mkdir('EXPORT')
-        print("EXPORT folder created.")
+        frame1 = Frame(root, bg = "red")
+        frame1.pack(side = "top", expand = True, fill = "both")
+
+        label1 = Label(frame1, bg = "red", \
+            text = "File NOT Found")
+        label1.pack(pady = 10)
+
+        button1 = ttk.Button(frame1, text = "Okay.",\
+            command = lambda: root.destroy())
+        button1.pack(pady = 10)
+
+        root.mainloop()
+        return
+
+    try:
+        if(fname.find('felix')>=0):
+            fname = fname.split('.')[0]
+
+        if os.path.isdir('EXPORT'):
+            print("EXPORT folder exist")
+        else:
+            os.mkdir('EXPORT')
+            print("EXPORT folder created.")
+            
+        if os.path.isdir('OUT'):
+            print("OUT folder exist")
+        else:
+            os.mkdir('OUT')
+            print("OUT folder created.")
+
+        if os.path.isdir('DATA'):
+            print("DATA folder exist")
+        else:
+            os.mkdir('DATA')
+            print("DATA folder created.")
+
+        filename = fname + ".felix"
+
+        if os.path.isfile(filename):
+            print("File exist, Copying to the DATA folder to process.")
+            shutil.copyfile(my_path + r"\{}".format(filename), my_path + r"\DATA\{}".format(filename))
         
-    if os.path.isdir('OUT'):
-        print("OUT folder exist")
-    else:
-        os.mkdir('OUT')
-        print("OUT folder created.")
+        data = felix_read_file(fname)
 
-    if os.path.isdir('DATA'):
-        print("DATA folder exist")
-    else:
-        os.mkdir('DATA')
-        print("DATA folder created.")
+        #Check wether the baslien file exists
+        if not os.path.isfile('DATA/'+fname+'.base'):
+            print("Guessing baseline from .felix file!")
+            xs, ys = GuessBaseLine(data)
+        else:
+            print("Reading baseline from .base file!")
+            xs, ys, *rest = ReadBase(fname)
 
-    filename = fname + ".felix"
+        fig, ax = plt.subplots()
 
-    if os.path.isfile(filename):
-        print("File exist, Copying to the DATA folder to process.")
-        shutil.copyfile(my_path + r"\{}".format(filename), my_path + r"\DATA\{}".format(filename))
-    
-    data = felix_read_file(fname)
+        p = InteractivePoints(fig, ax, xs, ys)
+        ax.plot(data[0], data[1], ls='', marker='o', ms=5, markeredgecolor='r', c='r')
 
-    #Check wether the baslien file exists
-    if not os.path.isfile('DATA/'+fname+'.base'):
-        print("Guessing baseline from .felix file!")
-        xs, ys = GuessBaseLine(data)
-    else:
-        print("Reading baseline from .base file!")
-        xs, ys, *rest = ReadBase(fname)
+        print("\nUSAGE:\nBlue baseline points are dragable...\
+            \nKeys:\n\
+        'a' - adds a point at current cursor position\n\
+        'd' - delets a point at current cursor position\n\
+        'w' - moves the point to the 'average' value at given x position\n\
+        'q' - stores baseline in .base file and quits!\n")
 
-    fig, ax = plt.subplots()
+        ax.set_title('BASELINE points are drag-able!')
+        ax.set_xlim((data[0][0]-70, data[0][-1]+70))
+        ax.set_xlabel("wavenumber (cm-1)")
+        ax.set_ylabel("Counts")
+        plt.show()
+        
+        #Powerfile check
+        powerfile = fname + ".pow"
+        if not os.path.isfile(powerfile):
+            print("NOTE: You don't have .pow file so you can't plot the data yet but you can make the baseline.")
+        elif os.path.isfile(powerfile):
+            shutil.copyfile(my_path + r"\{}".format(powerfile), my_path + r"\DATA\{}".format(powerfile))
+            print("{} Powerfile copied to the DATA folder.".format(powerfile))
+        
+        print("\n{}.base Baseline Saved.".format(fname))
+        if baseline != None:
+            SaveBase(fname, baseline)
+        
+    except:
+        filenotfound()
 
-    p = InteractivePoints(fig, ax, xs, ys)
-    ax.plot(data[0], data[1], ls='', marker='o', ms=5, markeredgecolor='r', c='r')
-
-    print("\nUSAGE:\nBlue baseline points are dragable...\
-        \nKeys:\n\
-    'a' - adds a point at current cursor position\n\
-    'd' - delets a point at current cursor position\n\
-    'w' - moves the point to the 'average' value at given x position\n\
-    'q' - stores baseline in .base file and quits!\n")
-
-    ax.set_title('BASELINE points are drag-able!')
-    ax.set_xlim((data[0][0]-70, data[0][-1]+70))
-    ax.set_xlabel("wavenumber (cm-1)")
-    ax.set_ylabel("Counts")
-    plt.show()
-    
-    #Powerfile check
-    powerfile = fname + ".pow"
-    if not os.path.isfile(powerfile):
-        print("NOTE: You don't have .pow file so you can't plot the data yet but you can make the baseline.")
-    elif os.path.isfile(powerfile):
-        shutil.copyfile(my_path + r"\{}".format(powerfile), my_path + r"\DATA\{}".format(powerfile))
-        print("{} Powerfile copied to the DATA folder.".format(powerfile))
-
-    print("\n{}.base Baseline Saved.".format(fname))
-    if baseline != None:
-        SaveBase(fname, baseline)
     return
 
 if __name__ == "__main__":

@@ -225,13 +225,10 @@ def normline_correction(fname, location, mname, temp, bwidth, ie):
         
         filesaved()
 
-    except WindowsError:
+    except:
         filenotfound()
-
-    
 
     print("DONE")
 
 if __name__ == "__main__":
-    help()
     main()
