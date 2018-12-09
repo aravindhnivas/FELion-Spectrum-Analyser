@@ -88,6 +88,8 @@ def avgSpec_plot(t, ts, lgs, minor, major, \
                 location, mname, temp, bwidth, ie,\
                 specificFiles, allFiles
                 ):
+    
+    show = False
     os.chdir(location)
     my_path = os.getcwd()
 
@@ -135,6 +137,8 @@ def avgSpec_plot(t, ts, lgs, minor, major, \
     fig.xaxis.set_minor_locator(MultipleLocator(minor))
     fig.xaxis.set_major_locator(MultipleLocator(major))
     plt.savefig(F)
+    if show:
+        plt.show()
     plt.close()
     print()
     print("Completed.")
