@@ -165,24 +165,9 @@ def main(s=True, plotShow=False):
     print("\nProcess Completed.\n")
 
 def normline_correction(fname, location, mname, temp, bwidth, ie):
-    
-    os.chdir(location)
-    my_path = os.getcwd()
 
-    if(fname.find('felix')>=0):
-        fname = fname.split('.')[0]
 
-    powerfile = fname + ".pow"
-    if os.path.isfile(powerfile):
-        shutil.copyfile(my_path + r"\{}".format(powerfile), my_path + r"\DATA\{}".format(powerfile))
-        print("{} Powerfile copied to the DATA folder.".format(powerfile))
-    else:
-        print("\nCAUTION:You don't have the {} powerfile(.pow)\n".format(powerfile))
-  
-    a,b = norm_line_felix(fname, mname, temp, bwidth, ie)
-    
-    print("\nProcess Completed.\n")
-
+    # Custom definitions:
     def filesaved():
         if os.path.isfile(my_path+r"\OUT\{}.pdf".format(fname)):
             saved = Tk()
@@ -200,7 +185,50 @@ def normline_correction(fname, location, mname, temp, bwidth, ie):
             button1.pack(pady = 10)
 
             saved.mainloop()
-    filesaved()
+        return
+
+    def filenotfound():
+        root = Tk()
+        root.geometry("400x200")
+
+        frame1 = Frame(root, bg = "red")
+        frame1.pack(side = "top", expand = True, fill = "both")
+
+        label1 = Label(frame1, bg = "red", \
+            text = "File NOT Found")
+        label1.pack(pady = 10)
+
+        button1 = ttk.Button(frame1, text = "Okay.",\
+            command = lambda: root.destroy())
+        button1.pack(pady = 10)
+
+        root.mainloop()
+        return
+    
+    os.chdir(location)
+    my_path = os.getcwd()
+
+    try:
+        if(fname.find('felix')>=0):
+            fname = fname.split('.')[0]
+
+        powerfile = fname + ".pow"
+        if os.path.isfile(powerfile):
+            shutil.copyfile(my_path + r"\{}".format(powerfile), my_path + r"\DATA\{}".format(powerfile))
+            print("{} Powerfile copied to the DATA folder.".format(powerfile))
+        else:
+            print("\nCAUTION:You don't have the {} powerfile(.pow)\n".format(powerfile))
+    
+        a,b = norm_line_felix(fname, mname, temp, bwidth, ie)
+        
+        print("\nProcess Completed.\n")
+        
+        filesaved()
+
+    except WindowsError:
+        filenotfound()
+
+    
 
     print("DONE")
 

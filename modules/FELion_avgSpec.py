@@ -92,61 +92,9 @@ def avgSpec_plot(t, ts, lgs, minor, major, \
                 location, mname, temp, bwidth, ie,\
                 specificFiles, allFiles
                 ):
-    
-    show = False
-    os.chdir(location)
-    my_path = os.getcwd()
 
-    fig = plt.subplot(1,1,1)
-    plt.rcParams['figure.figsize'] = [6,4]
-    plt.rcParams['figure.dpi'] = 80
-    plt.rcParams['savefig.dpi'] = 100
-    plt.rcParams['font.size'] = ts # Title Size
-    plt.rcParams['legend.fontsize'] = lgs # Legend Size
+    # Custom definitions:
 
-    pwd = os.listdir(my_path + r"\DATA") # going into the data folder to fetch all the available data filename.
-    fileNameList = [] # creating a varaiable list : Don't add any data here. You can use the script as it is since it automatically takes the data in the DATA folder
-    for f in pwd:
-        if f.find(".felix")>=0:
-            fileNameList.append(f.split(".felix")[0])
-
-    xs = np.array([],dtype='double')
-    ys = np.array([],dtype='double')
-
-    if all and not specificFiles:
-        for filelist in fileNameList:
-            a,b = norm_line_felix(filelist, mname, temp, bwidth, ie)
-            fig.plot(a, b, ls='', marker='o', ms=1, label=filelist)
-            xs = np.append(xs,a)
-            ys = np.append(ys,b)
-
-    fig.legend(title=t) #Set the fontsize for each label
-    #Binning
-    binns, inten = felix_binning(xs, ys, delta=DELTA)
-    fig.plot(binns, inten, ls='-', marker='', c='k')
-
-    #Exporting the Binned file.
-    F = 'OUT/%s.pdf'%(outFilename)
-    export_file(F, binns, inten)
-
-    #Set the Xlim values and fontsizes.
-    fig.set_xlim([xmin,xmax])
-    fig.set_xlabel(r"Calibrated lambda (cm-1)", fontsize=10)
-    fig.set_ylabel(r"Normalized Intensity", fontsize=10)
-    fig.tick_params(axis='both', which='major', labelsize=majorTickSize)
-
-    #Set the Grid value False if you don't need it.
-    fig.grid(True)
-    #Set the no. of Minor and Major ticks.
-    fig.xaxis.set_minor_locator(MultipleLocator(minor))
-    fig.xaxis.set_major_locator(MultipleLocator(major))
-    plt.savefig(F)
-    if show:
-        plt.show()
-    plt.close()
-    print()
-    print("Completed.")
-    print()
     def filesaved():
         if os.path.isfile(my_path+r"\OUT\{}.pdf".format(outFilename)):
             saved = Tk()
@@ -164,6 +112,86 @@ def avgSpec_plot(t, ts, lgs, minor, major, \
             button1.pack(pady = 10)
 
             saved.mainloop()
+        return
+
+    def filenotfound():
+        root = Tk()
+        root.geometry("400x200")
+
+        frame1 = Frame(root, bg = "red")
+        frame1.pack(side = "top", expand = True, fill = "both")
+
+        label1 = Label(frame1, bg = "red", \
+            text = "File NOT Found")
+        label1.pack(pady = 10)
+
+        button1 = ttk.Button(frame1, text = "Okay.",\
+            command = lambda: root.destroy())
+        button1.pack(pady = 10)
+
+        root.mainloop()
+        return
+    
+    show = False
+    os.chdir(location)
+    my_path = os.getcwd()
+
+    try:
+        fig = plt.subplot(1,1,1)
+        plt.rcParams['figure.figsize'] = [6,4]
+        plt.rcParams['figure.dpi'] = 80
+        plt.rcParams['savefig.dpi'] = 100
+        plt.rcParams['font.size'] = ts # Title Size
+        plt.rcParams['legend.fontsize'] = lgs # Legend Size
+
+        pwd = os.listdir(my_path + r"\DATA") # going into the data folder to fetch all the available data filename.
+        fileNameList = [] # creating a varaiable list : Don't add any data here. You can use the script as it is since it automatically takes the data in the DATA folder
+        for f in pwd:
+            if f.find(".felix")>=0:
+                fileNameList.append(f.split(".felix")[0])
+
+        xs = np.array([],dtype='double')
+        ys = np.array([],dtype='double')
+
+        if all and not specificFiles:
+            for filelist in fileNameList:
+                a,b = norm_line_felix(filelist, mname, temp, bwidth, ie)
+                fig.plot(a, b, ls='', marker='o', ms=1, label=filelist)
+                xs = np.append(xs,a)
+                ys = np.append(ys,b)
+
+        fig.legend(title=t) #Set the fontsize for each label
+        #Binning
+        binns, inten = felix_binning(xs, ys, delta=DELTA)
+        fig.plot(binns, inten, ls='-', marker='', c='k')
+
+        #Exporting the Binned file.
+        F = 'OUT/%s.pdf'%(outFilename)
+        export_file(F, binns, inten)
+
+        #Set the Xlim values and fontsizes.
+        fig.set_xlim([xmin,xmax])
+        fig.set_xlabel(r"Calibrated lambda (cm-1)", fontsize=10)
+        fig.set_ylabel(r"Normalized Intensity", fontsize=10)
+        fig.tick_params(axis='both', which='major', labelsize=majorTickSize)
+
+        #Set the Grid value False if you don't need it.
+        fig.grid(True)
+        #Set the no. of Minor and Major ticks.
+        fig.xaxis.set_minor_locator(MultipleLocator(minor))
+        fig.xaxis.set_major_locator(MultipleLocator(major))
+        plt.savefig(F)
+        if show:
+            plt.show()
+        plt.close()
+        print()
+        print("Completed.")
+        print()
+
+    except WindowsError:
+        filenotfound()
+
+    
     filesaved()
     return
 
