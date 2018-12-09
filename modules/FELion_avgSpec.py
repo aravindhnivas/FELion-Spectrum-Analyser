@@ -11,6 +11,10 @@ from FELion_normline import felix_binning
 from matplotlib.ticker import MultipleLocator, FormatStrFormatter, NullFormatter, NullLocator
 import matplotlib.pyplot as plt
 
+## modules
+from os import isfile
+from tkinter import Tk, Label
+
 DELTA=2.0
 
 def export_file(fname, wn, inten):
@@ -143,5 +147,13 @@ def avgSpec_plot(t, ts, lgs, minor, major, \
     print()
     print("Completed.")
     print()
+    def filesaved():
+        if isfile(my_path+r"\OUT\outFilename.pdf"):
+            root = Tk()
+            root.geometry("100x100")
+            label1 = Label(text = "Completed: {}.pdf file saved in OUT directory".format(outFilename))
+            label1.pack()
+            root.mainloop()
+    filesaved()
     return
 
