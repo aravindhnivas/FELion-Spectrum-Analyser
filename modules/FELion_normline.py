@@ -172,7 +172,7 @@ def normline_correction(fname, location, mname, temp, bwidth, ie):
         if os.path.isfile(my_path+r"\OUT\{}.pdf".format(fname)):
             root = Tk()
             root.withdraw()
-            messagebox.showinfo("Information", "File '{}.felix' Saved".format(fname))
+            messagebox.showinfo("Information", "File '{}.felix' Saved in OUT Directory".format(fname))
             root.destroy()
 
     def filenotfound():

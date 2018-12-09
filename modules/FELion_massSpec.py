@@ -90,17 +90,24 @@ def massSpec(fname, mname, temp, bwidth, ie, xmin, xmax, location,\
     os.chdir(location)
     my_path = os.getcwd()
 
-    def filesaved():
-        if os.path.isfile(my_path+r"\MassSpec_DATA\{}.png".format(fname)):
-            root = Tk()
-            root.withdraw()
-            messagebox.showinfo("Information", "File {}.png SAVED \nin MassSpec_DATA directory".format(fname))
-            root.destroy()
+    def save():
+        if messagebox.askokcancel("SAVE", "Do you want to save?"):
+            plt.savefig(my_path + r"\MassSpec_DATA\{}.png".format(fname))
+            if os.path.isfile(my_path+r"\MassSpec_DATA\{}.png".format(fname)):
+                root = Tk()
+                root.withdraw()
+                messagebox.showinfo("Information", "File '{}.png' SAVED \nin MassSpec_DATA directory"\
+                                    .format(fname))
+                root.destroy()
+            plt.show()
+        else:
+            plt.show()
+
 
     def filenotfound():
         root = Tk()
         root.withdraw()
-        messagebox.showerror("Error", "FILE {}.mass NOT FOUND".format(fname))
+        messagebox.showerror("Error", "FILE '{}.mass' NOT FOUND".format(fname))
         root.destroy()
 
     try:
@@ -144,10 +151,10 @@ def massSpec(fname, mname, temp, bwidth, ie, xmin, xmax, location,\
             plt.grid(True)
             plt.xlim([xmin,xmax])
             plt.ylim(1)
-            plt.title("Filename: {}, for {}, at temp: {}K, B0: {}ms and IE(eV): {}".format(fname, mname, temp, bwidth, ie))
-            plt.savefig(my_path + r"\MassSpec_DATA\{}.png".format(fname))
-            plt.show()
-            filesaved()
+            plt.title("Filename: {}, for {}, at temp: {}K, B0: {}ms and IE(eV): {}"\
+                        .format(fname, mname, temp, bwidth, ie))
+            save()
+            #plt.show()
 
         if combine:
             filelist = filelist.split(",")
@@ -191,7 +198,7 @@ def massSpec(fname, mname, temp, bwidth, ie, xmin, xmax, location,\
             plt.title("Filename: {}, for {}, at temp: {}K, B0: {}ms and IE(eV): {}".format(fname, mname, temp, bwidth, ie))
             plt.savefig(my_path + r"\MassSpec_DATA\{}.png".format(avgname))
             plt.show()
-            filesaved()
+            save()
             
     except:
         filenotfound()
