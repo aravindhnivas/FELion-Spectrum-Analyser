@@ -80,11 +80,11 @@ def main(**kwargs):
     fig.xaxis.set_major_locator(MultipleLocator(major))
     plt.savefig(F)
     plt.close()
-    print()
     print("Completed.")
     print()
 
-def avgSpec_plot(t, ts, lgs, minor, major, majorTickSize, xmin, xmax, outFilename,\
+def avgSpec_plot(t, ts, lgs, minor, major, \
+                majorTickSize, xmin, xmax, outFilename,\
                 location, mname, temp, bwidth, ie,\
                 specificFiles, allFiles
                 ):
@@ -108,9 +108,9 @@ def avgSpec_plot(t, ts, lgs, minor, major, majorTickSize, xmin, xmax, outFilenam
     ys = np.array([],dtype='double')
 
     if all and not specificFiles:
-        for l in fileNameList:
-            a,b = norm_line_felix(l[0], mname, temp, bwidth, ie)
-            fig.plot(a, b, ls='', marker='o', ms=1, label=l[0])
+        for filelist in fileNameList:
+            a,b = norm_line_felix(filelist, mname, temp, bwidth, ie)
+            fig.plot(a, b, ls='', marker='o', ms=1, label=filelist)
             xs = np.append(xs,a)
             ys = np.append(ys,b)
 
@@ -141,28 +141,3 @@ def avgSpec_plot(t, ts, lgs, minor, major, majorTickSize, xmin, xmax, outFilenam
     print()
     return
 
-def help():
-    print()
-    print("######################################################################################################")
-    print()
-    print("This is a simple python script to plot Average spectrum of all datas through Binning")
-    print()
-    print("Example of the input format: avgSpec.main(t='C3H3+', ts=10)")
-    print()
-    print("You can have the following input argument:")
-    print("NOTE: You can also simply call the function without any argument(default value will be assigned).")
-    print()
-    print("t: Define the title(default is 'Title')")
-    print("ts: title size(default is 10)")
-    print("xmin: Minimum value on X-axis (default is 1000)")
-    print("xmax: Maximum value on X-axis (default is 2000)")
-    print("lgs: legend label size (default is 5)")
-    print("minor: Each minor tick value (default is 5)")
-    print("major: Each major tick valve (default is 50)")
-    print("majorTickSize: Font size for the major tick label(default is 8)")
-    print()
-    print("######################################################################################################")
-
-if __name__ == "__main__":
-    help()
-    main()
