@@ -150,8 +150,10 @@ def massSpec(fname, mname, temp, bwidth, ie, xmin, xmax, location,\
                         .format(fname, mname, temp, bwidth, ie))
             if save_fig:
                 plt.savefig(my_path + r"\MassSpec_DATA\{}.png".format(fname))
-            plt.show()
-            saveinfo(fname)
+                plt.show()
+                saveinfo(fname)
+            else:
+                plt.show()
 
         if combine:
             filelist = filelist.split(",")
@@ -196,8 +198,10 @@ def massSpec(fname, mname, temp, bwidth, ie, xmin, xmax, location,\
             
             if save_fig:
                 plt.savefig(my_path + r"\MassSpec_DATA\{}.png".format(avgname))
-            plt.show()
-            saveinfo(avgname)
+                plt.show()
+                saveinfo(avgname)
+            else:
+                plt.show()
             
     except:
         filenotfound()
