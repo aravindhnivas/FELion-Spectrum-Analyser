@@ -30,7 +30,7 @@ def export_file(fname, wn, inten):
     #f.close()
 
 
-def norm_line_felix(fname, mname, temp, bwidth, ie):
+def norm_line_felix(fname, mname, temp, bwidth, ie, foravgshow):
     """
     Reads data from felix meassurement file and 
     calculates the calibrated wavenumber and calibrated/normalised
@@ -41,7 +41,7 @@ def norm_line_felix(fname, mname, temp, bwidth, ie):
     Output: data[0,1]     0 - wavenumber, 1 - intensity
     """
     save=True
-    show=False
+    show=True
     PD=True
 
     fig = plt.figure(figsize=(8,10))
@@ -92,15 +92,16 @@ def norm_line_felix(fname, mname, temp, bwidth, ie):
     
     ax.set_title("Filename: {}, for {}, at temp: {}K, B0: {}ms and IE(eV): {}".format(fname, mname, temp, bwidth, ie))
 
-    if save:
+    if save and not foravgshow:
         fname = fname.replace('.','_')
         plt.savefig('OUT/'+fname+'.pdf')
         export_file(fname, wavelength, intensity)
 
-    if show:
+    if show and not foravgshow:
         plt.show()
-
-    plt.close()
+    if foravgshow:
+        plt.close()
+    #plt.close()
 
     return wavelength, intensity
 
@@ -164,7 +165,7 @@ def main(s=True, plotShow=False):
     print(a, b)
     print("\nProcess Completed.\n")
 
-def normline_correction(fname, location, mname, temp, bwidth, ie):
+def normline_correction(fname, location, mname, temp, bwidth, ie, foravgshow):
 
 
     # Custom definitions:
@@ -195,7 +196,7 @@ def normline_correction(fname, location, mname, temp, bwidth, ie):
         else:
             print("\nCAUTION:You don't have the {} powerfile(.pow)\n".format(powerfile))
     
-        a,b = norm_line_felix(fname, mname, temp, bwidth, ie)
+        a,b = norm_line_felix(fname, mname, temp, bwidth, ie, foravgshow)
         
         print("\nProcess Completed.\n")
         

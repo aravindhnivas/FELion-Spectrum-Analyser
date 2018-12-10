@@ -81,8 +81,8 @@ def gui_normline():
                                 textvariable=location, justify = LEFT,\
                                 font=("Times", 12, "italic"))
 
-    location_label.place(relx = 0.1,  rely = 0.8, width = 100, height = 40)
-    location_entry.place(relx = 0.2,  rely = 0.8, relwidth = 0.4, height = 40)
+    location_label.place(relx = 0.1,  rely = 0.7, width = 100, height = 40)
+    location_entry.place(relx = 0.2,  rely = 0.7, relwidth = 0.4, height = 40)
 
     #Label for Entry Box;
     filename_label = Label(bottomFrame, text = " Filename:", font=("Times", 10, "bold"))
@@ -95,8 +95,8 @@ def gui_normline():
     filename_input.focus_set()
 
     #Placing the labels and buttons in bottom frame using place(), relx/y is relative to parent frame pixels
-    filename_label.place(relx = 0.1,  rely = 0.7, width = 100, height = 40)
-    filename_input.place(relx = 0.2,  rely = 0.7, width = 100, height = 40)
+    filename_label.place(relx = 0.1,  rely = 0.6, width = 100, height = 40)
+    filename_input.place(relx = 0.2,  rely = 0.6, width = 100, height = 40)
 
     ###########################################################################################
     ###########################################################################################
@@ -110,15 +110,18 @@ def gui_normline():
     ###########################################################################################
 
     ###########################################################################################
+
     #Normline
+    foravgshow = False
     normline_button = ttk.Button(bottomFrame, text="Normline")
     normline_button.config(
         command = lambda: normline_correction(
                                     fname.get(), location.get(),\
-                                    mname.get(), temp.get(), bwidth.get(), ie.get()
+                                    mname.get(), temp.get(), bwidth.get(), ie.get(),\
+                                    foravgshow
                                     )
                                     )
-    normline_button.place(relx = 0.4,  rely = 0.9, width = 100, height = 40)
+    normline_button.place(relx = 0.4,  rely = 0.8, width = 100, height = 40)
 
     # avg_labels's label:
     avg_label = Label(bottomFrame, text = "For Average Spectrum", font=("Times", 12, "italic"))
@@ -129,14 +132,14 @@ def gui_normline():
     avg_ts_ls = Label(bottomFrame, text = "Size\n(Title, Legends):", font=("Times", 10, "bold"))
     avg_xaxis_count = Label(bottomFrame, text = "X-axis\nticks div.:", font=("Times", 10, "bold"))
     avg_majorTick = Label(bottomFrame, text = "Major\nTickSz:", font=("Times", 10, "bold"))
-    avg_xaxis = Label(bottomFrame, text = "Range(cm-1):", font=("Times", 10, "bold"))
+    #avg_xaxis = Label(bottomFrame, text = "Range(cm-1):", font=("Times", 10, "bold"))
 
     # Placing the avg_labels
     avg_title.place(relx = 0.4,  rely = 0.1, width = 100, height = 40)
     avg_ts_ls.place(relx = 0.4,  rely = 0.2, width = 100, height = 40)
     avg_xaxis_count.place(relx = 0.4,  rely = 0.3, width = 100, height = 40)
     avg_majorTick.place(relx = 0.4,  rely = 0.4, width = 100, height = 40)
-    avg_xaxis.place(relx = 0.4,  rely = 0.5, width = 100, height = 40)
+    #avg_xaxis.place(relx = 0.4,  rely = 0.5, width = 100, height = 40)
 
     # avg_label's Entry widget:
     i_avg_title = StringVar()
@@ -145,8 +148,8 @@ def gui_normline():
     i_avg_minor = IntVar() 
     i_avg_major = IntVar() 
     i_avg_majorTick = IntVar() 
-    i_avg_xmin = IntVar() 
-    i_avg_xmax = IntVar()
+    #i_avg_xmin = IntVar() 
+    #i_avg_xmax = IntVar()
         
     i_avg_title.set("Title")
     i_avg_ts.set(10)
@@ -154,8 +157,8 @@ def gui_normline():
     i_avg_minor.set(5)
     i_avg_major.set(50)
     i_avg_majorTick.set(8)
-    i_avg_xmin.set(1000)
-    i_avg_xmax.set(2000)
+    #i_avg_xmin.set(1000)
+    #i_avg_xmax.set(2000)
 
     avg_title_Entry = Entry(bottomFrame, bg = "white", bd = 5, textvariable=i_avg_title, justify = LEFT, font=("Times", 12, "italic"))
     avg_ts_Entry = Entry(bottomFrame, bg = "white", bd = 5, textvariable=i_avg_ts, justify = LEFT, font=("Times", 10, "bold"))
@@ -163,8 +166,8 @@ def gui_normline():
     avg_minor_Entry = Entry(bottomFrame, bg = "white", bd = 5, textvariable=i_avg_minor, justify = LEFT, font=("Times", 10, "bold"))
     avg_major_Entry = Entry(bottomFrame, bg = "white", bd = 5, textvariable=i_avg_major, justify = LEFT, font=("Times", 10, "bold"))
     avg_majorTick_Entry = Entry(bottomFrame, bg = "white", bd = 5, textvariable=i_avg_majorTick, justify = LEFT, font=("Times", 10, "bold"))
-    avg_xmin_Entry = Entry(bottomFrame, bg = "white", bd = 5, textvariable=i_avg_xmin, justify = LEFT, font=("Times", 10, "bold"))
-    avg_xmax_Entry = Entry(bottomFrame, bg = "white", bd = 5, textvariable=i_avg_xmax, justify = LEFT, font=("Times", 10, "bold"))
+    #avg_xmin_Entry = Entry(bottomFrame, bg = "white", bd = 5, textvariable=i_avg_xmin, justify = LEFT, font=("Times", 10, "bold"))
+    #avg_xmax_Entry = Entry(bottomFrame, bg = "white", bd = 5, textvariable=i_avg_xmax, justify = LEFT, font=("Times", 10, "bold"))
 
     # Placing the avg_entry widgets:
     avg_title_Entry.place(relx = 0.5,  rely = 0.1, width = 100, height = 40)
@@ -173,8 +176,8 @@ def gui_normline():
     avg_minor_Entry.place(relx = 0.5,  rely = 0.3, width = 50, height = 40)
     avg_major_Entry.place(relx = 0.55,  rely = 0.3, width = 50, height = 40)
     avg_majorTick_Entry.place(relx = 0.5,  rely = 0.4, width = 100, height = 40)
-    avg_xmin_Entry.place(relx = 0.5,  rely = 0.5, width = 50, height = 40)
-    avg_xmax_Entry.place(relx = 0.55,  rely = 0.5, width = 50, height = 40)
+    #avg_xmin_Entry.place(relx = 0.5,  rely = 0.5, width = 50, height = 40)
+    #avg_xmax_Entry.place(relx = 0.55,  rely = 0.5, width = 50, height = 40)
 
     # avg spectrum output filename:
     avg_outputFilename = Label(bottomFrame, \
@@ -186,8 +189,8 @@ def gui_normline():
         textvariable=output_filename, justify = LEFT, font=("Times", 12, "italic"))
 
     # Placing avg_out filename labels and entry
-    avg_outputFilename.place(relx = 0.4,  rely = 0.6, width = 150, height = 50)
-    avg_outputFilename_entry.place(relx = 0.55,  rely = 0.6, width = 100, height = 50)
+    avg_outputFilename.place(relx = 0.4,  rely = 0.5, width = 150, height = 50)
+    avg_outputFilename_entry.place(relx = 0.55,  rely = 0.5, width = 100, height = 50)
 
     #Avg_Spectrum Button
     specificFiles_status = False
@@ -200,8 +203,8 @@ def gui_normline():
                                                     i_avg_minor.get(), \
                                                     i_avg_major.get(), \
                                                     i_avg_majorTick.get(), \
-                                                    i_avg_xmin.get(), \
-                                                    i_avg_xmax.get(),\
+                                                    #i_avg_xmin.get(), \
+                                                    #i_avg_xmax.get(),\
                                                     output_filename.get(),\
                                                     location.get(),\
                                                     mname.get(), temp.get(), bwidth.get(), ie.get(),\
@@ -209,7 +212,7 @@ def gui_normline():
                                                     allFiles=allFiles_status),\
                                                     )
 
-    avg_button.place(relx = 0.5,  rely = 0.9, width = 100, height = 40)
+    avg_button.place(relx = 0.5,  rely = 0.8, width = 100, height = 40)
 
     # Spectrum Analyzer and power Analyzer Buttons:
     sa_button = ttk.Button(bottomFrame, text="SA", \
@@ -217,8 +220,8 @@ def gui_normline():
     power_button = ttk.Button(bottomFrame, text = "Power", \
         command = lambda: FELion_Power(fname.get(), location.get()))
     # Placing SA and power buttons:
-    sa_button.place(relx = 0.2,  rely = 0.9, width = 100, height = 40)
-    power_button.place(relx = 0.3,  rely = 0.9, width = 100, height = 40)
+    sa_button.place(relx = 0.2,  rely = 0.8, width = 100, height = 40)
+    power_button.place(relx = 0.3,  rely = 0.8, width = 100, height = 40)
 
     # Initial Setting label:
     initial_set_label = Label(bottomFrame, text = "Spectra Parameters", font=("Times", 12, "italic"))

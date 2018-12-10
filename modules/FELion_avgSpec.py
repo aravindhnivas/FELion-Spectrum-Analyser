@@ -88,7 +88,7 @@ def main(**kwargs):
     print()
 
 def avgSpec_plot(t, ts, lgs, minor, major, \
-                majorTickSize, xmin, xmax, outFilename,\
+                majorTickSize, outFilename,\
                 location, mname, temp, bwidth, ie,\
                 specificFiles, allFiles
                 ):
@@ -97,10 +97,12 @@ def avgSpec_plot(t, ts, lgs, minor, major, \
 
     def filesaved():
         if os.path.isfile(my_path+r"\OUT\{}.pdf".format(outFilename)):
-            root = Tk()
-            root.withdraw()
-            messagebox.showinfo("Information", "File '{}.pdf' Saved".format(outFilename))
-            root.destroy()
+            #os.chdir(my_path+r"\OUT")
+            if r"\OUT\{}.pdf".format(outFilename).endswith(".pdf"):
+                root = Tk()
+                root.withdraw()
+                messagebox.showinfo("Information", "File '{}.pdf' Saved".format(outFilename))
+                root.destroy()
 
     def filenotfound():
         root = Tk()
@@ -108,7 +110,7 @@ def avgSpec_plot(t, ts, lgs, minor, major, \
         messagebox.showerror("Error", "FILE NOT FOUND")
         root.destroy()
     
-    show = False
+    show = True
     os.chdir(location)
     my_path = os.getcwd()
 
@@ -130,8 +132,9 @@ def avgSpec_plot(t, ts, lgs, minor, major, \
         ys = np.array([],dtype='double')
 
         if all and not specificFiles:
+            foravgshow = True
             for filelist in fileNameList:
-                a,b = norm_line_felix(filelist, mname, temp, bwidth, ie)
+                a,b = norm_line_felix(filelist, mname, temp, bwidth, ie, foravgshow)
                 fig.plot(a, b, ls='', marker='o', ms=1, label=filelist)
                 xs = np.append(xs,a)
                 ys = np.append(ys,b)
@@ -146,7 +149,7 @@ def avgSpec_plot(t, ts, lgs, minor, major, \
         export_file(F, binns, inten)
 
         #Set the Xlim values and fontsizes.
-        fig.set_xlim([xmin,xmax])
+        #fig.set_xlim([xmin,xmax])
         fig.set_xlabel(r"Calibrated lambda (cm-1)", fontsize=10)
         fig.set_ylabel(r"Normalized Intensity", fontsize=10)
         fig.tick_params(axis='both', which='major', labelsize=majorTickSize)
