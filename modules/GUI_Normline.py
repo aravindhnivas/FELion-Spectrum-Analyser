@@ -276,15 +276,23 @@ def gui_normline():
                                     m_figwidth.get(), m_figheight.get(),\
                                     combine_entry_values.get(),\
                                     output_filename.get(),\
-                                    mass_method_value.get()
+                                    mass_method_value.get(),\
+                                    mass_saveCheck_value.get()
                                     )
                             )
 
     #Placing mass spec:
     massSpec_label.place(relx = 0.7,  rely = 0.1, width = 100, height = 40)
     massSpec_input.place(relx = 0.8,  rely = 0.1, width = 100, height = 40)
-    mass_button.place(relx = 0.75,  rely = 0.7, width = 100, height = 40)
+    mass_button.place(relx = 0.8,  rely = 0.7, width = 100, height = 40)
 
+    # Save checkbutton:
+    mass_saveCheck_value = BooleanVar()
+    mass_saveCheck_value.set(True)
+    mass_saveCheck = ttk.Checkbutton(bottomFrame, text = "Save", variable = mass_saveCheck_value)
+    mass_saveCheck.place(relx = 0.7,  rely = 0.7, width = 100, height = 40)
+
+    
     # Mass Spec labels:
     mass_range_label = Label(bottomFrame, text = "Range(u):", font=("Times", 10, "bold"))
 
@@ -352,8 +360,13 @@ def gui_normline():
 
     # Baseline:
 
-    button1 = ttk.Button(text = "Baseline", command = lambda: import GUI_Baseline)
-    button1.place(relx = 0.7,  rely = 0.9, relwidth = 0.1, height = 50)
+    '''button1 = ttk.Button(text = "Baseline", command = lambda: import GUI_Baseline)
+    button1.place(relx = 0.7,  rely = 0.9, relwidth = 0.1, height = 50)'''
+
+    # test button:
+    #button_test = ttk.Button(bottomFrame, text = "test", command = lambda: print(mass_saveCheck_value.get()))
+    #button_test.place(relx = 0.7,  rely = 0.8, width = 100, height = 40)
+    
 
     ###########################################################################################
     ###########################################################################################
