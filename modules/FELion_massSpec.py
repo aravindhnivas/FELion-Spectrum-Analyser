@@ -91,15 +91,32 @@ def massSpec(fname, mname, temp, bwidth, ie, xmin, xmax, location,\
     my_path = os.getcwd()
 
     def save():
+
         if messagebox.askokcancel("SAVE", "Do you want to save?"):
             plt.savefig(my_path + r"\MassSpec_DATA\{}.png".format(fname))
+            plt.show()
             if os.path.isfile(my_path+r"\MassSpec_DATA\{}.png".format(fname)):
                 root = Tk()
                 root.withdraw()
                 messagebox.showinfo("Information", "File '{}.png' SAVED \nin MassSpec_DATA directory"\
                                     .format(fname))
                 root.destroy()
+            
+        else:
             plt.show()
+
+    def combinesave():
+
+        if messagebox.askokcancel("SAVE", "Do you want to save?"):
+            plt.savefig(my_path + r"\MassSpec_DATA\{}.png".format(avgname))
+            plt.show()
+            if os.path.isfile(my_path+r"\MassSpec_DATA\{}.png".format(avgname)):
+                root = Tk()
+                root.withdraw()
+                messagebox.showinfo("Information", "File '{}.png' SAVED \nin MassSpec_DATA directory"\
+                                    .format(avgname))
+                root.destroy()
+            
         else:
             plt.show()
 
@@ -196,9 +213,9 @@ def massSpec(fname, mname, temp, bwidth, ie, xmin, xmax, location,\
             plt.ylim(1)
             plt.xlim([xmin,xmax])
             plt.title("Filename: {}, for {}, at temp: {}K, B0: {}ms and IE(eV): {}".format(fname, mname, temp, bwidth, ie))
-            plt.savefig(my_path + r"\MassSpec_DATA\{}.png".format(avgname))
-            plt.show()
-            save()
+            #plt.savefig(my_path + r"\MassSpec_DATA\{}.png".format(avgname))
+            #plt.show()
+            combinesave()
             
     except:
         filenotfound()

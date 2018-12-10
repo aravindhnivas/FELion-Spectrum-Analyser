@@ -350,6 +350,11 @@ def gui_normline():
                             font=("Times", 12, "italic"))
     combine_entry.place(relx = 0.7,  rely = 0.6, relwidth = 0.2, height = 50)
 
+    # Baseline:
+
+    button1 = ttk.Button(text = "Baseline", command = lambda: import GUI_Baseline)
+    button1.place(relx = 0.7,  rely = 0.9, relwidth = 0.1, height = 50)
+
     ###########################################################################################
     ###########################################################################################
 
