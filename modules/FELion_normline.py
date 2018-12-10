@@ -179,7 +179,7 @@ def normline_correction(fname, location, mname, temp, bwidth, ie, foravgshow):
     def filenotfound():
         root = Tk()
         root.withdraw()
-        messagebox.showerror("Error", "FILE '{}.felix' NOT FOUND".format(fname))
+        messagebox.showerror("Error", "FILE '{}.felix' NOT FOUND (or make sure .base file is present)".format(fname))
         root.destroy()
     
     os.chdir(location)

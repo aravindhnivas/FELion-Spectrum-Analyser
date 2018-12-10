@@ -107,7 +107,7 @@ def avgSpec_plot(t, ts, lgs, minor, major, \
     def filenotfound():
         root = Tk()
         root.withdraw()
-        messagebox.showerror("Error", "FILE NOT FOUND")
+        messagebox.showerror("Error", "FILE NOT FOUND (or some of the file's .base files are missing)")
         root.destroy()
     
     show = True

@@ -354,7 +354,7 @@ def gui_normline():
         
 
     combine_entry_values = StringVar()
-    combine_entry_values.set("Combine: Enter just files nos. (if same data)")
+    combine_entry_values.set("Combine: Enter just files nos. (if same data) comma separated")
 
     combine_entry = Entry(bottomFrame, bg = "white", bd = 5,\
                             textvariable=combine_entry_values, justify = LEFT,\
