@@ -28,7 +28,8 @@ def outFile(fname, location):
                         if os.path.isfile(my_path+r"\Pow\{}.pow".format(fname)):
                                 save = Tk()
                                 save.withdraw()
-                                messagebox.showinfo("Information", "File {}.pow saved in /Pow directory".format(fname))
+                                messagebox.showinfo("Information", \
+                                        "File {}.pow saved in /Pow directory".format(fname))
                                 save.destroy()
 
                 def write():
