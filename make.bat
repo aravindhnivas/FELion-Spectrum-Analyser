@@ -54,6 +54,9 @@ copy C:\FELion-GUI\FELion-Normline.lnk "C:\ProgramData\Microsoft\Windows\Start M
 copy C:\FELion-GUI\FELion-Baseline.lnk "C:\ProgramData\Microsoft\Windows\Start Menu\Programs"
 copy C:\FELion-GUI\FELion-Powerfile.lnk "C:\ProgramData\Microsoft\Windows\Start Menu\Programs"
 
+REM ####################
+
+
 REM pushd "C:\ProgramData\Microsoft\Windows\Start Menu\Programs"
 REM mkdir FELion
 REM copy C:\FELion-GUI\FELion-Normline.lnk "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\FELion"
