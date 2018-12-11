@@ -18,7 +18,7 @@ from tkinter import Tk, messagebox
 DELTA=2.0
 
 def export_file(fname, wn, inten):
-    f = open(fname + '.dat','w')
+    f = open(fname.split(".pdf")[0] + '.dat','w')
     f.write("#DATA points as shown in figure: " + fname + ".pdf file!\n")
     f.write("#wn (cm-1)       intensity\n")
     for i in range(len(wn)):
@@ -89,14 +89,14 @@ def main(**kwargs):
 
 def avgSpec_plot(t, ts, lgs, minor, major, \
                 majorTickSize, outFilename,\
-                location, mname, temp, bwidth, ie,\
+                location, mname, temp, bwidth, ie, save,\
                 specificFiles, allFiles
                 ):
 
     # Custom definitions:
 
     def filesaved():
-        if os.path.isfile(my_path+r"\OUT\{}.pdf".format(outFilename)):
+        if os.path.isfile(my_path+r"\OUT\{}.pdf".format(outFilename)) and save:
             #os.chdir(my_path+r"\OUT")
             if r"\OUT\{}.pdf".format(outFilename).endswith(".pdf"):
                 root = Tk()
@@ -109,7 +109,9 @@ def avgSpec_plot(t, ts, lgs, minor, major, \
         root.withdraw()
         messagebox.showerror("Error", "FILE NOT FOUND (or some of the file's .base files are missing)")
         root.destroy()
-    
+
+
+    #save = True
     show = True
     os.chdir(location)
     my_path = os.getcwd()
@@ -134,7 +136,7 @@ def avgSpec_plot(t, ts, lgs, minor, major, \
         if all and not specificFiles:
             foravgshow = True
             for filelist in fileNameList:
-                a,b = norm_line_felix(filelist, mname, temp, bwidth, ie, foravgshow)
+                a,b = norm_line_felix(filelist, mname, temp, bwidth, ie, save, foravgshow)
                 fig.plot(a, b, ls='', marker='o', ms=1, label=filelist)
                 xs = np.append(xs,a)
                 ys = np.append(ys,b)
@@ -144,9 +146,7 @@ def avgSpec_plot(t, ts, lgs, minor, major, \
         binns, inten = felix_binning(xs, ys, delta=DELTA)
         fig.plot(binns, inten, ls='-', marker='', c='k')
 
-        #Exporting the Binned file.
-        F = 'OUT/%s.pdf'%(outFilename)
-        export_file(F, binns, inten)
+        
 
         #Set the Xlim values and fontsizes.
         #fig.set_xlim([xmin,xmax])
@@ -159,15 +159,23 @@ def avgSpec_plot(t, ts, lgs, minor, major, \
         #Set the no. of Minor and Major ticks.
         fig.xaxis.set_minor_locator(MultipleLocator(minor))
         fig.xaxis.set_major_locator(MultipleLocator(major))
-        plt.savefig(F)
+
+        if save:
+            # Saving and exporting the Binned file.
+            F = 'OUT/%s.pdf'%(outFilename)
+            export_file(F, binns, inten)
+            plt.savefig(F)
+
         if show:
             plt.show()
+
+        filesaved()
         plt.close()
         print()
         print("Completed.")
         print()
         
-        filesaved()
+        
 
     except:
         filenotfound()
