@@ -5,31 +5,52 @@ import os
 import shutil
 import time
 
+def on_closing():
+        if messagebox.askokcancel("Quit", "Do you want to quit?"):
+            root.destroy()
+def locationnotfound(location):
+        root = Tk()
+        root.withdraw()
+        messagebox.showerror("Error", "Location NOT FOUND".format(location))
+        root.destroy()
+
 def outFile(fname, location):
 
-    os.chdir(location)
-    my_path = os.getcwd()
 
-    file = T.get("1.0", "end-1c")
-    
-    if not os.path.isdir("Pow"):
-        os.mkdir("Pow")
-
-    f = open(my_path+"/Pow/{}.pow".format(fname), "w")
-    f.write(file)
-    f.close()
-    saveinfo(fname, location, my_path)
-    
-
-def saveinfo(fname, location, my_path):
-    os.chdir(location)
-    if os.path.isfile(my_path+r"\Pow\{}.pow".format(fname)):
-        save = Tk()
-        save.withdraw()
-        messagebox.showinfo("Information", "File {}.pow saved in /POW directory".format(fname))
-        save.destroy()
+        try:
+                os.chdir(location)
+                my_path = os.getcwd()
+                file = T.get("1.0", "end-1c")
 
 
+                def saveinfo():
+                        os.chdir(location)
+                        if os.path.isfile(my_path+r"\Pow\{}.pow".format(fname)):
+                                save = Tk()
+                                save.withdraw()
+                                messagebox.showinfo("Information", "File {}.pow saved in /Pow directory".format(fname))
+                                save.destroy()
+
+                def write():
+                        f = open(my_path+"/Pow/{}.pow".format(fname), "w")
+                        f.write(file)
+                        f.close()
+                        saveinfo()
+
+                
+                if not os.path.isdir("Pow"):
+                        os.mkdir("Pow")
+
+                if os.path.isfile(my_path+"/Pow/{}.pow".format(fname)):
+                        if messagebox.askokcancel("Overwrite", \
+                                "Do yo want to overwrite the existing {}.pow file?".format(fname)):
+                                write()
+                                
+                else:
+                        write()
+
+        except:
+                locationnotfound(location)
 
 root = Tk()
 width_window = 900
@@ -150,4 +171,6 @@ statusBar_right.pack(side = "top", fill = "both", expand = True)
 ###########################################################################################
 ###########################################################################################
 
+
+root.protocol("WM_DELETE_WINDOW", on_closing)
 root.mainloop()
