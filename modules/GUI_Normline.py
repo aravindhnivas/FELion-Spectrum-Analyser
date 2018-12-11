@@ -118,6 +118,7 @@ def gui_normline():
         command = lambda: normline_correction(
                                     fname.get(), location.get(),\
                                     mname.get(), temp.get(), bwidth.get(), ie.get(),\
+                                    normavg_saveCheck_value.get(),\
                                     foravgshow
                                     )
                                     )
@@ -208,11 +209,18 @@ def gui_normline():
                                                     output_filename.get(),\
                                                     location.get(),\
                                                     mname.get(), temp.get(), bwidth.get(), ie.get(),\
-                                                    specificFiles=specificFiles_status,\
-                                                    allFiles=allFiles_status),\
+                                                    normavg_saveCheck_value.get(),\
+                                                    specificFiles_status,\
+                                                    allFiles_status),\
                                                     )
 
     avg_button.place(relx = 0.5,  rely = 0.8, width = 100, height = 40)
+
+    # Save checkbutton for normline and avgspec:
+    normavg_saveCheck_value = BooleanVar()
+    normavg_saveCheck_value.set(True)
+    normavg_saveCheck = ttk.Checkbutton(bottomFrame, text = "Save", variable = normavg_saveCheck_value)
+    normavg_saveCheck.place(relx = 0.1,  rely = 0.8, width = 100, height = 40)
 
     # Spectrum Analyzer and power Analyzer Buttons:
     sa_button = ttk.Button(bottomFrame, text="SA", \
