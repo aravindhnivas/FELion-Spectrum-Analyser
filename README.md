@@ -5,7 +5,7 @@ to plot and analyse the spectra from FELIX
 such as Baseline correction, Power and Spectrum Analyse, 
 and Mass Spectrum Analyser.
 
-Just install using "install.exe" file.
+Just install using "install.bat" file.
 The program will the installed in the folder "C:\FELion-GUI"
 Shortcut of the programs are created in the User's Desktop.
 
