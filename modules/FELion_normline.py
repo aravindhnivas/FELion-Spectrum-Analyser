@@ -30,7 +30,8 @@ def export_file(fname, wn, inten):
     #f.close()
 
 
-def norm_line_felix(fname, mname, temp, bwidth, ie, foravgshow):
+def norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow):
+
     """
     Reads data from felix meassurement file and 
     calculates the calibrated wavenumber and calibrated/normalised
@@ -40,7 +41,7 @@ def norm_line_felix(fname, mname, temp, bwidth, ie, foravgshow):
     Input: filename       save = False by default (produce output pdf file)
     Output: data[0,1]     0 - wavenumber, 1 - intensity
     """
-    save=True
+
     show=True
     PD=True
 
@@ -165,12 +166,12 @@ def main(s=True, plotShow=False):
     print(a, b)
     print("\nProcess Completed.\n")
 
-def normline_correction(fname, location, mname, temp, bwidth, ie, foravgshow):
+def normline_correction(fname, location, mname, temp, bwidth, ie, save, foravgshow):
 
 
     # Custom definitions:
     def filesaved():
-        if os.path.isfile(my_path+r"\OUT\{}.pdf".format(fname)):
+        if os.path.isfile(my_path+r"\OUT\{}.pdf".format(fname)) and save:
             root = Tk()
             root.withdraw()
             messagebox.showinfo("Information", "File '{}.felix' Saved in OUT Directory".format(fname))
@@ -196,7 +197,7 @@ def normline_correction(fname, location, mname, temp, bwidth, ie, foravgshow):
         else:
             print("\nCAUTION:You don't have the {} powerfile(.pow)\n".format(powerfile))
     
-        a,b = norm_line_felix(fname, mname, temp, bwidth, ie, foravgshow)
+        a,b = norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow)
         
         print("\nProcess Completed.\n")
         
