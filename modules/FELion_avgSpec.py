@@ -43,7 +43,7 @@ def main(**kwargs):
     plt.rcParams['legend.fontsize'] = lgs # Legend Size
 
     my_path = os.getcwd() # getting current directory
-    pwd = os.listdir(my_path + r"\DATA") # going into the data folder to fetch all the available data filename.
+    pwd = os.listdir(my_path + "/DATA") # going into the data folder to fetch all the available data filename.
     fileNameList = [] # creating a varaiable list : Don't add any data here. You can use the script as it is since it automatically takes the data in the DATA folder
     for p in pwd:
         if p.endswith(".felix"): # finding the files only with .felix extension
@@ -96,9 +96,9 @@ def avgSpec_plot(t, ts, lgs, minor, major, \
     # Custom definitions:
 
     def filesaved():
-        if os.path.isfile(my_path+r"\OUT\{}.pdf".format(outFilename)) and save:
-            #os.chdir(my_path+r"\OUT")
-            if r"\OUT\{}.pdf".format(outFilename).endswith(".pdf"):
+        if os.path.isfile(my_path+"/OUT/{}.pdf".format(outFilename)) and save:
+            #os.chdir(my_path+"/OUT")
+            if "/OUT/{}.pdf".format(outFilename).endswith(".pdf"):
                 root = Tk()
                 root.withdraw()
                 messagebox.showinfo("Information", "File '{}.pdf' Saved".format(outFilename))
@@ -124,7 +124,7 @@ def avgSpec_plot(t, ts, lgs, minor, major, \
         plt.rcParams['font.size'] = ts # Title Size
         plt.rcParams['legend.fontsize'] = lgs # Legend Size
 
-        pwd = os.listdir(my_path + r"\DATA") # going into the data folder to fetch all the available data filename.
+        pwd = os.listdir(my_path + "/DATA") # going into the data folder to fetch all the available data filename.
         fileNameList = [] # creating a varaiable list : Don't add any data here. You can use the script as it is since it automatically takes the data in the DATA folder
         for f in pwd:
             if f.find(".felix")>=0:

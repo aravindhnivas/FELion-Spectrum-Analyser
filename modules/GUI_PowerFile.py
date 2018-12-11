@@ -25,7 +25,7 @@ def outFile(fname, location):
 
                 def saveinfo():
                         os.chdir(location)
-                        if os.path.isfile(my_path+r"\Pow\{}.pow".format(fname)):
+                        if os.path.isfile(my_path+"/Pow/{}.pow".format(fname)):
                                 save = Tk()
                                 save.withdraw()
                                 messagebox.showinfo("Information", \

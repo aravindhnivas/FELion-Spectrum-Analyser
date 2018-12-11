@@ -280,7 +280,7 @@ def main(fname=""):
 
     if os.path.isfile(filename):
         print("File exist, Copying to the DATA folder to process.")
-        shutil.copyfile(my_path + r"\{}".format(filename), my_path + r"\DATA\{}".format(filename))
+        shutil.copyfile(my_path + "/{}".format(filename), my_path + "/DATA/{}".format(filename))
 
     data = felix_read_file(fname)
 
@@ -315,7 +315,7 @@ def main(fname=""):
     if not os.path.isfile(powerfile):
         print("NOTE: You don't have .pow file so you can't plot the data yet but you can make the baseline.")
     elif os.path.isfile(powerfile):
-        shutil.copyfile(my_path + r"\{}".format(powerfile), my_path + r"\DATA\{}".format(powerfile))
+        shutil.copyfile(my_path + "/{}".format(powerfile), my_path + "/DATA/{}".format(powerfile))
         print("Powerfile is copied to the DATA folder")
 
     if baseline != None:
@@ -363,7 +363,7 @@ def baseline_correction(fname, location):
 
         if os.path.isfile(filename):
             print("File exist, Copying to the DATA folder to process.")
-            shutil.copyfile(my_path + r"\{}".format(filename), my_path + r"\DATA\{}".format(filename))
+            shutil.copyfile(my_path + "/{}".format(filename), my_path + "/DATA/{}".format(filename))
         
         data = felix_read_file(fname)
 
@@ -398,7 +398,7 @@ def baseline_correction(fname, location):
         if not os.path.isfile(powerfile):
             print("NOTE: You don't have .pow file so you can't plot the data yet but you can make the baseline.")
         elif os.path.isfile(powerfile):
-            shutil.copyfile(my_path + r"\{}".format(powerfile), my_path + r"\DATA\{}".format(powerfile))
+            shutil.copyfile(my_path + "/{}".format(powerfile), my_path + "/DATA/{}".format(powerfile))
             print("{} Powerfile copied to the DATA folder.".format(powerfile))
         
         print("\n{}.base Baseline Saved.".format(fname))

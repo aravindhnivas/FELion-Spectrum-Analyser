@@ -157,7 +157,7 @@ def main(s=True, plotShow=False):
     fname = filename
 
     if os.path.isfile(powerfile):
-        shutil.copyfile(my_path + r"\{}".format(powerfile), my_path + r"\DATA\{}".format(powerfile))
+        shutil.copyfile(my_path + "/{}".format(powerfile), my_path + "/DATA/{}".format(powerfile))
         print("Powerfile copied to the DATA folder.")
     else:
         print("\nCAUTION:You don't have the powerfile(.pow)\n")
@@ -168,10 +168,12 @@ def main(s=True, plotShow=False):
 
 def normline_correction(fname, location, mname, temp, bwidth, ie, save, foravgshow):
 
+    os.chdir(location)
+    my_path = os.getcwd()
 
     # Custom definitions:
     def filesaved():
-        if os.path.isfile(my_path+r"\OUT\{}.pdf".format(fname)) and save:
+        if os.path.isfile(my_path+"/OUT/{}.pdf".format(fname)) and save:
             root = Tk()
             root.withdraw()
             messagebox.showinfo("Information", "File '{}.felix' Saved in OUT Directory".format(fname))
@@ -182,9 +184,6 @@ def normline_correction(fname, location, mname, temp, bwidth, ie, save, foravgsh
         root.withdraw()
         messagebox.showerror("Error", "FILE '{}.felix' NOT FOUND (or make sure .base file is present)".format(fname))
         root.destroy()
-    
-    os.chdir(location)
-    my_path = os.getcwd()
 
     try:
         if(fname.find('felix')>=0):
@@ -192,7 +191,7 @@ def normline_correction(fname, location, mname, temp, bwidth, ie, save, foravgsh
 
         powerfile = fname + ".pow"
         if os.path.isfile(powerfile):
-            shutil.copyfile(my_path + r"\{}".format(powerfile), my_path + r"\DATA\{}".format(powerfile))
+            shutil.copyfile(my_path + "/{}".format(powerfile), my_path + "/DATA/{}".format(powerfile))
             print("{} Powerfile copied to the DATA folder.".format(powerfile))
         else:
             print("\nCAUTION:You don't have the {} powerfile(.pow)\n".format(powerfile))

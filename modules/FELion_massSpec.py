@@ -91,7 +91,7 @@ def massSpec(fname, mname, temp, bwidth, ie, xmin, xmax, location,\
     my_path = os.getcwd()
 
     def saveinfo(name):
-        if os.path.isfile(my_path+r"\MassSpec_DATA\{}.png".format(name)):
+        if os.path.isfile(my_path+"/MassSpec_DATA/{}.png".format(name)):
             root = Tk()
             root.withdraw()
             messagebox.showinfo("Information", "File '{}.png' SAVED \nin MassSpec_DATA directory"\
@@ -119,9 +119,9 @@ def massSpec(fname, mname, temp, bwidth, ie, xmin, xmax, location,\
 
             if not os.path.isdir("MassSpec_DATA"):
                 os.mkdir("MassSpec_DATA")
-                shutil.copyfile(my_path + r"\{}".format(filename), my_path + r"\MassSpec_DATA\{}".format(filename))
+                shutil.copyfile(my_path + "/{}".format(filename), my_path + "/MassSpec_DATA/{}".format(filename))
             else:
-                shutil.copyfile(my_path + r"\{}".format(filename), my_path + r"\MassSpec_DATA\{}".format(filename))
+                shutil.copyfile(my_path + "/{}".format(filename), my_path + "/MassSpec_DATA/{}".format(filename))
 
             with open(filename) as f:
                 data = f.read()
@@ -149,7 +149,7 @@ def massSpec(fname, mname, temp, bwidth, ie, xmin, xmax, location,\
             plt.title("Filename: {}, for {}, at temp: {}K, B0: {}ms and IE(eV): {}"\
                         .format(fname, mname, temp, bwidth, ie))
             if save_fig:
-                plt.savefig(my_path + r"\MassSpec_DATA\{}.png".format(fname))
+                plt.savefig(my_path + "/MassSpec_DATA/{}.png".format(fname))
                 plt.show()
                 saveinfo(fname)
             else:
@@ -197,7 +197,7 @@ def massSpec(fname, mname, temp, bwidth, ie, xmin, xmax, location,\
             plt.title("Filename: {}, for {}, at temp: {}K, B0: {}ms and IE(eV): {}".format(fname, mname, temp, bwidth, ie))
             
             if save_fig:
-                plt.savefig(my_path + r"\MassSpec_DATA\{}.png".format(avgname))
+                plt.savefig(my_path + "/MassSpec_DATA/{}.png".format(avgname))
                 plt.show()
                 saveinfo(avgname)
             else:
