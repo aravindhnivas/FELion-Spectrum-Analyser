@@ -119,10 +119,22 @@ def gui_normline():
                                     fname.get(), location.get(),\
                                     mname.get(), temp.get(), bwidth.get(), ie.get(),\
                                     normavg_saveCheck_value.get(),\
-                                    foravgshow
+                                    foravgshow, normallCheck_value.get(), norm_show_value.get()
                                     )
                                     )
     normline_button.place(relx = 0.4,  rely = 0.8, width = 100, height = 40)
+
+    # Save checkbutton for normall:
+    normallCheck_value = BooleanVar()
+    normallCheck_value.set(False)
+    normallCheck = ttk.Checkbutton(bottomFrame, text = "Plot all files", variable = normallCheck_value)
+    normallCheck.place(relx = 0.4,  rely = 0.9, width = 100, height = 40)
+
+    # Show checkbutton for Normline:
+    norm_show_value = BooleanVar()
+    norm_show_value.set(True)
+    norm_show = ttk.Checkbutton(bottomFrame, text = "Show", variable = norm_show_value)
+    norm_show.place(relx = 0.3,  rely = 0.9, width = 100, height = 40)
 
     # avg_labels's label:
     avg_label = Label(bottomFrame, text = "For Average Spectrum", font=("Times", 12, "italic"))
