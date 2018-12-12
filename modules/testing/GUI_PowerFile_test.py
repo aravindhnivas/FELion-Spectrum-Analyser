@@ -2,7 +2,7 @@
 
 from tkinter import *
 from tkinter import ttk, messagebox
-from GUI_settings import framesandlabels, centerIt, locationframe
+from GUI_settings import *
 import os
 import shutil
 import time
@@ -65,29 +65,18 @@ centerIt(root, width_window, height_window)
 root.title("FELion Spectrum Analyser - Pow file generator:")
 bottomFrame = framesandlabels(root, "sea green", "Title", "Sub-titile", "Status_left", "status_right")
 
-locationframe(bottomFrame, 0.1)
-
-#Label for Entry Box;
-user_input_label = Label(bottomFrame, text = " Filename:", font=("Times", 10, "bold"))
-
-#Entry Box;
-init_msg = "Enter here" #initialising message
-content = StringVar()   #defining Stringvar()
-user_input = Entry(bottomFrame, bg = "white", bd = 5, textvariable=content, justify = LEFT)
-user_input.config(font=("Times", 12, "italic"))
-user_input.focus_set()
-content.set(init_msg)
-###########################################################################################
-###########################################################################################
+location = lambda: locationframe(bottomFrame, 0.1)
+location()
+filename = lambda: filenameframe(bottomFrame, "Testing")
+filename()
 
 
 #Baseline
 save_button = ttk.Button(bottomFrame, text="Save")
-save_button.config(command = lambda: outFile(content.get(), location.get()))
+save_button.config(command = lambda: outFile(filename, location))
 
 #Placing the labels and buttons in bottom frame using place(), relx/y is relative to parent frame pixels
-user_input_label.place(relx = 0.1,  rely = 0.3, width = 100, height = 40)
-user_input.place(relx = 0.3,  rely = 0.3, width = 100, height = 40)
+
 save_button.place(relx = 0.5,  rely = 0.3, width = 100, height = 40)
 
 T = Text(bottomFrame)

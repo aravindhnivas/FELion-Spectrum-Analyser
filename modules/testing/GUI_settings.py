@@ -67,8 +67,8 @@ def framesandlabels(root,\
     return bottomFrame
 
 
-def locationframe(bottomFrame, xl = 0.1, yl = 0.1, lw = 100, lh = 50,\
-                    xe = 0.3, ye = 0.1, erw = 0.5, eh =  50):
+def locationframe(bottomFrame, xl = 0.1, yl = 0.1, lw = 100, lh = 40,\
+                    xe = 0.3, ye = 0.1, erw = 0.5, eh =  40):
 
     location_label = Label(bottomFrame, text = "Location:", font=("Times", 10, "bold"))
 
@@ -81,3 +81,22 @@ def locationframe(bottomFrame, xl = 0.1, yl = 0.1, lw = 100, lh = 50,\
 
     location_label.place(relx = xl,  rely = yl, width = lw, height = lh)
     location_entry.place(relx = xe,  rely = ye, relwidth = erw, height = eh)
+    return location.get()
+
+def filenameframe(bottomFrame, \
+        labeltext = "Filename: ",\
+        xl = 0.1, yl = 0.3, lw = 100, lh = 40,\
+        xe = 0.3, ye = 0.3, ew = 100, eh =  40):
+
+    user_input_label = Label(bottomFrame, text =labeltext, font=("Times", 10, "bold"))
+    init_msg = "Enter here"
+    content = StringVar()
+    user_input = Entry(bottomFrame, bg = "white", bd = 5, textvariable=content, justify = LEFT)
+    user_input.config(font=("Times", 12, "italic"))
+    user_input.focus_set()
+    content.set(init_msg)
+
+    user_input_label.place(relx = xl,  rely = yl, width = lw, height = lh)
+    user_input.place(relx = xe,  rely = ye, width = ew, height = eh)
+
+    return content.get()
