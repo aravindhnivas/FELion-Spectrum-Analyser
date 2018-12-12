@@ -127,8 +127,8 @@ def gui_normline():
     # Save checkbutton for normall:
     normallCheck_value = BooleanVar()
     normallCheck_value.set(False)
-    normallCheck = ttk.Checkbutton(bottomFrame, text = "Plot all files", variable = normallCheck_value)
-    normallCheck.place(relx = 0.4,  rely = 0.9, width = 100, height = 40)
+    normallCheck = ttk.Checkbutton(bottomFrame, text = "Plot all files at once", variable = normallCheck_value)
+    normallCheck.place(relx = 0.4,  rely = 0.9, width = 150, height = 40)
 
     # Show checkbutton for Normline:
     norm_show_value = BooleanVar()

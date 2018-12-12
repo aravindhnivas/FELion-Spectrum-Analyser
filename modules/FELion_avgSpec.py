@@ -135,8 +135,9 @@ def avgSpec_plot(t, ts, lgs, minor, major, \
 
         if all and not specificFiles:
             foravgshow = True
+            normshow = False
             for filelist in fileNameList:
-                a,b = norm_line_felix(filelist, mname, temp, bwidth, ie, save, foravgshow)
+                a,b = norm_line_felix(filelist, mname, temp, bwidth, ie, save, foravgshow, normshow)
                 fig.plot(a, b, ls='', marker='o', ms=1, label=filelist)
                 xs = np.append(xs,a)
                 ys = np.append(ys,b)
@@ -174,9 +175,6 @@ def avgSpec_plot(t, ts, lgs, minor, major, \
         print()
         print("Completed.")
         print()
-        
-        
-
     except:
         filenotfound()
     return

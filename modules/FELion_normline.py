@@ -100,13 +100,10 @@ def norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show):
 
     if show and not foravgshow:
         plt.show()
-        plt.close()
 
     if foravgshow:
         plt.close()
 
-    plt.close()
-    
     return wavelength, intensity
 
     
@@ -214,6 +211,7 @@ def normline_correction(fname, location, mname, temp, bwidth, ie, save, foravgsh
                 shutil.copyfile(my_path + "/{}".format(powerfile), my_path + "/DATA/{}".format(powerfile))
                 print("{} Powerfile copied to the DATA folder.".format(powerfile))
                 a,b = norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show)
+                plt.close()
                 filesaved()
             else:
                 pownotfound(fname)
@@ -232,15 +230,11 @@ def normline_correction(fname, location, mname, temp, bwidth, ie, save, foravgsh
                     shutil.copyfile(my_path + "/{}".format(powerfile), my_path + "/DATA/{}".format(powerfile))
                     print("{} Powerfile copied to the DATA folder.".format(powerfile))
                     a,b = norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show)
+                    plt.close()
                 else:
                     pownotfound(fname)
             completed(fileNameList)
     except:
         filenotfound()
-    plt.close()
+
     print("DONE")
-
-    
-
-if __name__ == "__main__":
-    main()
