@@ -30,7 +30,7 @@ def export_file(fname, wn, inten):
     #f.close()
 
 
-def norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow):
+def norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show):
 
     """
     Reads data from felix meassurement file and 
@@ -42,7 +42,7 @@ def norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow):
     Output: data[0,1]     0 - wavenumber, 1 - intensity
     """
 
-    show=True
+    #show=True
     PD=True
 
     fig = plt.figure(figsize=(8,10))
@@ -100,10 +100,13 @@ def norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow):
 
     if show and not foravgshow:
         plt.show()
+        plt.close()
+
     if foravgshow:
         plt.close()
-    #plt.close()
 
+    plt.close()
+    
     return wavelength, intensity
 
     
@@ -166,7 +169,7 @@ def main(s=True, plotShow=False):
     print(a, b)
     print("\nProcess Completed.\n")
 
-def normline_correction(fname, location, mname, temp, bwidth, ie, save, foravgshow):
+def normline_correction(fname, location, mname, temp, bwidth, ie, save, foravgshow, normall, show):
 
     os.chdir(location)
     my_path = os.getcwd()
@@ -176,7 +179,7 @@ def normline_correction(fname, location, mname, temp, bwidth, ie, save, foravgsh
         if os.path.isfile(my_path+"/OUT/{}.pdf".format(fname)) and save:
             root = Tk()
             root.withdraw()
-            messagebox.showinfo("Information", "File '{}.felix' Saved in OUT Directory".format(fname))
+            messagebox.showinfo("Information", "File '{}.pdf' Saved in OUT Directory".format(fname))
             root.destroy()
 
     def filenotfound():
@@ -184,28 +187,60 @@ def normline_correction(fname, location, mname, temp, bwidth, ie, save, foravgsh
         root.withdraw()
         messagebox.showerror("Error", "FILE '{}.felix' NOT FOUND (or make sure .base file is present)".format(fname))
         root.destroy()
+    
+    def pownotfound(fname):
+        root = Tk()
+        root.withdraw()
+        messagebox.showerror("Error", "FILE '{}.pow' NOT FOUND\n"\
+            "(Create the pow file for file: '{}.felix')".format(fname, fname))
+        root.destroy()
+
+    def completed(fileNameList):
+        for fname in fileNameList:
+            if os.path.isfile(my_path+"/OUT/{}.pdf".format(fname)) and save:
+                root = Tk()
+                root.withdraw()
+                messagebox.showinfo("Information", "File '{}.pdf' Saved in OUT Directory".format(fname))
+                root.destroy()
 
     try:
-        if(fname.find('felix')>=0):
-            fname = fname.split('.')[0]
+        if not normall:
 
-        powerfile = fname + ".pow"
-        if os.path.isfile(powerfile):
-            shutil.copyfile(my_path + "/{}".format(powerfile), my_path + "/DATA/{}".format(powerfile))
-            print("{} Powerfile copied to the DATA folder.".format(powerfile))
-        else:
-            print("\nCAUTION:You don't have the {} powerfile(.pow)\n".format(powerfile))
-    
-        a,b = norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow)
-        
-        print("\nProcess Completed.\n")
-        
-        filesaved()
+            if(fname.find('felix')>=0):
+                fname = fname.split('.')[0]
 
+            powerfile = fname + ".pow"
+            if os.path.isfile(powerfile):
+                shutil.copyfile(my_path + "/{}".format(powerfile), my_path + "/DATA/{}".format(powerfile))
+                print("{} Powerfile copied to the DATA folder.".format(powerfile))
+                a,b = norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show)
+                filesaved()
+            else:
+                pownotfound(fname)
+                #print("\nCAUTION:You don't have the {} powerfile(.pow)\n".format(powerfile))
+        
+        if normall:
+
+            pwd = os.listdir(my_path + "/DATA")
+            fileNameList = [] 
+            for f in pwd:
+                if f.find(".base")>=0:
+                    fileNameList.append(f.split(".base")[0])
+            for fname in fileNameList:
+                powerfile = fname + ".pow"
+                if os.path.isfile(powerfile):
+                    shutil.copyfile(my_path + "/{}".format(powerfile), my_path + "/DATA/{}".format(powerfile))
+                    print("{} Powerfile copied to the DATA folder.".format(powerfile))
+                    a,b = norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show)
+                else:
+                    pownotfound(fname)
+            completed(fileNameList)
     except:
         filenotfound()
-
+    plt.close()
     print("DONE")
+
+    
 
 if __name__ == "__main__":
     main()
