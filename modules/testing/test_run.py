@@ -1,17 +1,16 @@
 #!/usr/bin/python3
 
+import numpy as np
+from scipy import sparse
+from scipy.sparse.linalg import spsolve
 
-from tkinter import *
-from tkinter import ttk, messagebox
-from test_codes import centerIt, framesandlabels
-
-root = Tk()
-root.title("FELion Spectrum Analyser")
-width_window = 1000
-height_window = 400
-
-
-centerIt(root, width_window, height_window)
-framesandlabels(root, "chocolate1", "Test1", "testSub", "chekLeft", "CheckRight")
-
-root.mainloop()
+def baseline_als(y, lam, p, niter=10):
+  L = len(y)
+  D = sparse.diags([1,-2,1],[0,-1,-2], shape=(L,L-2))
+  w = np.ones(L)
+  for i in range(niter):
+    W = sparse.spdiags(w, 0, L, L)
+    Z = W + lam * D.dot(D.transpose())
+    z = spsolve(Z, w*y)
+    w = p * (y > z) + (1-p) * (y < z)
+  return z
