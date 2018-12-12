@@ -79,6 +79,13 @@ ROBOCOPY C:\FELion-GUI\ "%userprofile%\Desktop" FELion-Normline.lnk FELion-Basel
 
 ROBOCOPY C:\FELion-GUI "C:\ProgramData\Microsoft\Windows\Start Menu\Programs" FELion-Normline.lnk FELion-Baseline.lnk FELion-Powerfile.lnk
 
+echo "######################################################################################"
 
+echo "Installation Completed: Shorcuts created on Desktop and Start Menu"
+echo "Programs are: FELion-Normline, FELion-Baseline and FELion-Powerfile"
+
+echo "For latest version: https://github.com/aravindhnivas/FELion-Spectrum-Analyser"
+
+echo "######################################################################################"
 
 pause
