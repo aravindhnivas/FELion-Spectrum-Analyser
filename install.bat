@@ -30,9 +30,10 @@ if '%errorlevel%' NEQ '0' (
 :-------------------------------------- 
 
 python compile.py
-
+IF EXIST %cd%\modules\__pycache__ ROBOCOPY %cd%\modules\__pycache__ C:\FELion-GUI\__pycache__
 ROBOCOPY %cd%\modules C:\FELion-GUI
 IF EXIST C:\FELion-GUI set PATH = %PATH%;C:\FELion-GUI
+
 
 :: ####################
 set SCRIPT="%TEMP%\%RANDOM%-%RANDOM%-%RANDOM%-%RANDOM%.vbs"
