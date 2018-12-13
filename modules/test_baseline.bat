@@ -1,12 +1,9 @@
 @echo off
 
-REM set root=C:\ProgramData\Anaconda3
-REM set file=C:\FELion-GUI
-REM call %root%\Scripts\activate.bat %root%
-
-::call activate base
-FOR /F "tokens=*" %%g IN ('where python') do (SET pythonpath=%%g)
-echo %pythonpath%
-%pythonpath% %cd%\GUI_Baseline.py
+IF EXIST C:\ProgramData\Anaconda3 (
+    ECHO Anaconda3 exist: Success.
+    call activate base
+    python %cd%\GUI_Baseline.py
+) ELSE echo Anaconda3 is not installed
 
 pause
