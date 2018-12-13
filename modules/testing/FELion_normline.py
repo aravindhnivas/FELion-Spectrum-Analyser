@@ -182,7 +182,13 @@ def normline_correction(fname, location, mname, temp, bwidth, ie, save, foravgsh
     def filenotfound():
         root = Tk()
         root.withdraw()
-        messagebox.showerror("Error", "FILE '{}.felix' NOT FOUND (or make sure .base file is present)".format(fname))
+        messagebox.showerror("Error", "FILE '{}.felix' NOT FOUND".format(fname))
+        root.destroy()
+
+    def base_filenotfound():
+        root = Tk()
+        root.withdraw()
+        messagebox.showerror("Error", "FILE '{}.base' NOT FOUND".format(fname))
         root.destroy()
     
     def pownotfound(fname):
@@ -210,11 +216,18 @@ def normline_correction(fname, location, mname, temp, bwidth, ie, save, foravgsh
             if os.path.isfile(powerfile):
                 shutil.copyfile(my_path + "/{}".format(powerfile), my_path + "/DATA/{}".format(powerfile))
                 print("{} Powerfile copied to the DATA folder.".format(powerfile))
-                a,b = norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show)
-                plt.close()
-                filesaved()
-            else:
-                pownotfound(fname)
+                try:
+                    shutil.copyfile(my_path + "/{}".format(fname+".felix"), my_path + "/DATA/{}".format(fname+".felix"))
+                    a,b = norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show)
+                    plt.close()
+                    filesaved()
+                except:
+                    #else:
+                    if not os.path.isfile(fname+".felix"):
+                        filenotfound()
+                    elif not os.path.isfile(my_path+"/DATA/{}.base".format(fname)):
+                        base_filenotfound()
+            else: pownotfound(fname)
                 #print("\nCAUTION:You don't have the {} powerfile(.pow)\n".format(powerfile))
         
         if normall:

@@ -7,8 +7,14 @@ import os
 import shutil
 
 #FELion modules
+from FELion_baseline import *
 from FELion_massSpec import massSpec
+from FELion_avgSpec import avgSpec_plot
+from FELion_normline import normline_correction
+from FELion_power import FELion_Power
+from FELion_sa import FELion_Sa
 
+#Powerfile Functions:
 def locationnotfound(location):
         root = Tk()
         root.withdraw()
@@ -55,23 +61,23 @@ def outFile(fname, location, file):
 LARGE_FONT= ("Verdana", 12)
 
 diff = 0.15
-x1 = 0.3
+x1 = 0.25
 x2 = x1 + diff
 x3 = x2 + diff
+x4 = x3 + diff
 
 y = 0.9
 width, height = (100, 40)
 smallwidth = 50
 
+
 class FELion(Tk):
-
-
     def __init__(self, *args, **kwargs):
 
         Tk.__init__(self, *args, **kwargs)
         #Tk.iconbitmap(self,default='FELion_Icon.ico')
         Tk.wm_title(self, "FELion-Spectrum Analyser v.2.0")
-        Tk.wm_geometry(self, "900x500")
+        Tk.wm_geometry(self, "900x600")
 
         container = Frame(self)
         container.config(bg = "sea green")
@@ -96,7 +102,7 @@ class FELion(Tk):
 
         self.frames = {}
 
-        for F in (StartPage, Normline, Mass, Powerfile):
+        for F in (StartPage, Baseline, Normline, Mass, Powerfile):
 
             frame = F(container, self)
             self.frames[F] = frame
@@ -109,7 +115,6 @@ class FELion(Tk):
         frame = self.frames[cont]
         frame.tkraise()
 
-        
 class StartPage(Frame):
 
     def __init__(self, parent, controller):
@@ -130,6 +135,31 @@ class StartPage(Frame):
                             command=lambda: controller.show_frame(Powerfile))
         button3.place(relx = x3, rely = y, width = width, height = height)
 
+        button4 = ttk.Button(self, text="Baseline",
+                            command=lambda: controller.show_frame(Baseline))
+        button4.place(relx = x4, rely = y, width = width, height = height)
+
+class Baseline(Frame):
+        def __init__(self, parent, controller):
+                Frame.__init__(self, parent)
+                label = Label(self, text="Baseline Generator!!!", font=LARGE_FONT)
+                label.pack(pady=10,padx=10)
+
+                button1 = ttk.Button(self, text="Back to Home",
+                                command=lambda: controller.show_frame(StartPage))
+                button1.place(relx = x1, rely = y, width = width, height = height)
+
+                button2 = ttk.Button(self, text="Norm and Avg",
+                                command=lambda: controller.show_frame(Normline))
+                button2.place(relx = x2, rely = y, width = width, height = height)
+
+                button3 = ttk.Button(self, text="Mass Spec",
+                                command=lambda: controller.show_frame(Mass))
+                button3.place(relx = x3, rely = y, width = width, height = height)
+
+                button4 = ttk.Button(self, text="Powerfile",
+                            command=lambda: controller.show_frame(Powerfile))
+                button4.place(relx = x4, rely = y, width = width, height = height)
 
 class Normline(Frame):
 
@@ -150,28 +180,26 @@ class Normline(Frame):
                             command=lambda: controller.show_frame(Powerfile))
         button3.place(relx = x3, rely = y, width = width, height = height)
 
+        button4 = ttk.Button(self, text="Baseline",
+                            command=lambda: controller.show_frame(Baseline))
+        button4.place(relx = x4, rely = y, width = width, height = height)
 
-class Mass(Frame):
+        #Normline
 
-    def __init__(self, parent, controller):
-        Frame.__init__(self, parent)
-        label = Label(self, text="Mass Spec!!!", font=LARGE_FONT)
-        label.pack(pady=10,padx=10)
+        location_label = Label(self, text = "Location:", font=("Times", 10, "bold"))
 
-        button1 = ttk.Button(self, text="Back to Home",
-                            command=lambda: controller.show_frame(StartPage))
-        button1.place(relx = x1, rely = y, width = width, height = height)
+        location = StringVar()
+        location.set("Enter file lcoation here")
+        location_entry = Entry(self, bg = "white", bd = 5,\
+                                textvariable=location, justify = LEFT,\
+                                font=("Times", 12, "italic"))
 
-        button2 = ttk.Button(self, text="Norm and Avg",
-                            command=lambda: controller.show_frame(Normline))
-        button2.place(relx = x2, rely = y, width = width, height = height)
 
-        button3 = ttk.Button(self, text="Powerfile",
-                            command=lambda: controller.show_frame(Powerfile))
-        button3.place(relx = x3, rely = y, width = width, height = height)
-
-        # Mass Spectrum:
-        massSpec_label = Label(self, text = "Mass_file: ", font=("Times", 10, "bold"))
+        fname_label = Label(self, text = "Filename: ", font=("Times", 10, "bold"))
+        fname = StringVar()
+        fname.set("Enter here")
+        fname_input = Entry(self, bg = "white", bd = 5, \
+                textvariable=fname, justify = LEFT, font=("Times", 12, "italic"))
         
 
         # the compund details:
@@ -195,10 +223,239 @@ class Mass(Frame):
         bo_Width = Entry(self, bg = "white", bd = 5, textvariable=bwidth, justify = LEFT, font=("Times", 12, "italic"))
         ion_enrg = Entry(self, bg = "white", bd = 5, textvariable=ie, justify = LEFT, font=("Times", 12, "italic"))
 
+        foravgshow = False
+        normline_button = ttk.Button(self, text="Normline")
+        normline_button.config(
+                command = lambda: normline_correction(
+                                        fname.get(), location.get(),\
+                                        mname.get(), temp.get(), bwidth.get(), ie.get(),\
+                                        normavg_saveCheck_value.get(),\
+                                        foravgshow, normallCheck_value.get(), norm_show_value.get()
+                                        )
+                                        )
+        
+
+        # Save checkbutton for normall:
+        normallCheck_value = BooleanVar()
+        normallCheck_value.set(False)
+        normallCheck = ttk.Checkbutton(self, text = "Plot all files at once", variable = normallCheck_value)
+        
+
+        # Show checkbutton for Normline:
+        norm_show_value = BooleanVar()
+        norm_show_value.set(True)
+        norm_show = ttk.Checkbutton(self, text = "Show", variable = norm_show_value)
+        
+
+        # avg_labels's label:
+        avg_label = Label(self, text = "For Average Spectrum", font=("Times", 12, "italic"))
+        
+
+        # Avg_Spectrum Labels:
+        avg_title = Label(self, text = "Title:", font=("Times", 10, "bold"))
+        avg_ts_ls = Label(self, text = "Size\n(Title,Legend)", font=("Times", 10, "bold"))
+        avg_xaxis_count = Label(self, text = "X-axis\nticks div:", font=("Times", 10, "bold"))
+        avg_majorTick = Label(self, text = "Major\nTickSz:", font=("Times", 10, "bold"))
+
+        
+
+        # avg_label's Entry widget:
+        i_avg_title = StringVar()
+        i_avg_ts = IntVar() 
+        i_avg_lgs = IntVar() 
+        i_avg_minor = IntVar() 
+        i_avg_major = IntVar() 
+        i_avg_majorTick = IntVar() 
+        
+                
+        i_avg_title.set("Title")
+        i_avg_ts.set(10)
+        i_avg_lgs.set(5)
+        i_avg_minor.set(5)
+        i_avg_major.set(50)
+        i_avg_majorTick.set(8)
+
+        avg_title_Entry = Entry(self, bg = "white", bd = 5, textvariable=i_avg_title, justify = LEFT, font=("Times", 12, "italic"))
+        avg_ts_Entry = Entry(self, bg = "white", bd = 5, textvariable=i_avg_ts, justify = LEFT, font=("Times", 10, "bold"))
+        avg_lgs_Entry = Entry(self, bg = "white", bd = 5, textvariable=i_avg_lgs, justify = LEFT, font=("Times", 10, "bold"))
+        avg_minor_Entry = Entry(self, bg = "white", bd = 5, textvariable=i_avg_minor, justify = LEFT, font=("Times", 10, "bold"))
+        avg_major_Entry = Entry(self, bg = "white", bd = 5, textvariable=i_avg_major, justify = LEFT, font=("Times", 10, "bold"))
+        avg_majorTick_Entry = Entry(self, bg = "white", bd = 5, textvariable=i_avg_majorTick, justify = LEFT, font=("Times", 10, "bold"))
+
+        # avg spectrum output filename:
+        avg_outputFilename = Label(self, \
+                text = "Out. filename\n(Average)", font=("Times", 10, "bold"))
+
+        output_filename = StringVar()
+        output_filename.set("Average")
+        avg_outputFilename_entry = Entry(self, bg = "white", bd = 5, \
+                textvariable=output_filename, justify = LEFT, font=("Times", 12, "italic"))
+
+        #Avg_Spectrum Button
+        specificFiles_status = False
+        allFiles_status = True
+        avg_button = ttk.Button(self, text="Avg_spectrum")
+        avg_button.config(command = lambda: avgSpec_plot(
+                                                        i_avg_title.get(), \
+                                                        i_avg_ts.get(), \
+                                                        i_avg_lgs.get(), \
+                                                        i_avg_minor.get(), \
+                                                        i_avg_major.get(), \
+                                                        i_avg_majorTick.get(), \
+                                                        output_filename.get(),\
+                                                        location.get(),\
+                                                        mname.get(), temp.get(), bwidth.get(), ie.get(),\
+                                                        normavg_saveCheck_value.get(),\
+                                                        specificFiles_status,\
+                                                        allFiles_status),\
+                                                        )
+
+        
+
+        # Save checkbutton for normline and avgspec:
+        normavg_saveCheck_value = BooleanVar()
+        normavg_saveCheck_value.set(True)
+        normavg_saveCheck = ttk.Checkbutton(self, text = "Save", variable = normavg_saveCheck_value)
+        
+
+        # Spectrum Analyzer and power Analyzer Buttons:
+        sa_button = ttk.Button(self, text="SA", \
+                command = lambda: FELion_Sa(fname.get(), location.get()))
+        power_button = ttk.Button(self, text = "Power", \
+                command = lambda: FELion_Power(fname.get(), location.get()))
+        # Placing SA and power buttons:
+        
+
+        norm_diff = 0.1
+        norm_smalldiff = 0.06
+
+        n_x1 = 0.1
+        n_x2 = n_x1 + norm_diff
+        n_x3 = n_x2 + norm_diff +0.05
+        n_x4 = n_x3 + norm_diff
+        n_x5 = n_x4 + norm_smalldiff
+        n_x6 = n_x5 + norm_diff
+        n_x7 = n_x6 + norm_diff
+
+        n_y1 = 0.15
+        n_y2 = n_y1 + norm_diff
+        n_y3 = n_y2 + norm_diff +0.05
+        n_y4 = n_y3 + norm_diff
+        n_y5 = n_y4 + norm_diff
+        n_y6 = n_y5 + norm_diff
+
+
+        location_label.place(relx = n_x1,  rely =n_y1, width = width, height = height)
+        fname_label.place(relx = n_x1,  rely =n_y2, width = width, height = height)
+        molecule_name_label.place(relx = n_x1,  rely = n_y3, width = width, height = height)
+        temp_label.place(relx = n_x1,  rely = n_y4, width = width, height = height)
+        bwidth_label.place(relx = n_x1,  rely =n_y5, width = width, height = height)
+        ion_enrg_label.place(relx = n_x1,  rely = n_y6, width = width, height = height)
+
+        location_entry.place(relx = n_x2,  rely = n_y1, relwidth = 0.5, height = height)
+        fname_input.place(relx = n_x2,  rely = n_y2, width = width, height = height)
+        molecule_name.place(relx = n_x2,  rely = n_y3, width = width, height = height)
+        temperature.place(relx = n_x2,  rely =n_y4, width = width, height = height)
+        bo_Width.place(relx = n_x2,  rely = n_y5, width = width, height = height)
+        ion_enrg.place(relx = n_x2,  rely =n_y6, width = width, height = height)
+
+        
+        a_y3 = n_y2 + norm_diff
+        a_y4 = a_y3 + norm_diff
+        a_y5 = a_y4 + norm_diff
+        a_y6 = a_y5 + norm_diff
+        a_y7 = a_y6 + norm_diff
+
+        avg_label.place(relx = n_x3,  rely = n_y2, relwidth = 0.2, height = 40)
+        
+        avg_title.place(relx = n_x3,  rely = a_y3, width = width, height = height)
+        avg_ts_ls.place(relx = n_x3,  rely = a_y4, width = width, height = height)
+        avg_xaxis_count.place(relx = n_x3,  rely = a_y5, width = width, height = height)
+        avg_majorTick.place(relx = n_x3,  rely = a_y6, width = width, height = height)
+
+        avg_title_Entry.place(relx = n_x4,  rely = a_y3, width = width, height = height)
+        avg_ts_Entry.place(relx = n_x4,  rely = a_y4, width = smallwidth, height = height)
+        avg_lgs_Entry.place(relx = n_x5,  rely = a_y4, width = smallwidth, height = height)
+        avg_minor_Entry.place(relx = n_x4,  rely = a_y5, width = smallwidth, height = height)
+        avg_major_Entry.place(relx = n_x5,  rely = a_y5, width = smallwidth, height = height)
+        avg_majorTick_Entry.place(relx = n_x4,  rely = a_y6, width = width, height = height)
+
+        avg_outputFilename.place(relx = n_x3,  rely =a_y7, width = width, height = height)
+        avg_outputFilename_entry.place(relx = n_x4,  rely = a_y7, width = width, height = height)
+
+        normavg_saveCheck.place(relx = n_x6,  rely = a_y3, width = width, height = height)
+        norm_show.place(relx = n_x6+0.15,  rely = a_y3, width = width, height = height)
+        normallCheck.place(relx = n_x6,  rely = a_y4, width = width+50, height = height)
+
+        normline_button.place(relx = n_x6,  rely = a_y5, width = width, height = height)
+        sa_button.place(relx = n_x6,  rely = a_y6, width = width, height = height)
+        power_button.place(relx = n_x6+0.15,  rely = a_y6, width = width, height = height)
+        
+        avg_button.place(relx = n_x6,  rely = a_y7, width = width, height = height)
+
+class Mass(Frame):
+
+    def __init__(self, parent, controller):
+        Frame.__init__(self, parent)
+        label = Label(self, text="Mass Spec!!!", font=LARGE_FONT)
+        label.pack(pady=10,padx=10)
+
+        button1 = ttk.Button(self, text="Back to Home",
+                            command=lambda: controller.show_frame(StartPage))
+        button1.place(relx = x1, rely = y, width = width, height = height)
+
+        button2 = ttk.Button(self, text="Norm and Avg",
+                            command=lambda: controller.show_frame(Normline))
+        button2.place(relx = x2, rely = y, width = width, height = height)
+
+        button3 = ttk.Button(self, text="Powerfile",
+                            command=lambda: controller.show_frame(Powerfile))
+        button3.place(relx = x3, rely = y, width = width, height = height)
+
+        button4 = ttk.Button(self, text="Baseline",
+                            command=lambda: controller.show_frame(Baseline))
+        button4.place(relx = x4, rely = y, width = width, height = height)
+
+        # Mass Spectrum:
+
+        location_label = Label(self, text = "Location:", font=("Times", 10, "bold"))
+
+        location = StringVar()
+        location.set("Enter file lcoation here")
+        location_entry = Entry(self, bg = "white", bd = 5,\
+                                textvariable=location, justify = LEFT,\
+                                font=("Times", 12, "italic"))
+
+
+        massSpec_label = Label(self, text = "Mass_file: ", font=("Times", 10, "bold"))
         mass = StringVar()
         mass.set("Enter here")
         massSpec_input = Entry(self, bg = "white", bd = 5, \
                 textvariable=mass, justify = LEFT, font=("Times", 12, "italic"))
+        
+
+        # the compund details:
+        molecule_name_label = Label(self, text = "Molecule", font=("Times", 10, "bold"))
+        temp_label = Label(self, text = "TEMP(K)", font=("Times", 10, "bold"))
+        bwidth_label = Label(self, text = "B0 Width(ms)", font=("Times", 10, "bold"))
+        ion_enrg_label = Label(self, text = "IE(eV)", font=("Times", 10, "bold"))
+
+        mname = StringVar()
+        temp = StringVar()
+        bwidth = StringVar()
+        ie = StringVar()
+
+        mname.set("Molecule")
+        temp.set("-")
+        bwidth.set("-")
+        ie.set("-")
+
+        molecule_name = Entry(self, bg = "white", bd = 5, textvariable=mname, justify = LEFT, font=("Times", 12, "italic"))
+        temperature = Entry(self, bg = "white", bd = 5, textvariable=temp, justify = LEFT, font=("Times", 12, "italic"))
+        bo_Width = Entry(self, bg = "white", bd = 5, textvariable=bwidth, justify = LEFT, font=("Times", 12, "italic"))
+        ion_enrg = Entry(self, bg = "white", bd = 5, textvariable=ie, justify = LEFT, font=("Times", 12, "italic"))
+
+        
                 
         mass_button = ttk.Button(self, text="MassSpec", \
                                         command = lambda: massSpec(\
@@ -240,23 +497,16 @@ class Mass(Frame):
         mass_figWidth = Entry(self, bg = "white", bd = 5, textvariable=m_figwidth, justify = LEFT, font=("Times", 10, "bold"))
         mass_figHeight = Entry(self, bg = "white", bd = 5, textvariable=m_figheight, justify = LEFT, font=("Times", 10, "bold"))
 
-        
-        
-
         #Combine Mass spec:
         def combine_func(self, combine):
-                display_label = Label(self, font=("Times", 10, "italic"))
-
                 if not combine:
                         display_label.config(text = "Single mode active:")
-                        display_label.place(relx = 0.7,  rely = 0.5, relwidth = 0.2, height = 40)
-
                 if combine:
                         display_label.config(text = "Combine mode active:")
-                        display_label.place(relx = 0.7,  rely = 0.5, relwidth = 0.2, height = 40)
+                        
                 
-
-
+        display_label = Label(self, font=("Times", 10, "italic"))
+        
         mass_method_value = BooleanVar()
         single_mass = ttk.Radiobutton(self, text = "Single: ", \
                 variable = mass_method_value, value = False, \
@@ -265,9 +515,6 @@ class Mass(Frame):
                 variable = mass_method_value, value = True, \
                 command = lambda: combine_func(self, mass_method_value.get()))
 
-        
-                
-
         combine_entry_values = StringVar()
         combine_entry_values.set("Combine: Enter just files nos. (if same data) comma separated")
 
@@ -275,45 +522,70 @@ class Mass(Frame):
                                 textvariable=combine_entry_values, justify = LEFT,\
                                 font=("Times", 12, "italic"))
 
+        # avg spectrum output filename:
+        avg_outputFilename = Label(self, \
+                text = "Output filename\n(Combine mode)", font=("Times", 10, "bold"))
+
+        output_filename = StringVar()
+        output_filename.set("Average")
+        avg_outputFilename_entry = Entry(self, bg = "white", bd = 5, \
+                textvariable=output_filename, justify = LEFT, font=("Times", 12, "italic"))
+
+        
+
         
         mass_diff = 0.1
-        mass_smalldiff = 0.5
+        mass_smalldiff = 0.06
+
         m_x1 = 0.1
         m_x2 = m_x1 + mass_diff
-        m_x3 = m_x2 + mass_diff
+        m_x3 = m_x2 + mass_diff +0.05
         m_x4 = m_x3 + mass_diff
-        m_y1 = 0.3
+        m_x5 = m_x4 + mass_smalldiff
+        m_x6 = m_x5 + mass_diff
+        m_x7 = m_x6 + mass_diff
+
+        m_y1 = 0.2
         m_y2 = m_y1 + mass_diff
-        m_y3 = m_y2 + mass_diff
+        m_y3 = m_y2 + mass_diff +0.05
         m_y4 = m_y3 + mass_diff
-
-        molecule_name_label.place(relx = m_x1,  rely = m_y1, width = width, height = height)
-        temp_label.place(relx = m_x1,  rely = m_y2, width = width, height = height)
-        bwidth_label.place(relx = m_x1,  rely =m_y3, width = width, height = height)
-        ion_enrg_label.place(relx = m_x1,  rely = m_y4, width = width, height = height)
-        molecule_name.place(relx = m_x2,  rely = m_y1, width = width, height = height)
-        temperature.place(relx = m_x2,  rely =m_y2, width = width, height = height)
-        bo_Width.place(relx = m_x2,  rely = m_y3, width = width, height = height)
-        ion_enrg.place(relx = m_x2,  rely =m_y4, width = width, height = height)
-
-        massSpec_label.place(relx = 0.1,  rely = 0.1, width = width, height = height)
-        massSpec_input.place(relx = 0.2,  rely = 0.1, width = width, height = height)
-        mass_range_label.place(relx = 0.7,  rely = 0.2, width = width, height = height)
-        mass_xmin_Entry.place(relx = 0.8,  rely = 0.2, width = smallwidth, height = height)
-        mass_xmax_Entry.place(relx = 0.85,  rely = 0.2, width = smallwidth, height = height)
-        mass_figsize.place(relx = 0.7,  rely = 0.3, width = width, height = height)
-        mass_figWidth.place(relx = 0.8,  rely = 0.3, width = smallwidth, height = height)
-        mass_figHeight.place(relx = 0.85,  rely = 0.3, width = smallwidth, height = height)
-
-        single_mass.place(relx = 0.7,  rely = 0.4, width = width, height = height)
-        combine_mass.place(relx = 0.8,  rely = 0.4, width = width, height = height)
-
-        combine_entry.place(relx = 0.7,  rely = 0.6, relwidth = 0.2, height = 50)
-
-        mass_saveCheck.place(relx = 0.7,  rely = 0.7, width = width, height = height)
-        mass_button.place(relx = 0.8,  rely = 0.7, width = width, height = height)
+        m_y5 = m_y4 + mass_diff
+        m_y6 = m_y5 + mass_diff
 
 
+        location_label.place(relx = m_x1,  rely =m_y1, width = width, height = height)
+        massSpec_label.place(relx = m_x1,  rely =m_y2, width = width, height = height)
+        molecule_name_label.place(relx = m_x1,  rely = m_y3, width = width, height = height)
+        temp_label.place(relx = m_x1,  rely = m_y4, width = width, height = height)
+        bwidth_label.place(relx = m_x1,  rely =m_y5, width = width, height = height)
+        ion_enrg_label.place(relx = m_x1,  rely = m_y6, width = width, height = height)
+
+        location_entry.place(relx = m_x2,  rely = m_y1, relwidth = 0.5, height = height)
+        massSpec_input.place(relx = m_x2,  rely = m_y2, width = width, height = height)
+        molecule_name.place(relx = m_x2,  rely = m_y3, width = width, height = height)
+        temperature.place(relx = m_x2,  rely =m_y4, width = width, height = height)
+        bo_Width.place(relx = m_x2,  rely = m_y5, width = width, height = height)
+        ion_enrg.place(relx = m_x2,  rely =m_y6, width = width, height = height)
+
+        
+        mass_range_label.place(relx = m_x3,  rely = m_y3, width = width, height = height)
+        mass_xmin_Entry.place(relx = m_x4,  rely = m_y3, width = smallwidth, height = height)
+        mass_xmax_Entry.place(relx = m_x5,  rely = m_y3, width = smallwidth, height = height)
+
+        mass_figsize.place(relx = m_x3,  rely = m_y4, width = width, height = height)
+        mass_figWidth.place(relx = m_x4,  rely = m_y4, width = smallwidth, height = height)
+        mass_figHeight.place(relx = m_x5,  rely = m_y4, width = smallwidth, height = height)
+
+        single_mass.place(relx = m_x3+0.04,  rely = m_y5, width = width, height = height)
+        combine_mass.place(relx = m_x4+0.04,  rely = m_y5, width = width, height = height)
+        display_label.place(relx = m_x3+0.04,  rely = m_y6, relwidth = 0.2, height = height)
+
+        combine_entry.place(relx = m_x6,  rely = m_y3, relwidth = 0.3, height = height)
+        mass_saveCheck.place(relx = m_x6+0.03,  rely = m_y4, width = width, height = height)
+        mass_button.place(relx = m_x7+0.05,  rely = m_y4, width = width, height = height)
+
+        avg_outputFilename.place(relx = m_x6,  rely = m_y6, width = width+50, height = height)
+        avg_outputFilename_entry.place(relx = m_x7+0.05,  rely = m_y6, width = width, height = height)
 
 class Powerfile(Frame):
 
@@ -333,6 +605,10 @@ class Powerfile(Frame):
         button3 = ttk.Button(self, text="Mass Spec",
                             command=lambda: controller.show_frame(Mass))
         button3.place(relx = x3, rely = y, width = width, height = height)
+
+        button4 = ttk.Button(self, text="Baseline",
+                            command=lambda: controller.show_frame(Baseline))
+        button4.place(relx = x4, rely = y, width = width, height = height)
 
         # Labels and buttons:
 
@@ -369,12 +645,14 @@ class Powerfile(Frame):
         T.insert(END, quote)
 
         location_label.place(relx = 0.1,  rely = 0.1, width = 100, height = 40)
-        user_input_label.place(relx = 0.1,  rely = 0.3, width = 100, height = 40)
-        T.place(relx = 0.1,  rely = 0.5, relwidth = 0.7, relheight = 0.4)
         location_entry.place(relx = 0.3,  rely = 0.1, relwidth = 0.5, height = 40)
+
+        user_input_label.place(relx = 0.1,  rely = 0.3, width = 100, height = 40)
         user_input.place(relx = 0.3,  rely = 0.3, width = 100, height = 40)
         save_button.place(relx = 0.5,  rely = 0.3, width = 100, height = 40)
-        S.place(relx = 0.8,  rely = 0.5, width = 15, relheight = 0.4)
+
+        T.place(relx = 0.15,  rely = 0.4, relwidth = 0.7, relheight = 0.4)
+        S.place(relx = 0.85,  rely = 0.4, width = 15, relheight = 0.4)
         
 app = FELion()
 app.mainloop()
