@@ -21,7 +21,7 @@ NUM_POINTS = 18
 baseline=None
 
 # Class for Baseline Calibration
-class BaselineCalibrator(object):
+class BaselineCalibrator:
     """
     Defines a baseline and is used to interpolate baseline for 
     any given wavenumber
@@ -40,7 +40,7 @@ class BaselineCalibrator(object):
         ax.plot(self.Bx, self.By, marker='s', ls='', ms=5, c='b', markeredgecolor='b', animated=True)
 ########################################################################################
 # Interactive LINE plotter
-class InteractivePoints(object):
+class InteractivePoints:
     """
     Line editor
     Keys:
@@ -166,6 +166,7 @@ class InteractivePoints(object):
         self.ax.draw_artist(self.line)
         self.ax.draw_artist(self.funcLine)
         self.canvas.blit(self.ax.bbox)
+        
 ########################################################################################
 
 def ReadBase(fname):
@@ -305,7 +306,7 @@ def baseline_correction(fname, location):
 
         fig, ax = plt.subplots()
 
-        p = InteractivePoints(fig, ax, xs, ys)
+        p=InteractivePoints(fig, ax, xs, ys)
         ax.plot(data[0], data[1], ls='', marker='o', ms=5, markeredgecolor='r', c='r')
 
         print("\nUSAGE:\nBlue baseline points are dragable...\

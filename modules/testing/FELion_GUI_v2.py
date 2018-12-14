@@ -4,12 +4,12 @@ import os
 import shutil
 
 #FELion modules
-from FELion_baseline import baseline_correction
 from FELion_massSpec import massSpec
 from FELion_avgSpec import avgSpec_plot
 from FELion_normline import normline_correction
 from FELion_power import FELion_Power
 from FELion_sa import FELion_Sa
+from baseline1 import *
 
 #Powerfile Functions:
 def locationnotfound(location):
@@ -146,7 +146,7 @@ class StartPage(Frame):
         button4.place(relx = x4, rely = y, width = width, height = height)
 
 class Baseline(Frame):
-
+    
     def __init__(self, parent, controller):
         Frame.__init__(self,parent, bg="sea green")
 
@@ -718,6 +718,7 @@ class Powerfile(Frame):
         T.place(relx = 0.15,  rely = 0.4, relwidth = 0.7, relheight = 0.4)
         S.place(relx = 0.85,  rely = 0.4, width = 15, relheight = 0.4)
         
+
 app = FELion()
 app.protocol("WM_DELETE_WINDOW", on_closing)
 app.mainloop()
