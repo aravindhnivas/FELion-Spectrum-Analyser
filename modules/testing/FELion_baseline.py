@@ -410,6 +410,3 @@ def baseline_correction(fname, location):
             filenotfound()
 
     return
-
-if __name__ == "__main__":
-    main()
