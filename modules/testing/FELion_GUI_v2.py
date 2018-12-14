@@ -145,6 +145,19 @@ class StartPage(Frame):
                             command=lambda: controller.show_frame(Baseline))
         button4.place(relx = x4, rely = y, width = width, height = height)
 
+        welcome_msg = """The FELion Spectrum analyser for analysing FELIX data.
+
+        It consists the following functions:
+        1. Normline and Average Spectrum Analyser
+        2. Mass Spectrum Analyser
+        3. Powerfile Generator
+
+        
+        """
+        label = Label(self, text=welcome_msg, justify = "left",\
+                font=("Verdana", 12, "italic"), bg="sea green")
+        label.place(relx = 0.1, rely = 0.1, relwidth = 0.8, relheight = 0.6)
+
 class Baseline(Frame):
     
     def __init__(self, parent, controller):
