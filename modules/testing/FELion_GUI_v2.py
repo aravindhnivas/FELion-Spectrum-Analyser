@@ -1,19 +1,15 @@
-# The code for changing pages was derived from: http://stackoverflow.com/questions/7546050/switch-between-two-frames-in-tkinter
-# License: http://creativecommons.org/licenses/by-sa/3.0/	
-
 from tkinter import *
 from tkinter import ttk, messagebox
 import os
 import shutil
 
 #FELion modules
-
+from FELion_baseline import baseline_correction
 from FELion_massSpec import massSpec
 from FELion_avgSpec import avgSpec_plot
 from FELion_normline import normline_correction
 from FELion_power import FELion_Power
 from FELion_sa import FELion_Sa
-from FELion_baseline import baseline_correction
 
 #Powerfile Functions:
 def locationnotfound(location):
@@ -59,7 +55,17 @@ def outFile(fname, location, file):
         except:
                 locationnotfound(location)
 
-LARGE_FONT= ("Verdana", 12)
+def on_closing():
+    if messagebox.askokcancel("Quit", "Do you want to quit?"):
+      app.destroy()
+
+def save_on():
+    if messagebox.askokcancel("SAVE","Save the file?"):
+        app.quit()
+    return
+
+
+LARGE_FONT= ("Verdana", 15)
 
 diff = 0.15
 x1 = 0.25
@@ -71,17 +77,15 @@ y = 0.9
 width, height = (100, 40)
 smallwidth = 50
 
-
 class FELion(Tk):
     def __init__(self, *args, **kwargs):
 
         Tk.__init__(self, *args, **kwargs)
-        #Tk.iconbitmap(self,default='FELion_Icon.ico')
+        Tk.iconbitmap(self,default=os.getcwd()+'/modules/FELion_Icon.ico')
         Tk.wm_title(self, "FELion-Spectrum Analyser v.2.0")
         Tk.wm_geometry(self, "900x600")
 
         container = Frame(self)
-        container.config(bg = "sea green")
         container.pack(side="top", fill="both", expand = True)
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
@@ -119,10 +123,11 @@ class FELion(Tk):
 class StartPage(Frame):
 
     def __init__(self, parent, controller):
-        Frame.__init__(self,parent)
+        Frame.__init__(self,parent, bg="sea green")
         
-        label = Label(self, text="Welcome", font=LARGE_FONT)
-        label.pack(pady=10,padx=10)
+        label = Label(self, text="Welcome", \
+                font=LARGE_FONT, bg="sea green", bd = 1, relief = SOLID)
+        label.place(relx = 0, rely = 0, relwidth = 1)
 
         button1 = ttk.Button(self, text="Norm and Avg",
                             command=lambda: controller.show_frame(Normline))
@@ -141,33 +146,89 @@ class StartPage(Frame):
         button4.place(relx = x4, rely = y, width = width, height = height)
 
 class Baseline(Frame):
-        def __init__(self, parent, controller):
-                Frame.__init__(self, parent)
-                label = Label(self, text="Baseline Generator!!!", font=LARGE_FONT)
-                label.pack(pady=10,padx=10)
 
-                button1 = ttk.Button(self, text="Back to Home",
-                                command=lambda: controller.show_frame(StartPage))
-                button1.place(relx = x1, rely = y, width = width, height = height)
+    def __init__(self, parent, controller):
+        Frame.__init__(self,parent, bg="sea green")
 
-                button2 = ttk.Button(self, text="Norm and Avg",
-                                command=lambda: controller.show_frame(Normline))
-                button2.place(relx = x2, rely = y, width = width, height = height)
+        label = Label(self, text="Baseline", \
+                font=LARGE_FONT, bg="sea green", bd = 1, relief = SOLID)
+        label.place(relx = 0, rely = 0, relwidth = 1)
 
-                button3 = ttk.Button(self, text="Mass Spec",
-                                command=lambda: controller.show_frame(Mass))
-                button3.place(relx = x3, rely = y, width = width, height = height)
+        button1 = ttk.Button(self, text="Back to Home",
+                        command=lambda: controller.show_frame(StartPage))
+        button1.place(relx = x1, rely = y, width = width, height = height)
 
-                button4 = ttk.Button(self, text="Powerfile",
-                            command=lambda: controller.show_frame(Powerfile))
-                button4.place(relx = x4, rely = y, width = width, height = height)
+        button2 = ttk.Button(self, text="Norm and Avg",
+                        command=lambda: controller.show_frame(Normline))
+        button2.place(relx = x2, rely = y, width = width, height = height)
+
+        button3 = ttk.Button(self, text="Mass Spec",
+                        command=lambda: controller.show_frame(Mass))
+        button3.place(relx = x3, rely = y, width = width, height = height)
+
+        button4 = ttk.Button(self, text="Powerfile",
+                        command=lambda: controller.show_frame(Powerfile))
+        button4.place(relx = x4, rely = y, width = width, height = height)
+
+        # Labels and buttons:
+
+        # Location:
+        location_label = Label(self, text = "Location:", font=("Times", 10, "bold"))
+
+        location = StringVar()
+        location.set("Enter file lcoation here")
+        location_entry = Entry(self, bg = "white", bd = 5,\
+                                textvariable=location, justify = LEFT,\
+                                font=("Times", 12, "italic"))
+
+
+        location_label.place(relx = 0.1,  rely = 0.1, width = 100, height = 40)
+        location_entry.place(relx = 0.3,  rely = 0.1, relwidth = 0.5, height = 40)
+
+        #Label for Entry Box;
+        user_input_label = Label(self, text = " Filename:", font=("Times", 10, "bold"))
+
+        #Entry Box;
+        init_msg = "Enter here" #initialising message
+        content = StringVar()   #defining Stringvar()
+        user_input = Entry(self, bg = "white", bd = 5, textvariable=content, justify = LEFT)
+        user_input.config(font=("Times", 12, "italic"))
+        user_input.focus_set()
+        content.set(init_msg)
+        ###########################################################################################
+        ###########################################################################################
+
+        #Quit Button
+        quitButton = ttk.Button(self, text = "quit")
+        quitButton.config(command = lambda: on_closing())
+        ###########################################################################################
+        ###########################################################################################
+
+        ###########################################################################################
+        ###########################################################################################
+
+        #Baseline
+        baseline_button = ttk.Button(self, text="Baseline")
+        baseline_button.config(command = lambda: baseline_correction(content.get(), location.get()))
+
+        #Save progm button
+        saveButton = ttk.Button(self, text = "Save Baseline")
+        saveButton.config(command = lambda: save_on())
+
+        #Placing the labels and buttons in bottom frame using place(), relx/y is relative to parent frame pixels
+        user_input_label.place(relx = 0.1,  rely = 0.3, width = 100, height = 40)
+        user_input.place(relx = 0.3,  rely = 0.3, width = 100, height = 40)
+        baseline_button.place(relx = 0.1,  rely = 0.5, width = 100, height = 40)
+        saveButton.place(relx = 0.3,  rely = 0.5, width = 100, height = 40)
 
 class Normline(Frame):
 
     def __init__(self, parent, controller):
-        Frame.__init__(self, parent)
-        label = Label(self, text="Norm and Avg!!!", font=LARGE_FONT)
-        label.pack(pady=10,padx=10)
+        Frame.__init__(self,parent, bg="sea green")
+        
+        label = Label(self, text="Normline", \
+                font=LARGE_FONT, bg="sea green", bd = 1, relief = SOLID)
+        label.place(relx = 0, rely = 0, relwidth = 1)
 
         button1 = ttk.Button(self, text="Back to Home",
                             command=lambda: controller.show_frame(StartPage))
@@ -327,7 +388,7 @@ class Normline(Frame):
         # Placing SA and power buttons:
         
 
-        norm_diff = 0.1
+        norm_diff = 0.12
         norm_smalldiff = 0.06
 
         n_x1 = 0.1
@@ -336,14 +397,14 @@ class Normline(Frame):
         n_x4 = n_x3 + norm_diff
         n_x5 = n_x4 + norm_smalldiff
         n_x6 = n_x5 + norm_diff
-        n_x7 = n_x6 + norm_diff
 
-        n_y1 = 0.15
-        n_y2 = n_y1 + norm_diff
-        n_y3 = n_y2 + norm_diff +0.05
-        n_y4 = n_y3 + norm_diff
-        n_y5 = n_y4 + norm_diff
-        n_y6 = n_y5 + norm_diff
+        n_y1 = 0.1
+        ynorm_diff = 0.1
+        n_y2 = n_y1 + ynorm_diff
+        n_y3 = n_y2 + ynorm_diff +0.05
+        n_y4 = n_y3 + ynorm_diff
+        n_y5 = n_y4 + ynorm_diff
+        n_y6 = n_y5 + ynorm_diff
 
 
         location_label.place(relx = n_x1,  rely =n_y1, width = width, height = height)
@@ -361,11 +422,11 @@ class Normline(Frame):
         ion_enrg.place(relx = n_x2,  rely =n_y6, width = width, height = height)
 
         
-        a_y3 = n_y2 + norm_diff
-        a_y4 = a_y3 + norm_diff
-        a_y5 = a_y4 + norm_diff
-        a_y6 = a_y5 + norm_diff
-        a_y7 = a_y6 + norm_diff
+        a_y3 = n_y2 + ynorm_diff
+        a_y4 = a_y3 + ynorm_diff
+        a_y5 = a_y4 + ynorm_diff
+        a_y6 = a_y5 + ynorm_diff
+        a_y7 = a_y6 + ynorm_diff
 
         avg_label.place(relx = n_x3,  rely = n_y2, relwidth = 0.2, height = 40)
         
@@ -397,9 +458,11 @@ class Normline(Frame):
 class Mass(Frame):
 
     def __init__(self, parent, controller):
-        Frame.__init__(self, parent)
-        label = Label(self, text="Mass Spec!!!", font=LARGE_FONT)
-        label.pack(pady=10,padx=10)
+        Frame.__init__(self,parent, bg="sea green")
+        
+        label = Label(self, text="Mass Spectrum", \
+                font=LARGE_FONT, bg="sea green", bd = 1, relief = SOLID)
+        label.place(relx = 0, rely = 0, relwidth = 1)
 
         button1 = ttk.Button(self, text="Back to Home",
                             command=lambda: controller.show_frame(StartPage))
@@ -506,7 +569,7 @@ class Mass(Frame):
                         display_label.config(text = "Combine mode active:")
                         
                 
-        display_label = Label(self, font=("Times", 10, "italic"))
+        display_label = Label(self, font=("Times", 12, "italic"), bg = "sea green")
         
         mass_method_value = BooleanVar()
         single_mass = ttk.Radiobutton(self, text = "Single: ", \
@@ -532,10 +595,8 @@ class Mass(Frame):
         avg_outputFilename_entry = Entry(self, bg = "white", bd = 5, \
                 textvariable=output_filename, justify = LEFT, font=("Times", 12, "italic"))
 
-        
-
-        
-        mass_diff = 0.1
+           
+        mass_diff = 0.12
         mass_smalldiff = 0.06
 
         m_x1 = 0.1
@@ -546,13 +607,13 @@ class Mass(Frame):
         m_x6 = m_x5 + mass_diff
         m_x7 = m_x6 + mass_diff
 
-        m_y1 = 0.2
-        m_y2 = m_y1 + mass_diff
-        m_y3 = m_y2 + mass_diff +0.05
-        m_y4 = m_y3 + mass_diff
-        m_y5 = m_y4 + mass_diff
-        m_y6 = m_y5 + mass_diff
-
+        m_y1 = 0.1
+        ymass_diff = 0.1
+        m_y2 = m_y1 + ymass_diff
+        m_y3 = m_y2 + ymass_diff +0.05
+        m_y4 = m_y3 + ymass_diff
+        m_y5 = m_y4 + ymass_diff
+        m_y6 = m_y5 + ymass_diff
 
         location_label.place(relx = m_x1,  rely =m_y1, width = width, height = height)
         massSpec_label.place(relx = m_x1,  rely =m_y2, width = width, height = height)
@@ -577,23 +638,25 @@ class Mass(Frame):
         mass_figWidth.place(relx = m_x4,  rely = m_y4, width = smallwidth, height = height)
         mass_figHeight.place(relx = m_x5,  rely = m_y4, width = smallwidth, height = height)
 
-        single_mass.place(relx = m_x3+0.04,  rely = m_y5, width = width, height = height)
-        combine_mass.place(relx = m_x4+0.04,  rely = m_y5, width = width, height = height)
-        display_label.place(relx = m_x3+0.04,  rely = m_y6, relwidth = 0.2, height = height)
+        single_mass.place(relx = m_x3,  rely = m_y5, width = width, height = height)
+        combine_mass.place(relx = m_x4,  rely = m_y5, width = width, height = height)
+        display_label.place(relx = m_x3,  rely = m_y6, relwidth = 0.25, height = height)
 
-        combine_entry.place(relx = m_x6,  rely = m_y3, relwidth = 0.3, height = height)
-        mass_saveCheck.place(relx = m_x6+0.03,  rely = m_y4, width = width, height = height)
-        mass_button.place(relx = m_x7+0.05,  rely = m_y4, width = width, height = height)
+        combine_entry.place(relx = m_x6,  rely = m_y3, relwidth = 0.25, height = height)
+        mass_saveCheck.place(relx = m_x6,  rely = m_y4, width = width, height = height)
+        mass_button.place(relx = m_x7,  rely = m_y4, width = width, height = height)
 
-        avg_outputFilename.place(relx = m_x6,  rely = m_y6, width = width+50, height = height)
+        avg_outputFilename.place(relx = m_x6,  rely = m_y6, width = width+30, height = height)
         avg_outputFilename_entry.place(relx = m_x7+0.05,  rely = m_y6, width = width, height = height)
 
 class Powerfile(Frame):
 
     def __init__(self, parent, controller):
-        Frame.__init__(self, parent)
-        label = Label(self, text="Powerfile Generator!!!", font=LARGE_FONT)
-        label.pack(pady=10,padx=10)
+        Frame.__init__(self,parent, bg="sea green")
+        
+        label = Label(self, text="Powerfile Generator", \
+                font=LARGE_FONT, bg="sea green", bd = 1, relief = SOLID)
+        label.place(relx = 0, rely = 0, relwidth = 1)
 
         button1 = ttk.Button(self, text="Back to Home",
                             command=lambda: controller.show_frame(StartPage))
@@ -656,4 +719,5 @@ class Powerfile(Frame):
         S.place(relx = 0.85,  rely = 0.4, width = 15, relheight = 0.4)
         
 app = FELion()
+app.protocol("WM_DELETE_WINDOW", on_closing)
 app.mainloop()
