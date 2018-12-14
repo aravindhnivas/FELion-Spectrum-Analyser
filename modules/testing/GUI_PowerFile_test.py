@@ -7,7 +7,7 @@ import os
 import shutil
 
 #FELion modules
-from FELion_baseline import *
+#from FELion_baseline import *
 from FELion_massSpec import massSpec
 from FELion_avgSpec import avgSpec_plot
 from FELion_normline import normline_correction

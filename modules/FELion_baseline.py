@@ -332,7 +332,7 @@ def baseline_correction(fname, location):
 
         root = Tk()
         root.withdraw()
-        messagebox.showerror("Error", "FILE NOT FOUND")
+        messagebox.showerror("Error", "FILE '{}' NOT FOUND".format(filename))
         root.destroy()
 
         return
@@ -406,7 +406,8 @@ def baseline_correction(fname, location):
             SaveBase(fname, baseline)
         
     except:
-        filenotfound()
+        if not os.path.isfile(filename):
+            filenotfound()
 
     return
 
