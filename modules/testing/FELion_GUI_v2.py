@@ -151,8 +151,6 @@ class StartPage(Frame):
         1. Normline and Average Spectrum Analyser
         2. Mass Spectrum Analyser
         3. Powerfile Generator
-
-        
         """
         label = Label(self, text=welcome_msg, justify = "left",\
                 font=("Verdana", 12, "italic"), bg="sea green")
