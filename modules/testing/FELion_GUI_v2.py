@@ -184,9 +184,6 @@ class Normline(Frame):
                             command=lambda: controller.show_frame(Powerfile))
         button3.place(relx = x3, rely = y, width = width, height = height)
 
-        #button4 = ttk.Button(self, text="Baseline",
-        #                    command=lambda: controller.show_frame(Baseline))
-        #button4.place(relx = x4, rely = y, width = width, height = height)
 
         #Normline
 
