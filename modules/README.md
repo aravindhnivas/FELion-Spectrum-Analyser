@@ -7,7 +7,7 @@ and Mass Spectrum Analyser.
 
 Just install using "install.bat" file.
 The program will the installed in the folder "C:\FELion-GUI"
-Shortcut of the programs are created in the User's Desktop.
+Shortcut of the programs are created in the User's Desktop and in Start Menu as well.
 
 After installing ignore the warning such as "If the program might not be correctly installed"
 
