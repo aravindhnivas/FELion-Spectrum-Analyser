@@ -76,7 +76,7 @@ class FELion(Tk):
     def __init__(self, *args, **kwargs):
 
         Tk.__init__(self, *args, **kwargs)
-        Tk.iconbitmap(self,default=os.getcwd()+'/modules/FELion_Icon.ico')
+        Tk.iconbitmap(self,default='C:/FELion-GUI/FELion_Icon.ico')
         Tk.wm_title(self, "FELion-Spectrum Analyser v.2.0")
         Tk.wm_geometry(self, "900x600")
 
