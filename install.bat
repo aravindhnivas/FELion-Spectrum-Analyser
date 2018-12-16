@@ -30,9 +30,10 @@ if '%errorlevel%' NEQ '0' (
 :-------------------------------------- 
 
 python compile.py
+ROBOCOPY %cd%\modules C:\FELion-GUI
+
 IF EXIST %cd%\modules\__pycache__ ROBOCOPY %cd%\modules\__pycache__ C:\FELion-GUI\__pycache__
 IF EXIST %cd%\modules\_datas ROBOCOPY %cd%\modules\_datas C:\FELion-GUI\_datas
-ROBOCOPY %cd%\modules C:\FELion-GUI
 IF EXIST C:\FELion-GUI set PATH = %PATH%;C:\FELion-GUI
 
 
@@ -60,35 +61,16 @@ echo oLink.Save >> %SCRIPT%
 cscript /nologo %SCRIPT%
 del %SCRIPT%
 
-:: ####################
-
-:: ####################
-set SCRIPT="%TEMP%\%RANDOM%-%RANDOM%-%RANDOM%-%RANDOM%.vbs"
-echo Set oWS = WScript.CreateObject("WScript.Shell") >> %SCRIPT%
-:: echo sLinkFile = "%USERPROFILE%\Desktop\FELion-Powerfile.lnk" >> %SCRIPT%
-echo sLinkFile = "C:\FELion-GUI\FELion-Powerfile.lnk" >> %SCRIPT%
-echo Set oLink = oWS.CreateShortcut(sLinkFile) >> %SCRIPT%
-echo oLink.TargetPath = "C:\FELion-GUI\Powerfile.bat" >> %SCRIPT%
-echo oLink.IconLocation = "C:\FELion-GUI\FELion_Icon.ico" >> %SCRIPT%
-echo oLink.Save >> %SCRIPT%
-cscript /nologo %SCRIPT%
-del %SCRIPT%
-
-:: ####################
-
-
 ROBOCOPY C:\FELion-GUI\ "%userprofile%\Desktop" FELion-Normline.lnk FELion-Baseline.lnk FELion-Powerfile.lnk
 
 
 ROBOCOPY C:\FELion-GUI "C:\ProgramData\Microsoft\Windows\Start Menu\Programs" FELion-Normline.lnk FELion-Baseline.lnk FELion-Powerfile.lnk
 
 echo "######################################################################################"
-
 echo "Installation Completed: Shorcuts created on Desktop and Start Menu"
-echo "Programs are: FELion-Normline, FELion-Baseline and FELion-Powerfile"
+echo "Programs are: FELion-Normline and FELion-Baseline"
 
 echo "For latest version: https://github.com/aravindhnivas/FELion-Spectrum-Analyser"
-
 echo "######################################################################################"
 
 pause
