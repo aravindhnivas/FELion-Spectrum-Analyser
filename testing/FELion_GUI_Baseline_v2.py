@@ -154,12 +154,14 @@ class Baseline(Frame):
         user_input_label = Label(self, text = " Filename:", font=("Times", 10, "bold"))
 
         #Entry Box;
-        init_msg = "Enter here" #initialising message
-        content = StringVar()   #defining Stringvar()
-        user_input = Entry(self, bg = "white", bd = 5, textvariable=content, justify = LEFT)
-        user_input.config(font=("Times", 12, "italic"))
-        user_input.focus_set()
-        content.set(init_msg)
+        #init_msg = "Enter here" #initialising message
+        #content = StringVar()   #defining Stringvar()
+        #user_input = Entry(self, bg = "white", bd = 5, textvariable=content, justify = LEFT)
+        #user_input.config(font=("Times", 12, "italic"))
+        #user_input.focus_set()
+        #content.set(init_msg)
+        #user_input.place(relx = b_x2,  rely = b_y2, width = 100, height = 40)
+
 
         #fname, location = open_dir(self)
         #Baseline
@@ -185,7 +187,6 @@ class Baseline(Frame):
         filename_label.place(relx = b_x2,  rely = b_y2, relwidth = 0.3, height = 40)
 
         user_input_label.place(relx = b_x1,  rely = b_y2, width = 100, height = 40)
-        #user_input.place(relx = b_x2,  rely = b_y2, width = 100, height = 40)
         baseline_button.place(relx = b_x1,  rely = b_y3, width = 100, height = 40)
         saveButton.place(relx = b_x2,  rely = b_y3, width = 100, height = 40)
 
