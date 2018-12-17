@@ -76,7 +76,7 @@ class FELion(Tk):
     def __init__(self, *args, **kwargs):
 
         Tk.__init__(self, *args, **kwargs)
-        Tk.iconbitmap(self,default=os.getcwd()+'/modules/FELion_Icon.ico')
+        Tk.iconbitmap(self,default='C:/FELion-GUI/FELion_Icon.ico')
         Tk.wm_title(self, "FELion-Spectrum Analyser v.2.0")
         Tk.wm_geometry(self, "900x600")
 
@@ -184,6 +184,9 @@ class Normline(Frame):
                             command=lambda: controller.show_frame(Powerfile))
         button3.place(relx = x3, rely = y, width = width, height = height)
 
+        #button4 = ttk.Button(self, text="Baseline",
+        #                    command=lambda: controller.show_frame(Baseline))
+        #button4.place(relx = x4, rely = y, width = width, height = height)
 
         #Normline
 
