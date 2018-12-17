@@ -93,7 +93,7 @@ class StartPage_Base(Frame):
 
         This program can do Baseline Correction.
         
-        Follow the processing with other program "FELion" for further analysis.
+        Follow the processing with other program "FELion_Normline" for further analysis.
 
         Report bug/suggestion: aravindh@science.ru.nl
         """
@@ -134,7 +134,18 @@ class Baseline(Frame):
             root.destroy()
             current_location.config(text = self.location)
             filename_label.config(text = self.fname)
-            
+            return
+        
+        def saveas(self):
+            root = Tk()
+            root.withdraw()
+
+            root.filename =  filedialog.asksaveasfilename(initialdir = "/",title = "Select file",filetypes = (("jpeg files","*.jpg"),("all files","*.*")))
+            #filename = root.filename
+
+            root.destroy()
+            return
+  
         # Labels and buttons:
         browse_loc = ttk.Button(self, text = "Browse File")
         browse_loc.config(command = lambda: open_dir(self))
@@ -155,6 +166,10 @@ class Baseline(Frame):
         saveButton = ttk.Button(self, text = "Save Baseline")
         saveButton.config(command = lambda: save_on())
 
+        #SaveAs progm button
+        saveAsButton = ttk.Button(self, text = "SaveAs")
+        saveAsButton.config(command = lambda: saveas(self))
+
         b_diff = 0.2
         b_x1 = 0.1
         b_x2 = b_x1 + b_diff
@@ -163,7 +178,7 @@ class Baseline(Frame):
         b_y1 = 0.25
         b_y2 = b_y1 + y_diff
         b_y3 = b_y2 + y_diff + 0.05
-
+        b_y4 = b_y3 + y_diff
 
         browse_loc.place(relx = b_x1,  rely = b_y1, width = 100, height = 40)
         current_location.place(relx = b_x2,  rely = b_y1, relwidth = 0.6, height = 40)
@@ -172,6 +187,7 @@ class Baseline(Frame):
         user_input_label.place(relx = b_x1,  rely = b_y2, width = 100, height = 40)
         baseline_button.place(relx = b_x1,  rely = b_y3, width = 100, height = 40)
         saveButton.place(relx = b_x2,  rely = b_y3, width = 100, height = 40)
+        saveAsButton.place(relx = b_x2,  rely = b_y4, width = 100, height = 40)
 
 
 root = FELion_base()
