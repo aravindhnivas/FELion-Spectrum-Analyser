@@ -1,24 +1,23 @@
 #!/usr/bin/python3
+
 from tkinter import *
-from tkinter import ttk, messagebox, filedialog
+from tkinter import ttk, messagebox
 import os
 import shutil
 
+
 #FELion Module
 from FELion_baseline import baseline_correction
-
 
 def on_closing():
     if messagebox.askokcancel("Quit", "Do you want to quit?"):
       root.destroy()
 
 def save_on():
-    #if messagebox.askokcancel("SAVE","Save the file?"):
-    messagebox.showinfo("FILE SAVED", "File SAVED\nDon't press the Save button again unless different file!")
-    root.quit()
+    if messagebox.askokcancel("SAVE","Save the file?"):
+        messagebox.showinfo("FILE SAVED", "File SAVED\nDon't press the Save button again unless different file!")
+        root.quit()
     return
-
-
 
 LARGE_FONT= ("Verdana", 15)
 
@@ -93,7 +92,7 @@ class StartPage_Base(Frame):
 
         This program can do Baseline Correction.
         
-        Follow the processing with other program "FELion_Normline" for further analysis.
+        Follow the processing with other program "FELion" for further analysis.
 
         Report bug/suggestion: aravindh@science.ru.nl
         """
@@ -114,51 +113,38 @@ class Baseline(Frame):
                         command=lambda: controller.show_frame(StartPage_Base))
         button1.place(relx = x1, rely = y, width = width, height = height)
 
-        # Opening a Directory:
-        self.location = "/"
-        self.fname = ""
 
-        def open_dir(self):
-
-            root = Tk()
-            root.withdraw()
-
-            root.filename =  filedialog.askopenfilename(initialdir = self.location, title = "Select file", filetypes = (("Felix files","*.felix"),("all files","*.*")))
-            filename = root.filename
-            filename = filename.split("/")
-
-            self.fname = filename[-1]
-            del filename[-1]
-            self.location = "/".join(filename)
-
-            root.destroy()
-            current_location.config(text = self.location)
-            filename_label.config(text = self.fname)
-            return
-  
         # Labels and buttons:
-        browse_loc = ttk.Button(self, text = "Browse File")
-        browse_loc.config(command = lambda: open_dir(self))
 
-        # Printing current location:
-        current_location = Label(self)
-        filename_label = Label(self)
-        
+        # Location:
+        location_label = Label(self, text = "Location:", font=("Times", 10, "bold"))
+
+        location = StringVar()
+        location.set("Enter file lcoation here")
+        location_entry = Entry(self, bg = "white", bd = 5,\
+                                textvariable=location, justify = LEFT,\
+                                font=("Times", 12, "italic"))
+
+
+
         #Label for Entry Box;
         user_input_label = Label(self, text = " Filename:", font=("Times", 10, "bold"))
 
-        #fname, location = open_dir(self)
+        #Entry Box;
+        init_msg = "Enter here" #initialising message
+        content = StringVar()   #defining Stringvar()
+        user_input = Entry(self, bg = "white", bd = 5, textvariable=content, justify = LEFT)
+        user_input.config(font=("Times", 12, "italic"))
+        user_input.focus_set()
+        content.set(init_msg)
+
         #Baseline
         baseline_button = ttk.Button(self, text="Baseline")
-        baseline_button.config(command = lambda: baseline_correction(self.fname, self.location))
+        baseline_button.config(command = lambda: baseline_correction(content.get(), location.get()))
 
         #Save progm button
         saveButton = ttk.Button(self, text = "Save Baseline")
         saveButton.config(command = lambda: save_on())
-
-        #SaveAs progm button
-        #saveAsButton = ttk.Button(self, text = "SaveAs")
-        #saveAsButton.config(command = lambda: saveas(self))
 
         b_diff = 0.2
         b_x1 = 0.1
@@ -168,16 +154,14 @@ class Baseline(Frame):
         b_y1 = 0.25
         b_y2 = b_y1 + y_diff
         b_y3 = b_y2 + y_diff + 0.05
-        b_y4 = b_y3 + y_diff
 
-        browse_loc.place(relx = b_x1,  rely = b_y1, width = 100, height = 40)
-        current_location.place(relx = b_x2,  rely = b_y1, relwidth = 0.6, height = 40)
-        filename_label.place(relx = b_x2,  rely = b_y2, relwidth = 0.3, height = 40)
 
+        location_label.place(relx = b_x1,  rely = b_y1, width = 100, height = 40)
+        location_entry.place(relx = b_x2,  rely = b_y1, relwidth = 0.5, height = 40)
         user_input_label.place(relx = b_x1,  rely = b_y2, width = 100, height = 40)
+        user_input.place(relx = b_x2,  rely = b_y2, width = 100, height = 40)
         baseline_button.place(relx = b_x1,  rely = b_y3, width = 100, height = 40)
         saveButton.place(relx = b_x2,  rely = b_y3, width = 100, height = 40)
-        #saveAsButton.place(relx = b_x2,  rely = b_y4, width = 100, height = 40)
 
 
 root = FELion_base()
