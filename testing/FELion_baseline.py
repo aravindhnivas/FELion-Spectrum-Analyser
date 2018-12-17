@@ -323,9 +323,15 @@ def main(fname=""):
     return
 
 def baseline_correction(fname, location):
-
-    os.chdir(location)
+    print(fname+"Empy")
+    print(location+"Empty")
+    #os.chdir(location)
     my_path = os.getcwd()
+    print(my_path)
+
+    if(fname.find('felix')>=0):
+            fname = fname.split('.')[0]
+    filename = fname + ".felix"
 
     # Custom definitions:
     def filenotfound():
@@ -338,9 +344,6 @@ def baseline_correction(fname, location):
         return
 
     try:
-        if(fname.find('felix')>=0):
-            fname = fname.split('.')[0]
-
         if os.path.isdir('EXPORT'):
             print("EXPORT folder exist")
         else:
@@ -358,8 +361,6 @@ def baseline_correction(fname, location):
         else:
             os.mkdir('DATA')
             print("DATA folder created.")
-
-        filename = fname + ".felix"
 
         if os.path.isfile(filename):
             print("File exist, Copying to the DATA folder to process.")

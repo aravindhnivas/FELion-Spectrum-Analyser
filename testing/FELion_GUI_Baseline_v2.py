@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 from tkinter import *
-from tkinter import ttk, messagebox
+from tkinter import ttk, messagebox, filedialog
 import os
 import shutil
 
@@ -18,6 +18,8 @@ def save_on():
         messagebox.showinfo("FILE SAVED", "File SAVED\nDon't press the Save button again unless different file!")
         root.quit()
     return
+
+
 
 LARGE_FONT= ("Verdana", 15)
 
@@ -113,19 +115,41 @@ class Baseline(Frame):
                         command=lambda: controller.show_frame(StartPage_Base))
         button1.place(relx = x1, rely = y, width = width, height = height)
 
+        # Opening a Directory:
+        location = ""
+        fname = ""
 
+        def open_dir(self):
+
+            global location
+            global fname
+
+            root = Tk()
+            root.withdraw()
+
+            #root.directory = filedialog.askdirectory()
+            root.filename =  filedialog.askopenfilename(initialdir = "/",title = "Select file",filetypes = (("Felix files","*.felix"),("all files","*.*")))
+            filename = root.filename
+            filename = filename.split("/")
+
+            fname = filename[-1]
+            del filename[-1]
+
+            location = "/".join(filename)
+
+            root.destroy()
+            current_location.config(text = location)
+            filename_label.config(text = fname)
+            
         # Labels and buttons:
+        browse_loc = ttk.Button(self, text = "Browse location")
+        browse_loc.config(command = lambda: open_dir(self))
 
-        # Location:
-        location_label = Label(self, text = "Location:", font=("Times", 10, "bold"))
-
-        location = StringVar()
-        location.set("Enter file lcoation here")
-        location_entry = Entry(self, bg = "white", bd = 5,\
-                                textvariable=location, justify = LEFT,\
-                                font=("Times", 12, "italic"))
-
-
+        
+        # Printing current location:
+        current_location = Label(self)
+        filename_label = Label(self)
+        
 
         #Label for Entry Box;
         user_input_label = Label(self, text = " Filename:", font=("Times", 10, "bold"))
@@ -138,9 +162,10 @@ class Baseline(Frame):
         user_input.focus_set()
         content.set(init_msg)
 
+        #fname, location = open_dir(self)
         #Baseline
         baseline_button = ttk.Button(self, text="Baseline")
-        baseline_button.config(command = lambda: baseline_correction(content.get(), location.get()))
+        baseline_button.config(command = lambda: baseline_correction(fname, location))
 
         #Save progm button
         saveButton = ttk.Button(self, text = "Save Baseline")
@@ -156,10 +181,12 @@ class Baseline(Frame):
         b_y3 = b_y2 + y_diff + 0.05
 
 
-        location_label.place(relx = b_x1,  rely = b_y1, width = 100, height = 40)
-        location_entry.place(relx = b_x2,  rely = b_y1, relwidth = 0.5, height = 40)
+        browse_loc.place(relx = b_x1,  rely = b_y1, width = 100, height = 40)
+        current_location.place(relx = b_x2,  rely = b_y1, relwidth = 0.6, height = 40)
+        filename_label.place(relx = b_x2,  rely = b_y2, relwidth = 0.3, height = 40)
+
         user_input_label.place(relx = b_x1,  rely = b_y2, width = 100, height = 40)
-        user_input.place(relx = b_x2,  rely = b_y2, width = 100, height = 40)
+        #user_input.place(relx = b_x2,  rely = b_y2, width = 100, height = 40)
         baseline_button.place(relx = b_x1,  rely = b_y3, width = 100, height = 40)
         saveButton.place(relx = b_x2,  rely = b_y3, width = 100, height = 40)
 

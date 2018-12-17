@@ -1,16 +1,17 @@
-#!/usr/bin/python3
+from tkinter import *
+from tkinter import filedialog
+import os
 
-import numpy as np
-from scipy import sparse
-from scipy.sparse.linalg import spsolve
+# Opening a Directory:
+root = Tk()
+root.withdraw()
+#root.directory = filedialog.askdirectory()
+#root.filename =  filedialog.asksaveasfilename(initialdir = "/",title = "Select file",filetypes = (("jpeg files","*.jpg"),("all files","*.*")))
+root.filename =  filedialog.askopenfilename(initialdir = "/",title = "Select file",filetypes = (("jpeg files","*.jpg"),("all files","*.*")))
+filename = root.filename
+fname = filename.split("/")[-1]
+location = filename
+root.destroy()
 
-def baseline_als(y, lam, p, niter=10):
-  L = len(y)
-  D = sparse.diags([1,-2,1],[0,-1,-2], shape=(L,L-2))
-  w = np.ones(L)
-  for i in range(niter):
-    W = sparse.spdiags(w, 0, L, L)
-    Z = W + lam * D.dot(D.transpose())
-    z = spsolve(Z, w*y)
-    w = p * (y > z) + (1-p) * (y < z)
-  return z
+print(filename)
+print(fname)
