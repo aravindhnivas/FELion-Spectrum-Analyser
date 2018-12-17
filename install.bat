@@ -1,5 +1,7 @@
 @echo off
 
+:: To get Admin Access.
+
 :: BatchGotAdmin
 :-------------------------------------
 ::  --> Check for permissions
@@ -29,6 +31,8 @@ if '%errorlevel%' NEQ '0' (
     CD /D "%~dp0"
 :-------------------------------------- 
 
+:: Installation Script
+
 python compile.py
 ROBOCOPY %cd%\modules C:\FELion-GUI
 
@@ -40,7 +44,6 @@ IF EXIST C:\FELion-GUI set PATH = %PATH%;C:\FELion-GUI
 :: ####################
 set SCRIPT="%TEMP%\%RANDOM%-%RANDOM%-%RANDOM%-%RANDOM%.vbs"
 echo Set oWS = WScript.CreateObject("WScript.Shell") >> %SCRIPT%
-:: echo sLinkFile = "%USERPROFILE%\Desktop\FELion-Normline.lnk" >> %SCRIPT%
 echo sLinkFile = "C:\FELion-GUI\FELion-Normline.lnk" >> %SCRIPT%
 echo Set oLink = oWS.CreateShortcut(sLinkFile) >> %SCRIPT%
 echo oLink.TargetPath = "C:\FELion-GUI\Normline.bat" >> %SCRIPT%
@@ -48,11 +51,12 @@ echo oLink.IconLocation = "C:\FELion-GUI\FELion_Icon.ico" >> %SCRIPT%
 echo oLink.Save >> %SCRIPT%
 cscript /nologo %SCRIPT%
 del %SCRIPT%
+:: ####################
+
 
 :: ####################
 set SCRIPT="%TEMP%\%RANDOM%-%RANDOM%-%RANDOM%-%RANDOM%.vbs"
 echo Set oWS = WScript.CreateObject("WScript.Shell") >> %SCRIPT%
-:: echo sLinkFile = "%USERPROFILE%\Desktop\FELion-Baseline.lnk" >> %SCRIPT%
 echo sLinkFile = "C:\FELion-GUI\FELion-Baseline.lnk" >> %SCRIPT%
 echo Set oLink = oWS.CreateShortcut(sLinkFile) >> %SCRIPT%
 echo oLink.TargetPath = "C:\FELion-GUI\Baseline.bat" >> %SCRIPT%
@@ -60,16 +64,15 @@ echo oLink.IconLocation = "C:\FELion-GUI\FELion_Icon.ico" >> %SCRIPT%
 echo oLink.Save >> %SCRIPT%
 cscript /nologo %SCRIPT%
 del %SCRIPT%
+:: ####################
+
 
 ROBOCOPY C:\FELion-GUI\ "%userprofile%\Desktop" FELion-Normline.lnk FELion-Baseline.lnk
-
-
 ROBOCOPY C:\FELion-GUI "C:\ProgramData\Microsoft\Windows\Start Menu\Programs" FELion-Normline.lnk FELion-Baseline.lnk
 
 echo "######################################################################################"
 echo "Installation Completed: Shorcuts created on Desktop and Start Menu"
 echo "Programs are: FELion-Normline and FELion-Baseline"
-
 echo "For latest version: https://github.com/aravindhnivas/FELion-Spectrum-Analyser"
 echo "######################################################################################"
 
