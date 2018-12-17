@@ -326,11 +326,12 @@ def baseline_correction(fname, location):
 
     os.chdir(location)
     my_path = os.getcwd()
-    print(my_path)
 
     if(fname.find('felix')>=0):
             fname = fname.split('.')[0]
+            
     filename = fname + ".felix"
+    powerfile = fname + ".pow"
 
     # Custom definitions:
     def filenotfound():
@@ -394,7 +395,7 @@ def baseline_correction(fname, location):
         plt.show()
         
         #Powerfile check
-        powerfile = fname + ".pow"
+        
         if not os.path.isfile(powerfile):
             print("NOTE: You don't have .pow file so you can't plot the data yet but you can make the baseline.")
         elif os.path.isfile(powerfile):
