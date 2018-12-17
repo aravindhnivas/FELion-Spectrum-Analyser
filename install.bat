@@ -66,7 +66,7 @@ cscript /nologo %SCRIPT%
 del %SCRIPT%
 :: ####################
 
-ROBOCOPY C:\FELion-GUI\ "C:\Users\Public\Desktop" FELion-Normline.lnk FELion-Baseline.lnk
+ROBOCOPY C:\FELion-GUI "C:\Users\Public\Desktop" FELion-Normline.lnk FELion-Baseline.lnk
 ROBOCOPY C:\FELion-GUI "C:\ProgramData\Microsoft\Windows\Start Menu\Programs" FELion-Normline.lnk FELion-Baseline.lnk
 
 echo "######################################################################################"
