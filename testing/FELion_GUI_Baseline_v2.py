@@ -115,7 +115,7 @@ class Baseline(Frame):
         button1.place(relx = x1, rely = y, width = width, height = height)
 
         # Opening a Directory:
-        self.location = ""
+        self.location = "/"
         self.fname = ""
 
         def open_dir(self):
@@ -127,7 +127,7 @@ class Baseline(Frame):
             root.withdraw()
 
             #root.directory = filedialog.askdirectory()
-            root.filename =  filedialog.askopenfilename(initialdir = "/",title = "Select file",filetypes = (("Felix files","*.felix"),("all files","*.*")))
+            root.filename =  filedialog.askopenfilename(initialdir = self.location, title = "Select file", filetypes = (("Felix files","*.felix"),("all files","*.*")))
             filename = root.filename
             filename = filename.split("/")
 
