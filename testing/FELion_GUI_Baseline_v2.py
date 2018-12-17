@@ -120,20 +120,15 @@ class Baseline(Frame):
 
         def open_dir(self):
 
-            #global self.location
-            #global self.fname
-
             root = Tk()
             root.withdraw()
 
-            #root.directory = filedialog.askdirectory()
             root.filename =  filedialog.askopenfilename(initialdir = self.location, title = "Select file", filetypes = (("Felix files","*.felix"),("all files","*.*")))
             filename = root.filename
             filename = filename.split("/")
 
             self.fname = filename[-1]
             del filename[-1]
-
             self.location = "/".join(filename)
 
             root.destroy()
@@ -144,24 +139,12 @@ class Baseline(Frame):
         browse_loc = ttk.Button(self, text = "Browse File")
         browse_loc.config(command = lambda: open_dir(self))
 
-        
         # Printing current location:
         current_location = Label(self)
         filename_label = Label(self)
         
-
         #Label for Entry Box;
         user_input_label = Label(self, text = " Filename:", font=("Times", 10, "bold"))
-
-        #Entry Box;
-        #init_msg = "Enter here" #initialising message
-        #content = StringVar()   #defining Stringvar()
-        #user_input = Entry(self, bg = "white", bd = 5, textvariable=content, justify = LEFT)
-        #user_input.config(font=("Times", 12, "italic"))
-        #user_input.focus_set()
-        #content.set(init_msg)
-        #user_input.place(relx = b_x2,  rely = b_y2, width = 100, height = 40)
-
 
         #fname, location = open_dir(self)
         #Baseline
