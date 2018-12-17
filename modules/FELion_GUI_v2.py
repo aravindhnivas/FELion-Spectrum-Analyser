@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 from tkinter import *
-from tkinter import ttk, messagebox
+from tkinter import ttk, messagebox, filedialog
 import os
 import shutil
 
@@ -184,26 +184,53 @@ class Normline(Frame):
                             command=lambda: controller.show_frame(Powerfile))
         button3.place(relx = x3, rely = y, width = width, height = height)
 
-        #button4 = ttk.Button(self, text="Baseline",
-        #                    command=lambda: controller.show_frame(Baseline))
-        #button4.place(relx = x4, rely = y, width = width, height = height)
+        # Opening a Directory:
+        self.location = "/"
+        self.fname = ""
+
+        def open_dir(self):
+
+            root = Tk()
+            root.withdraw()
+
+            root.filename =  filedialog.askopenfilename(initialdir = self.location, title = "Select file", filetypes = (("Felix files","*.felix"),("all files","*.*")))
+            filename = root.filename
+            filename = filename.split("/")
+
+            self.fname = filename[-1]
+            del filename[-1]
+            self.location = "/".join(filename)
+
+            root.destroy()
+            current_location.config(text = self.location)
+            filename_label.config(text = self.fname)
+            return
+  
+        # Labels and buttons:
+        browse_loc = ttk.Button(self, text = "Browse File")
+        browse_loc.config(command = lambda: open_dir(self))
+
+        # Printing current location:
+        current_location = Label(self)
+        filename_label = Label(self)
 
         #Normline
 
-        location_label = Label(self, text = "Location:", font=("Times", 10, "bold"))
+        #location_label = Label(self, text = "Location:", font=("Times", 10, "bold"))
 
-        location = StringVar()
-        location.set("Enter file lcoation here")
-        location_entry = Entry(self, bg = "white", bd = 5,\
-                                textvariable=location, justify = LEFT,\
-                                font=("Times", 12, "italic"))
+        #location = StringVar()
+        #location.set("Enter file lcoation here")
+        #location_entry = Entry(self, bg = "white", bd = 5,\
+        #                        textvariable=location, justify = LEFT,\
+        #                       font=("Times", 12, "italic"))
 
 
         fname_label = Label(self, text = "Filename: ", font=("Times", 10, "bold"))
-        fname = StringVar()
-        fname.set("Enter here")
-        fname_input = Entry(self, bg = "white", bd = 5, \
-                textvariable=fname, justify = LEFT, font=("Times", 12, "italic"))
+        
+        #fname = StringVar()
+        #fname.set("Enter here")
+        #fname_input = Entry(self, bg = "white", bd = 5, \
+        #        textvariable=fname, justify = LEFT, font=("Times", 12, "italic"))
         
 
         # the compund details:
@@ -231,7 +258,7 @@ class Normline(Frame):
         normline_button = ttk.Button(self, text="Normline")
         normline_button.config(
                 command = lambda: normline_correction(
-                                        fname.get(), location.get(),\
+                                        self.fname, self.location,\
                                         mname.get(), temp.get(), bwidth.get(), ie.get(),\
                                         normavg_saveCheck_value.get(),\
                                         foravgshow, normallCheck_value.get(), norm_show_value.get()
@@ -307,7 +334,7 @@ class Normline(Frame):
                                                         i_avg_major.get(), \
                                                         i_avg_majorTick.get(), \
                                                         output_filename.get(),\
-                                                        location.get(),\
+                                                        self.location,\
                                                         mname.get(), temp.get(), bwidth.get(), ie.get(),\
                                                         normavg_saveCheck_value.get(),\
                                                         specificFiles_status,\
@@ -324,9 +351,9 @@ class Normline(Frame):
 
         # Spectrum Analyzer and power Analyzer Buttons:
         sa_button = ttk.Button(self, text="SA", \
-                command = lambda: FELion_Sa(fname.get(), location.get()))
+                command = lambda: FELion_Sa(self.fname, self.location))
         power_button = ttk.Button(self, text = "Power", \
-                command = lambda: FELion_Power(fname.get(), location.get()))
+                command = lambda: FELion_Power(self.fname, self.location))
         # Placing SA and power buttons:
         
 
@@ -349,15 +376,18 @@ class Normline(Frame):
         n_y6 = n_y5 + ynorm_diff
 
 
-        location_label.place(relx = n_x1,  rely =n_y1, width = width, height = height)
+        #location_label.place(relx = n_x1,  rely =n_y1, width = width, height = height)
+        browse_loc.place(relx = n_x1,  rely =n_y1, width = width, height = height)
         fname_label.place(relx = n_x1,  rely =n_y2, width = width, height = height)
         molecule_name_label.place(relx = n_x1,  rely = n_y3, width = width, height = height)
         temp_label.place(relx = n_x1,  rely = n_y4, width = width, height = height)
         bwidth_label.place(relx = n_x1,  rely =n_y5, width = width, height = height)
         ion_enrg_label.place(relx = n_x1,  rely = n_y6, width = width, height = height)
 
-        location_entry.place(relx = n_x2,  rely = n_y1, relwidth = 0.5, height = height)
-        fname_input.place(relx = n_x2,  rely = n_y2, width = width, height = height)
+        #location_entry.place(relx = n_x2,  rely = n_y1, relwidth = 0.5, height = height)
+        current_location.place(relx = n_x2,  rely = n_y1, relwidth = 0.5, height = height)
+        #fname_input.place(relx = n_x2,  rely = n_y2, width = width, height = height)
+        filename_label.place(relx = n_x2,  rely = n_y2, width = width, height = height)
         molecule_name.place(relx = n_x2,  rely = n_y3, width = width, height = height)
         temperature.place(relx = n_x2,  rely =n_y4, width = width, height = height)
         bo_Width.place(relx = n_x2,  rely = n_y5, width = width, height = height)
@@ -418,26 +448,37 @@ class Mass(Frame):
                             command=lambda: controller.show_frame(Powerfile))
         button3.place(relx = x3, rely = y, width = width, height = height)
 
-        #button4 = ttk.Button(self, text="Baseline",
-        #                    command=lambda: controller.show_frame(Baseline))
-        #button4.place(relx = x4, rely = y, width = width, height = height)
+        # Opening a Directory:
+        self.location = "/"
+        self.fname = ""
 
-        # Mass Spectrum:
+        def open_dir(self):
 
-        location_label = Label(self, text = "Location:", font=("Times", 10, "bold"))
+            root = Tk()
+            root.withdraw()
 
-        location = StringVar()
-        location.set("Enter file lcoation here")
-        location_entry = Entry(self, bg = "white", bd = 5,\
-                                textvariable=location, justify = LEFT,\
-                                font=("Times", 12, "italic"))
+            root.filename =  filedialog.askopenfilename(initialdir = self.location, title = "Select file", filetypes = (("Mass files","*.mass"),("all files","*.*")))
+            filename = root.filename
+            filename = filename.split("/")
 
+            self.fname = filename[-1]
+            del filename[-1]
+            self.location = "/".join(filename)
+
+            root.destroy()
+            current_location.config(text = self.location)
+            filename_label.config(text = self.fname)
+            return
+  
+        # Labels and buttons:
+        browse_loc = ttk.Button(self, text = "Browse File")
+        browse_loc.config(command = lambda: open_dir(self))
+
+        # Printing current location:
+        current_location = Label(self)
+        filename_label = Label(self)
 
         massSpec_label = Label(self, text = "Mass_file: ", font=("Times", 10, "bold"))
-        mass = StringVar()
-        mass.set("Enter here")
-        massSpec_input = Entry(self, bg = "white", bd = 5, \
-                textvariable=mass, justify = LEFT, font=("Times", 12, "italic"))
         
 
         # the compund details:
@@ -465,9 +506,9 @@ class Mass(Frame):
                 
         mass_button = ttk.Button(self, text="MassSpec", \
                                         command = lambda: massSpec(\
-                                        mass.get(), mname.get(), temp.get(), bwidth.get(), ie.get(),\
+                                        self.fname, mname.get(), temp.get(), bwidth.get(), ie.get(),\
                                         mass_xmin.get(), mass_xmax.get(),\
-                                        location.get(),\
+                                        self.location,\
                                         m_figwidth.get(), m_figheight.get(),\
                                         combine_entry_values.get(),\
                                         output_filename.get(),\
@@ -557,20 +598,19 @@ class Mass(Frame):
         m_y5 = m_y4 + ymass_diff
         m_y6 = m_y5 + ymass_diff
 
-        location_label.place(relx = m_x1,  rely =m_y1, width = width, height = height)
+        browse_loc.place(relx = m_x1,  rely =m_y1, width = width, height = height)
         massSpec_label.place(relx = m_x1,  rely =m_y2, width = width, height = height)
         molecule_name_label.place(relx = m_x1,  rely = m_y3, width = width, height = height)
         temp_label.place(relx = m_x1,  rely = m_y4, width = width, height = height)
         bwidth_label.place(relx = m_x1,  rely =m_y5, width = width, height = height)
         ion_enrg_label.place(relx = m_x1,  rely = m_y6, width = width, height = height)
 
-        location_entry.place(relx = m_x2,  rely = m_y1, relwidth = 0.5, height = height)
-        massSpec_input.place(relx = m_x2,  rely = m_y2, width = width, height = height)
+        current_location.place(relx = m_x2,  rely = m_y1, relwidth = 0.5, height = height)
+        filename_label.place(relx = m_x2,  rely = m_y2, width = width, height = height)
         molecule_name.place(relx = m_x2,  rely = m_y3, width = width, height = height)
         temperature.place(relx = m_x2,  rely =m_y4, width = width, height = height)
         bo_Width.place(relx = m_x2,  rely = m_y5, width = width, height = height)
         ion_enrg.place(relx = m_x2,  rely =m_y6, width = width, height = height)
-
         
         mass_range_label.place(relx = m_x3,  rely = m_y3, width = width, height = height)
         mass_xmin_Entry.place(relx = m_x4,  rely = m_y3, width = smallwidth, height = height)
@@ -590,6 +630,8 @@ class Mass(Frame):
 
         avg_outputFilename.place(relx = m_x6,  rely = m_y6, width = width+30, height = height)
         avg_outputFilename_entry.place(relx = m_x7+0.05,  rely = m_y6, width = width, height = height)
+
+        
 
 class Powerfile(Frame):
 
@@ -611,10 +653,6 @@ class Powerfile(Frame):
         button3 = ttk.Button(self, text="Mass Spec",
                             command=lambda: controller.show_frame(Mass))
         button3.place(relx = x3, rely = y, width = width, height = height)
-
-        #button4 = ttk.Button(self, text="Baseline",
-        #                    command=lambda: controller.show_frame(Baseline))
-        #button4.place(relx = x4, rely = y, width = width, height = height)
 
         # Labels and buttons:
 
