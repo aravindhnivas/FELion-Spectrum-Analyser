@@ -323,9 +323,8 @@ def main(fname=""):
     return
 
 def baseline_correction(fname, location):
-    print(fname+"Empy")
-    print(location+"Empty")
-    #os.chdir(location)
+
+    os.chdir(location)
     my_path = os.getcwd()
     print(my_path)
 

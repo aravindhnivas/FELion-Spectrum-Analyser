@@ -116,13 +116,13 @@ class Baseline(Frame):
         button1.place(relx = x1, rely = y, width = width, height = height)
 
         # Opening a Directory:
-        location = ""
-        fname = ""
+        self.location = ""
+        self.fname = ""
 
         def open_dir(self):
 
-            global location
-            global fname
+            #global self.location
+            #global self.fname
 
             root = Tk()
             root.withdraw()
@@ -132,17 +132,17 @@ class Baseline(Frame):
             filename = root.filename
             filename = filename.split("/")
 
-            fname = filename[-1]
+            self.fname = filename[-1]
             del filename[-1]
 
-            location = "/".join(filename)
+            self.location = "/".join(filename)
 
             root.destroy()
-            current_location.config(text = location)
-            filename_label.config(text = fname)
+            current_location.config(text = self.location)
+            filename_label.config(text = self.fname)
             
         # Labels and buttons:
-        browse_loc = ttk.Button(self, text = "Browse location")
+        browse_loc = ttk.Button(self, text = "Browse File")
         browse_loc.config(command = lambda: open_dir(self))
 
         
@@ -165,7 +165,7 @@ class Baseline(Frame):
         #fname, location = open_dir(self)
         #Baseline
         baseline_button = ttk.Button(self, text="Baseline")
-        baseline_button.config(command = lambda: baseline_correction(fname, location))
+        baseline_button.config(command = lambda: baseline_correction(self.fname, self.location))
 
         #Save progm button
         saveButton = ttk.Button(self, text = "Save Baseline")
