@@ -135,16 +135,6 @@ class Baseline(Frame):
             current_location.config(text = self.location)
             filename_label.config(text = self.fname)
             return
-        
-        def saveas(self):
-            root = Tk()
-            root.withdraw()
-
-            root.filename =  filedialog.asksaveasfilename(initialdir = "/",title = "Select file",filetypes = (("jpeg files","*.jpg"),("all files","*.*")))
-            #filename = root.filename
-
-            root.destroy()
-            return
   
         # Labels and buttons:
         browse_loc = ttk.Button(self, text = "Browse File")
@@ -167,8 +157,8 @@ class Baseline(Frame):
         saveButton.config(command = lambda: save_on())
 
         #SaveAs progm button
-        saveAsButton = ttk.Button(self, text = "SaveAs")
-        saveAsButton.config(command = lambda: saveas(self))
+        #saveAsButton = ttk.Button(self, text = "SaveAs")
+        #saveAsButton.config(command = lambda: saveas(self))
 
         b_diff = 0.2
         b_x1 = 0.1
@@ -187,7 +177,7 @@ class Baseline(Frame):
         user_input_label.place(relx = b_x1,  rely = b_y2, width = 100, height = 40)
         baseline_button.place(relx = b_x1,  rely = b_y3, width = 100, height = 40)
         saveButton.place(relx = b_x2,  rely = b_y3, width = 100, height = 40)
-        saveAsButton.place(relx = b_x2,  rely = b_y4, width = 100, height = 40)
+        #saveAsButton.place(relx = b_x2,  rely = b_y4, width = 100, height = 40)
 
 
 root = FELion_base()
