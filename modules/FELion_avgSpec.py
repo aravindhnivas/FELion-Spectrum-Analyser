@@ -122,8 +122,8 @@ def avgSpec_plot(t, ts, lgs, minor, major, \
         figure = plt.figure(figsize=(fwidth, fheight), )
         fig = figure.add_subplot(1,1,1)
         #plt.rcParams['figure.figsize'] = [fwidth,fheight]
-        #plt.rcParams['figure.dpi'] = 80
-        #plt.rcParams['savefig.dpi'] = 100
+        plt.rcParams['figure.dpi'] = 80
+        plt.rcParams['savefig.dpi'] = 100
         plt.rcParams['font.size'] = ts
         plt.rcParams['legend.fontsize'] = lgs
 
