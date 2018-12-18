@@ -52,10 +52,10 @@ def norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show):
     PD=True
 
     if not foravgshow:
-        plt.rcParams['figure.figsize'] = [8,10]
-        plt.rcParams['figure.dpi'] = 80
-        plt.rcParams['savefig.dpi'] = 100
-        fig = plt.figure()
+        #plt.rcParams['figure.figsize'] = [8,10]
+        #plt.rcParams['figure.dpi'] = 80
+        #plt.rcParams['savefig.dpi'] = 100
+        fig = plt.figure(figsize=(8,7), )
         ax = fig.add_subplot(3,1,1)
         bx = fig.add_subplot(3,1,2)
         cx = fig.add_subplot(3,1,3)
@@ -328,7 +328,7 @@ def normline_correction(fname, location, mname, temp, bwidth, ie, save, foravgsh
 
         if normall:
             for_normall_saveDialog = True
-            pwd = os.listdir(my_path + "/DATA")
+            #pwd = os.listdir(my_path + "/DATA")
             fileNameList = []
 
             #for f in pwd:
