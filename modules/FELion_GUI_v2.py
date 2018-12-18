@@ -296,10 +296,10 @@ class Normline(Frame):
         i_avg_title.set("Title")
         i_avg_ts.set(15)
         i_avg_lgs.set(10)
-        i_avg_minor.set(5)
+        i_avg_minor.set(20)
         i_avg_major.set(100)
-        i_avg_majorTick.set(8)
-        i_avg_markersz.set(1)
+        i_avg_majorTick.set(15)
+        i_avg_markersz.set(2)
 
         i_avg_xlabelsz.set(15)
         i_avg_ylabelsz.set(15)
