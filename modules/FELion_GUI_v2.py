@@ -216,22 +216,8 @@ class Normline(Frame):
 
         #Normline
 
-        #location_label = Label(self, text = "Location:", font=("Times", 10, "bold"))
-
-        #location = StringVar()
-        #location.set("Enter file lcoation here")
-        #location_entry = Entry(self, bg = "white", bd = 5,\
-        #                        textvariable=location, justify = LEFT,\
-        #                       font=("Times", 12, "italic"))
-
-
         fname_label = Label(self, text = "Filename: ", font=("Times", 10, "bold"))
-        
-        #fname = StringVar()
-        #fname.set("Enter here")
-        #fname_input = Entry(self, bg = "white", bd = 5, \
-        #        textvariable=fname, justify = LEFT, font=("Times", 12, "italic"))
-        
+
 
         # the compund details:
         molecule_name_label = Label(self, text = "Molecule", font=("Times", 10, "bold"))
@@ -288,6 +274,8 @@ class Normline(Frame):
         avg_xaxis_count = Label(self, text = "X-axis\nticks div:", font=("Times", 10, "bold"))
         avg_majorTick = Label(self, text = "Major\nTickSz:", font=("Times", 10, "bold"))
 
+        avg_xywf = Label(self, text = "X,Y,Wid,Ht", font=("Times", 10, "bold"))
+
         
 
         # avg_label's Entry widget:
@@ -296,15 +284,25 @@ class Normline(Frame):
         i_avg_lgs = IntVar() 
         i_avg_minor = IntVar() 
         i_avg_major = IntVar() 
-        i_avg_majorTick = IntVar() 
+        i_avg_majorTick = IntVar()
+
+        i_avg_xlabelsz = IntVar()
+        i_avg_ylabelsz= IntVar()
+        i_avg_fwidth= IntVar()
+        i_avg_fheight= IntVar()
         
                 
         i_avg_title.set("Title")
-        i_avg_ts.set(10)
-        i_avg_lgs.set(5)
+        i_avg_ts.set(15)
+        i_avg_lgs.set(10)
         i_avg_minor.set(5)
-        i_avg_major.set(50)
+        i_avg_major.set(100)
         i_avg_majorTick.set(8)
+
+        i_avg_xlabelsz.set(15)
+        i_avg_ylabelsz.set(15)
+        i_avg_fwidth.set(10)
+        i_avg_fheight.set(10)
 
         avg_title_Entry = Entry(self, bg = "white", bd = 5, textvariable=i_avg_title, justify = LEFT, font=("Times", 12, "italic"))
         avg_ts_Entry = Entry(self, bg = "white", bd = 5, textvariable=i_avg_ts, justify = LEFT, font=("Times", 10, "bold"))
@@ -312,6 +310,11 @@ class Normline(Frame):
         avg_minor_Entry = Entry(self, bg = "white", bd = 5, textvariable=i_avg_minor, justify = LEFT, font=("Times", 10, "bold"))
         avg_major_Entry = Entry(self, bg = "white", bd = 5, textvariable=i_avg_major, justify = LEFT, font=("Times", 10, "bold"))
         avg_majorTick_Entry = Entry(self, bg = "white", bd = 5, textvariable=i_avg_majorTick, justify = LEFT, font=("Times", 10, "bold"))
+
+        avg_xlabelsz = Entry(self, bg = "white", bd = 5, textvariable=i_avg_xlabelsz, justify = LEFT, font=("Times", 12, "italic"))
+        avg_ylabelsz = Entry(self, bg = "white", bd = 5, textvariable=i_avg_ylabelsz, justify = LEFT, font=("Times", 12, "italic"))
+        avg_fwidth = Entry(self, bg = "white", bd = 5, textvariable=i_avg_fwidth, justify = LEFT, font=("Times", 12, "italic"))
+        avg_fheight = Entry(self, bg = "white", bd = 5, textvariable=i_avg_fheight, justify = LEFT, font=("Times", 12, "italic"))
 
         # avg spectrum output filename:
         avg_outputFilename = Label(self, \
@@ -338,7 +341,10 @@ class Normline(Frame):
                                                         mname.get(), temp.get(), bwidth.get(), ie.get(),\
                                                         normavg_saveCheck_value.get(),\
                                                         specificFiles_status,\
-                                                        allFiles_status),\
+                                                        allFiles_status,\
+                                                        i_avg_xlabelsz.get(), i_avg_ylabelsz.get(),\
+                                                        i_avg_fwidth.get(), i_avg_fheight.get()\
+                                                        )
                                                         )
 
         
@@ -354,7 +360,6 @@ class Normline(Frame):
                 command = lambda: FELion_Sa(self.fname, self.location))
         power_button = ttk.Button(self, text = "Power", \
                 command = lambda: FELion_Power(self.fname, self.location))
-        # Placing SA and power buttons:
         
 
         norm_diff = 0.12
@@ -366,6 +371,8 @@ class Normline(Frame):
         n_x4 = n_x3 + norm_diff
         n_x5 = n_x4 + norm_smalldiff
         n_x6 = n_x5 + norm_diff
+        n_x7 = n_x6 + norm_smalldiff
+
 
         n_y1 = 0.1
         ynorm_diff = 0.1
@@ -376,7 +383,6 @@ class Normline(Frame):
         n_y6 = n_y5 + ynorm_diff
 
 
-        #location_label.place(relx = n_x1,  rely =n_y1, width = width, height = height)
         browse_loc.place(relx = n_x1,  rely =n_y1, width = width, height = height)
         fname_label.place(relx = n_x1,  rely =n_y2, width = width, height = height)
         molecule_name_label.place(relx = n_x1,  rely = n_y3, width = width, height = height)
@@ -384,9 +390,7 @@ class Normline(Frame):
         bwidth_label.place(relx = n_x1,  rely =n_y5, width = width, height = height)
         ion_enrg_label.place(relx = n_x1,  rely = n_y6, width = width, height = height)
 
-        #location_entry.place(relx = n_x2,  rely = n_y1, relwidth = 0.5, height = height)
         current_location.place(relx = n_x2,  rely = n_y1, relwidth = 0.5, height = height)
-        #fname_input.place(relx = n_x2,  rely = n_y2, width = width, height = height)
         filename_label.place(relx = n_x2,  rely = n_y2, width = width, height = height)
         molecule_name.place(relx = n_x2,  rely = n_y3, width = width, height = height)
         temperature.place(relx = n_x2,  rely =n_y4, width = width, height = height)
@@ -399,6 +403,8 @@ class Normline(Frame):
         a_y5 = a_y4 + ynorm_diff
         a_y6 = a_y5 + ynorm_diff
         a_y7 = a_y6 + ynorm_diff
+        a_y8 = a_y7 + ynorm_diff
+
 
         avg_label.place(relx = n_x3,  rely = n_y2, relwidth = 0.2, height = 40)
         
@@ -416,6 +422,12 @@ class Normline(Frame):
 
         avg_outputFilename.place(relx = n_x3,  rely =a_y7, width = width, height = height)
         avg_outputFilename_entry.place(relx = n_x4,  rely = a_y7, width = width, height = height)
+
+        avg_xywf.place(relx = n_x3,  rely =a_y8, width = width, height = height)
+        avg_xlabelsz.place(relx = n_x4,  rely =a_y8, width = smallwidth, height = height)
+        avg_ylabelsz.place(relx = n_x5,  rely =a_y8, width = smallwidth, height = height)
+        avg_fwidth.place(relx = n_x6-0.05,  rely =a_y8, width = smallwidth, height = height)
+        avg_fheight.place(relx = n_x7-0.05,  rely =a_y8, width = smallwidth, height = height)
 
         normavg_saveCheck.place(relx = n_x6,  rely = a_y3, width = width, height = height)
         norm_show.place(relx = n_x6+0.15,  rely = a_y3, width = width, height = height)

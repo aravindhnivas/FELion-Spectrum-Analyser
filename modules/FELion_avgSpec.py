@@ -90,9 +90,15 @@ def main(**kwargs):
 def avgSpec_plot(t, ts, lgs, minor, major, \
                 majorTickSize, outFilename,\
                 location, mname, temp, bwidth, ie, save,\
-                specificFiles, allFiles
+                specificFiles, allFiles, xlabelsz, ylabelsz, fwidth, fheight
                 ):
 
+    fig = plt.subplot(1,1,1)
+    plt.rcParams['figure.figsize'] = [fwidth,fheight]
+    plt.rcParams['figure.dpi'] = 80
+    plt.rcParams['savefig.dpi'] = 100
+    plt.rcParams['font.size'] = ts
+    plt.rcParams['legend.fontsize'] = lgs
     # Custom definitions:
 
     def filesaved():
@@ -117,13 +123,6 @@ def avgSpec_plot(t, ts, lgs, minor, major, \
     my_path = os.getcwd()
 
     try:
-        fig = plt.subplot(1,1,1)
-        plt.rcParams['figure.figsize'] = [6,4]
-        plt.rcParams['figure.dpi'] = 80
-        plt.rcParams['savefig.dpi'] = 100
-        plt.rcParams['font.size'] = ts # Title Size
-        plt.rcParams['legend.fontsize'] = lgs # Legend Size
-
         pwd = os.listdir(my_path + "/DATA") # going into the data folder to fetch all the available data filename.
         fileNameList = [] # creating a varaiable list : Don't add any data here. You can use the script as it is since it automatically takes the data in the DATA folder
         for f in pwd:
@@ -151,8 +150,8 @@ def avgSpec_plot(t, ts, lgs, minor, major, \
 
         #Set the Xlim values and fontsizes.
         #fig.set_xlim([xmin,xmax])
-        fig.set_xlabel(r"Calibrated lambda (cm-1)", fontsize=10)
-        fig.set_ylabel(r"Normalized Intensity", fontsize=10)
+        fig.set_xlabel(r"Calibrated lambda (cm-1)", fontsize=xlabelsz)
+        fig.set_ylabel(r"Normalized Intensity", fontsize=ylabelsz)
         fig.tick_params(axis='both', which='major', labelsize=majorTickSize)
 
         #Set the Grid value False if you don't need it.

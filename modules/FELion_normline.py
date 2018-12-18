@@ -41,16 +41,12 @@ def norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show):
     Input: filename       save = False by default (produce output pdf file)
     Output: data[0,1]     0 - wavenumber, 1 - intensity
     """
-
-    #show=True
     PD=True
 
-    #fig = plt.figure(figsize=(8,10))
-    plt.rcParams['figure.figsize'] = [8,10]
-    plt.rcParams['figure.dpi'] = 80
-    plt.rcParams['savefig.dpi'] = 100
-    #plt.rcParams['font.size'] = ts # Title Size
-    #plt.rcParams['legend.fontsize'] = lgs # Legend Size
+    if not foravgshow:
+        plt.rcParams['figure.figsize'] = [8,10]
+        plt.rcParams['figure.dpi'] = 80
+        plt.rcParams['savefig.dpi'] = 100
 
     fig = plt.figure()
     ax = fig.add_subplot(3,1,1)
