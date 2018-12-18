@@ -41,73 +41,81 @@ def norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show):
     Input: filename       save = False by default (produce output pdf file)
     Output: data[0,1]     0 - wavenumber, 1 - intensity
     """
-    PD=True
-
-    if not foravgshow:
-        plt.rcParams['figure.figsize'] = [8,10]
-        plt.rcParams['figure.dpi'] = 80
-        plt.rcParams['savefig.dpi'] = 100
-
-    fig = plt.figure()
-    ax = fig.add_subplot(3,1,1)
-    bx = fig.add_subplot(3,1,2)
-    cx = fig.add_subplot(3,1,3)
-    ax2 = ax.twinx()
-    bx2 = bx.twinx()
 
     if(fname.find('DATA')):
         fname = fname.split('/')[-1]
 
     if(fname.find('felix')):
         fname = fname.split('.')[0]
-
+    
     data = felix_read_file(fname)
+    PD=True
 
-    #Get the baseline
-    baseCal = BaselineCalibrator(fname)
-    baseCal.plot(ax)
-    ax.plot(data[0], data[1], ls='', marker='o', ms=3, markeredgecolor='r', c='r')
-    ax.set_ylabel("cnts")
-    ax.set_xlim([data[0].min()*0.95, data[0].max()*1.05])
+    if not foravgshow:
+        plt.rcParams['figure.figsize'] = [8,10]
+        plt.rcParams['figure.dpi'] = 80
+        plt.rcParams['savefig.dpi'] = 100
+        fig = plt.figure()
+        ax = fig.add_subplot(3,1,1)
+        bx = fig.add_subplot(3,1,2)
+        cx = fig.add_subplot(3,1,3)
+        ax2 = ax.twinx()
+        bx2 = bx.twinx()
 
-    #Get the power and number of shots
-    powCal = PowerCalibrator(fname)
-    powCal.plot(bx2, ax2)
+        #Get the baseline
+        baseCal = BaselineCalibrator(fname)
+        baseCal.plot(ax)
+        ax.plot(data[0], data[1], ls='', marker='o', ms=3, markeredgecolor='r', c='r')
+        ax.set_ylabel("cnts")
+        ax.set_xlim([data[0].min()*0.95, data[0].max()*1.05])
+
+        #Get the power and number of shots
+        powCal = PowerCalibrator(fname)
+        powCal.plot(bx2, ax2)
 
 
-    #Get the spectrum analyser
-    saCal = SpectrumAnalyserCalibrator(fname)
-    saCal.plot(bx)
-    bx.set_ylabel("SA")
-    
+        #Get the spectrum analyser
+        saCal = SpectrumAnalyserCalibrator(fname)
+        saCal.plot(bx)
+        bx.set_ylabel("SA")
+        
 
-    #Calibrate X for all the data points
-    wavelength = saCal.sa_cm(data[0])
+        #Calibrate X for all the data points
+        wavelength = saCal.sa_cm(data[0])
 
-    #Normalise the intensity
-    #multiply by 1000 because of mJ but ONLY FOR PD!!!
-    if(PD):
-        intensity = -np.log(data[1]/baseCal.val(data[0])) / powCal.power(data[0]) / powCal.shots(data[0]) *1000 
-    else:
-        intensity = (data[1]-baseCal.val(data[0])) / powCal.power(data[0]) / powCal.shots(data[0])
+        #Normalise the intensity
+        #multiply by 1000 because of mJ but ONLY FOR PD!!!
+        if(PD):
+            intensity = -np.log(data[1]/baseCal.val(data[0])) / powCal.power(data[0]) / powCal.shots(data[0]) *1000 
+        else:
+            intensity = (data[1]-baseCal.val(data[0])) / powCal.power(data[0]) / powCal.shots(data[0])
 
-    cx.plot(wavelength, intensity, ls='-', marker='o', ms=2, c='r', markeredgecolor='k', markerfacecolor='k')
-    cx.set_xlabel("wn (cm-1)")
-    
-    ax.set_title("Filename: {}, for {}, at temp: {}K, B0: {}ms and IE(eV): {}".format(fname, mname, temp, bwidth, ie))
+        cx.plot(wavelength, intensity, ls='-', marker='o', ms=2, c='r', markeredgecolor='k', markerfacecolor='k')
+        cx.set_xlabel("wn (cm-1)")
+        
+        ax.set_title("Filename: {}, for {}, at temp: {}K,\nB0: {}ms and IE(eV): {}".format(fname, mname, temp, bwidth, ie))
 
-    if save and not foravgshow:
-        fname = fname.replace('.','_')
-        plt.savefig('OUT/'+fname+'.pdf')
-        export_file(fname, wavelength, intensity)
+        if save:
+            fname = fname.replace('.','_')
+            plt.savefig('OUT/'+fname+'.pdf')
+            export_file(fname, wavelength, intensity)
 
-    if show and not foravgshow:
-        plt.show()
-
-    if foravgshow:
+        if show:
+            plt.show()
+        
         plt.close()
 
-    return wavelength, intensity
+    if foravgshow:
+        saCal = SpectrumAnalyserCalibrator(fname)
+        wavelength = saCal.sa_cm(data[0])
+        baseCal = BaselineCalibrator(fname)
+        powCal = PowerCalibrator(fname)
+
+        if(PD):
+            intensity = -np.log(data[1]/baseCal.val(data[0])) / powCal.power(data[0]) / powCal.shots(data[0]) *1000 
+        else:
+            intensity = (data[1]-baseCal.val(data[0])) / powCal.power(data[0]) / powCal.shots(data[0])
+        return wavelength, intensity
 
     
 def felix_binning(xs, ys, delta=1):
@@ -221,8 +229,8 @@ def normline_correction(fname, location, mname, temp, bwidth, ie, save, foravgsh
                 root.destroy()
 
     def run(for_normall_saveDialog):
-        a,b = norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show)
-        plt.close()
+        norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show)
+        #plt.close()
         if not for_normall_saveDialog:
             filesaved()
 

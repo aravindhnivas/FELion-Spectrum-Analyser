@@ -90,19 +90,15 @@ def main(**kwargs):
 def avgSpec_plot(t, ts, lgs, minor, major, \
                 majorTickSize, outFilename,\
                 location, mname, temp, bwidth, ie, save,\
-                specificFiles, allFiles, xlabelsz, ylabelsz, fwidth, fheight
+                specificFiles, allFiles, \
+                xlabelsz, ylabelsz, fwidth, fheight, markersz, show
                 ):
 
-    fig = plt.subplot(1,1,1)
-    plt.rcParams['figure.figsize'] = [fwidth,fheight]
-    plt.rcParams['figure.dpi'] = 80
-    plt.rcParams['savefig.dpi'] = 100
-    plt.rcParams['font.size'] = ts
-    plt.rcParams['legend.fontsize'] = lgs
+    
     # Custom definitions:
 
     def filesaved():
-        if os.path.isfile(my_path+"/OUT/{}.pdf".format(outFilename)) and save:
+        if os.path.isfile(my_path+"/OUT/{}.pdf".format(outFilename)):
             #os.chdir(my_path+"/OUT")
             if "/OUT/{}.pdf".format(outFilename).endswith(".pdf"):
                 root = Tk()
@@ -118,11 +114,18 @@ def avgSpec_plot(t, ts, lgs, minor, major, \
 
 
     #save = True
-    show = True
+    #show = True
     os.chdir(location)
     my_path = os.getcwd()
 
     try:
+        fig = plt.subplot(1,1,1)
+        plt.rcParams['figure.figsize'] = [fwidth,fheight]
+        plt.rcParams['figure.dpi'] = 80
+        plt.rcParams['savefig.dpi'] = 100
+        plt.rcParams['font.size'] = ts
+        plt.rcParams['legend.fontsize'] = lgs
+
         pwd = os.listdir(my_path + "/DATA") # going into the data folder to fetch all the available data filename.
         fileNameList = [] # creating a varaiable list : Don't add any data here. You can use the script as it is since it automatically takes the data in the DATA folder
         for f in pwd:
@@ -137,16 +140,15 @@ def avgSpec_plot(t, ts, lgs, minor, major, \
             normshow = False
             for filelist in fileNameList:
                 a,b = norm_line_felix(filelist, mname, temp, bwidth, ie, save, foravgshow, normshow)
-                fig.plot(a, b, ls='', marker='o', ms=1, label=filelist)
+                fig.plot(a, b, ls='', marker='o', ms=markersz, label=filelist)
                 xs = np.append(xs,a)
                 ys = np.append(ys,b)
 
         fig.legend(title=t) #Set the fontsize for each label
+
         #Binning
         binns, inten = felix_binning(xs, ys, delta=DELTA)
         fig.plot(binns, inten, ls='-', marker='', c='k')
-
-        
 
         #Set the Xlim values and fontsizes.
         #fig.set_xlim([xmin,xmax])
@@ -160,17 +162,19 @@ def avgSpec_plot(t, ts, lgs, minor, major, \
         fig.xaxis.set_minor_locator(MultipleLocator(minor))
         fig.xaxis.set_major_locator(MultipleLocator(major))
 
+        if show:
+            plt.show()
+
         if save:
             # Saving and exporting the Binned file.
             F = 'OUT/%s.pdf'%(outFilename)
             export_file(F, binns, inten)
             plt.savefig(F)
+            filesaved()
 
-        if show:
-            plt.show()
-
-        filesaved()
         plt.close()
+        #filesaved()
+        #plt.close()
         print()
         print("Completed.")
         print()

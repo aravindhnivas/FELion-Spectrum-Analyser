@@ -272,7 +272,7 @@ class Normline(Frame):
         avg_title = Label(self, text = "Title:", font=("Times", 10, "bold"))
         avg_ts_ls = Label(self, text = "Size\n(Title,Legend)", font=("Times", 10, "bold"))
         avg_xaxis_count = Label(self, text = "X-axis\nticks div:", font=("Times", 10, "bold"))
-        avg_majorTick = Label(self, text = "Major\nTickSz:", font=("Times", 10, "bold"))
+        avg_majorTick = Label(self, text = "Major TickSz,\nMarkerSz:", font=("Times", 10, "bold"))
 
         avg_xywf = Label(self, text = "X,Y,Wid,Ht", font=("Times", 10, "bold"))
 
@@ -290,6 +290,7 @@ class Normline(Frame):
         i_avg_ylabelsz= IntVar()
         i_avg_fwidth= IntVar()
         i_avg_fheight= IntVar()
+        i_avg_markersz = IntVar()
         
                 
         i_avg_title.set("Title")
@@ -298,6 +299,7 @@ class Normline(Frame):
         i_avg_minor.set(5)
         i_avg_major.set(100)
         i_avg_majorTick.set(8)
+        i_avg_markersz.set(1)
 
         i_avg_xlabelsz.set(15)
         i_avg_ylabelsz.set(15)
@@ -310,6 +312,8 @@ class Normline(Frame):
         avg_minor_Entry = Entry(self, bg = "white", bd = 5, textvariable=i_avg_minor, justify = LEFT, font=("Times", 10, "bold"))
         avg_major_Entry = Entry(self, bg = "white", bd = 5, textvariable=i_avg_major, justify = LEFT, font=("Times", 10, "bold"))
         avg_majorTick_Entry = Entry(self, bg = "white", bd = 5, textvariable=i_avg_majorTick, justify = LEFT, font=("Times", 10, "bold"))
+        avg_markersize_Entry = Entry(self, bg = "white", bd = 5, textvariable=i_avg_markersz, justify = LEFT, font=("Times", 10, "bold"))
+
 
         avg_xlabelsz = Entry(self, bg = "white", bd = 5, textvariable=i_avg_xlabelsz, justify = LEFT, font=("Times", 12, "italic"))
         avg_ylabelsz = Entry(self, bg = "white", bd = 5, textvariable=i_avg_ylabelsz, justify = LEFT, font=("Times", 12, "italic"))
@@ -343,7 +347,8 @@ class Normline(Frame):
                                                         specificFiles_status,\
                                                         allFiles_status,\
                                                         i_avg_xlabelsz.get(), i_avg_ylabelsz.get(),\
-                                                        i_avg_fwidth.get(), i_avg_fheight.get()\
+                                                        i_avg_fwidth.get(), i_avg_fheight.get(),\
+                                                        i_avg_markersz.get(), norm_show_value.get()
                                                         )
                                                         )
 
@@ -418,7 +423,8 @@ class Normline(Frame):
         avg_lgs_Entry.place(relx = n_x5,  rely = a_y4, width = smallwidth, height = height)
         avg_minor_Entry.place(relx = n_x4,  rely = a_y5, width = smallwidth, height = height)
         avg_major_Entry.place(relx = n_x5,  rely = a_y5, width = smallwidth, height = height)
-        avg_majorTick_Entry.place(relx = n_x4,  rely = a_y6, width = width, height = height)
+        avg_majorTick_Entry.place(relx = n_x4,  rely = a_y6, width = smallwidth, height = height)
+        avg_markersize_Entry.place(relx = n_x5,  rely = a_y6, width = smallwidth, height = height)
 
         avg_outputFilename.place(relx = n_x3,  rely =a_y7, width = width, height = height)
         avg_outputFilename_entry.place(relx = n_x4,  rely = a_y7, width = width, height = height)
