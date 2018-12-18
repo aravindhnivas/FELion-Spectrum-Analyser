@@ -331,15 +331,15 @@ def normline_correction(fname, location, mname, temp, bwidth, ie, save, foravgsh
             pwd = os.listdir(my_path + "/DATA")
             fileNameList = []
 
-            for f in pwd:
-                if f.find(".base")>=0:
-                    fileNameList.append(f.split(".base")[0])
+            #for f in pwd:
+            #    if f.find(".base")>=0:
+            #       fileNameList.append(f.split(".base")[0])
 
             cwd = os.listdir(my_path)
-            if len(fileNameList)<1:
-                for f in cwd:
-                    if f.find(".base")>=0:
-                        fileNameList.append(f.split(".base")[0])
+            #if len(fileNameList)<1:
+            for f in cwd:
+                if f.find(".base")>=0:
+                    fileNameList.append(f.split(".base")[0])
 
             for fname in fileNameList:
                 fullname = fname + ".felix"

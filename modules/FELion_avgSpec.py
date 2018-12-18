@@ -98,7 +98,7 @@ def avgSpec_plot(t, ts, lgs, minor, major, \
     # Custom definitions:
 
     def filesaved():
-        if os.path.isfile(my_path+"/OUT/{}.pdf".format(outFilename)):
+        if os.path.isfile(my_path+"/OUT/{}.pdf".format(outFilename)) and save:
             #os.chdir(my_path+"/OUT")
             if "/OUT/{}.pdf".format(outFilename).endswith(".pdf"):
                 root = Tk()
@@ -162,15 +162,16 @@ def avgSpec_plot(t, ts, lgs, minor, major, \
         fig.xaxis.set_minor_locator(MultipleLocator(minor))
         fig.xaxis.set_major_locator(MultipleLocator(major))
 
-        if show:
-            plt.show()
 
         if save:
             # Saving and exporting the Binned file.
             F = 'OUT/%s.pdf'%(outFilename)
             export_file(F, binns, inten)
             plt.savefig(F)
-            filesaved()
+            
+        if show:
+            plt.show()
+        filesaved()
 
         plt.close()
         #filesaved()
