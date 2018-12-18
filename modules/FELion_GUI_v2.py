@@ -304,7 +304,7 @@ class Normline(Frame):
         i_avg_xlabelsz.set(15)
         i_avg_ylabelsz.set(15)
         i_avg_fwidth.set(10)
-        i_avg_fheight.set(10)
+        i_avg_fheight.set(5)
 
         avg_title_Entry = Entry(self, bg = "white", bd = 5, textvariable=i_avg_title, justify = LEFT, font=("Times", 12, "italic"))
         avg_ts_Entry = Entry(self, bg = "white", bd = 5, textvariable=i_avg_ts, justify = LEFT, font=("Times", 10, "bold"))
