@@ -53,9 +53,9 @@ def norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show):
 
     if not foravgshow:
         #plt.rcParams['figure.figsize'] = [8,10]
-        #plt.rcParams['figure.dpi'] = 80
-        #plt.rcParams['savefig.dpi'] = 100
-        fig = plt.figure(figsize=(8,7), )
+        plt.rcParams['figure.dpi'] = 80
+        plt.rcParams['savefig.dpi'] = 100
+        fig = plt.figure(figsize=(8,10), )
         ax = fig.add_subplot(3,1,1)
         bx = fig.add_subplot(3,1,2)
         cx = fig.add_subplot(3,1,3)
