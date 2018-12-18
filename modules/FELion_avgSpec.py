@@ -119,10 +119,11 @@ def avgSpec_plot(t, ts, lgs, minor, major, \
     my_path = os.getcwd()
 
     try:
-        fig = plt.subplot(1,1,1)
-        plt.rcParams['figure.figsize'] = [fwidth,fheight]
-        plt.rcParams['figure.dpi'] = 80
-        plt.rcParams['savefig.dpi'] = 100
+        figure = plt.figure(figsize=(fwidth, fheight), )
+        fig = figure.add_subplot(1,1,1)
+        #plt.rcParams['figure.figsize'] = [fwidth,fheight]
+        #plt.rcParams['figure.dpi'] = 80
+        #plt.rcParams['savefig.dpi'] = 100
         plt.rcParams['font.size'] = ts
         plt.rcParams['legend.fontsize'] = lgs
 
@@ -162,24 +163,23 @@ def avgSpec_plot(t, ts, lgs, minor, major, \
         fig.xaxis.set_minor_locator(MultipleLocator(minor))
         fig.xaxis.set_major_locator(MultipleLocator(major))
 
-
         if save:
             # Saving and exporting the Binned file.
             F = 'OUT/%s.pdf'%(outFilename)
             export_file(F, binns, inten)
             plt.savefig(F)
-            
+        
         if show:
             plt.show()
+        
         filesaved()
-
         plt.close()
-        #filesaved()
-        #plt.close()
+        
         print()
         print("Completed.")
         print()
-    except:
+    
+    except FileNotFoundError:
         filenotfound()
     return
 
