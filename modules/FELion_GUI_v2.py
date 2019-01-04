@@ -78,7 +78,10 @@ class FELion(Tk):
         Tk.__init__(self, *args, **kwargs)
         Tk.iconbitmap(self,default='C:/FELion-GUI/FELion_Icon.ico')
         Tk.wm_title(self, "FELion-Spectrum Analyser v.2.0")
-        Tk.wm_geometry(self, "900x600")
+        #Tk.wm_geometry(self, "900x600")
+        self.tk.call('tk', 'scaling', 1.5)
+
+
 
         container = Frame(self)
         container.pack(side="top", fill="both", expand = True)
@@ -717,5 +720,6 @@ class Powerfile(Frame):
         S.place(relx = 0.85,  rely = 0.4, width = 15, relheight = 0.4)
 
 app = FELion()
+
 app.protocol("WM_DELETE_WINDOW", on_closing)
 app.mainloop()
