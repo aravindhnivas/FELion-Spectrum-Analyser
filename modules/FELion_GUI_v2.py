@@ -14,10 +14,10 @@ from FELion_power import FELion_Power
 from FELion_sa import FELion_Sa
 
 #Powerfile Functions:
-def locationnotfound(location):
+def locationnotfound():
         root = Tk()
         root.withdraw()
-        messagebox.showerror("Error", "Location NOT FOUND".format(location))
+        messagebox.showerror("Error", "Location NOT FOUND")
         root.destroy()
 
 def outFile(fname, location, file):
@@ -47,7 +47,8 @@ def outFile(fname, location, file):
                         os.mkdir("Pow")
 
                 if os.path.isfile(my_path+"/Pow/{}.pow".format(fname)):
-                        if messagebox.askokcancel("Overwrite", \
+                        messagebox.showerror("OVERWRITE","File already exist")
+                        if messagebox.askokcancel("OVERWRITE", \
                                 "Do yo want to overwrite the existing {}.pow file?".format(fname)):
                                 write()
                                 
@@ -55,7 +56,7 @@ def outFile(fname, location, file):
                         write()
 
         except:
-                locationnotfound(location)
+                locationnotfound()
 
 def on_closing():
     if messagebox.askokcancel("Quit", "Do you want to quit?"):
