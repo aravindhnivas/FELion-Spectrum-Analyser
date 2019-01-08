@@ -185,14 +185,14 @@ def normline_correction(fname, location, mname, temp, bwidth, ie, save, foravgsh
     if(fname.find('felix')>=0):
         fname = fname.split('.')[0]
 
-    if not os.path.isdir("DATA"): os.mkdir("DATA")
-    if not os.path.isdir("EXPORT"): os.mkdir("EXPORT")
-    if not os.path.isdir("OUT"): os.mkdir("OUT")
-    
     fullname = fname + ".felix"
     powerfile = fname + ".pow"
     basefile = fname + ".base"
 
+    if not os.path.isdir("DATA"): os.mkdir("DATA")
+    if not os.path.isdir("EXPORT"): os.mkdir("EXPORT")
+    if not os.path.isdir("OUT"): os.mkdir("OUT")       
+    
     # Custom definitions:
     def filesaved():
         if os.path.isfile(my_path+"/OUT/{}.pdf".format(fname)) and save:
@@ -213,11 +213,11 @@ def normline_correction(fname, location, mname, temp, bwidth, ie, save, foravgsh
         messagebox.showerror("Error", "FILE '{}' NOT FOUND\nDo Baseline correction FIRST!".format(basefile))
         root.destroy()
     
-    def pownotfound(fname):
+    def pownotfound():
         root = Tk()
         root.withdraw()
-        messagebox.showerror("Error", "FILE '{}.pow' NOT FOUND\n"\
-            "(Create the pow file for file: '{}.felix')".format(fname, fname))
+        messagebox.showerror("Error", "FILE '{}' NOT FOUND\n"\
+            "(Create the pow file for file: '{}')".format(powerfile, fullname))
         root.destroy()
 
     def completed(fileNameList):
@@ -229,127 +229,66 @@ def normline_correction(fname, location, mname, temp, bwidth, ie, save, foravgsh
                 root.destroy()
 
     def run(for_normall_saveDialog):
+
         norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show)
-        #plt.close()
         if not for_normall_saveDialog:
             filesaved()
 
     def normrun(basefile, powerfile, fullname, for_normall_saveDialog):
 
-        if os.path.isfile(my_path+"/DATA/"+basefile):
-
-                if os.path.isfile(my_path+"/DATA/"+powerfile):
-
-                    if os.path.isfile(my_path+"/DATA/"+fullname):
-
-                        run(for_normall_saveDialog)
-
-                    elif not os.path.isfile(my_path+"/"+fullname):
-                        filenotfound()
-
-                    elif os.path.isfile(my_path+"/"+fullname):
-                        shutil.copyfile(my_path + "/{}".format(fullname),\
+        #File check
+        if not os.path.isfile(my_path+"/DATA/"+fullname):
+            if os.path.isfile(my_path+"/"+fullname):
+                shutil.copyfile(my_path + "/{}".format(fullname),\
                             my_path + "/DATA/{}".format(fullname))
-                        print("{} FELIX copied to the DATA folder.".format(fullname))
-                        
-                        run(for_normall_saveDialog)
+                print("{} copied to the DATA folder.".format(fullname))
+            else:
+                return filenotfound()
 
-                elif not os.path.isfile(my_path+"/{}".format(powerfile)):
-                    pownotfound(fname)
-
-                elif os.path.isfile(my_path+"/"+powerfile):
-                    shutil.copyfile(my_path + "/{}".format(powerfile),\
-                            my_path + "/DATA/{}".format(powerfile))
-                    print("{} Powerfile copied to the DATA folder.".format(powerfile))
-
-                    if os.path.isfile(my_path+"/DATA/"+fullname):
-
-                        run(for_normall_saveDialog)
-
-                    elif not os.path.isfile(my_path+"/"+fullname):
-                        filenotfound()
-
-                    elif os.path.isfile(my_path+"/"+fullname):
-                        shutil.copyfile(my_path + "/{}".format(fullname),\
-                            my_path + "/DATA/{}".format(fullname))
-                        print("{} FELIX copied to the DATA folder.".format(fullname))
-                        
-                        run(for_normall_saveDialog)
-            
-        elif not os.path.isfile(my_path+"/"+basefile):
-            base_filenotfound()
-
-        elif os.path.isfile(my_path+"/"+basefile):
-            shutil.copyfile(my_path + "/{}".format(basefile),\
-                        my_path + "/DATA/{}".format(basefile))
-            print("{} Basefile copied to the DATA folder.".format(basefile))
-            
-            if os.path.isfile(my_path+"/DATA/"+powerfile):
-
-                if os.path.isfile(my_path+"/DATA/"+fullname):
-
-                    run(for_normall_saveDialog)
-                
-                elif not os.path.isfile(my_path+"/{}".format(fullname)):
-                    filenotfound()
-                
-                elif os.path.isfile(my_path+"/"+fullname):
-                    shutil.copyfile(my_path + "/{}".format(fullname),\
-                        my_path + "/DATA/{}".format(fullname))
-                    print("{} FELIX copied to the DATA folder.".format(fullname))
-                    
-                    run(for_normall_saveDialog)
-
-            elif not os.path.isfile(my_path+"/{}".format(powerfile)):
-                pownotfound(fname)
-
-            elif os.path.isfile(my_path+"/"+powerfile):
-                shutil.copyfile(my_path + "/{}".format(powerfile),\
-                        my_path + "/DATA/{}".format(powerfile))
+        #Powefile check
+        if not os.path.isfile(my_path+"/DATA/"+powerfile):
+            if os.path.isfile(my_path+"/Pow/"+powerfile):
+                shutil.copyfile(my_path + "/Pow/{}".format(powerfile), my_path + "/DATA/{}".format(powerfile))
                 print("{} Powerfile copied to the DATA folder.".format(powerfile))
-
-                if os.path.isfile(my_path+"/DATA/"+fullname):
-
-                    run(for_normall_saveDialog)
-                elif not os.path.isfile(my_path+"/{}".format(fullname)):
-                    filenotfound()
-                elif os.path.isfile(my_path+"/"+fullname):
-                    shutil.copyfile(my_path + "/{}".format(fullname),\
-                        my_path + "/DATA/{}".format(fullname))
-                    print("{} FELIX copied to the DATA folder.".format(fullname))
-                    
-                    run(for_normall_saveDialog)
-
-    try:
-        if not normall:
-            for_normall_saveDialog = False
-            normrun(basefile, powerfile, fullname, for_normall_saveDialog)
-
-
-        if normall:
-            for_normall_saveDialog = True
-            #pwd = os.listdir(my_path + "/DATA")
-            fileNameList = []
-
-            #for f in pwd:
-            #    if f.find(".base")>=0:
-            #       fileNameList.append(f.split(".base")[0])
-
-            cwd = os.listdir(my_path)
-            #if len(fileNameList)<1:
-            for f in cwd:
-                if f.find(".base")>=0:
-                    fileNameList.append(f.split(".base")[0])
-
-            for fname in fileNameList:
-                fullname = fname + ".felix"
-                powerfile = fname + ".pow"
-                basefile = fname + ".base"
-                normrun(basefile, powerfile, fullname, for_normall_saveDialog)
-                
-            completed(fileNameList)
         
-    except:
-        filenotfound()
+            elif os.path.isfile(my_path+"/"+powerfile):
+                shutil.copyfile(my_path + "/{}".format(powerfile), my_path + "/DATA/{}".format(powerfile))
+                print("{} Powerfile copied to the DATA folder.".format(powerfile))
+            
+            else:
+                return pownotfound()
+        
+        #Basefile check
+        if not os.path.isfile(my_path+"/DATA/"+basefile):
+            if os.path.isfile(my_path+"/"+basefile):
+                shutil.copyfile(my_path + "/{}".format(basefile),\
+                            my_path + "/DATA/{}".format(basefile))
+                print("{} Basefile copied to the DATA folder.".format(basefile))
+            else:
+                return base_filenotfound()
+
+        #Normline run
+        run(for_normall_saveDialog)
+
+    if not normall:
+        for_normall_saveDialog = False
+        normrun(basefile, powerfile, fullname, for_normall_saveDialog)
+
+
+    if normall:
+        for_normall_saveDialog = True
+        fileNameList = []
+        cwd = os.listdir(my_path)
+        for f in cwd:
+            if f.find(".base")>=0:
+                fileNameList.append(f.split(".base")[0])
+
+        for fname in fileNameList:
+            fullname = fname + ".felix"
+            powerfile = fname + ".pow"
+            basefile = fname + ".base"
+            normrun(basefile, powerfile, fullname, for_normall_saveDialog)
+            
+        completed(fileNameList)
 
     print("DONE")
