@@ -654,8 +654,6 @@ class Mass(Frame):
         avg_outputFilename.place(relx = m_x6,  rely = m_y6, width = width+30, height = height)
         avg_outputFilename_entry.place(relx = m_x7+0.05,  rely = m_y6, width = width, height = height)
 
-        
-
 class Powerfile(Frame):
 
     def __init__(self, parent, controller):
@@ -679,15 +677,6 @@ class Powerfile(Frame):
 
         # Labels and buttons:
 
-        '''# Location:
-        location_label = Label(self, text = "Location:", font=("Times", 10, "bold"))
-
-        location = StringVar()
-        location.set("Enter file lcoation here")
-        location_entry = Entry(self, bg = "white", bd = 5,\
-                                textvariable=location, justify = LEFT,\
-                                font=("Times", 12, "italic"))'''
-
         # Opening a Directory:
         self.location = "/"
         date = datetime.datetime.now()
@@ -699,16 +688,10 @@ class Powerfile(Frame):
             root.withdraw()
 
             root.directory =  filedialog.askdirectory()
-            #directory = root.directory
-            #filename = filename.split("/")
-
-            #self.fname = filename[-1]
-            #del filename[-1]
             self.location = root.directory
 
             root.destroy()
             location_entry.config(text = self.location)
-            #filename_label.config(text = self.fname)
             return
 
         location_entry = Label(self)
