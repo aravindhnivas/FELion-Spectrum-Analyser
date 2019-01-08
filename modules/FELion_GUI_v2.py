@@ -4,6 +4,7 @@ from tkinter import *
 from tkinter import ttk, messagebox, filedialog
 import os
 import shutil
+import datetime
 
 #FELion modules
 from FELion_massSpec import massSpec
@@ -151,11 +152,11 @@ class StartPage(Frame):
                 2. Mass Spectrum Plot
                 3. Powerfile Generator
 
-        NOTE: Before using these functions: 
+        NOTE: Before using Normline and Average Spectrum plot functions: 
         Make sure you already did "Baseline Correction" using "FELion_Baseline" Program
 
-        The data files can be anywhere, so give it's path in "Location".
-        (If error: Maybe, try to avoid using //server as the location)
+
+        If error: Maybe, try to avoid using //server as the location
 
         The processed raw data output files can be found in "EXPORT" and "DATA" folder.
         The processed output files can be found in "OUT" and "MassSpec_DATA"
@@ -677,20 +678,49 @@ class Powerfile(Frame):
 
         # Labels and buttons:
 
-        # Location:
+        '''# Location:
         location_label = Label(self, text = "Location:", font=("Times", 10, "bold"))
 
         location = StringVar()
         location.set("Enter file lcoation here")
         location_entry = Entry(self, bg = "white", bd = 5,\
                                 textvariable=location, justify = LEFT,\
-                                font=("Times", 12, "italic"))
+                                font=("Times", 12, "italic"))'''
+
+        # Opening a Directory:
+        self.location = "/"
+        date = datetime.datetime.now()
+        self.fname = date.strftime("%d_%m_%y-#")
+
+        def open_dir(self):
+
+            root = Tk()
+            root.withdraw()
+
+            root.directory =  filedialog.askdirectory()
+            #directory = root.directory
+            #filename = filename.split("/")
+
+            #self.fname = filename[-1]
+            #del filename[-1]
+            self.location = root.directory
+
+            root.destroy()
+            location_entry.config(text = self.location)
+            #filename_label.config(text = self.fname)
+            return
+
+        location_entry = Label(self)
+  
+        # Labels and buttons:
+        location_label = ttk.Button(self, text = "Browse File")
+        location_label.config(command = lambda: open_dir(self))
 
         #Label for Entry Box;
         user_input_label = Label(self, text = "Filename:", font=("Times", 10, "bold"))
 
         #Entry Box;
-        init_msg = "Enter here" #initialising message
+        init_msg = self.fname #initialising message
         content = StringVar()   #defining Stringvar()
         user_input = Entry(self, bg = "white", bd = 5, textvariable=content, justify = LEFT)
         user_input.config(font=("Times", 12, "italic"))
@@ -699,7 +729,7 @@ class Powerfile(Frame):
 
         #Baseline
         save_button = ttk.Button(self, text="Save")
-        save_button.config(command = lambda: outFile(content.get(), location.get(), T.get("1.0", "end-1c")))
+        save_button.config(command = lambda: outFile(content.get(), self.location, T.get("1.0", "end-1c")))
 
         T = Text(self)
         S = Scrollbar(self)
