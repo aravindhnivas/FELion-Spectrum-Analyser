@@ -1,7 +1,0 @@
-#POWER file
-# 10 Hz FELIX
-#
-#SHOTS=10
-#INTERP=linear
-#    IN_no_UM (if one deletes the "no" the firs number will be in \mu m
-# wavelength/cm-1      energy/pulse/mJ
