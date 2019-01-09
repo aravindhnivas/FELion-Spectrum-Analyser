@@ -697,7 +697,7 @@ class Powerfile(Frame):
         location_entry = Label(self)
   
         # Labels and buttons:
-        location_label = ttk.Button(self, text = "Browse File")
+        location_label = ttk.Button(self, text = "Select Folder")
         location_label.config(command = lambda: open_dir(self))
 
         #Label for Entry Box;
