@@ -12,7 +12,7 @@ def makeint(filename):
     a, b, aint, bint = [],[],[],[]
     f = open(filename)
     for i in f:
-        if not i[0] == "#":
+        if not i[0] == "#" and not i == "\n":
             a1, b1 = i.split()
             a.append(a1)
             b.append(b1)
