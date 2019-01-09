@@ -269,7 +269,7 @@ def massSpec(fname, mname, temp, bwidth, ie, xmin, xmax, location,\
                 file= fname[0:9] + file +'.mass'
             else:
                 file = file + '.mass'
-            f = open(filename)
+            f = open(file)
             x, y = [],[]
             for i in f:
                 if not i[0] == "#" and not i == "\n":
