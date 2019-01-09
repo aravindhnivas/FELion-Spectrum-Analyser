@@ -770,7 +770,7 @@ class Plot(Frame):
                             command=lambda: controller.show_frame(Mass))
         button4.place(relx = x4, rely = y, width = width, height = height)
 
-        def normalising(self,filename, norm):
+        def normalising(self, filename, norm):
                 os.chdir(self.location)
                 f = open(filename)
                 x, y, normx, normy= [],[],[],[]
@@ -839,12 +839,12 @@ class Plot(Frame):
 
         filename = Label(self, text = "Filename: ", font=("Times", 10, "bold"))
 
-        self.normCheck_value = BooleanVar()
-        self.normCheck_value.set(True)
-        normCheck = ttk.Checkbutton(self, text = "Norm(Ft.Scale)", variable = self.normCheck_value)
+        normCheck_value = BooleanVar()
+        normCheck_value.set(True)
+        normCheck = ttk.Checkbutton(self, text = "Norm(Ft.Scale)", variable = normCheck_value)
 
         plotbutton = ttk.Button(self, text="Plot", \
-                                        command = lambda: normalising(self, self.fname, self.normCheck_value.get()))
+                                        command = lambda: normalising(self, self.fname, normCheck_value.get()))
 
         mass_diff = 0.12
         mass_smalldiff = 0.06
