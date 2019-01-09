@@ -791,16 +791,10 @@ class Plot(Frame):
                 plt.grid(True)
 
                 if norm:
-                        if filename.find(".mass")<0:
-                                plt.plot(normx, normy, label = filename)
+                        plt.plot(normx, normy, label = filename)
 
                 else:
-                        if filename.find(".mass")<0:
-                                plt.plot(x,y, label = filename)
-
-                if filename.find(".mass"):
-                        plt.semilogy(x,y, label = filename)
-                
+                        plt.plot(x,y, label = filename)
 
                 plt.legend()
                 plt.show()
@@ -841,7 +835,7 @@ class Plot(Frame):
 
         normCheck_value = BooleanVar()
         normCheck_value.set(True)
-        normCheck = ttk.Checkbutton(self, text = "Norm(Ft.Scale)", variable = normCheck_value)
+        normCheck = ttk.Checkbutton(self, text = "Normalise", variable = normCheck_value)
 
         plotbutton = ttk.Button(self, text="Plot", \
                                         command = lambda: normalising(self, self.fname, normCheck_value.get()))
