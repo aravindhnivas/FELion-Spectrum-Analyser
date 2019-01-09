@@ -635,24 +635,24 @@ class Mass(Frame):
         bo_Width.place(relx = m_x2,  rely = m_y5, width = width, height = height)
         ion_enrg.place(relx = m_x2,  rely =m_y6, width = width, height = height)
         
-        mass_range_label.place(relx = m_x3,  rely = m_y3, width = width, height = height)
-        mass_xmin_Entry.place(relx = m_x4,  rely = m_y3, width = smallwidth, height = height)
-        mass_xmax_Entry.place(relx = m_x5,  rely = m_y3, width = smallwidth, height = height)
+        #mass_range_label.place(relx = m_x3,  rely = m_y3, width = width, height = height)
+        #mass_xmin_Entry.place(relx = m_x4,  rely = m_y3, width = smallwidth, height = height)
+        #mass_xmax_Entry.place(relx = m_x5,  rely = m_y3, width = smallwidth, height = height)
 
-        mass_figsize.place(relx = m_x3,  rely = m_y4, width = width, height = height)
-        mass_figWidth.place(relx = m_x4,  rely = m_y4, width = smallwidth, height = height)
-        mass_figHeight.place(relx = m_x5,  rely = m_y4, width = smallwidth, height = height)
+        #mass_figsize.place(relx = m_x3,  rely = m_y4, width = width, height = height)
+        #mass_figWidth.place(relx = m_x4,  rely = m_y4, width = smallwidth, height = height)
+        #mass_figHeight.place(relx = m_x5,  rely = m_y4, width = smallwidth, height = height)
 
         single_mass.place(relx = m_x3,  rely = m_y5, width = width, height = height)
         combine_mass.place(relx = m_x4,  rely = m_y5, width = width, height = height)
-        display_label.place(relx = m_x3,  rely = m_y6, relwidth = 0.25, height = height)
+        display_label.place(relx = m_x5+0.05,  rely = m_y5, relwidth = 0.25, height = height)
 
-        combine_entry.place(relx = m_x6,  rely = m_y3, relwidth = 0.25, height = height)
-        mass_saveCheck.place(relx = m_x6,  rely = m_y4, width = width, height = height)
-        mass_button.place(relx = m_x7,  rely = m_y4, width = width, height = height)
+        combine_entry.place(relx = m_x3,  rely = m_y3, relwidth = 0.25, height = height)
+        mass_saveCheck.place(relx = m_x3,  rely = m_y4, width = width, height = height)
+        mass_button.place(relx = m_x4,  rely = m_y4, width = width, height = height)
 
-        avg_outputFilename.place(relx = m_x6,  rely = m_y6, width = width+30, height = height)
-        avg_outputFilename_entry.place(relx = m_x7+0.05,  rely = m_y6, width = width, height = height)
+        avg_outputFilename.place(relx = m_x3,  rely = m_y6, width = width+30, height = height)
+        avg_outputFilename_entry.place(relx = m_x4+0.05,  rely = m_y6, width = width, height = height)
 
 class Powerfile(Frame):
 
