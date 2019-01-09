@@ -107,7 +107,7 @@ class FELion(Tk):
 
         self.frames = {}
 
-        for F in (StartPage, Normline, Mass, Powerfile):
+        for F in (StartPage, Normline, Mass, Powerfile, Plot):
 
             frame = F(container, self)
             self.frames[F] = frame
@@ -141,9 +141,9 @@ class StartPage(Frame):
                             command=lambda: controller.show_frame(Powerfile))
         button3.place(relx = x3, rely = y, width = width, height = height)
 
-        #button4 = ttk.Button(self, text="Baseline",
-        #                    command=lambda: controller.show_frame(Baseline))
-        #button4.place(relx = x4, rely = y, width = width, height = height)
+        button4 = ttk.Button(self, text="Plot",
+                            command=lambda: controller.show_frame(Plot))
+        button4.place(relx = x4, rely = y, width = width, height = height)
 
         welcome_msg = """
         The FELion Spectrum analyser for analysing FELIX data using Python;
@@ -188,6 +188,10 @@ class Normline(Frame):
         button3 = ttk.Button(self, text="Powerfile",
                             command=lambda: controller.show_frame(Powerfile))
         button3.place(relx = x3, rely = y, width = width, height = height)
+
+        button4 = ttk.Button(self, text="Plot",
+                            command=lambda: controller.show_frame(Plot))
+        button4.place(relx = x4, rely = y, width = width, height = height)
 
         # Opening a Directory:
         self.location = "/"
@@ -471,6 +475,10 @@ class Mass(Frame):
                             command=lambda: controller.show_frame(Powerfile))
         button3.place(relx = x3, rely = y, width = width, height = height)
 
+        button4 = ttk.Button(self, text="Plot",
+                            command=lambda: controller.show_frame(Plot))
+        button4.place(relx = x4, rely = y, width = width, height = height)
+
         # Opening a Directory:
         self.location = "/"
         self.fname = ""
@@ -675,6 +683,10 @@ class Powerfile(Frame):
                             command=lambda: controller.show_frame(Mass))
         button3.place(relx = x3, rely = y, width = width, height = height)
 
+        button4 = ttk.Button(self, text="Plot",
+                            command=lambda: controller.show_frame(Plot))
+        button4.place(relx = x4, rely = y, width = width, height = height)
+
         # Labels and buttons:
 
         # Opening a Directory:
@@ -732,6 +744,31 @@ class Powerfile(Frame):
 
         T.place(relx = 0.15,  rely = 0.4, relwidth = 0.7, relheight = 0.4)
         S.place(relx = 0.85,  rely = 0.4, width = 15, relheight = 0.4)
+
+class Plot(Frame):
+
+    def __init__(self, parent, controller):
+        Frame.__init__(self,parent, bg="sea green")
+        
+        label = Label(self, text="Plot", \
+                font=LARGE_FONT, bg="sea green", bd = 1, relief = SOLID)
+        label.place(relx = 0, rely = 0, relwidth = 1)
+
+        button1 = ttk.Button(self, text="Back to Home",
+                            command=lambda: controller.show_frame(StartPage))
+        button1.place(relx = x1, rely = y, width = width, height = height)
+
+        button2 = ttk.Button(self, text="Norm and Avg",
+                            command=lambda: controller.show_frame(Normline))
+        button2.place(relx = x2, rely = y, width = width, height = height)
+
+        button3 = ttk.Button(self, text="Mass Spec",
+                            command=lambda: controller.show_frame(Mass))
+        button3.place(relx = x3, rely = y, width = width, height = height)
+
+        button4 = ttk.Button(self, text="Powerfile",
+                            command=lambda: controller.show_frame(Mass))
+        button4.place(relx = x4, rely = y, width = width, height = height)
 
 app = FELion()
 
