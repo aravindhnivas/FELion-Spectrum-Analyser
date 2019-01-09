@@ -1,10 +1,10 @@
 #!/usr/bin/python3
-
 from tkinter import *
 from tkinter import ttk, messagebox, filedialog
 import os
 import shutil
 import datetime
+import matplotlib.pyplot as plt
 
 #FELion modules
 from FELion_massSpec import massSpec
@@ -769,6 +769,110 @@ class Plot(Frame):
         button4 = ttk.Button(self, text="Powerfile",
                             command=lambda: controller.show_frame(Mass))
         button4.place(relx = x4, rely = y, width = width, height = height)
+
+        def normalising(self,filename, norm):
+                os.chdir(self.location)
+                f = open(filename)
+                x, y, normx, normy= [],[],[],[]
+                for i in f:
+                        if not i[0] == "#" and not i == "\n":
+                                a, b = i.split()
+                                x.append(float(a))
+                                y.append(float(b))
+
+                # normalising (Feature Scaling (0,1) range):
+                for i, j in zip(x, y):
+                        i = (i-min(x))/(max(x)-min(x))
+                        normx.append(i)
+                        j = (j-min(y))/(max(y)-min(y))
+                        normy.append(j)
+                
+                f.close()
+                plt.grid(True)
+
+                if norm:
+                        if filename.find(".mass")<0:
+                                plt.plot(normx, normy, label = filename)
+
+                else:
+                        if filename.find(".mass")<0:
+                                plt.plot(x,y, label = filename)
+
+                if filename.find(".mass"):
+                        plt.semilogy(x,y, label = filename)
+                
+
+                plt.legend()
+                plt.show()
+                plt.close()
+                return
+
+        # Opening a Directory:
+        self.location = "/"
+        self.fname = ""
+
+        def open_dir(self):
+
+            root = Tk()
+            root.withdraw()
+
+            root.filename =  filedialog.askopenfilename(initialdir = self.location, title = "Select file", filetypes = (("all files","*.*"), ("all files","*.*")))
+            filename = root.filename
+            filename = filename.split("/")
+
+            self.fname = filename[-1]
+            del filename[-1]
+            self.location = "/".join(filename)
+
+            root.destroy()
+            current_location.config(text = self.location)
+            filename_label.config(text = self.fname)
+            return
+  
+        # Labels and buttons:
+        browse_loc = ttk.Button(self, text = "Browse File")
+        browse_loc.config(command = lambda: open_dir(self))
+
+        # Printing current location:
+        current_location = Label(self)
+        filename_label = Label(self)
+
+        filename = Label(self, text = "Filename: ", font=("Times", 10, "bold"))
+
+        self.normCheck_value = BooleanVar()
+        self.normCheck_value.set(True)
+        normCheck = ttk.Checkbutton(self, text = "Norm(Ft.Scale)", variable = self.normCheck_value)
+
+        plotbutton = ttk.Button(self, text="Plot", \
+                                        command = lambda: normalising(self, self.fname, self.normCheck_value.get()))
+
+        mass_diff = 0.12
+        mass_smalldiff = 0.06
+
+        m_x1 = 0.1
+        m_x2 = m_x1 + mass_diff
+        m_x3 = m_x2 + mass_diff +0.05
+        m_x4 = m_x3 + mass_diff
+        m_x5 = m_x4 + mass_smalldiff
+        m_x6 = m_x5 + mass_diff
+        m_x7 = m_x6 + mass_diff
+
+        m_y1 = 0.1
+        ymass_diff = 0.1
+        m_y2 = m_y1 + ymass_diff
+        m_y3 = m_y2 + ymass_diff +0.05
+        m_y4 = m_y3 + ymass_diff
+        m_y5 = m_y4 + ymass_diff
+        m_y6 = m_y5 + ymass_diff
+
+        browse_loc.place(relx = m_x1,  rely =m_y1, width = width, height = height)
+        filename.place(relx = m_x1,  rely =m_y2, width = width, height = height)
+        current_location.place(relx = m_x2,  rely = m_y1, relwidth = 0.5, height = height)
+        filename_label.place(relx = m_x2,  rely = m_y2, width = width, height = height)
+        normCheck.place(relx = m_x3,  rely = m_y2, width = width, height = height)
+        plotbutton.place(relx = m_x4,  rely = m_y2, width = width, height = height)
+
+        
 
 app = FELion()
 
