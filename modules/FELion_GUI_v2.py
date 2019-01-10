@@ -813,6 +813,15 @@ class Plot(Frame):
                                         plt.plot(x,y, label = i)
 
                 plt.legend()
+                plt.xlabel("Wavenumber(cm-1)")
+                if norm:
+                        plt.ylabel("Normalised (Scaled to 1) Intensity")
+                else:
+                        plt.ylabel("Intensity")
+                if combine:
+                        plt.savefig("combined.png")
+                else:
+                        plt.savefig(filename+".png")
                 plt.show()
                 plt.close()
                 return
