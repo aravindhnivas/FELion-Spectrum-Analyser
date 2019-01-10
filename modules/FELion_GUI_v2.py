@@ -772,31 +772,45 @@ class Plot(Frame):
                             command=lambda: controller.show_frame(Mass))
         button4.place(relx = x4, rely = y, width = width, height = height)
 
-        def normalising(self, filename, norm):
+        def normalising(self, filename, combine, filelist, norm):
                 os.chdir(self.location)
-                f = open(filename)
-                x, y, normx, normy= [],[],[],[]
-                for i in f:
-                        if not i[0] == "#" and not i == "\n":
-                                a, b = i.split()
-                                x.append(float(a))
-                                y.append(float(b))
 
-                # normalising (Feature Scaling (0,1) range):
-                for i, j in zip(x, y):
-                        i = (i-min(x))/(max(x)-min(x))
-                        normx.append(i)
-                        j = (j-min(y))/(max(y)-min(y))
-                        normy.append(j)
-                
-                f.close()
+                def fopen(self, filename):
+                        f = open(filename)
+                        x, y, normy = [],[], []
+                        for i in f:
+                                if not i[0] == "#" and not i == "\n":
+                                        a, b = i.split()
+                                        x.append(float(a))
+                                        y.append(float(b))
+
+                        # normalising (Feature Scaling (0,1) range):
+                        for j in y:
+                                j = (j-min(y))/(max(y)-min(y))
+                                normy.append(j)
+                        
+                        f.close()
+                        return x, y, normy
+
                 plt.grid(True)
 
-                if norm:
-                        plt.plot(normx, normy, label = filename)
+                if not combine:
+                        x, y, normy = fopen(self, filename)
+                        if norm:
+                                plt.plot(x, normy, label = filename)
 
-                else:
-                        plt.plot(x,y, label = filename)
+                        else:
+                                plt.plot(x,y, label = filename)
+                if combine:
+                        filelist = filelist.split(",")
+                        for i in filelist:
+                                i = i.strip()
+                                x, y, normy = fopen(self, i)
+                                if norm:
+                                        plt.plot(x, normy, label = i)
+
+                                else:
+                                        plt.plot(x,y, label = i)
 
                 plt.legend()
                 plt.show()
@@ -835,12 +849,25 @@ class Plot(Frame):
 
         filename = Label(self, text = "Filename: ", font=("Times", 10, "bold"))
 
+        combine_entry_values = StringVar()
+        combine_entry_values.set("Filename(fullname with extension) to stack plot, comma separated")
+
+        combine_entry = Entry(self, bg = "white", bd = 5,\
+                                textvariable=combine_entry_values, justify = LEFT,\
+                                font=("Times", 12, "italic"))
+
+
+
         normCheck_value = BooleanVar()
         normCheck_value.set(True)
         normCheck = ttk.Checkbutton(self, text = "Normalise", variable = normCheck_value)
 
+        combineCheck_value = BooleanVar()
+        combineCheck_value.set(False)
+        combineCheck = ttk.Checkbutton(self, text = "Combine", variable = combineCheck_value)
+
         plotbutton = ttk.Button(self, text="Plot", \
-                                        command = lambda: normalising(self, self.fname, normCheck_value.get()))
+                                        command = lambda: normalising(self, self.fname, combineCheck_value.get(), combine_entry_values.get(), normCheck_value.get()))
 
         timescan_plotbutton = ttk.Button(self, text="TimeScan", \
                                         command = lambda: timescanplot(self.fname, self.location))
@@ -869,8 +896,10 @@ class Plot(Frame):
         current_location.place(relx = m_x2,  rely = m_y1, relwidth = 0.5, height = height)
         filename_label.place(relx = m_x2,  rely = m_y2, width = width, height = height)
         normCheck.place(relx = m_x3,  rely = m_y2, width = width, height = height)
+        combineCheck.place(relx = m_x1,  rely = m_y3, width = width, height = height)
         plotbutton.place(relx = m_x4,  rely = m_y2, width = width, height = height)
         timescan_plotbutton.place(relx = m_x5+0.06,  rely = m_y2, width = width, height = height)
+        combine_entry.place(relx = m_x1,  rely = m_y4, relwidth = 0.6, height = height)
 
         
 
