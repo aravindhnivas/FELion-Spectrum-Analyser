@@ -35,4 +35,5 @@ def timescanplot(filename, location):
     plt.ylabel("Ion Counts")
     plt.legend()
     plt.show()
+    plt.savefig(os.getcwd()+filename+".png")
     plt.close()
