@@ -1,7 +1,8 @@
 import matplotlib.pyplot as plt
 import os
 
-def timescanplot(filename):
+def timescanplot(filename, location):
+    os.chdir(location)
     f = open(filename)
 
     datas = []

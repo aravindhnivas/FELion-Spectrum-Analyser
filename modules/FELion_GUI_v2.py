@@ -1,10 +1,12 @@
 #!/usr/bin/python3
+
 from tkinter import *
 from tkinter import ttk, messagebox, filedialog
 import os
 import shutil
 import datetime
 import matplotlib.pyplot as plt
+from timescan_plot import timescanplot
 
 #FELion modules
 from FELion_massSpec import massSpec
@@ -840,6 +842,9 @@ class Plot(Frame):
         plotbutton = ttk.Button(self, text="Plot", \
                                         command = lambda: normalising(self, self.fname, normCheck_value.get()))
 
+        timescan_plotbutton = ttk.Button(self, text="TimeScan", \
+                                        command = lambda: timescanplot(self.fname, self.location))
+
         mass_diff = 0.12
         mass_smalldiff = 0.06
 
@@ -865,6 +870,7 @@ class Plot(Frame):
         filename_label.place(relx = m_x2,  rely = m_y2, width = width, height = height)
         normCheck.place(relx = m_x3,  rely = m_y2, width = width, height = height)
         plotbutton.place(relx = m_x4,  rely = m_y2, width = width, height = height)
+        timescan_plotbutton.place(relx = m_x5+0.06,  rely = m_y2, width = width, height = height)
 
         
 
