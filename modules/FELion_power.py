@@ -33,9 +33,10 @@ class PowerCalibrator(object):
                     self.interpol = line.split('=')[-1].strip('\n')
                 continue
             else:
-                x, y, = line.split()
-                xw.append(float(x))
-                yw.append(float(y))
+                if not line == "\n":
+                    x, y, = line.split()
+                    xw.append(float(x))
+                    yw.append(float(y))
     
         if in_um:
             self.xw = 10000/np.array(xw)
