@@ -3,20 +3,32 @@ import os
 
 def timescanplot(filename, location):
     os.chdir(location)
-    f = open(filename)
+    datas, mass_values, values = [], [], []
+    f = open(filename, "r")
 
-    datas = []
     for line in f:
         if not line[0] == "#" and not line == "\n":
             a = line.split()
             datas.append(a)
             if line.strip() == "ALL:":
+                del datas[-1]
                 break
-    f.close()
-    del datas[-1]
     no_of_mass = len(datas[0])-2
 
+    f.close()
+
+    f = open(filename, "r")
+    for line in f:
+        if line.find("#Time")>=0:
+            values = line.split()
+
+    for i in range(no_of_mass):
+        mass_values.append(values[i+1])
+        
+    f.close()
+
     d = {}
+
     for i in range(no_of_mass):
         d["mass_#{0}".format(i)] = []
 
@@ -29,11 +41,13 @@ def timescanplot(filename, location):
 
     for i in range(no_of_mass):
         plt.scatter(time, d['mass_#{}'.format(i)])
-        plt.plot(time, d['mass_#{}'.format(i)], label = "mass_#{}".format(i))
-        
+        plt.plot(time, d['mass_#{}'.format(i)], label = "mass: {}".format(mass_values[i]))
+
+    plt.grid(True)
     plt.xlabel("Time (ms)")
     plt.ylabel("Ion Counts")
     plt.legend()
-    plt.savefig(os.getcwd()+"/"+filename+".png")
+    plt.title(filename)
+    plt.savefig(filename+".png")
     plt.show()
     plt.close()
