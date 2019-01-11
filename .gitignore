@@ -5,3 +5,6 @@
 *.pyc
 *.pdf
 *.pyc
+*.felix
+*.base
+*.pow
