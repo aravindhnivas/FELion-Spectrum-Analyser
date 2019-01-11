@@ -21,11 +21,16 @@ def timescanplot(filename, location):
 
     f = open(filename, "r")
     for line in f:
-        if line.find("#Time")>=0:
-            values = line.split()
+        if line.find("#mass")>=0:
+            tmp = line[5:].split(":")
+            tmp.append(":")
+            tmp = tmp[0].strip()+tmp[-1]+tmp[1].strip()
+            mass_values.append(tmp)
 
-    for i in range(no_of_mass):
-        mass_values.append(values[i+1])
+    #mass_values = [i[i].strip() for i in values[i]]
+
+    #for i in range(no_of_mass):
+    #    mass_values.append(values[i+1])
         
     f.close()
 
@@ -43,7 +48,7 @@ def timescanplot(filename, location):
 
     for i in range(no_of_mass):
         plt.scatter(time, d['mass_#{}'.format(i)])
-        plt.plot(time, d['mass_#{}'.format(i)], label = "mass: {}".format(mass_values[i]))
+        plt.plot(time, d['mass_#{}'.format(i)], label = mass_values[i])
 
     plt.grid(True)
     plt.xlabel("Time (ms)")
