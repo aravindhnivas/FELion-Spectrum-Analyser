@@ -83,10 +83,7 @@ class FELion(Tk):
         Tk.iconbitmap(self,default='C:/FELion-GUI/FELion_Icon.ico')
         Tk.wm_title(self, "FELion-Spectrum Analyser v.2.0")
         Tk.wm_geometry(self, "900x600")
-        #self.tk.call('tk', 'scaling', 1.5)
-
-
-
+       
         container = Frame(self)
         container.pack(side="top", fill="both", expand = True)
         container.grid_rowconfigure(0, weight=1)
@@ -226,9 +223,7 @@ class Normline(Frame):
         filename_label = Label(self)
 
         #Normline
-
         fname_label = Label(self, text = "Filename: ", font=("Times", 10, "bold"))
-
 
         # the compund details:
         molecule_name_label = Label(self, text = "Molecule", font=("Times", 10, "bold"))
@@ -286,8 +281,6 @@ class Normline(Frame):
         avg_majorTick = Label(self, text = "Major TickSz,\nMarkerSz:", font=("Times", 10, "bold"))
 
         avg_xywf = Label(self, text = "X,Y,Wid,Ht", font=("Times", 10, "bold"))
-
-        
 
         # avg_label's Entry widget:
         i_avg_title = StringVar()
@@ -363,8 +356,6 @@ class Normline(Frame):
                                                         )
                                                         )
 
-        
-
         # Save checkbutton for normline and avgspec:
         normavg_saveCheck_value = BooleanVar()
         normavg_saveCheck_value.set(True)
@@ -377,7 +368,6 @@ class Normline(Frame):
         power_button = ttk.Button(self, text = "Power", \
                 command = lambda: FELion_Power(self.fname, self.location))
         
-
         norm_diff = 0.12
         norm_smalldiff = 0.06
 
@@ -534,9 +524,7 @@ class Mass(Frame):
         temperature = Entry(self, bg = "white", bd = 5, textvariable=temp, justify = LEFT, font=("Times", 12, "italic"))
         bo_Width = Entry(self, bg = "white", bd = 5, textvariable=bwidth, justify = LEFT, font=("Times", 12, "italic"))
         ion_enrg = Entry(self, bg = "white", bd = 5, textvariable=ie, justify = LEFT, font=("Times", 12, "italic"))
-
-        
-                
+      
         mass_button = ttk.Button(self, text="MassSpec", \
                                         command = lambda: massSpec(\
                                         self.fname, mname.get(), temp.get(), bwidth.get(), ie.get(),\
@@ -865,8 +853,6 @@ class Plot(Frame):
                                 textvariable=combine_entry_values, justify = LEFT,\
                                 font=("Times", 12, "italic"))
 
-
-
         normCheck_value = BooleanVar()
         normCheck_value.set(True)
         normCheck = ttk.Checkbutton(self, text = "Normalise", variable = normCheck_value)
@@ -909,8 +895,6 @@ class Plot(Frame):
         plotbutton.place(relx = m_x4,  rely = m_y2, width = width, height = height)
         timescan_plotbutton.place(relx = m_x5+0.06,  rely = m_y2, width = width, height = height)
         combine_entry.place(relx = m_x1,  rely = m_y4, relwidth = 0.6, height = height)
-
-        
 
 app = FELion()
 
