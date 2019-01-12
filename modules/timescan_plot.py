@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import math as m
 import os
 
-def errorbar(filename):
+def errorbar(filename, no_of_mass):
     #Error bar calculations:
     f = open(filename, "r")
     mass_values = []
@@ -107,8 +107,8 @@ def errorbar(filename):
     standard_deviation = [[m.sqrt(i) for i in varience[j]] for j in range(len(varience))]
     standard_error = [[i/m.sqrt(no_of_moreiterations[j]) for i in standard_deviation[j]] for j in range(len(standard_deviation))]
     
-    return standard_error
-    
+    return standard_error, iterations, mass_values
+
 def timescanplot(filename, location):
     os.chdir(location)
     datas = []
@@ -132,7 +132,7 @@ def timescanplot(filename, location):
 
     time = [float(i[0]) for i in datas]
 
-    error = errorbar(filename)
+    error, iterations, mass_values = errorbar(filename, no_of_mass)
     tmp = []
     if len(error[0])>len(time):
         for i in error:
