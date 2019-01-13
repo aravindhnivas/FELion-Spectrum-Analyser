@@ -7,16 +7,16 @@ import os
 def errorbar(filename, no_of_mass):
     #Error bar calculations:
     f = open(filename, "r")
-    mass_values = []
+    mass_number = []
     for line in f:
         if line.find("#mass")>=0:
             tmp = line[5:].split(":")
             tmp.append(":")
             tmp = tmp[0].strip()+tmp[-1]+tmp[1].strip()
-            mass_values.append(tmp)
+            mass_number.append(tmp)
     f.close()
 
-    iterations = [int(i.split(":")[-1]) for i in mass_values]
+    iterations = [int(i.split(":")[-1]) for i in mass_number]
 
     f = open(filename, "r")
     start = False
@@ -107,12 +107,14 @@ def errorbar(filename, no_of_mass):
     standard_deviation = [[m.sqrt(i) for i in varience[j]] for j in range(len(varience))]
     standard_error = [[i/m.sqrt(no_of_moreiterations[j]) for i in standard_deviation[j]] for j in range(len(standard_deviation))]
     
-    return standard_error, iterations, mass_values
+    return standard_error, iterations, samples
 
 def timescanplot(filename, location):
+
     os.chdir(location)
     datas = []
     f = open(filename, "r")
+
     for line in f:
         if not line[0] == "#" and not line == "\n":
             a = line.split()
@@ -121,9 +123,11 @@ def timescanplot(filename, location):
                 del datas[-1]
                 break
     no_of_mass = len(datas[0])-2
+
     f.close()
 
     d = {}
+
     for i in range(no_of_mass):
         d["mass_#{0}".format(i)] = []
 
@@ -140,10 +144,12 @@ def timescanplot(filename, location):
             tmp.append(i)
         error = tmp
 
-        
+    j = 0
     for i in range(no_of_mass):
         if iterations[i]>1:
-            plt.errorbar(time, d["mass_#{}".format(i)], error, label = mass_values[i])
+            plt.errorbar(time, d["mass_#{}".format(i)], yerr = error[j], fmt = "-", 
+                        label = "Mass:"+str(mass_values["mass_sample_{}".format(i)][0][0][0])+": Iter "+str(iterations[i]))
+            j += 1
             
     plt.grid(True)
     plt.xlabel("Time (ms)")
