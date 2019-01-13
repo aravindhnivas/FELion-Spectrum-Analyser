@@ -3,6 +3,7 @@
 import matplotlib.pyplot as plt
 import math as m
 import os
+import numpy as np
 
 def errorbar(filename, no_of_mass):
     #Error bar calculations:
