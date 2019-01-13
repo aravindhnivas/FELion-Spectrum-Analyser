@@ -144,13 +144,24 @@ def timescanplot(filename, location):
             tmp.append(i)
         error = tmp
 
+    plt.figure(figsize=(15, 7), dpi=150)
     j = 0
+    deg = 3
     for i in range(no_of_mass):
         if iterations[i]>1:
-            plt.errorbar(time, d["mass_#{}".format(i)], yerr = error[j], fmt = "-", 
-                        label = "Mass:"+str(mass_values["mass_sample_{}".format(i)][0][0][0])+": Iter "+str(iterations[i]))
-            j += 1
+            x, y = time, d["mass_#{}".format(i)]
+            lg = "Mass: "+str(mass_values["mass_sample_{}".format(i)][0][0][0])+", Iter: "+str(iterations[i])
             
+            plt.errorbar(x, y, yerr = error[j], fmt = ".", label = lg)
+            
+            z = np.polyfit(x, y, deg)
+            p = np.poly1d(z)
+            y_fit = [p(i) for i in x]
+
+            plt.plot(x, y_fit)
+            j += 1
+
+
     plt.grid(True)
     plt.xlabel("Time (ms)")
     plt.ylabel("Ion Counts")
