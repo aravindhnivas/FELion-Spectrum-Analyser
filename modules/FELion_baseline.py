@@ -19,6 +19,23 @@ from tkinter import Tk, messagebox
 PPS = 5         #points around the value to average
 NUM_POINTS = 18
 baseline=None
+def ReadBase(fname):
+    #open file and skip sharps
+    interpol='cubic'
+    wl, cnt = [],[]
+    f = open('DATA/' + fname + '.base')
+    for line in f:
+        if line[0] == '#':
+            if line.find('INTERP')==1:
+                interpol = line.split('=')[-1].strip('\n')
+            continue
+        else:
+            x, y, = line.split()
+            wl.append(float(x))
+            cnt.append(float(y))
+    
+    f.close()
+    return np.array(wl), np.array(cnt), interpol
 
 # Class for Baseline Calibration
 class BaselineCalibrator(object):
@@ -167,25 +184,6 @@ class InteractivePoints(object):
         self.ax.draw_artist(self.funcLine)
         self.canvas.blit(self.ax.bbox)
 ########################################################################################
-
-def ReadBase(fname):
-    #open file and skip sharps
-    interpol='cubic'
-    wl, cnt = [],[]
-    f = open('DATA/' + fname + '.base')
-    for line in f:
-        if line[0] == '#':
-            if line.find('INTERP')==1:
-                interpol = line.split('=')[-1].strip('\n')
-            continue
-        else:
-            x, y, = line.split()
-            wl.append(float(x))
-            cnt.append(float(y))
-    
-    f.close()
-    return np.array(wl), np.array(cnt), interpol
-
 def felix_read_file(fname):
     """
     Reads data from felix meassurement file
@@ -221,7 +219,6 @@ def felix_read_file(fname):
     res = np.take(data, indices, 1)
     return res
 
-
 def GuessBaseLine(data):
     """
     Guesses the baseline according to real points in the datafile.
@@ -247,8 +244,6 @@ def SaveBase(fname, baseline):
     f.write("#BTYPE=cubic\n")
     for i in range(len(b[0])):
         f.write("{:8.3f}\t{:8.2f}\n".format(b[0][i], b[1][i]))
-    f.close()
-    return f, fname, baseline
 
 def main(fname=""):
     if fname == "":
@@ -408,8 +403,6 @@ def baseline_correction(fname, location):
     except:
         if not os.path.isfile(filename):
             filenotfound()
-
-    return
 
 if __name__ == "__main__":
     main()
