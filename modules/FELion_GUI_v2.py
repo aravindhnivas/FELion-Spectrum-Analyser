@@ -865,7 +865,16 @@ class Plot(Frame):
                                         command = lambda: normalising(self, self.fname, combineCheck_value.get(), combine_entry_values.get(), normCheck_value.get()))
 
         timescan_plotbutton = ttk.Button(self, text="TimeScan", \
-                                        command = lambda: timescanplot(self.fname, self.location))
+                                        command = lambda: timescanplot(self.fname, self.location, deg.get()))
+
+        ployfit_label = Label(self, text = "Polyfit deg:", font=("Times", 10, "bold"))
+
+        deg = IntVar()
+        deg.set(3)
+        polyfit_entry = Entry(self, bg = "white", bd = 5, \
+                textvariable = deg, justify = LEFT, font=("Times", 12, "italic"))
+
+
 
         mass_diff = 0.12
         mass_smalldiff = 0.06
@@ -894,6 +903,10 @@ class Plot(Frame):
         combineCheck.place(relx = m_x1,  rely = m_y3, width = width, height = height)
         plotbutton.place(relx = m_x4,  rely = m_y2, width = width, height = height)
         timescan_plotbutton.place(relx = m_x5+0.06,  rely = m_y2, width = width, height = height)
+        
+        ployfit_label.place(relx = m_x5+0.06,  rely = m_y3, width = width, height = height)
+        polyfit_entry.place(relx = m_x6+0.06,  rely = m_y3, width = smallwidth, height = height)
+
         combine_entry.place(relx = m_x1,  rely = m_y4, relwidth = 0.6, height = height)
 
 app = FELion()
