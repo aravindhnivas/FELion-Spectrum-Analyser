@@ -337,10 +337,8 @@ def baseline_correction(fname, location):
 
     filename = fname + ".felix"
 
-    if os.path.isfile(filename):
-        print("File exist, Copying to the DATA folder to process.")
-        shutil.copyfile(my_path + "/{}".format(filename), my_path + "/DATA/{}".format(filename))
-    
+    shutil.copyfile(my_path + "/{}".format(filename), my_path + "/DATA/{}".format(filename))
+
     data = felix_read_file(fname)
 
     #Check wether the baslien file exists
