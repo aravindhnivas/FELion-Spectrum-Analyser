@@ -15,10 +15,14 @@ import os
 import shutil
 from tkinter import Tk, messagebox
 
+
 #These 2 values are used when guessing the baseline:
 PPS = 5         #points around the value to average
 NUM_POINTS = 18
 baseline=None
+
+########################################################################################
+
 def ReadBase(fname):
     #open file and skip sharps
     interpol='cubic'
@@ -183,7 +187,9 @@ class InteractivePoints(object):
         self.ax.draw_artist(self.line)
         self.ax.draw_artist(self.funcLine)
         self.canvas.blit(self.ax.bbox)
-########################################################################################
+################################################################################
+
+
 def felix_read_file(fname):
     """
     Reads data from felix meassurement file
@@ -201,7 +207,7 @@ def felix_read_file(fname):
                 sa_factor=2.0
             continue
         else:
-            if len(line.split()) < 4: continue
+            if len(line.split()) < 4: continue;
             x, y, z, q, *rest = line.split()
             wl.append(float(x))
             cnt.append(float(z))
@@ -218,6 +224,7 @@ def felix_read_file(fname):
     
     res = np.take(data, indices, 1)
     return res
+
 
 def GuessBaseLine(data):
     """

@@ -1,12 +1,10 @@
 #!/usr/bin/python3
+
 from tkinter import *
 from tkinter import ttk, messagebox, filedialog
 import os
 import shutil
-
-#FELion Module
 from FELion_baseline import baseline_correction
-
 
 def on_closing():
     if messagebox.askokcancel("Quit", "Do you want to quit?"):
@@ -17,8 +15,6 @@ def save_on():
     messagebox.showinfo("FILE SAVED", "File SAVED\nDon't press the Save button again unless different file!")
     root.quit()
     return
-
-
 
 LARGE_FONT= ("Verdana", 15)
 
