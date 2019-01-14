@@ -368,6 +368,7 @@ def baseline_correction(fname, location):
     plt.show()
     
     #Powerfile check
+    powerfile = fname+".pow"
     if os.path.isfile(powerfile):
         shutil.copyfile(my_path + "/{}".format(powerfile), my_path + "/DATA/{}".format(powerfile))
         print("{} Powerfile copied to the DATA folder.".format(powerfile))
