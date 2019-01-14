@@ -110,7 +110,7 @@ def errorbar(filename, no_of_mass):
     
     return standard_error, iterations, samples
 
-def timescanplot(filename, location):
+def timescanplot(filename, location, deg):
 
     os.chdir(location)
     datas = []
@@ -147,7 +147,7 @@ def timescanplot(filename, location):
 
     plt.figure(figsize=(15, 7), dpi=150)
     j = 0
-    deg = 3
+    #deg = 3
     for i in range(no_of_mass):
         if iterations[i]>1:
             x, y = time, d["mass_#{}".format(i)]
@@ -162,12 +162,11 @@ def timescanplot(filename, location):
             plt.plot(x, y_fit, "k-")
             j += 1
 
-
     plt.grid(True)
     plt.xlabel("Time (ms)")
     plt.ylabel("Ion Counts")
     plt.legend()
-    plt.title(filename)
+    plt.title(filename+ ":  Polyfit of Order: %i"%deg)
     plt.savefig(filename+".png")
     plt.show()
     plt.close()
