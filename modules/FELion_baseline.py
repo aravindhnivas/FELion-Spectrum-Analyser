@@ -368,10 +368,7 @@ def baseline_correction(fname, location):
     plt.show()
     
     #Powerfile check
-    powerfile = fname + ".pow"
-    if not os.path.isfile(powerfile):
-        print("NOTE: You don't have .pow file so you can't plot the data yet but you can make the baseline.")
-    elif os.path.isfile(powerfile):
+    if os.path.isfile(powerfile):
         shutil.copyfile(my_path + "/{}".format(powerfile), my_path + "/DATA/{}".format(powerfile))
         print("{} Powerfile copied to the DATA folder.".format(powerfile))
     
