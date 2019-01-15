@@ -145,7 +145,7 @@ def timescanplot(filename, location, deg):
             tmp.append(i)
         error = tmp
 
-    plt.figure(figsize=(15, 7), dpi=150)
+    plt.figure(figsize=(15, 7), dpi=100)
     j = 0
     #deg = 3
     for i in range(no_of_mass):
