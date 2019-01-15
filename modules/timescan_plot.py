@@ -4,7 +4,12 @@ import matplotlib.pyplot as plt
 import math
 import os
 import numpy as np
+from scipy.optimize import curve_fit
 
+
+def func(x, a, b, c):
+    #return a * np.exp(-b * x) + c
+    return a * np.log(b * x) + c
 
 def timescanplot(filename, location, deg):
     os.chdir(location)
@@ -111,12 +116,24 @@ def timescanplot(filename, location, deg):
             lg = "{} : {}".format(mass_values[i], iterations[i])
             
             plt.errorbar(x, y, yerr = err, fmt = ".", label = lg )
-            
+
+            #Polyfit
             z = np.polyfit(x, y, deg)
             p = np.poly1d(z)
             y_fit = [p(i) for i in x]
             
             plt.plot(x, y_fit, "k-")
+
+            '''# log fit
+            popt, pcov = curve_fit(func, x, y)
+
+            #brutal force to avoid errors
+            x = np.array(x, dtype=float) #transform your data in a numpy array of floats 
+            y = np.array(y, dtype=float) #so the curve_fit can work
+            
+            yy = func(x, *popt)
+            
+            plt.plot(x, yy, 'r-', label = "log fit")'''
             
     plt.grid(True)
     plt.xlabel("Time (ms)")
