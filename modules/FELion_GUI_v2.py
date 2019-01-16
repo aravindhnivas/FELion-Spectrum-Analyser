@@ -904,7 +904,5 @@ def get_dpi(window):
 
 
 app = FELion()
-app.tk.call('tk', 'scaling', 10.0)
-
 app.protocol("WM_DELETE_WINDOW", on_closing)
 app.mainloop()
