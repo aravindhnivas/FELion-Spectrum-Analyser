@@ -1,11 +1,12 @@
 #!/usr/bin/python3
-
 from tkinter import *
 from tkinter import ttk, messagebox, filedialog
+
 import os
 import shutil
 from FELion_baseline import baseline_correction
 
+###########
 def on_closing():
     if messagebox.askokcancel("Quit", "Do you want to quit?"):
       root.destroy()
