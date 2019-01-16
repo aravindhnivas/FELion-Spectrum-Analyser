@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+
 import os
 import numpy as np
 import pylab as P
@@ -6,10 +7,13 @@ import sys
 import copy 
 from os import path
 from scipy.optimize import leastsq
+
 from FELion_normline import norm_line_felix
 from FELion_normline import felix_binning
+
 from matplotlib.ticker import MultipleLocator, FormatStrFormatter, NullFormatter, NullLocator
 import matplotlib.pyplot as plt
+from FELion_definitions import *
 
 ## modules
 import os
@@ -94,9 +98,6 @@ def avgSpec_plot(t, ts, lgs, minor, major, \
                 xlabelsz, ylabelsz, fwidth, fheight, markersz, show
                 ):
 
-    
-    # Custom definitions:
-
     def filesaved():
         if os.path.isfile(my_path+"/OUT/{}.pdf".format(outFilename)) and save:
             #os.chdir(my_path+"/OUT")
@@ -106,32 +107,25 @@ def avgSpec_plot(t, ts, lgs, minor, major, \
                 messagebox.showinfo("Information", "File '{}.pdf' Saved".format(outFilename))
                 root.destroy()
 
-    def filenotfound():
-        root = Tk()
-        root.withdraw()
-        messagebox.showerror("Error", "FILE NOT FOUND (or some of the file's .base files are missing)")
-        root.destroy()
-
-
-    #save = True
-    #show = True
     os.chdir(location)
     my_path = os.getcwd()
 
     try:
-        figure = plt.figure(figsize=(fwidth, fheight), )
+        figure = plt.figure(figsize=(fwidth, fheight), dpi = 100)
         fig = figure.add_subplot(1,1,1)
-        #plt.rcParams['figure.figsize'] = [fwidth,fheight]
-        plt.rcParams['figure.dpi'] = 80
-        plt.rcParams['savefig.dpi'] = 100
         plt.rcParams['font.size'] = ts
         plt.rcParams['legend.fontsize'] = lgs
 
-        pwd = os.listdir(my_path + "/DATA") # going into the data folder to fetch all the available data filename.
-        fileNameList = [] # creating a varaiable list : Don't add any data here. You can use the script as it is since it automatically takes the data in the DATA folder
-        for f in pwd:
-            if f.find(".felix")>=0:
-                fileNameList.append(f.split(".felix")[0])
+        pwd = os.listdir(os.getcwd()+'/DATA')
+        f = []
+        filesz = lambda x: (os.stat(x).st_size)/1024.0
+        for i in pwd:
+            if i.find(".felix")>=0:
+                f.append(i)
+        fileNameList = []
+        for i in f:
+            if filesz(os.getcwd()+'/DATA/'+i)>4.0:
+                fileNameList.append(i)
 
         xs = np.array([],dtype='double')
         ys = np.array([],dtype='double')
@@ -178,8 +172,6 @@ def avgSpec_plot(t, ts, lgs, minor, major, \
         print()
         print("Completed.")
         print()
-    
-    except FileNotFoundError:
-        filenotfound()
-    return
 
+    except FileNotFoundError:
+        filenotfound("ERROR: ", "Some .base or .pow file might be missing")
