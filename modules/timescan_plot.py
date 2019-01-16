@@ -109,7 +109,6 @@ def timescanplot(filename, location, deg):
             del standard_error[i][-1]
 
     plt.figure(figsize=(10,5), dpi = 100)
-    #deg = 3
     for i in range(no_of_mass):
         if iterations[i]>1:
             x, y, err = time, mass_mean[i], standard_error[i]
