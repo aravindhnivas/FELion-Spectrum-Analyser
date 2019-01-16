@@ -100,12 +100,7 @@ def avgSpec_plot(t, ts, lgs, minor, major, \
 
     def filesaved():
         if os.path.isfile(my_path+"/OUT/{}.pdf".format(outFilename)) and save:
-            #os.chdir(my_path+"/OUT")
-            if "/OUT/{}.pdf".format(outFilename).endswith(".pdf"):
-                root = Tk()
-                root.withdraw()
-                messagebox.showinfo("Information", "File '{}.pdf' Saved".format(outFilename))
-                root.destroy()
+            ShowInfo("SAVED", "File %s.pdf saved"%outFilename)
 
     os.chdir(location)
     my_path = os.getcwd()
@@ -145,20 +140,15 @@ def avgSpec_plot(t, ts, lgs, minor, major, \
         binns, inten = felix_binning(xs, ys, delta=DELTA)
         fig.plot(binns, inten, ls='-', marker='', c='k')
 
-        #Set the Xlim values and fontsizes.
-        #fig.set_xlim([xmin,xmax])
         fig.set_xlabel(r"Calibrated lambda (cm-1)", fontsize=xlabelsz)
         fig.set_ylabel(r"Normalized Intensity", fontsize=ylabelsz)
         fig.tick_params(axis='both', which='major', labelsize=majorTickSize)
 
-        #Set the Grid value False if you don't need it.
         fig.grid(True)
-        #Set the no. of Minor and Major ticks.
         fig.xaxis.set_minor_locator(MultipleLocator(minor))
         fig.xaxis.set_major_locator(MultipleLocator(major))
 
         if save:
-            # Saving and exporting the Binned file.
             F = 'OUT/%s.pdf'%(outFilename)
             export_file(F, binns, inten)
             plt.savefig(F)
@@ -174,4 +164,4 @@ def avgSpec_plot(t, ts, lgs, minor, major, \
         print()
 
     except FileNotFoundError:
-        filenotfound("ERROR: ", "Some .base or .pow file might be missing")
+        ErrorInfo("ERROR", "Some .felix are corrupt or .base file is missing")

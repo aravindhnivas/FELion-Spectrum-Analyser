@@ -11,13 +11,13 @@ from FELion_baseline import felix_read_file, BaselineCalibrator
 from FELion_power import PowerCalibrator
 from FELion_sa import SpectrumAnalyserCalibrator
 import os
-import shutil
 
 
 
 # Custom inport:
 import matplotlib.pyplot as plt
 from tkinter import Tk, messagebox
+from FELion_definitions import *
 
 ################################################################################
 
@@ -179,116 +179,85 @@ def main(s=True, plotShow=False):
 
 def normline_correction(fname, location, mname, temp, bwidth, ie, save, foravgshow, normall, show):
 
-    os.chdir(location)
-    my_path = os.getcwd()
+    try:
+        os.chdir(location)
+        my_path = os.getcwd()
 
-    if(fname.find('felix')>=0):
-        fname = fname.split('.')[0]
-
-    fullname = fname + ".felix"
-    powerfile = fname + ".pow"
-    basefile = fname + ".base"
-
-    if not os.path.isdir("DATA"): os.mkdir("DATA")
-    if not os.path.isdir("EXPORT"): os.mkdir("EXPORT")
-    if not os.path.isdir("OUT"): os.mkdir("OUT")       
-    
-    # Custom definitions:
-    def filesaved():
-        if os.path.isfile(my_path+"/OUT/{}.pdf".format(fname)) and save:
-            root = Tk()
-            root.withdraw()
-            messagebox.showinfo("Information", "File '{}.pdf' Saved in OUT Directory".format(fname))
-            root.destroy()
-
-    def filenotfound():
-        root = Tk()
-        root.withdraw()
-        messagebox.showerror("Error", "FILE '{}' NOT FOUND".format(fullname))
-        root.destroy()
-
-    def base_filenotfound():
-        root = Tk()
-        root.withdraw()
-        messagebox.showerror("Error", "FILE '{}' NOT FOUND\nDo Baseline correction FIRST!".format(basefile))
-        root.destroy()
-    
-    def pownotfound():
-        root = Tk()
-        root.withdraw()
-        messagebox.showerror("Error", "FILE '{}' NOT FOUND\n"\
-            "(Create the pow file for file: '{}')".format(powerfile, fullname))
-        root.destroy()
-
-    def completed(fileNameList):
-        for fname in fileNameList:
-            if os.path.isfile(my_path+"/OUT/{}.pdf".format(fname)) and save:
-                root = Tk()
-                root.withdraw()
-                messagebox.showinfo("Information", "File '{}.pdf' Saved in OUT Directory".format(fname))
-                root.destroy()
-
-    def run(for_normall_saveDialog):
-
-        norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show)
-        if not for_normall_saveDialog:
-            filesaved()
-
-    def normrun(basefile, powerfile, fullname, for_normall_saveDialog):
-
-        #File check
-        if not os.path.isfile(my_path+"/DATA/"+fullname):
-            if os.path.isfile(my_path+"/"+fullname):
-                shutil.copyfile(my_path + "/{}".format(fullname),\
-                            my_path + "/DATA/{}".format(fullname))
-                print("{} copied to the DATA folder.".format(fullname))
-            else:
-                return filenotfound()
-
-        #Powefile check
-        if not os.path.isfile(my_path+"/DATA/"+powerfile):
-            if os.path.isfile(my_path+"/Pow/"+powerfile):
-                shutil.copyfile(my_path + "/Pow/{}".format(powerfile), my_path + "/DATA/{}".format(powerfile))
-                print("{} Powerfile copied to the DATA folder.".format(powerfile))
-        
-            elif os.path.isfile(my_path+"/"+powerfile):
-                shutil.copyfile(my_path + "/{}".format(powerfile), my_path + "/DATA/{}".format(powerfile))
-                print("{} Powerfile copied to the DATA folder.".format(powerfile))
+        if(fname.find('felix')>=0): fname = fname.split('.')[0]
             
-            else:
-                return pownotfound()
-        
-        #Basefile check
-        if not os.path.isfile(my_path+"/DATA/"+basefile):
-            if os.path.isfile(my_path+"/"+basefile):
-                shutil.copyfile(my_path + "/{}".format(basefile),\
-                            my_path + "/DATA/{}".format(basefile))
-                print("{} Basefile copied to the DATA folder.".format(basefile))
-            else:
-                return base_filenotfound()
+        fullname = fname + ".felix"
+        powerfile = fname + ".pow"
+        basefile = fname + ".base"
 
-        #Normline run
-        run(for_normall_saveDialog)
+        folders = ['DATA', 'EXPORT', 'OUT']
 
-    if not normall:
-        for_normall_saveDialog = False
-        normrun(basefile, powerfile, fullname, for_normall_saveDialog)
+        for i in folders:
+            if not os.path.isdir(i): os.mkdir(i)
 
+        def completed(fileNameList):
+            for fname in fileNameList:
+                if os.path.isfile(my_path+"/OUT/{}.pdf".format(fname)) and save:
+                    ShowInfo("SAVED", "File %s.pdf saved in OUT/ directory"%fname)
 
-    if normall:
-        for_normall_saveDialog = True
-        fileNameList = []
-        cwd = os.listdir(my_path)
-        for f in cwd:
-            if f.find(".base")>=0:
-                fileNameList.append(f.split(".base")[0])
+        def run(for_normall_saveDialog):
 
-        for fname in fileNameList:
-            fullname = fname + ".felix"
-            powerfile = fname + ".pow"
-            basefile = fname + ".base"
+            norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show)
+            if not for_normall_saveDialog:
+                if os.path.isfile(my_path+"/OUT/{}.pdf".format(fname)) and save:
+                    ShowInfo("SAVED", "File %s.pdf saved in OUT/ directory"%fname)
+
+        def normrun(basefile, powerfile, fullname, for_normall_saveDialog):
+
+            #File check
+            if not os.path.isfile(my_path+"/DATA/"+fullname):
+                if os.path.isfile(my_path+"/"+fullname):
+                    copy(my_path, fullname)
+                else:
+                    return ErrorInfo("ERROR: ", "File %s NOT found"%fullname)
+
+            #Powefile check
+            if not os.path.isfile(my_path+"/DATA/"+powerfile):
+                if os.path.isfile(my_path+"/Pow/"+powerfile):
+                    copy(my_path, powerfile)
+            
+                elif os.path.isfile(my_path+"/"+powerfile):
+                    copy(my_path, powerfile)
+                
+                else:
+                    return ErrorInfo("ERROR: ", "Powerfile: %s NOT found"%powerfile)
+            
+            #Basefile check
+            if not os.path.isfile(my_path+"/DATA/"+basefile):
+                if os.path.isfile(my_path+"/"+basefile):
+                    copy(my_path, basefile)
+                else:
+                    return ErrorInfo("ERROR: ", "Basefile: %s NOT found"%basefile)
+
+            #Normline run
+            run(for_normall_saveDialog)
+
+        if not normall:
+            for_normall_saveDialog = False
             normrun(basefile, powerfile, fullname, for_normall_saveDialog)
-            
-        completed(fileNameList)
 
-    print("DONE")
+
+        if normall:
+            for_normall_saveDialog = True
+            fileNameList = []
+            cwd = os.listdir(my_path)
+            for f in cwd:
+                if f.find(".base")>=0:
+                    fileNameList.append(f.split(".base")[0])
+
+            for fname in fileNameList:
+                fullname = fname + ".felix"
+                powerfile = fname + ".pow"
+                basefile = fname + ".base"
+                normrun(basefile, powerfile, fullname, for_normall_saveDialog)
+                
+            completed(fileNameList)
+
+        print("DONE")
+        
+    except Exception as e:
+        ErrorInfo("ERROR:", e)
