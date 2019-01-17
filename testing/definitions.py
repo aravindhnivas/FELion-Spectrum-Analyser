@@ -1,38 +1,38 @@
 import tkinter as tk
-class CustomWidget(tk.Frame):
-    def __init__(self, parent, label, default="", strng):
+from tkinter import ttk, StringVar, IntVar
+
+class LabelAndEntry(tk.Frame):
+    def __init__(self, parent, label, entry, strng):
         tk.Frame.__init__(self, parent)
 
-        self.label = tk.Label(self, text=label, anchor="w")
-        self.entry = tk.Entry(self)
+        self.label = tk.Label(self, text=label, font = ("Times", 12, "bold"))
         
         self.strng = strng
-        if self.strng: self.value = StrngVar()
-        else: sefl.value = IntVar()
+        if self.strng: self.value = StringVar()
+        else: self.value = IntVar()
         
-        self.entry.insert(0, default)
+        self.value.set(entry)       
+        
+        self.entry = tk.Entry(self, textvariable = self.value, bg = "white",\
+                              bd = 5, font = ("Times", 12, "italic"))
 
-        self.label.pack(side="top", fill="x")
-        self.entry.pack(side="bottom", fill="x", padx=4)
+        self.label.grid(row = 0, column = 0)
+        self.entry.grid(row = 0, column = 1)
 
     def get(self):
-        return self.entry.get()
+        return self.value.get()
 
 class Example(tk.Frame):
     def __init__(self, parent):
         tk.Frame.__init__(self, parent)
         
-        self.e1 = CustomWidget(self, "First Name:", "Inigo")
-        self.e2 = CustomWidget(self, "Last Name:", "Montoya")
-
-        self.e1.grid(row=0, column=0, sticky="ew")
-        self.e2.grid(row=1, column=0, sticky="ew")
-
-        self.grid_columnconfigure(0, weight=1)
-        self.grid_rowconfigure(2, weight=1)
-
+        self.e1 = LabelAndEntry(self, "Name:","John Nash", strng = True)
+        self.e1.pack()
+        
+        self.e2 = LabelAndEntry(self, "Filename:","Hello "+ self.e1.get(), strng = True)
+        self.e2.pack()
 
 if __name__ == "__main__":
     root = tk.Tk()
-    Example(root).place(x=0, y=0, relwidth=1, relheight=0.3)
+    Example(root).pack()
     root.mainloop()
