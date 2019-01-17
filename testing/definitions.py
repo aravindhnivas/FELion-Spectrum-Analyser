@@ -16,7 +16,7 @@ class LabelAndEntry(tk.Frame):
         self.entry = tk.Entry(self, textvariable = self.value, bg = "white",\
                               bd = 5, font = ("Times", 12, "italic"))
 
-        self.label.grid(row = 0, column = 0)
+        self.label.place
         self.entry.grid(row = 0, column = 1)
 
     def get(self):
