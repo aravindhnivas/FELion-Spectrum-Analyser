@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-
 from tkinter import *
 from tkinter import ttk, messagebox, filedialog
 import os
@@ -14,29 +13,18 @@ from FELion_avgSpec import avgSpec_plot
 from FELion_normline import normline_correction
 from FELion_power import FELion_Power
 from FELion_sa import FELion_Sa
-
-#Powerfile Functions:
-def locationnotfound():
-        root = Tk()
-        root.withdraw()
-        messagebox.showerror("Error", "Location NOT FOUND")
-        root.destroy()
+from FELion_definitions import *
 
 def outFile(fname, location, file):
         try:
                 os.chdir(location)
                 my_path = os.getcwd()
-                #file = T.get("1.0", "end-1c")
-
-
+ 
                 def saveinfo():
                         os.chdir(location)
                         if os.path.isfile(my_path+"/Pow/{}.pow".format(fname)):
-                                save = Tk()
-                                save.withdraw()
-                                messagebox.showinfo("Information", \
-                                        "File {}.pow saved in /Pow directory".format(fname))
-                                save.destroy()
+                                ShowInfo("SAVED", "File %s.pow saved in /Pow directory"%fname)
+                                
 
                 def write():
                         f = open(my_path+"/Pow/{}.pow".format(fname), "w")
@@ -45,8 +33,7 @@ def outFile(fname, location, file):
                         saveinfo()
 
                 
-                if not os.path.isdir("Pow"):
-                        os.mkdir("Pow")
+                if not os.path.isdir("Pow"): os.mkdir("Pow") 
 
                 if os.path.isfile(my_path+"/Pow/{}.pow".format(fname)):
                         messagebox.showerror("OVERWRITE","File already exist")
@@ -57,12 +44,8 @@ def outFile(fname, location, file):
                 else:
                         write()
 
-        except:
-                locationnotfound()
-
-def on_closing():
-    if messagebox.askokcancel("Quit", "Do you want to quit?"):
-      app.destroy()
+        except Exception as e:
+                ErrorInfo("ERROR", e)
 
 LARGE_FONT= ("Verdana", 15)
 
@@ -875,7 +858,6 @@ class Plot(Frame):
                 textvariable = deg, justify = LEFT, font=("Times", 12, "italic"))
 
 
-
         mass_diff = 0.12
         mass_smalldiff = 0.06
 
@@ -909,7 +891,18 @@ class Plot(Frame):
 
         combine_entry.place(relx = m_x1,  rely = m_y4, relwidth = 0.6, height = height)
 
-app = FELion()
+def on_closing():
+    if messagebox.askokcancel("Quit", "Do you want to quit?"):
+        app.destroy()
 
+def get_dpi(window):
+    MM_TO_IN = 1/25.4
+    pxw = window.master.winfo_screenwidth()
+    inw = window.master.winfo_screenmmwidth() * MM_TO_IN
+    return pxw/inw
+
+
+
+app = FELion()
 app.protocol("WM_DELETE_WINDOW", on_closing)
 app.mainloop()
