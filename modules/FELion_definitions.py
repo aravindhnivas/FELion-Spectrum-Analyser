@@ -46,7 +46,7 @@ def recursive_overwrite(src, dest, ignore=None):
 
 def update():
     try:
-        t = "D:/FELion_update_cache"
+        t = "C:/FELion_update_cache"
         git.Repo.clone_from('https://github.com/aravindhnivas/FELion-Spectrum-Analyser', t, branch='master', depth=1)
         recursive_overwrite(os.path.join(t, 'modules'), 'C:/FELion-GUI/software')
 
