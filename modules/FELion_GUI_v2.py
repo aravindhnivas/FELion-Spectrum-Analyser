@@ -48,9 +48,8 @@ def outFile(fname, location, file):
                 ErrorInfo("ERROR", e)
 
 LARGE_FONT= ("Verdana", 15)
-
 diff = 0.15
-x1 = 0.25
+x1 = 0.15
 x2 = x1 + diff
 x3 = x2 + diff
 x4 = x3 + diff
