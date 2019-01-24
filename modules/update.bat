@@ -33,4 +33,4 @@ if '%errorlevel%' NEQ '0' (
 
 :: Installation Script
 
-python %cd%\update.py
+python C:\FELion-GUI\modules\update.py

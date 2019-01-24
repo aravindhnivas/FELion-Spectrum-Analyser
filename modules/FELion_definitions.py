@@ -43,11 +43,11 @@ def recursive_overwrite(src, dest, ignore=None):
 
 def update():
 
-    try:
-        subprocess.call(["update.bat"])
-        
-    except Exception as e:
-        ErrorInfo("ERROR: ", e)
+    #try:
+    subprocess.call(["update.bat"])
+
+    #except Exception as e:
+    #    ErrorInfo("ERROR: ", e)
 
 # Tkinter functions:
 ####################################
