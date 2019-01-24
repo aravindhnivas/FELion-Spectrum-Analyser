@@ -1,10 +1,10 @@
 #!/usr/bin/python3
-
 from tkinter import *
 from tkinter import ttk, messagebox, filedialog
 import os
 import shutil
-
+import git
+import tempfile
 
 # General functions:
 
@@ -24,6 +24,11 @@ def ShowInfo(info, msg):
     root.withdraw()
     messagebox.showinfo(str(info), str(msg))
     root.destroy()
+
+# Update modules
+
+def update():
+    pass
 
 # Tkinter functions:
 ####################################
