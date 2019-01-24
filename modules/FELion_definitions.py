@@ -27,8 +27,25 @@ def ShowInfo(info, msg):
 
 # Update modules
 
+def recursive_overwrite(src, dest, ignore=None):
+    if os.path.isdir(src):
+        if not os.path.isdir(dest):
+            os.makedirs(dest)
+        files = os.listdir(src)
+        if ignore is not None:
+            ignored = ignore(src, files)
+        else:
+            ignored = set()
+        for f in files:
+            if f not in ignored:
+                recursive_overwrite(os.path.join(src, f), 
+                                    os.path.join(dest, f), 
+                                    ignore)
+    else:
+        shutil.copyfile(src, dest)
+
 def update():
-    
+
     try:
         # Create temporary dir
         t = tempfile.mkdtemp()
@@ -37,7 +54,7 @@ def update():
         git.Repo.clone_from('https://github.com/aravindhnivas/FELion-Spectrum-Analyser', t, branch='master', depth=1)
 
         # Copy desired file from temporary dir
-        shutil.move(os.path.join(t, 'modules'), 'C:/FELion-GUI')
+        recursive_overwrite(os.path.join(t, 'modules'), 'C:/FELion-GUI')
 
         # Remove temporary dir
         shutil.rmtree(t)
