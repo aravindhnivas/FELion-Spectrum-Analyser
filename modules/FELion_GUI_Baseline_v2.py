@@ -35,7 +35,7 @@ class FELion_base(Tk):
     def __init__(self, *args, **kwargs):
 
         Tk.__init__(self, *args, **kwargs)
-        Tk.iconbitmap(self,default='C:/FELION-GUI/FELion_Icon.ico')
+        Tk.iconbitmap(self,default='C:/FELION-GUI/software/FELion_Icon.ico')
         Tk.wm_title(self, "FELion Baseline Correction v.2.0")
         Tk.wm_geometry(self, "900x600")
 

@@ -34,12 +34,8 @@ if '%errorlevel%' NEQ '0' (
 :: Installation Script
 
 python compile.py
-ROBOCOPY %cd%\modules C:\FELion-GUI
-del "C:\FELion-GUI\update.py"
-del "C:\FELion-GUI\update.bat"
-
-ROBOCOPY %cd%\modules\update.py C:\FELion-GUI\update
-ROBOCOPY %cd%\modules\update.bat C:\FELion-GUI\update
+ROBOCOPY %cd%\modules C:\FELion-GUI\software
+ROBOCOPY %cd%\update C:\FELion-GUI
 
 
 IF EXIST %cd%\modules\__pycache__ ROBOCOPY %cd%\modules\__pycache__ C:\FELion-GUI\__pycache__
@@ -50,10 +46,10 @@ IF EXIST C:\FELion-GUI set PATH = %PATH%;C:\FELion-GUI
 :: ####################
 set SCRIPT="%TEMP%\%RANDOM%-%RANDOM%-%RANDOM%-%RANDOM%.vbs"
 echo Set oWS = WScript.CreateObject("WScript.Shell") >> %SCRIPT%
-echo sLinkFile = "C:\FELion-GUI\FELion-Normline.lnk" >> %SCRIPT%
+echo sLinkFile = "C:\FELion-GUI\software\FELion-Normline.lnk" >> %SCRIPT%
 echo Set oLink = oWS.CreateShortcut(sLinkFile) >> %SCRIPT%
-echo oLink.TargetPath = "C:\FELion-GUI\Normline.bat" >> %SCRIPT%
-echo oLink.IconLocation = "C:\FELion-GUI\FELion_Icon.ico" >> %SCRIPT%
+echo oLink.TargetPath = "C:\FELion-GUI\software\Normline.bat" >> %SCRIPT%
+echo oLink.IconLocation = "C:\FELion-GUI\software\FELion_Icon.ico" >> %SCRIPT%
 echo oLink.Save >> %SCRIPT%
 cscript /nologo %SCRIPT%
 del %SCRIPT%
@@ -63,17 +59,17 @@ del %SCRIPT%
 :: ####################
 set SCRIPT="%TEMP%\%RANDOM%-%RANDOM%-%RANDOM%-%RANDOM%.vbs"
 echo Set oWS = WScript.CreateObject("WScript.Shell") >> %SCRIPT%
-echo sLinkFile = "C:\FELion-GUI\FELion-Baseline.lnk" >> %SCRIPT%
+echo sLinkFile = "C:\FELion-GUI\software\FELion-Baseline.lnk" >> %SCRIPT%
 echo Set oLink = oWS.CreateShortcut(sLinkFile) >> %SCRIPT%
-echo oLink.TargetPath = "C:\FELion-GUI\Baseline.bat" >> %SCRIPT%
-echo oLink.IconLocation = "C:\FELion-GUI\FELion_Icon.ico" >> %SCRIPT%
+echo oLink.TargetPath = "C:\FELion-GUI\software\Baseline.bat" >> %SCRIPT%
+echo oLink.IconLocation = "C:\FELion-GUI\software\FELion_Icon.ico" >> %SCRIPT%
 echo oLink.Save >> %SCRIPT%
 cscript /nologo %SCRIPT%
 del %SCRIPT%
 :: ####################
 
-ROBOCOPY C:\FELion-GUI "C:\Users\Public\Desktop" FELion-Normline.lnk FELion-Baseline.lnk
-ROBOCOPY C:\FELion-GUI "C:\ProgramData\Microsoft\Windows\Start Menu\Programs" FELion-Normline.lnk FELion-Baseline.lnk
+ROBOCOPY C:\FELion-GUI\software "C:\Users\Public\Desktop" FELion-Normline.lnk FELion-Baseline.lnk
+ROBOCOPY C:\FELion-GUI\software "C:\ProgramData\Microsoft\Windows\Start Menu\Programs" FELion-Normline.lnk FELion-Baseline.lnk
 
 echo "######################################################################################"
 echo "Installation Completed: Shorcuts created on Desktop and Start Menu"
