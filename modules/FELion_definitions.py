@@ -49,11 +49,14 @@ def recursive_overwrite(src, dest, ignore=None):
 
 def update():
     try:
-        with TemporaryDirectory() as t:
-            git.Repo.clone_from('https://github.com/aravindhnivas/FELion-Spectrum-Analyser', t, branch='master', depth=1)
-            recursive_overwrite(os.path.join(t, 'modules'), 'C:/FELion-GUI/software')
+        if isdir("D:/FELion_update_cache"): shutil.rmtree("D:/FELion_update_cache")
+        t = "D:/FELion_update_cache"
+        git.Repo.clone_from('https://github.com/aravindhnivas/FELion-Spectrum-Analyser', t, branch='master', depth=1)
+        recursive_overwrite(os.path.join(t, 'modules'), 'C:/FELion-GUI/software')
 
         ShowInfo("UPDATED", "Program is updated to the latest version.")
+
+        shutil.rmtree("D:/FELion_update_cache")
 
     except Exception as e:
         ErrorInfo("ERROR: ", e)
