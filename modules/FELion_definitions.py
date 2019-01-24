@@ -1,9 +1,19 @@
 #!/usr/bin/python3
+
 from tkinter import *
 from tkinter import ttk, messagebox, filedialog
 import os, shutil, tempfile, git, subprocess
 from os.path import isdir, dirname
-import elevate
+import win32com.shell.shell as shell
+
+import sys
+ASADMIN = 'asadmin'
+
+def admin():
+    if sys.argv[-1] != ASADMIN:
+        script = os.path.abspath(sys.argv[0])
+        params = ' '.join([script] + sys.argv[1:] + [ASADMIN])
+        shell.ShellExecuteEx(lpVerb='runas', lpFile=sys.executable, lpParameters=params)
 
 # General functions:
 
@@ -47,7 +57,7 @@ def recursive_overwrite(src, dest, ignore=None):
 def update():
 
     try:
-        elevate.elevate()
+        admin()
         # Create temporary dir
         t = tempfile.mkdtemp()
 
@@ -63,7 +73,7 @@ def update():
 
     except Exception as e:
         ErrorInfo("ERROR: ", e)
-        
+
 # Tkinter functions:
 ####################################
 
