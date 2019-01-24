@@ -35,7 +35,7 @@ if '%errorlevel%' NEQ '0' (
 
 python compile.py
 ROBOCOPY %cd%\modules C:\FELion-GUI\software
-ROBOCOPY %cd%\update C:\FELion-GUI\update
+::ROBOCOPY %cd%\update C:\FELion-GUI\update
 
 
 IF EXIST %cd%\modules\__pycache__ ROBOCOPY %cd%\modules\__pycache__ C:\FELion-GUI\__pycache__
