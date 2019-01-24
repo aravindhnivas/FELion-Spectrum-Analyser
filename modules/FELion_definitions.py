@@ -8,6 +8,7 @@ import os, shutil, tempfile, git, subprocess
 copy = lambda pathdir, x: (shutil.copyfile(pathdir + os.sep+ "{}".format(x), pathdir +os.sep+ "DATA"+os.sep+"{}".format(x)), print("%s copied to DATA folder"))
 move = lambda pathdir, x: (shutil.move(pathdir +os.sep+ "{}".format(x), pathdir +os.sep+ "DATA"+os.sep+"{}".format(x)), print("%s moved to DATA folder"))
 
+
 # Tkinter messagebox
 
 def ErrorInfo(error, msg):
@@ -44,7 +45,7 @@ def recursive_overwrite(src, dest, ignore=None):
 def update():
 
     #try:
-    subprocess.call(["update.bat"])
+    subprocess.call(["C:/FELion-GUI/update.bat"])
 
     #except Exception as e:
     #    ErrorInfo("ERROR: ", e)
