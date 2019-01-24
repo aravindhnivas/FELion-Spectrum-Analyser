@@ -35,6 +35,12 @@ if '%errorlevel%' NEQ '0' (
 
 python compile.py
 ROBOCOPY %cd%\modules C:\FELion-GUI
+del "C:\FELion-GUI\update.py"
+del "C:\FELion-GUI\update.bat"
+
+ROBOCOPY %cd%\modules\update.py C:\FELion-GUI\update
+ROBOCOPY %cd%\modules\update.bat C:\FELion-GUI\update
+
 
 IF EXIST %cd%\modules\__pycache__ ROBOCOPY %cd%\modules\__pycache__ C:\FELion-GUI\__pycache__
 IF EXIST %cd%\modules\_datas ROBOCOPY %cd%\modules\_datas C:\FELion-GUI\_datas

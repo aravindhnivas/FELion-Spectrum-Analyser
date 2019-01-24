@@ -1,5 +1,9 @@
 
 import os, shutil, tempfile, git
+from os.path import dirname
+
+os.chdir(dirname(os.getcwd()))
+
 from FELion_definitions import ErrorInfo, ShowInfo, recursive_overwrite
 
 try:

@@ -45,7 +45,7 @@ def recursive_overwrite(src, dest, ignore=None):
 def update():
 
     #try:
-    subprocess.call(["C:/FELion-GUI/update.bat"])
+    subprocess.call(["C:/FELion-GUI/update/update.bat"])
 
     #except Exception as e:
     #    ErrorInfo("ERROR: ", e)
