@@ -51,7 +51,7 @@ try:
     git.Repo.clone_from('https://github.com/aravindhnivas/FELion-Spectrum-Analyser', "TEMP", branch='master', depth=1)
 
     # Copy desired file from temporary dir
-    recursive_overwrite(os.path.join(t, 'modules'), 'C:/FELion-GUI/software')
+    recursive_overwrite(os.path.join("TEMP", 'modules'), 'C:/FELion-GUI/software')
 
     # Remove temporary dir
     shutil.rmtree("TEMP")
