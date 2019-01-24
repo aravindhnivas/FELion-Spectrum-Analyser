@@ -16,6 +16,7 @@ import os
 import matplotlib.pyplot as plt
 from tkinter import Tk, messagebox
 from FELion_definitions import *
+from os.path import dirname, isdir, isfile
 
 ################################################################################
 
@@ -178,19 +179,28 @@ def main(s=True, plotShow=False):
 def normline_correction(fname, location, mname, temp, bwidth, ie, save, foravgshow, normall, show):
 
     try:
-        os.chdir(location)
-        my_path = os.getcwd()
-
-        if(fname.find('felix')>=0): fname = fname.split('.')[0]
+        folders = ["DATA", "EXPORT", "OUT"]
+        back_dir = dirname(location)
+        
+        if set(folders).issubset(os.listdir(back_dir)): 
+            os.chdir(back_dir)
+            my_path = os.getcwd()
+        
+        else: 
+            os.chdir(location)
+            my_path = os.getcwd() 
             
+        if(fname.find('felix')>=0):
+            fname = fname.split('.')[0]
+
         fullname = fname + ".felix"
-        powerfile = fname + ".pow"
         basefile = fname + ".base"
+        powerfile = fname + ".pow"
+        files = [fullname, powerfile, basefile]
 
-        folders = ['DATA', 'EXPORT', 'OUT']
-
-        for i in folders:
-            if not os.path.isdir(i): os.mkdir(i)
+        for dirs, filenames in zip(folders, files):
+            if not isdir(dirs): os.mkdir(dirs)
+            if isfile(filenames): move(my_path, filenames)
 
         def completed(fileNameList):
             for fname in fileNameList:

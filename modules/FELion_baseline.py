@@ -11,10 +11,12 @@ from matplotlib.artist import Artist
 from matplotlib.mlab import dist_point_to_segment
 from scipy.interpolate import interp1d
 
-import os 
+import os
+from os.path import dirname, isdir, isfile
 import shutil
 from tkinter import Tk, messagebox
 
+from FELion_definitions import move, copy, ErrorInfo
 
 #These 2 values are used when guessing the baseline:
 PPS = 5         #points around the value to average
@@ -325,57 +327,66 @@ def main(fname=""):
     return
 
 def baseline_correction(fname, location):
-    os.chdir(location)
-    my_path = os.getcwd()    
+
+    try:
+        folders = ["DATA", "EXPORT", "OUT"]
+        back_dir = dirname(location)
+        
+        if set(folders).issubset(os.listdir(back_dir)): 
+            os.chdir(back_dir)
+            my_path = os.getcwd()
+        
+        else: 
+            os.chdir(location)
+            my_path = os.getcwd() 
+            
+        if(fname.find('felix')>=0):
+            fname = fname.split('.')[0]
+
+        filename = fname + ".felix"
+        basefile = fname + ".base"
+        powerfile = fname + ".pow"
+        files = [filename, powerfile, basefile]
+
+        for dirs, filenames in zip(folders, files):
+            if not isdir(dirs): os.mkdir(dirs)
+            if isfile(filenames): move(my_path, filenames)
+
+        data = felix_read_file(fname)
+
+        #Check wether the baslien file exists
+        if not os.path.isfile('DATA/'+fname+'.base'):
+            print("Guessing baseline from .felix file!")
+            xs, ys = GuessBaseLine(data)
+        else:
+            print("Reading baseline from .base file!")
+            xs, ys, *rest = ReadBase(fname)
+
+        fig, ax = plt.subplots()
+
+        p = InteractivePoints(fig, ax, xs, ys)
+        ax.plot(data[0], data[1], ls='', marker='o', ms=5, markeredgecolor='r', c='r')
+
+        print("\nUSAGE:\nBlue baseline points are dragable...\
+            \nKeys:\n\
+        'a' - adds a point at current cursor position\n\
+        'd' - delets a point at current cursor position\n\
+        'w' - moves the point to the 'average' value at given x position\n\
+        'q' - stores baseline in .base file and quits!\n")
+
+        ax.set_title('BASELINE points are drag-able!')
+        ax.set_xlim((data[0][0]-70, data[0][-1]+70))
+        ax.set_xlabel("wavenumber (cm-1)")
+        ax.set_ylabel("Counts")
+        plt.show()
+        
+        print("\n{}.base Baseline Saved.".format(fname))
+
+        if baseline != None:
+            SaveBase(fname, baseline)
     
-    if(fname.find('felix')>=0):
-        fname = fname.split('.')[0]
-
-    if not os.path.isdir('EXPORT'): os.mkdir('EXPORT')
-    if not os.path.isdir('DATA'): os.mkdir('DATA')
-    if not os.path.isdir('OUT'): os.mkdir('OUT')
-
-    filename = fname + ".felix"
-
-    shutil.copyfile(my_path + "/{}".format(filename), my_path + "/DATA/{}".format(filename))
-
-    data = felix_read_file(fname)
-
-    #Check wether the baslien file exists
-    if not os.path.isfile('DATA/'+fname+'.base'):
-        print("Guessing baseline from .felix file!")
-        xs, ys = GuessBaseLine(data)
-    else:
-        print("Reading baseline from .base file!")
-        xs, ys, *rest = ReadBase(fname)
-
-    fig, ax = plt.subplots()
-
-    p = InteractivePoints(fig, ax, xs, ys)
-    ax.plot(data[0], data[1], ls='', marker='o', ms=5, markeredgecolor='r', c='r')
-
-    print("\nUSAGE:\nBlue baseline points are dragable...\
-        \nKeys:\n\
-    'a' - adds a point at current cursor position\n\
-    'd' - delets a point at current cursor position\n\
-    'w' - moves the point to the 'average' value at given x position\n\
-    'q' - stores baseline in .base file and quits!\n")
-
-    ax.set_title('BASELINE points are drag-able!')
-    ax.set_xlim((data[0][0]-70, data[0][-1]+70))
-    ax.set_xlabel("wavenumber (cm-1)")
-    ax.set_ylabel("Counts")
-    plt.show()
-    
-    #Powerfile check
-    powerfile = fname+".pow"
-    if os.path.isfile(powerfile):
-        shutil.copyfile(my_path + "/{}".format(powerfile), my_path + "/DATA/{}".format(powerfile))
-        print("{} Powerfile copied to the DATA folder.".format(powerfile))
-    
-    print("\n{}.base Baseline Saved.".format(fname))
-    if baseline != None:
-        SaveBase(fname, baseline)
+    except Exception as e:
+        ErrorInfo("ERROR: ", e)
 
 if __name__ == "__main__":
     main()
