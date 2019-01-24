@@ -46,7 +46,6 @@ def recursive_overwrite(src, dest, ignore=None):
 
 def update():
 
-    #try:    
     try:
         elevate.elevate()
         # Create temporary dir
@@ -64,10 +63,7 @@ def update():
 
     except Exception as e:
         ErrorInfo("ERROR: ", e)
-
-    #except Exception as e:
-    #    ErrorInfo("ERROR: ", e)
-
+        
 # Tkinter functions:
 ####################################
 
