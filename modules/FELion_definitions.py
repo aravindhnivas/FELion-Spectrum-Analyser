@@ -48,10 +48,12 @@ def recursive_overwrite(src, dest, ignore=None):
         shutil.copyfile(src, dest)
 
 def update():
-    try:               
-        t = "C:\\FELion_update_cache"
-        git.Repo.clone_from('https://github.com/aravindhnivas/FELion-Spectrum-Analyser', t, branch='master', depth=1)
-        recursive_overwrite(os.path.join(t, 'modules'), 'C:/FELion-GUI/software/')
+    try:
+        if not isdir("C:\\FELion_update_cache"): 
+            os.mkdir("C:\\FELion_update_cache")               
+        
+        git.Repo.clone_from('https://github.com/aravindhnivas/FELion-Spectrum-Analyser',"C:\\FELion_update_cache", branch='master', depth=1)
+        recursive_overwrite(os.path.join("C:\\FELion_update_cache", 'modules'), 'C:/FELion-GUI/software/')
 
         ShowInfo("UPDATED", "Program is updated to the latest version.")
 
