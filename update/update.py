@@ -2,7 +2,11 @@
 
 from tkinter import messagebox, Tk
 import os, shutil, tempfile, git
-from os.path import dirname
+from os.path import dirname, isdir
+import elevate
+
+
+elevate.elevate(show_console = False)
 
 # Tkinter messagebox
 
@@ -39,16 +43,18 @@ def recursive_overwrite(src, dest, ignore=None):
 
 try:
     # Create temporary dir
-    t = tempfile.mkdtemp()
+    #t = tempfile.mkdtemp()
+
+    if not isdir("TEMP"): os.mkdir("TMEP")
 
     # Clone into temporary dir
-    git.Repo.clone_from('https://github.com/aravindhnivas/FELion-Spectrum-Analyser', t, branch='master', depth=1)
+    git.Repo.clone_from('https://github.com/aravindhnivas/FELion-Spectrum-Analyser', "TEMP", branch='master', depth=1)
 
     # Copy desired file from temporary dir
     recursive_overwrite(os.path.join(t, 'modules'), 'C:/FELion-GUI/software')
 
     # Remove temporary dir
-    shutil.rmtree(t)
+    shutil.rmtree("TEMP")
     ShowInfo("UPDATED", "Program is updated to the latest version.")
 
 except Exception as e:
