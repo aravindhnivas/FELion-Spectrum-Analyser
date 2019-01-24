@@ -3,15 +3,12 @@
 from tkinter import *
 from tkinter import ttk, messagebox, filedialog
 import os, shutil, tempfile, git, subprocess, sys
-from os.path import isdir, dirname
+from os.path import isdir, dirname, join
 from tempfile import TemporaryDirectory
 
-
-
 # General functions:
-
-copy = lambda pathdir, x: (shutil.copyfile(pathdir + os.sep+ "{}".format(x), pathdir +os.sep+ "DATA"+os.sep+"{}".format(x)), print("%s copied to DATA folder"))
-move = lambda pathdir, x: (shutil.move(pathdir +os.sep+ "{}".format(x), pathdir +os.sep+ "DATA"+os.sep+"{}".format(x)), print("%s moved to DATA folder"))
+copy = lambda pathdir, x: (shutil.copyfile(join(pathdir, x), join(pathdir,"DATA" ,x)), print("%s copied to DATA folder" %x))
+move = lambda pathdir, x: (shutil.copyfile(join(pathdir, x), join(pathdir,"DATA" ,x)), print("%s moved to DATA folder"%x))
 
 
 # Tkinter messagebox
@@ -49,15 +46,11 @@ def recursive_overwrite(src, dest, ignore=None):
 
 def update():
     try:
-        if isdir("D:/FELion_update_cache"): shutil.rmtree("D:/FELion_update_cache")
         t = "D:/FELion_update_cache"
-        git.Repo.clone_from('https://github.com/aravindhnivas/FELion-Spectrum-Analyser/modules', t, branch='master', depth=1)
-        #recursive_overwrite(os.path.join(t, 'modules'), 'C:/FELion-GUI/software')
-        recursive_overwrite(t, 'C:/FELion-GUI/software')
+        git.Repo.clone_from('https://github.com/aravindhnivas/FELion-Spectrum-Analyser', t, branch='master', depth=1)
+        recursive_overwrite(os.path.join(t, 'modules'), 'C:/FELion-GUI/software')
 
         ShowInfo("UPDATED", "Program is updated to the latest version.")
-
-        shutil.rmtree("D:/FELion_update_cache")
 
     except Exception as e:
         ErrorInfo("ERROR: ", e)
