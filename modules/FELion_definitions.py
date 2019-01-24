@@ -48,26 +48,12 @@ def recursive_overwrite(src, dest, ignore=None):
         shutil.copyfile(src, dest)
 
 def update():
+    try:               
+        t = "C:\\FELion_update_cache"
+        git.Repo.clone_from('https://github.com/aravindhnivas/FELion-Spectrum-Analyser', t, branch='master', depth=1)
+        recursive_overwrite(os.path.join(t, 'modules'), 'C:/FELion-GUI/software/')
 
-    try:
-        ASADMIN = 'asadmin'
-        if sys.argv[-1] != ASADMIN:
-            script = os.path.abspath(sys.argv[0])
-            params = ' '.join([script] + sys.argv[1:] + [ASADMIN])
-            shell.ShellExecuteEx(lpVerb='runas', lpFile=sys.executable, lpParameters=params)
-            
-            # Create temporary dir
-            t = tempfile.mkdtemp()
-
-            # Clone into temporary dir
-            git.Repo.clone_from('https://github.com/aravindhnivas/FELion-Spectrum-Analyser', t, branch='master', depth=1)
-
-            # Copy desired file from temporary dir
-            recursive_overwrite(os.path.join(t, 'modules'), 'C:/FELion-GUI/software')
-
-            # Remove temporary dir
-            shutil.rmtree(t)
-            ShowInfo("UPDATED", "Program is updated to the latest version.")
+        ShowInfo("UPDATED", "Program is updated to the latest version.")
 
     except Exception as e:
         ErrorInfo("ERROR: ", e)
