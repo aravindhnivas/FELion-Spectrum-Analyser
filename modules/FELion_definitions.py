@@ -51,8 +51,9 @@ def update():
     try:
         if isdir("D:/FELion_update_cache"): shutil.rmtree("D:/FELion_update_cache")
         t = "D:/FELion_update_cache"
-        git.Repo.clone_from('https://github.com/aravindhnivas/FELion-Spectrum-Analyser', t, branch='master', depth=1)
-        recursive_overwrite(os.path.join(t, 'modules'), 'C:/FELion-GUI/software')
+        git.Repo.clone_from('https://github.com/aravindhnivas/FELion-Spectrum-Analyser/modules', t, branch='master', depth=1)
+        #recursive_overwrite(os.path.join(t, 'modules'), 'C:/FELion-GUI/software')
+        recursive_overwrite(t, 'C:/FELion-GUI/software')
 
         ShowInfo("UPDATED", "Program is updated to the latest version.")
 
