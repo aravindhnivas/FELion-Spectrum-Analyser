@@ -49,9 +49,7 @@ def update():
         t = "C:/FELion_update_cache"
         git.Repo.clone_from('https://github.com/aravindhnivas/FELion-Spectrum-Analyser', t, branch='master', depth=1)
         recursive_overwrite(os.path.join(t, 'modules'), 'C:/FELion-GUI/software')
-
         ShowInfo("UPDATED", "Program is updated to the latest version.")
-        #os.execv('C:/FELion-GUI/software/FELion_GUI_Baseline_v2.py', ['']) 
 
     except Exception as e:
         ErrorInfo("ERROR: ", e)
