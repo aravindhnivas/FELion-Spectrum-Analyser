@@ -28,7 +28,23 @@ def ShowInfo(info, msg):
 # Update modules
 
 def update():
-    pass
+    
+    try:
+        # Create temporary dir
+        t = tempfile.mkdtemp()
+
+        # Clone into temporary dir
+        git.Repo.clone_from('https://github.com/aravindhnivas/FELion-Spectrum-Analyser', t, branch='master', depth=1)
+
+        # Copy desired file from temporary dir
+        shutil.move(os.path.join(t, 'modules'), 'C:/FELion-GUI')
+
+        # Remove temporary dir
+        shutil.rmtree(t)
+        ShowInfo("UPDATED", "Program is updated to the latest version.")
+
+    except Exception as e:
+        ErrorInfo("ERROR: ", e)
 
 # Tkinter functions:
 ####################################

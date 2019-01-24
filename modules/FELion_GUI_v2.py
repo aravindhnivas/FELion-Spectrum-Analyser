@@ -53,6 +53,7 @@ x1 = 0.15
 x2 = x1 + diff
 x3 = x2 + diff
 x4 = x3 + diff
+x5 = x4 + diff + 0.07
 
 y = 0.9
 width, height = (100, 40)
@@ -125,6 +126,10 @@ class StartPage(Frame):
         button4 = ttk.Button(self, text="Plot",
                             command=lambda: controller.show_frame(Plot))
         button4.place(relx = x4, rely = y, width = width, height = height)
+
+        button5 = ttk.Button(self, text="Update Program",
+                            command=lambda: update())
+        button5.place(relx = x5, rely = y, width = 110, height = height)
 
         welcome_msg = """
         The FELion Spectrum analyser for analysing FELIX data using Python;

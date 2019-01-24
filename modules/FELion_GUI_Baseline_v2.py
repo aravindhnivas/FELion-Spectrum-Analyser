@@ -6,6 +6,8 @@ import os
 import shutil
 from FELion_baseline import baseline_correction
 
+from FELion_definitions import update
+
 ###########
 def on_closing():
     if messagebox.askokcancel("Quit", "Do you want to quit?"):
@@ -84,6 +86,10 @@ class StartPage_Base(Frame):
         button1 = ttk.Button(self, text="Baseline",
                             command=lambda: controller.show_frame(Baseline))
         button1.place(relx = x1, rely = y, width = width, height = height)
+
+        button2 = ttk.Button(self, text="Update Program",
+                            command=lambda: update())
+        button2.place(relx = x3, rely = y, width = 110, height = height)
 
         welcome_msg = """
         The FELion Spectrum analyser for analysing FELIX data:
