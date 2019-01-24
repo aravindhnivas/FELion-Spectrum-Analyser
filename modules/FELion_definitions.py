@@ -2,18 +2,11 @@
 
 from tkinter import *
 from tkinter import ttk, messagebox, filedialog
-import os, shutil, tempfile, git, subprocess
+import os, shutil, tempfile, git, subprocess, sys
 from os.path import isdir, dirname
 import win32com.shell.shell as shell
 
-import sys
-ASADMIN = 'asadmin'
 
-def admin():
-    if sys.argv[-1] != ASADMIN:
-        script = os.path.abspath(sys.argv[0])
-        params = ' '.join([script] + sys.argv[1:] + [ASADMIN])
-        shell.ShellExecuteEx(lpVerb='runas', lpFile=sys.executable, lpParameters=params)
 
 # General functions:
 
@@ -57,19 +50,24 @@ def recursive_overwrite(src, dest, ignore=None):
 def update():
 
     try:
-        admin()
-        # Create temporary dir
-        t = tempfile.mkdtemp()
+        ASADMIN = 'asadmin'
+        if sys.argv[-1] != ASADMIN:
+            script = os.path.abspath(sys.argv[0])
+            params = ' '.join([script] + sys.argv[1:] + [ASADMIN])
+            shell.ShellExecuteEx(lpVerb='runas', lpFile=sys.executable, lpParameters=params)
+            
+            # Create temporary dir
+            t = tempfile.mkdtemp()
 
-        # Clone into temporary dir
-        git.Repo.clone_from('https://github.com/aravindhnivas/FELion-Spectrum-Analyser', t, branch='master', depth=1)
+            # Clone into temporary dir
+            git.Repo.clone_from('https://github.com/aravindhnivas/FELion-Spectrum-Analyser', t, branch='master', depth=1)
 
-        # Copy desired file from temporary dir
-        recursive_overwrite(os.path.join(t, 'modules'), 'C:/FELion-GUI/software')
+            # Copy desired file from temporary dir
+            recursive_overwrite(os.path.join(t, 'modules'), 'C:/FELion-GUI/software')
 
-        # Remove temporary dir
-        shutil.rmtree(t)
-        ShowInfo("UPDATED", "Program is updated to the latest version.")
+            # Remove temporary dir
+            shutil.rmtree(t)
+            ShowInfo("UPDATED", "Program is updated to the latest version.")
 
     except Exception as e:
         ErrorInfo("ERROR: ", e)
