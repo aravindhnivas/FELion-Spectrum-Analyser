@@ -37,7 +37,6 @@ python compile.py
 ROBOCOPY %cd%\modules C:\FELion-GUI\software
 ::ROBOCOPY %cd%\update C:\FELion-GUI\update
 
-
 IF EXIST %cd%\modules\__pycache__ ROBOCOPY %cd%\modules\__pycache__ C:\FELion-GUI\__pycache__
 IF EXIST %cd%\modules\_datas ROBOCOPY %cd%\modules\_datas C:\FELion-GUI\_datas
 IF EXIST C:\FELion-GUI set PATH = %PATH%;C:\FELion-GUI
