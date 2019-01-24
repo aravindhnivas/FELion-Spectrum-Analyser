@@ -51,6 +51,7 @@ def update():
         recursive_overwrite(os.path.join(t, 'modules'), 'C:/FELion-GUI/software')
 
         ShowInfo("UPDATED", "Program is updated to the latest version.")
+        sys.exit(0)
 
     except Exception as e:
         ErrorInfo("ERROR: ", e)
