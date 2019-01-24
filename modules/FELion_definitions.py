@@ -8,8 +8,8 @@ import shutil
 
 # General functions:
 
-copy = lambda pathdir, x: (shutil.copyfile(pathdir + "/{}".format(x), pathdir + "/DATA/{}".format(x)), print("%s copied to DATA folder"))
-move = lambda pathdir, x: (shutil.move(pathdir + "/{}".format(x), pathdir + "/DATA/{}".format(x)), print("%s moved to DATA folder"))
+copy = lambda pathdir, x: (shutil.copyfile(pathdir + os.sep+ "{}".format(x), pathdir +os.sep+ "DATA"+os.sep+"{}".format(x)), print("%s copied to DATA folder"))
+move = lambda pathdir, x: (shutil.move(pathdir +os.sep+ "{}".format(x), pathdir +os.sep+ "DATA"+os.sep+"{}".format(x)), print("%s moved to DATA folder"))
 
 # Tkinter messagebox
 
