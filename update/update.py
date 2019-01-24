@@ -6,8 +6,7 @@ from os.path import dirname, isdir
 import elevate
 
 
-elevate.elevate(show_console = False)
-
+elevate.elevate(show_console=False)
 # Tkinter messagebox
 
 def ErrorInfo(error, msg):

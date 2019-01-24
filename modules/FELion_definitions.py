@@ -2,6 +2,8 @@
 from tkinter import *
 from tkinter import ttk, messagebox, filedialog
 import os, shutil, tempfile, git, subprocess
+from os.path import isdir, dirname
+import elevate
 
 # General functions:
 
@@ -44,8 +46,24 @@ def recursive_overwrite(src, dest, ignore=None):
 
 def update():
 
-    #try:
-    subprocess.call(["C:/FELion-GUI/update/update.bat"])
+    #try:    
+    try:
+        elevate.elevate()
+        # Create temporary dir
+        t = tempfile.mkdtemp()
+
+        # Clone into temporary dir
+        git.Repo.clone_from('https://github.com/aravindhnivas/FELion-Spectrum-Analyser', t, branch='master', depth=1)
+
+        # Copy desired file from temporary dir
+        recursive_overwrite(os.path.join(t, 'modules'), 'C:/FELion-GUI/software')
+
+        # Remove temporary dir
+        shutil.rmtree(t)
+        ShowInfo("UPDATED", "Program is updated to the latest version.")
+
+    except Exception as e:
+        ErrorInfo("ERROR: ", e)
 
     #except Exception as e:
     #    ErrorInfo("ERROR: ", e)
