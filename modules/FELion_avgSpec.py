@@ -19,7 +19,7 @@ from FELion_definitions import *
 import os
 from tkinter import Tk, messagebox
 
-DELTA=2.0
+#DELTA=2.0
 
 def export_file(fname, wn, inten):
     f = open(fname.split(".pdf")[0] + '.dat','w')
@@ -95,7 +95,7 @@ def avgSpec_plot(t, ts, lgs, minor, major, \
                 majorTickSize, outFilename,\
                 location, mname, temp, bwidth, ie, save,\
                 specificFiles, allFiles, \
-                xlabelsz, ylabelsz, fwidth, fheight, markersz, show
+                xlabelsz, ylabelsz, fwidth, fheight, markersz, show, DELTA
                 ):
 
     def filesaved():
@@ -158,10 +158,6 @@ def avgSpec_plot(t, ts, lgs, minor, major, \
         
         filesaved()
         plt.close()
-        
-        print()
-        print("Completed.")
-        print()
 
-    except FileNotFoundError:
-        ErrorInfo("ERROR", "Some .felix are corrupt or .base file is missing")
+    except Exception as e:
+        ErrorInfo("ERROR", e)

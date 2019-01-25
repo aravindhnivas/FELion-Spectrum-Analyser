@@ -259,6 +259,13 @@ class Normline(Frame):
 
         # avg_labels's label:
         avg_label = Label(self, text = "For Average Spectrum", font=("Times", 12, "italic"))
+
+        delta_label = Label(self, text = "DELTA", font = "Times 12 italic")
+
+        delta = IntVar()
+        delta.set(2)
+        delta_value = Entry(self, bg = "white", bd = 5, textvariable=delta, justify = LEFT, font=("Times", 12, "italic"))
+        
         
 
         # Avg_Spectrum Labels:
@@ -339,7 +346,8 @@ class Normline(Frame):
                                                         allFiles_status,\
                                                         i_avg_xlabelsz.get(), i_avg_ylabelsz.get(),\
                                                         i_avg_fwidth.get(), i_avg_fheight.get(),\
-                                                        i_avg_markersz.get(), norm_show_value.get()
+                                                        i_avg_markersz.get(), norm_show_value.get(),\
+                                                        delta.get()
                                                         )
                                                         )
 
@@ -400,6 +408,8 @@ class Normline(Frame):
 
 
         avg_label.place(relx = n_x3,  rely = n_y2, relwidth = 0.2, height = 40)
+        delta_label.place(relx = n_x6,  rely = n_y2, width = width, height = 40)
+        delta_value.place(relx = n_x6+0.12,  rely = n_y2, width = width, height = 40)
         
         avg_title.place(relx = n_x3,  rely = a_y3, width = width, height = height)
         avg_ts_ls.place(relx = n_x3,  rely = a_y4, width = width, height = height)
