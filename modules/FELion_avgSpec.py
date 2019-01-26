@@ -17,6 +17,7 @@ from FELion_definitions import *
 
 ## modules
 import os
+from os.path import dirname, isdir, isfile
 from tkinter import Tk, messagebox
 
 #DELTA=2.0
@@ -102,10 +103,21 @@ def avgSpec_plot(t, ts, lgs, minor, major, \
         if os.path.isfile(my_path+"/OUT/{}.pdf".format(outFilename)) and save:
             ShowInfo("SAVED", "File %s.pdf saved"%outFilename)
 
-    os.chdir(location)
-    my_path = os.getcwd()
+         
 
     try:
+
+        folders = ["DATA", "EXPORT", "OUT"]
+        back_dir = dirname(location)
+        
+        if set(folders).issubset(os.listdir(back_dir)): 
+            os.chdir(back_dir)
+            my_path = os.getcwd()
+        
+        else: 
+            os.chdir(location)
+            my_path = os.getcwd()
+
         figure = plt.figure(figsize=(fwidth, fheight), dpi = 100)
         fig = figure.add_subplot(1,1,1)
         plt.rcParams['font.size'] = ts
