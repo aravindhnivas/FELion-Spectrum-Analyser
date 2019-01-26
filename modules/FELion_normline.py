@@ -219,17 +219,17 @@ def normline_correction(fname, location, mname, temp, bwidth, ie, save, foravgsh
             #File check
             if not os.path.isfile(my_path+"/DATA/"+fullname):
                 if os.path.isfile(my_path+"/"+fullname):
-                    copy(my_path, fullname)
+                    move(my_path, fullname)
                 else:
                     return ErrorInfo("ERROR: ", "File %s NOT found"%fullname)
 
             #Powefile check
             if not os.path.isfile(my_path+"/DATA/"+powerfile):
                 if os.path.isfile(my_path+"/Pow/"+powerfile):
-                    copy(my_path, powerfile)
+                    move(my_path, powerfile)
             
                 elif os.path.isfile(my_path+"/"+powerfile):
-                    copy(my_path, powerfile)
+                    move(my_path, powerfile)
                 
                 else:
                     return ErrorInfo("ERROR: ", "Powerfile: %s NOT found"%powerfile)
@@ -237,7 +237,7 @@ def normline_correction(fname, location, mname, temp, bwidth, ie, save, foravgsh
             #Basefile check
             if not os.path.isfile(my_path+"/DATA/"+basefile):
                 if os.path.isfile(my_path+"/"+basefile):
-                    copy(my_path, basefile)
+                    move(my_path, basefile)
                 else:
                     return ErrorInfo("ERROR: ", "Basefile: %s NOT found"%basefile)
 
