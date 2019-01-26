@@ -1,16 +1,13 @@
 #!/usr/bin/python3
 
-import os
 import numpy as np
 import pylab as P
 import sys
-import copy 
 from os import path
 from scipy.optimize import leastsq
 
 from FELion_normline import norm_line_felix
 from FELion_normline import felix_binning
-
 from matplotlib.ticker import MultipleLocator, FormatStrFormatter, NullFormatter, NullLocator
 import matplotlib.pyplot as plt
 from FELion_definitions import *
@@ -20,7 +17,6 @@ import os
 from os.path import dirname, isdir, isfile
 from tkinter import Tk, messagebox
 
-#DELTA=2.0
 
 def export_file(fname, wn, inten):
     f = open(fname.split(".pdf")[0] + '.dat','w')
