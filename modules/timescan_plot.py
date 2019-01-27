@@ -11,7 +11,7 @@ def func(x, a, b, c):
     #return a * np.exp(-b * x) + c
     return a * np.log(b * x) + c
 
-def timescanplot(filename, location, deg):
+def timescanplot(filename, location, deg, fit):
     os.chdir(location)
     f = open(filename)
     no_of_mass = 0
@@ -114,14 +114,15 @@ def timescanplot(filename, location, deg):
             x, y, err = time, mass_mean[i], standard_error[i]
             lg = "{} : {}".format(mass_values[i], iterations[i])
             
-            plt.errorbar(x, y, yerr = err, fmt = ".", label = lg )
+            e = plt.errorbar(x, y, yerr = err, fmt = "-o", label = lg )
 
-            #Polyfit
-            z = np.polyfit(x, y, deg)
-            p = np.poly1d(z)
-            y_fit = [p(i) for i in x]
-            
-            plt.plot(x, y_fit, "k-")
+            if fit:
+                #Polyfit
+                z = np.polyfit(x, y, deg)
+                p = np.poly1d(z)
+                y_fit = [p(i) for i in x]
+                
+                plt.plot(x, y_fit, "k-")
 
             '''# log fit
             popt, pcov = curve_fit(func, x, y)
@@ -138,7 +139,8 @@ def timescanplot(filename, location, deg):
     plt.xlabel("Time (ms)")
     plt.ylabel("Ion Counts")
     plt.legend()
-    plt.title(filename + ":  Polyfit of Order: %i"%deg)
+    plt.title(filename)
+    plt.tight_layout()
     plt.savefig(filename+".png")
     plt.show()
     plt.close()
