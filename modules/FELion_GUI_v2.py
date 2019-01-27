@@ -916,7 +916,6 @@ def get_dpi(window):
     return pxw/inw
 
 
-
 app = FELion()
 app.protocol("WM_DELETE_WINDOW", on_closing)
 app.mainloop()
