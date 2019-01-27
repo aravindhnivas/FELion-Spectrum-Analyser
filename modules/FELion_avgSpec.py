@@ -103,7 +103,7 @@ def avgSpec_plot(t, ts, lgs, minor, major, \
 
     try:
 
-        folders = ["DATA", "EXPORT", "OUT"]
+        folders = ["DATA", "EXPORT", "OUT", "ToAvg"]
         back_dir = dirname(location)
         
         if set(folders).issubset(os.listdir(back_dir)): 
@@ -113,13 +113,15 @@ def avgSpec_plot(t, ts, lgs, minor, major, \
         else: 
             os.chdir(location)
             my_path = os.getcwd()
+        
+        if not isdir("ToAvg"): os.mkdir("ToAvg")
 
         figure = plt.figure(figsize=(fwidth, fheight), dpi = 100)
         fig = figure.add_subplot(1,1,1)
         plt.rcParams['font.size'] = ts
         plt.rcParams['legend.fontsize'] = lgs
 
-        pwd = os.listdir(os.getcwd()+'/DATA')
+        pwd = os.listdir(os.getcwd()+'/ToAvg')
         f = []
         filesz = lambda x: (os.stat(x).st_size)/1024.0
         for i in pwd:
@@ -127,7 +129,7 @@ def avgSpec_plot(t, ts, lgs, minor, major, \
                 f.append(i)
         fileNameList = []
         for i in f:
-            if filesz(os.getcwd()+'/DATA/'+i)>4.0:
+            if filesz(os.getcwd()+'/ToAvg/'+i)>4.0:
                 fileNameList.append(i)
 
         xs = np.array([],dtype='double')

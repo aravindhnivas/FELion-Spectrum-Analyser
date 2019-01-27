@@ -329,7 +329,8 @@ def main(fname=""):
 def baseline_correction(fname, location):
 
     try:
-        folders = ["DATA", "EXPORT", "OUT"]
+        
+        folders = ["DATA", "EXPORT", "OUT", "ToAvg"]
         back_dir = dirname(location)
         
         if set(folders).issubset(os.listdir(back_dir)): 

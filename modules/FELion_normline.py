@@ -191,7 +191,7 @@ def main(s=True, plotShow=False):
 def normline_correction(fname, location, mname, temp, bwidth, ie, save, foravgshow, normall, show):
 
     try:
-        folders = ["DATA", "EXPORT", "OUT"]
+        folders = ["DATA", "EXPORT", "OUT", "ToAvg"]
         back_dir = dirname(location)
         
         if set(folders).issubset(os.listdir(back_dir)): 
