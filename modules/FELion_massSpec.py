@@ -46,6 +46,9 @@ def massSpec(fname, mname, temp, bwidth, ie, xmin, xmax, location,\
             plt.ylabel('Ion counts /{} ms'.format(bwidth))
             plt.title("Filename: {}, for {}, at temp: {}K, B0: {}ms and IE(eV): {}"\
                         .format(fname, mname, temp, bwidth, ie))
+
+            plt.tight_layout()
+
             if save_fig:
                 plt.savefig(my_path + "/MassSpec_DATA/{}.png".format(fname))
                 plt.show()
@@ -84,6 +87,7 @@ def massSpec(fname, mname, temp, bwidth, ie, xmin, xmax, location,\
             plt.grid(True)
             plt.title("Filename: {}, for {}, at temp: {}K, B0: {}ms and IE(eV): {}".format(fname, mname, temp, bwidth, ie))
             
+            plt.tight_layout()
             if save_fig:
                 plt.savefig(my_path + "/MassSpec_DATA/{}.png".format(avgname))
                 plt.show()
