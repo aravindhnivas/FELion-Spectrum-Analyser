@@ -784,12 +784,12 @@ class Plot(Frame):
                 if not combine:
                         x, y, normy = fopen(self, filename)
                         if norm:
-                                if log: plt.semilogy(x, normy, label = i.split(".")[0])
-                                else:   plt.plot(x, normy, label = i.split(".")[0])
+                                if log: plt.semilogy(x, normy, label = filename.split(".")[0])
+                                else:   plt.plot(x, normy, label = filename.split(".")[0])
 
                         else:
-                                if log: plt.semilogy(x,y, label = i.split(".")[0])
-                                else:   plt.plot(x,y, label = i.split(".")[0])
+                                if log: plt.semilogy(x,y, label = filename.split(".")[0])
+                                else:   plt.plot(x,y, label = filename.split(".")[0])
 
                 if combine:
                         filelist = filelist.split(",")
