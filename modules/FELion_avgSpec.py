@@ -99,10 +99,7 @@ def avgSpec_plot(t, ts, lgs, minor, major, \
         if os.path.isfile(my_path+"/OUT/{}.pdf".format(outFilename)) and save:
             ShowInfo("SAVED", "File %s.pdf saved"%outFilename)
 
-         
-
     try:
-
         folders = ["DATA", "EXPORT", "OUT", "ToAvg"]
         back_dir = dirname(location)
         
