@@ -880,6 +880,10 @@ class Plot(Frame):
         log_value = BooleanVar()
         log_value.set(True)
         log = ttk.Checkbutton(self, text = "Log", variable = log_value)
+
+        fit_value = BooleanVar()
+        fit_value.set(True)
+        fit = ttk.Checkbutton(self, text = "", variable = fit_value)
         
 
 
@@ -892,7 +896,7 @@ class Plot(Frame):
                 )
 
         timescan_plotbutton = ttk.Button(self, text="TimeScan", \
-                                        command = lambda: timescanplot(self.fname, self.location, deg.get()))
+                command = lambda: timescanplot(self.fname, self.location, deg.get(), fit_value.get()))
 
         ployfit_label = Label(self, text = "Polyfit deg:", font=("Times", 10, "bold"))
 
@@ -935,6 +939,7 @@ class Plot(Frame):
         
         ployfit_label.place(relx = m_x5+0.06,  rely = m_y3, width = width, height = height)
         polyfit_entry.place(relx = m_x6+0.06,  rely = m_y3, width = smallwidth, height = height)
+        fit.place(relx = m_x7,  rely = m_y3, width = smallwidth, height = height)
 
         combine_entry.place(relx = m_x1,  rely = m_y4, relwidth = 0.6, height = height)
 
