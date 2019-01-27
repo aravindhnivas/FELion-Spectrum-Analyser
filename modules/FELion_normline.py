@@ -113,7 +113,7 @@ def norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show):
         plt.xlabel("Wavenumber (cm-1)")
         plt.ylabel("Counts")
         plt.title("Baseline: Filename: {}, for {} ".format(fname, mname))
-        plt.savefig('OUT/'+fname+'_baseline.pdf')
+        plt.savefig('OUT/'+fname+'_baseline.png')
         plt.close()
 
     if foravgshow:
