@@ -68,6 +68,9 @@ def norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show):
         ax.set_ylabel("cnts")
         ax.set_xlim([data[0].min()*0.95, data[0].max()*1.05])
 
+
+        
+
         #Get the power and number of shots
         powCal = PowerCalibrator(fname)
         powCal.plot(bx2, ax2)
@@ -102,6 +105,18 @@ def norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show):
         if show:
             plt.show()
         
+        plt.close()
+
+        # save baseline
+
+        base1 = plt.figure(dpi = 100)
+        base = base1.add_subplot(1,1,1)
+        baseCal.plot(base)
+        base.plot(data[0], data[1], ls='', marker='o', ms=3, markeredgecolor='r', c='r')
+        plt.xlabel("Wavenumber (cm-1)")
+        plt.ylabel("Counts")
+        plt.title("Baseline: Filename: {}, for {} ".format(fname, mname))
+        plt.savefig('OUT/'+fname+'_baseline.pdf')
         plt.close()
 
     if foravgshow:
