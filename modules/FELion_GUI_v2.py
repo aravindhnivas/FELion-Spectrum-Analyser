@@ -758,7 +758,7 @@ class Plot(Frame):
         button4.place(relx = x4, rely = y, width = width, height = height)
 
 
-        def normalising(self, filename, combine, filelist, norm, show):
+        def normalising(self, filename, combine, filelist, norm, show, log):
 
                 os.chdir(self.location)
 
@@ -794,10 +794,14 @@ class Plot(Frame):
                                 i = i.strip()
                                 x, y, normy = fopen(self, i)
                                 if norm:
-                                        plt.plot(x, normy, label = i.split(".")[0])
+                                        if log:
+                                                plt.semilogy(x, normy, label = i.split(".")[0])
+                                        else: plt.plot(x, normy, label = i.split(".")[0])
 
                                 else:
-                                        plt.plot(x,y, label = i.split(".")[0])
+                                        if log: plt.semilogy(x,y, label = i.split(".")[0])
+
+                                        else: plt.plot(x,y, label = i.split(".")[0])
 
                 plt.legend()
                 plt.xlabel("Wavenumber(cm-1)")
@@ -867,8 +871,19 @@ class Plot(Frame):
         show_value.set(True)
         show = ttk.Checkbutton(self, text = "Show", variable = show_value)
 
+        log_value = BooleanVar()
+        log_value.set(True)
+        log = ttk.Checkbutton(self, text = "Log", variable = log_value)
+        
+
+
         plotbutton = ttk.Button(self, text="Plot", \
-                command = lambda: normalising(self, self.fname, combineCheck_value.get(), combine_entry_values.get(), normCheck_value.get(), show_value.get()))
+                command = lambda: normalising(\
+                self, self.fname, combineCheck_value.get(), \
+                combine_entry_values.get(), normCheck_value.get(), \
+                show_value.get(), log_value.get()\
+                )
+                )
 
         timescan_plotbutton = ttk.Button(self, text="TimeScan", \
                                         command = lambda: timescanplot(self.fname, self.location, deg.get()))
@@ -910,6 +925,7 @@ class Plot(Frame):
         timescan_plotbutton.place(relx = m_x5+0.06,  rely = m_y2, width = width, height = height)
 
         show.place(relx = m_x4,  rely = m_y3, width = width, height = height)
+        log.place(relx = m_x3,  rely = m_y3, width = width, height = height)
         
         ployfit_label.place(relx = m_x5+0.06,  rely = m_y3, width = width, height = height)
         polyfit_entry.place(relx = m_x6+0.06,  rely = m_y3, width = smallwidth, height = height)
