@@ -757,7 +757,9 @@ class Plot(Frame):
                             command=lambda: controller.show_frame(Mass))
         button4.place(relx = x4, rely = y, width = width, height = height)
 
-        def normalising(self, filename, combine, filelist, norm):
+
+        def normalising(self, filename, combine, filelist, norm, show):
+
                 os.chdir(self.location)
 
                 def fopen(self, filename):
@@ -782,20 +784,20 @@ class Plot(Frame):
                 if not combine:
                         x, y, normy = fopen(self, filename)
                         if norm:
-                                plt.plot(x, normy, label = filename)
+                                plt.plot(x, normy, label = filename.split(".")[0])
 
                         else:
-                                plt.plot(x,y, label = filename)
+                                plt.plot(x,y, label = filename.split(".")[0])
                 if combine:
                         filelist = filelist.split(",")
                         for i in filelist:
                                 i = i.strip()
                                 x, y, normy = fopen(self, i)
                                 if norm:
-                                        plt.plot(x, normy, label = i)
+                                        plt.plot(x, normy, label = i.split(".")[0])
 
                                 else:
-                                        plt.plot(x,y, label = i)
+                                        plt.plot(x,y, label = i.split(".")[0])
 
                 plt.legend()
                 plt.xlabel("Wavenumber(cm-1)")
@@ -806,8 +808,11 @@ class Plot(Frame):
                 if combine:
                         plt.savefig("combined.png")
                 else:
-                        plt.savefig(filename+".png")
-                plt.show()
+                        plt.savefig(filename.split(".")[0]+".png")
+
+                if show:
+                        plt.show()
+
                 plt.close()
                 return
 
@@ -858,8 +863,12 @@ class Plot(Frame):
         combineCheck_value.set(False)
         combineCheck = ttk.Checkbutton(self, text = "Combine", variable = combineCheck_value)
 
+        show_value = BooleanVar()
+        show_value.set(True)
+        show = ttk.Checkbutton(self, text = "Show", variable = show_value)
+
         plotbutton = ttk.Button(self, text="Plot", \
-                                        command = lambda: normalising(self, self.fname, combineCheck_value.get(), combine_entry_values.get(), normCheck_value.get()))
+                command = lambda: normalising(self, self.fname, combineCheck_value.get(), combine_entry_values.get(), normCheck_value.get(), show_value.get()))
 
         timescan_plotbutton = ttk.Button(self, text="TimeScan", \
                                         command = lambda: timescanplot(self.fname, self.location, deg.get()))
@@ -899,6 +908,8 @@ class Plot(Frame):
         combineCheck.place(relx = m_x1,  rely = m_y3, width = width, height = height)
         plotbutton.place(relx = m_x4,  rely = m_y2, width = width, height = height)
         timescan_plotbutton.place(relx = m_x5+0.06,  rely = m_y2, width = width, height = height)
+
+        show.place(relx = m_x4,  rely = m_y3, width = width, height = height)
         
         ployfit_label.place(relx = m_x5+0.06,  rely = m_y3, width = width, height = height)
         polyfit_entry.place(relx = m_x6+0.06,  rely = m_y3, width = smallwidth, height = height)
