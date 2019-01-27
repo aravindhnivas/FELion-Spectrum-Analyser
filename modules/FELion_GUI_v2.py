@@ -812,6 +812,9 @@ class Plot(Frame):
                         plt.ylabel("Normalised (Scaled to 1) Intensity")
                 else:
                         plt.ylabel("Intensity")
+                
+                plt.tight_layout()
+
                 if combine:
                         plt.savefig("combined.png")
                 else:
