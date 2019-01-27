@@ -68,9 +68,6 @@ def norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show):
         ax.set_ylabel("cnts")
         ax.set_xlim([data[0].min()*0.95, data[0].max()*1.05])
 
-
-        
-
         #Get the power and number of shots
         powCal = PowerCalibrator(fname)
         powCal.plot(bx2, ax2)

@@ -16,7 +16,7 @@ from os.path import dirname, isdir, isfile
 import shutil
 from tkinter import Tk, messagebox
 
-from FELion_definitions import move, copy, ErrorInfo
+from FELion_definitions import move, copy, ErrorInfo, ShowInfo
 
 #These 2 values are used when guessing the baseline:
 PPS = 5         #points around the value to average
