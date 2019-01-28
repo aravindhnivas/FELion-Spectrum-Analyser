@@ -101,7 +101,8 @@ def avgSpec_plot(t, ts, lgs, minor, major, \
             ShowInfo("SAVED", "File %s.pdf saved"%outFilename)
 
     try:
-        folders = ["DATA", "EXPORT", "OUT", "ToAvg"]
+
+        folders = ["DATA", "EXPORT", "OUT"]
         back_dir = dirname(location)
         
         if set(folders).issubset(os.listdir(back_dir)): 
@@ -110,35 +111,36 @@ def avgSpec_plot(t, ts, lgs, minor, major, \
         
         else: 
             os.chdir(location)
-            my_path = os.getcwd()
-        
-        if not isdir("ToAvg"): os.mkdir("ToAvg")
+            my_path = os.getcwd() 
+
+        for dirs in folders:
+            if not isdir(dirs): os.mkdir(dirs)
 
         figure = plt.figure(figsize=(fwidth, fheight), dpi = 100)
         fig = figure.add_subplot(1,1,1)
         plt.rcParams['font.size'] = ts
         plt.rcParams['legend.fontsize'] = lgs
 
-        #pwd = os.listdir(os.getcwd()+'/ToAvg')
-        #f = []
-        #filesz = lambda x: (os.stat(x).st_size)/1024.0
-        #for i in pwd:
-        #    if i.find(".felix")>=0:
-        #        f.append(i)
-        #fileNameList = []
-        #for i in f:
-        #    if filesz(os.getcwd()+'/ToAvg/'+i)>4.0:
-        #        fileNameList.append(i)
-
         xs = np.array([],dtype='double')
         ys = np.array([],dtype='double')
 
         if all and not specificFiles:
+
             foravgshow = True
             normshow = False
-            for filelist in fileNameList:
-                a,b = norm_line_felix(filelist, mname, temp, bwidth, ie, save, foravgshow, normshow)
-                fig.plot(a, b, ls='', marker='o', ms=markersz, label=filelist)
+
+            for fname in fileNameList:
+                fname = fname.split(".")[0]
+                fullname = fname + ".felix"
+                basefile = fname + ".base"
+                powerfile = fname + ".pow"
+                files = [fullname, powerfile, basefile]
+
+                for filenames in files:
+                    if isfile(filenames): move(my_path, filenames)
+
+                a,b = norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, normshow)
+                fig.plot(a, b, ls='', marker='o', ms=markersz, label=fname)
                 xs = np.append(xs,a)
                 ys = np.append(ys,b)
 

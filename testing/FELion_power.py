@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from scipy.interpolate import interp1d
 
 from tkinter import Tk, messagebox
+from os.path import dirname
 ################################################################################
 class PowerCalibrator(object):
     """
@@ -105,7 +106,14 @@ def main():
 
 def FELion_Power(fname, location):
 
-    os.chdir(location)
+    folders = ["DATA", "EXPORT", "OUT"]
+    back_dir = dirname(location)
+    
+    if set(folders).issubset(os.listdir(back_dir)): 
+        os.chdir(back_dir)
+    
+    else: 
+        os.chdir(location)
 
     def filenotfound():
         root = Tk()
