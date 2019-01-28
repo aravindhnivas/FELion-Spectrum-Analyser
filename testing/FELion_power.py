@@ -145,6 +145,10 @@ def FELion_Power(fname, location):
         ax.set_ylabel("power (mJ)")
         bx.set_ylabel("n shots")
         plt.show()
+
+        
+        plt.tight_layout()
+        plt.close()
     except:
         filenotfound()
 #----------------------------------------

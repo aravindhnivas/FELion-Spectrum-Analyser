@@ -146,6 +146,9 @@ def FELion_Sa(fname, location):
         ax.set_xlabel("wn set (cm-1)")
         ax.set_ylabel("wn SA (cm-1)")
         plt.show()
+
+        plt.tight_layout()
+        plt.close()
     except:
         filenotfound()
 
