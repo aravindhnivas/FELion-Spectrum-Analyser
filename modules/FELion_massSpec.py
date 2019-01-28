@@ -7,13 +7,18 @@ import shutil
 from tkinter import Tk, messagebox
 
 from FELion_definitions import ShowInfo, copy, move, ErrorInfo
+from os.path import join, isdir
 
-def massSpec(fname, mname, temp, bwidth, ie, xmin, xmax, location,\
-            fig_width, fig_height, filelist, avgname, combine, save_fig):
+def massSpec(fname, mname, temp, bwidth, ie, location,\
+            filelist, avgname, combine, save_fig):
 
     try:
         os.chdir(location)
         my_path = os.getcwd()
+
+        if not isdir("MassSpec_DATA"):
+            os.mkdir("MassSpec_DATA")
+
         if fname.find(".mass")>0:
             fname = fname.split(".")[0]
 
@@ -57,17 +62,10 @@ def massSpec(fname, mname, temp, bwidth, ie, xmin, xmax, location,\
                 plt.show()
 
         if combine:
-            filelist = filelist.split(",")
-
+            if filelist == []: 
+                return ErrorInfo("Select Files: ", "Please select the files to plot")
             for file in filelist:
-                file = file.strip()
-                if file.find("mass")>=0:
-                    file = file.split(".")[0]
-                    
-                if len(file) <2:
-                    file= fname[0:9] + file +'.mass'
-                else:
-                    file = file + '.mass'
+
                 f = open(file)
                 x, y = [],[]
                 for i in f:
@@ -78,7 +76,7 @@ def massSpec(fname, mname, temp, bwidth, ie, xmin, xmax, location,\
                 f.close()
                 
                 plt.grid(True)
-                plt.semilogy(x, y, label = file)
+                plt.semilogy(x, y, label = file.split('.')[0])
             
                 plt.legend()
 
@@ -88,8 +86,9 @@ def massSpec(fname, mname, temp, bwidth, ie, xmin, xmax, location,\
             plt.title("Filename: {}, for {}, at temp: {}K, B0: {}ms and IE(eV): {}".format(fname, mname, temp, bwidth, ie))
             
             plt.tight_layout()
+
             if save_fig:
-                plt.savefig(my_path + "/MassSpec_DATA/{}.png".format(avgname))
+                plt.savefig(join(my_path,"MassSpec_DATA","%s.png"%avgname))
                 plt.show()
                 saveinfo(avgname)
             else:

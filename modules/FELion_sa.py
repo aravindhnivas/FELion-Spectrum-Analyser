@@ -12,6 +12,7 @@ from FELion_baseline import felix_read_file
 
 
 from tkinter import Tk, messagebox
+from os.path import dirname
 
 ################################################################################
 
@@ -114,7 +115,14 @@ def main():
 
 def FELion_Sa(fname, location):
     
-    os.chdir(location)
+    folders = ["DATA", "EXPORT", "OUT"]
+    back_dir = dirname(location)
+    
+    if set(folders).issubset(os.listdir(back_dir)): 
+        os.chdir(back_dir)
+    
+    else: 
+        os.chdir(location)
 
     def filenotfound():
         root = Tk()
@@ -138,6 +146,9 @@ def FELion_Sa(fname, location):
         ax.set_xlabel("wn set (cm-1)")
         ax.set_ylabel("wn SA (cm-1)")
         plt.show()
+
+        plt.tight_layout()
+        plt.close()
     except:
         filenotfound()
 
