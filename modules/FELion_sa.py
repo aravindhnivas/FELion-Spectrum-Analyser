@@ -13,6 +13,7 @@ from FELion_baseline import felix_read_file
 
 from tkinter import Tk, messagebox
 from os.path import dirname
+from FELion_definitions import ErrorInfo
 
 ################################################################################
 
@@ -124,12 +125,6 @@ def FELion_Sa(fname, location):
     else: 
         os.chdir(location)
 
-    def filenotfound():
-        root = Tk()
-        root.withdraw()
-        messagebox.showerror("Error", "FILE {}.felix NOT FOUND".format(fname))
-        root.destroy()
-
     try:
         if(fname.find('felix')>=0):
             fname = fname.split('.')[0]
@@ -137,20 +132,18 @@ def FELion_Sa(fname, location):
         saCalibrator = SpectrumAnalyserCalibrator(fname, fit='cubic')
         
         fig, ax = plt.subplots()
-        #plot the spectrum analyser calibration
         saCalibrator.plot(ax)
 
         ax.set_title('Spectrum analyser calibration from {}.felix file'.format(fname))
-        #ax.set_xlim((wn.min()-70, wn.max()+70))
-        #ax.set_ylim((0, 30))
         ax.set_xlabel("wn set (cm-1)")
         ax.set_ylabel("wn SA (cm-1)")
         plt.show()
 
         plt.tight_layout()
         plt.close()
-    except:
-        filenotfound()
+
+    except Exception as e:
+        ErrorInfo("ERROR", e)
 
 #----------------------------------------
 #ENTRY POINT:

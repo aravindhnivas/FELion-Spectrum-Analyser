@@ -9,7 +9,10 @@ from scipy.interpolate import interp1d
 
 from tkinter import Tk, messagebox
 from os.path import dirname
+from FELion_definitions import ErrorInfo
+
 ################################################################################
+
 class PowerCalibrator(object):
     """
     Reads the power file and provides the power and n_shot
@@ -115,13 +118,8 @@ def FELion_Power(fname, location):
     else: 
         os.chdir(location)
 
-    def filenotfound():
-        root = Tk()
-        root.withdraw()
-        messagebox.showerror("Error", "FILE {}.felix NOT FOUND".format(fname))
-        root.destroy()
-
     try:
+
         if(fname.find('felix')>=0):
             fname = fname.split('.')[0]
             
@@ -144,16 +142,13 @@ def FELion_Power(fname, location):
         ax.set_xlabel("wn (cm-1)")
         ax.set_ylabel("power (mJ)")
         bx.set_ylabel("n shots")
-        plt.show()
-
-        
+        plt.show() 
         plt.tight_layout()
         plt.close()
-    except:
-        filenotfound()
+    
+    except Exception as e:
+        ErrorInfo("ERROR", e)
 #----------------------------------------
 #ENTRY POINT:
 if __name__ == "__main__":
     main()
-
-    #input('press enter to quit...')
