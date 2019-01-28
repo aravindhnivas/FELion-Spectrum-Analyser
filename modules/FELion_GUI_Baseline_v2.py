@@ -1,23 +1,19 @@
 #!/usr/bin/python3
 from tkinter import *
 from tkinter import ttk, messagebox, filedialog
-
 import os
 import shutil
 from FELion_baseline import baseline_correction
-
 from FELion_definitions import update
+from os.path import join
 
-###########
 def on_closing():
     if messagebox.askokcancel("Quit", "Do you want to quit?"):
-      root.destroy()
+      app.destroy()
 
 def save_on():
-    #if messagebox.askokcancel("SAVE","Save the file?"):
     messagebox.showinfo("FILE SAVED", "File SAVED\nDon't press the Save button again unless different file!")
-    root.quit()
-    return
+    app.quit()
 
 LARGE_FONT= ("Verdana", 15)
 
@@ -37,7 +33,7 @@ class FELion_base(Tk):
         Tk.__init__(self, *args, **kwargs)
         Tk.iconbitmap(self,default='C:/FELION-GUI/software/FELion_Icon.ico')
         Tk.wm_title(self, "FELion Baseline Correction v.2.0")
-        Tk.wm_geometry(self, "900x600")
+        Tk.wm_geometry(self, "1000x600")
 
         container = Frame(self)
         container.pack(side="top", fill="both", expand = True)
@@ -182,7 +178,21 @@ class Baseline(Frame):
         saveButton.place(relx = b_x2,  rely = b_y3, width = 100, height = 40)
         #saveAsButton.place(relx = b_x2,  rely = b_y4, width = 100, height = 40)
 
+###################################################################################################################################################
+# Main Program
 
-root = FELion_base()
-root.protocol("WM_DELETE_WINDOW", on_closing)
-root.mainloop()
+app = FELion_base()
+
+icons_locations = "D:/FELion-Spectrum-Analyser/testing/"
+app.protocol("WM_DELETE_WINDOW", on_closing)
+
+shutdown = PhotoImage(file = join(icons_locations, "power.png"))
+restarticon = PhotoImage(file = join(icons_locations, "restart.png"))
+
+power = ttk.Button(app, image=shutdown, text = 'power', command = lambda: app.destroy())
+restart = ttk.Button(app, image=restarticon, text = 'restart', command = lambda: os.execl(sys.executable, sys.executable, *sys.argv))
+
+restart.place(relx = 0.95, rely = 0.05)
+power.place(relx = 0.95, rely = 0.15)
+
+app.mainloop()
