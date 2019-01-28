@@ -102,6 +102,9 @@ def avgSpec_plot(t, ts, lgs, minor, major, \
 
     try:
 
+        if fileNameList == []:
+            return ShowInfo("Information", "Click Select File(s)")
+
         folders = ["DATA", "EXPORT", "OUT"]
         back_dir = dirname(location)
         

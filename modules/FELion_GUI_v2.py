@@ -369,7 +369,7 @@ class Normline(Frame):
         power_button = ttk.Button(self, text = "Power", \
                 command = lambda: FELion_Power(self.fname, self.location))
 
-        
+        self.filelist = []
         def openfilelist(self):
                 self.filelist = []
                 self.openlist = askopenfilenames(self, initialdir=self.location, initialfile='tmp',
@@ -526,7 +526,8 @@ class Mass(Frame):
         # Labels and buttons:
         browse_loc = ttk.Button(self, text = "Browse File")
         browse_loc.config(command = lambda: open_dir(self))
-   
+        
+        self.filelist = []
         def openfilelist(self):
                 self.filelist = []
                 self.openlist = askopenfilenames(self, initialdir=self.location, initialfile='tmp',
@@ -909,7 +910,10 @@ class Plot(Frame):
         fit_value.set(True)
         fit = ttk.Checkbutton(self, text = "", variable = fit_value)
 
+
         # opening multiple files
+        
+        self.filelist = []
         def openfilelist(self):
                 self.filelist = []
                 self.openlist = askopenfilenames(self, initialdir=self.location, initialfile='tmp',

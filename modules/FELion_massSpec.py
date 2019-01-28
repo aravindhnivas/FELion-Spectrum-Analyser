@@ -63,7 +63,7 @@ def massSpec(fname, mname, temp, bwidth, ie, location,\
 
         if combine:
             if filelist == []: 
-                return ErrorInfo("Select Files: ", "Please select the files to plot")
+                return ErrorInfo("Select Files: ", "Click Select File(s)")
             for file in filelist:
 
                 f = open(file)
