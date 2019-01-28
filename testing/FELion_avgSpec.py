@@ -93,7 +93,7 @@ def avgSpec_plot(t, ts, lgs, minor, major, \
                 majorTickSize, outFilename,\
                 location, mname, temp, bwidth, ie, save,\
                 specificFiles, allFiles, \
-                xlabelsz, ylabelsz, fwidth, fheight, markersz, show, DELTA
+                xlabelsz, ylabelsz, fwidth, fheight, markersz, show, DELTA, fileNameList
                 ):
 
     def filesaved():
@@ -119,16 +119,16 @@ def avgSpec_plot(t, ts, lgs, minor, major, \
         plt.rcParams['font.size'] = ts
         plt.rcParams['legend.fontsize'] = lgs
 
-        pwd = os.listdir(os.getcwd()+'/ToAvg')
-        f = []
-        filesz = lambda x: (os.stat(x).st_size)/1024.0
-        for i in pwd:
-            if i.find(".felix")>=0:
-                f.append(i)
-        fileNameList = []
-        for i in f:
-            if filesz(os.getcwd()+'/ToAvg/'+i)>4.0:
-                fileNameList.append(i)
+        #pwd = os.listdir(os.getcwd()+'/ToAvg')
+        #f = []
+        #filesz = lambda x: (os.stat(x).st_size)/1024.0
+        #for i in pwd:
+        #    if i.find(".felix")>=0:
+        #        f.append(i)
+        #fileNameList = []
+        #for i in f:
+        #    if filesz(os.getcwd()+'/ToAvg/'+i)>4.0:
+        #        fileNameList.append(i)
 
         xs = np.array([],dtype='double')
         ys = np.array([],dtype='double')
