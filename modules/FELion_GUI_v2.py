@@ -15,6 +15,8 @@ from FELion_power import FELion_Power
 from FELion_sa import FELion_Sa
 from FELion_definitions import *
 
+from tkfilebrowser import askopenfilenames
+
 def outFile(fname, location, file):
         try:
                 os.chdir(location)
@@ -792,7 +794,7 @@ class Plot(Frame):
                                 else:   plt.plot(x,y, label = filename.split(".")[0])
 
                 if combine:
-                        filelist = filelist.split(",")
+                        #filelist = filelist.split(",")
                         for i in filelist:
                                 i = i.strip()
                                 x, y, normy = fopen(self, i)
@@ -884,13 +886,26 @@ class Plot(Frame):
         fit_value = BooleanVar()
         fit_value.set(True)
         fit = ttk.Checkbutton(self, text = "", variable = fit_value)
-        
 
+
+        # opening multiple files
+        self.filelist = []
+        def openfilelist(self):
+                self.filelist = askopenfilenames(self, initialdir='/', initialfile='tmp',
+                                filetypes=[("All files", "*"), ("All files", "*")])
+                
+                self.filelist = list(self.filelist)
+                return self.filelist
+                
+        openfiles = ttk.Button(self, text = "open", command = lambda: openfilelist(self))
+        
 
         plotbutton = ttk.Button(self, text="Plot", \
                 command = lambda: normalising(\
                 self, self.fname, combineCheck_value.get(), \
-                combine_entry_values.get(), normCheck_value.get(), \
+                #combine_entry_values.get(),\
+                self.filelist,\
+                normCheck_value.get(), \
                 show_value.get(), log_value.get()\
                 )
                 )
@@ -942,6 +957,7 @@ class Plot(Frame):
         fit.place(relx = m_x7,  rely = m_y3, width = smallwidth, height = height)
 
         combine_entry.place(relx = m_x1,  rely = m_y4, relwidth = 0.6, height = height)
+        openfiles.place(relx = m_x1,  rely = m_y5, relwidth = 0.6, height = height)
 
 def on_closing():
     if messagebox.askokcancel("Quit", "Do you want to quit?"):

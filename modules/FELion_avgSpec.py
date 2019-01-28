@@ -16,6 +16,7 @@ from FELion_definitions import *
 import os
 from os.path import dirname, isdir, isfile
 from tkinter import Tk, messagebox
+from tkfilebrowser import askopenfilenames
 
 
 def export_file(fname, wn, inten):
@@ -159,6 +160,10 @@ def avgSpec_plot(t, ts, lgs, minor, major, \
             F = 'OUT/%s.pdf'%(outFilename)
             export_file(F, binns, inten)
             plt.savefig(F)
+
+            j ='OUT/%s.png'%(outFilename)
+            export_file(F, binns, inten)
+            plt.savefig(j)
         
         if show:
             plt.show()
