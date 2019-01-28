@@ -183,7 +183,7 @@ class Baseline(Frame):
 
 app = FELion_base()
 
-icons_locations = "D:/FELion-Spectrum-Analyser/testing/"
+icons_locations = "C:/FELion-GUI/software/"
 app.protocol("WM_DELETE_WINDOW", on_closing)
 
 shutdown = PhotoImage(file = join(icons_locations, "power.png"))
