@@ -1,6 +1,4 @@
 #!/usr/bin/python3
-
-
 import numpy as np
 import pylab as P
 import sys
@@ -11,13 +9,14 @@ from FELion_baseline import felix_read_file, BaselineCalibrator
 from FELion_power import PowerCalibrator
 from FELion_sa import SpectrumAnalyserCalibrator
 import os
-import shutil
 
 
 
 # Custom inport:
 import matplotlib.pyplot as plt
 from tkinter import Tk, messagebox
+from FELion_definitions import *
+from os.path import dirname, isdir, isfile
 
 ################################################################################
 
@@ -42,76 +41,92 @@ def norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show):
     Output: data[0,1]     0 - wavenumber, 1 - intensity
     """
 
-    #show=True
-    PD=True
-
-    #fig = plt.figure(figsize=(8,10))
-    plt.rcParams['figure.figsize'] = [8,10]
-    plt.rcParams['figure.dpi'] = 80
-    plt.rcParams['savefig.dpi'] = 100
-    #plt.rcParams['font.size'] = ts # Title Size
-    #plt.rcParams['legend.fontsize'] = lgs # Legend Size
-
-    fig = plt.figure()
-    ax = fig.add_subplot(3,1,1)
-    bx = fig.add_subplot(3,1,2)
-    cx = fig.add_subplot(3,1,3)
-    ax2 = ax.twinx()
-    bx2 = bx.twinx()
-
     if(fname.find('DATA')):
         fname = fname.split('/')[-1]
 
     if(fname.find('felix')):
         fname = fname.split('.')[0]
-
+    
     data = felix_read_file(fname)
+    PD=True
 
-    #Get the baseline
-    baseCal = BaselineCalibrator(fname)
-    baseCal.plot(ax)
-    ax.plot(data[0], data[1], ls='', marker='o', ms=3, markeredgecolor='r', c='r')
-    ax.set_ylabel("cnts")
-    ax.set_xlim([data[0].min()*0.95, data[0].max()*1.05])
+    if not foravgshow:
+        #plt.rcParams['figure.figsize'] = [8,10]
+        plt.rcParams['figure.dpi'] = 80
+        plt.rcParams['savefig.dpi'] = 100
+        fig = plt.figure(figsize=(8,10), )
+        ax = fig.add_subplot(3,1,1)
+        bx = fig.add_subplot(3,1,2)
+        cx = fig.add_subplot(3,1,3)
+        ax2 = ax.twinx()
+        bx2 = bx.twinx()
 
-    #Get the power and number of shots
-    powCal = PowerCalibrator(fname)
-    powCal.plot(bx2, ax2)
+        #Get the baseline
+        baseCal = BaselineCalibrator(fname)
+        baseCal.plot(ax)
+        ax.plot(data[0], data[1], ls='', marker='o', ms=3, markeredgecolor='r', c='r')
+        ax.set_ylabel("cnts")
+        ax.set_xlim([data[0].min()*0.95, data[0].max()*1.05])
+
+        #Get the power and number of shots
+        powCal = PowerCalibrator(fname)
+        powCal.plot(bx2, ax2)
 
 
-    #Get the spectrum analyser
-    saCal = SpectrumAnalyserCalibrator(fname)
-    saCal.plot(bx)
-    bx.set_ylabel("SA")
-    
+        #Get the spectrum analyser
+        saCal = SpectrumAnalyserCalibrator(fname)
+        saCal.plot(bx)
+        bx.set_ylabel("SA")
+        
 
-    #Calibrate X for all the data points
-    wavelength = saCal.sa_cm(data[0])
+        #Calibrate X for all the data points
+        wavelength = saCal.sa_cm(data[0])
 
-    #Normalise the intensity
-    #multiply by 1000 because of mJ but ONLY FOR PD!!!
-    if(PD):
-        intensity = -np.log(data[1]/baseCal.val(data[0])) / powCal.power(data[0]) / powCal.shots(data[0]) *1000 
-    else:
-        intensity = (data[1]-baseCal.val(data[0])) / powCal.power(data[0]) / powCal.shots(data[0])
+        #Normalise the intensity
+        #multiply by 1000 because of mJ but ONLY FOR PD!!!
+        if(PD):
+            intensity = -np.log(data[1]/baseCal.val(data[0])) / powCal.power(data[0]) / powCal.shots(data[0]) *1000 
+        else:
+            intensity = (data[1]-baseCal.val(data[0])) / powCal.power(data[0]) / powCal.shots(data[0])
 
-    cx.plot(wavelength, intensity, ls='-', marker='o', ms=2, c='r', markeredgecolor='k', markerfacecolor='k')
-    cx.set_xlabel("wn (cm-1)")
-    
-    ax.set_title("Filename: {}, for {}, at temp: {}K, B0: {}ms and IE(eV): {}".format(fname, mname, temp, bwidth, ie))
+        cx.plot(wavelength, intensity, ls='-', marker='o', ms=2, c='r', markeredgecolor='k', markerfacecolor='k')
+        cx.set_xlabel("wn (cm-1)")
+        
+        ax.set_title("Filename: {}, for {}, at temp: {}K,\nB0: {}ms and IE(eV): {}".format(fname, mname, temp, bwidth, ie))
 
-    if save and not foravgshow:
-        fname = fname.replace('.','_')
-        plt.savefig('OUT/'+fname+'.pdf')
-        export_file(fname, wavelength, intensity)
+        if save:
+            fname = fname.replace('.','_')
+            plt.savefig('OUT/'+fname+'.pdf')
+            export_file(fname, wavelength, intensity)
 
-    if show and not foravgshow:
-        plt.show()
-
-    if foravgshow:
+        if show:
+            plt.show()
+        
         plt.close()
 
-    return wavelength, intensity
+        # save baseline
+
+        base1 = plt.figure(dpi = 100)
+        base = base1.add_subplot(1,1,1)
+        baseCal.plot(base)
+        base.plot(data[0], data[1], ls='', marker='o', ms=3, markeredgecolor='r', c='r')
+        plt.xlabel("Wavenumber (cm-1)")
+        plt.ylabel("Counts")
+        plt.title("Baseline: Filename: {}, for {} ".format(fname, mname))
+        plt.savefig('OUT/'+fname+'_baseline.png')
+        plt.close()
+
+    if foravgshow:
+        saCal = SpectrumAnalyserCalibrator(fname)
+        wavelength = saCal.sa_cm(data[0])
+        baseCal = BaselineCalibrator(fname)
+        powCal = PowerCalibrator(fname)
+
+        if(PD):
+            intensity = -np.log(data[1]/baseCal.val(data[0])) / powCal.power(data[0]) / powCal.shots(data[0]) *1000 
+        else:
+            intensity = (data[1]-baseCal.val(data[0])) / powCal.power(data[0]) / powCal.shots(data[0])
+        return wavelength, intensity
 
     
 def felix_binning(xs, ys, delta=1):
@@ -175,148 +190,72 @@ def main(s=True, plotShow=False):
 
 def normline_correction(fname, location, mname, temp, bwidth, ie, save, foravgshow, normall, show):
 
-    os.chdir(location)
-    my_path = os.getcwd()
-
-    if(fname.find('felix')>=0):
-        fname = fname.split('.')[0]
-
-    if not os.path.isdir("DATA"): os.mkdir("DATA")
-    if not os.path.isdir("EXPORT"): os.mkdir("EXPORT")
-    if not os.path.isdir("OUT"): os.mkdir("OUT")
-    
-    fullname = fname + ".felix"
-    powerfile = fname + ".pow"
-    basefile = fname + ".base"
-
-    # Custom definitions:
-    def filesaved():
-        if os.path.isfile(my_path+"/OUT/{}.pdf".format(fname)) and save:
-            root = Tk()
-            root.withdraw()
-            messagebox.showinfo("Information", "File '{}.pdf' Saved in OUT Directory".format(fname))
-            root.destroy()
-
-    def filenotfound():
-        root = Tk()
-        root.withdraw()
-        messagebox.showerror("Error", "FILE '{}' NOT FOUND".format(fullname))
-        root.destroy()
-
-    def base_filenotfound():
-        root = Tk()
-        root.withdraw()
-        messagebox.showerror("Error", "FILE '{}' NOT FOUND\nDo Baseline correction FIRST!".format(basefile))
-        root.destroy()
-    
-    def pownotfound(fname):
-        root = Tk()
-        root.withdraw()
-        messagebox.showerror("Error", "FILE '{}.pow' NOT FOUND\n"\
-            "(Create the pow file for file: '{}.felix')".format(fname, fname))
-        root.destroy()
-
-    def completed(fileNameList):
-        for fname in fileNameList:
-            if os.path.isfile(my_path+"/OUT/{}.pdf".format(fname)) and save:
-                root = Tk()
-                root.withdraw()
-                messagebox.showinfo("Information", "File '{}.pdf' Saved in OUT Directory".format(fname))
-                root.destroy()
-
-    def run(for_normall_saveDialog):
-        a,b = norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show)
-        plt.close()
-        if not for_normall_saveDialog:
-            filesaved()
-
-    def normrun(basefile, powerfile, fullname, for_normall_saveDialog):
-
-        if os.path.isfile(my_path+"/DATA/"+basefile):
-
-                if os.path.isfile(my_path+"/DATA/"+powerfile):
-
-                    if os.path.isfile(my_path+"/DATA/"+fullname):
-
-                        run(for_normall_saveDialog)
-
-                    elif not os.path.isfile(my_path+"/"+fullname):
-                        filenotfound()
-
-                    elif os.path.isfile(my_path+"/"+fullname):
-                        shutil.copyfile(my_path + "/{}".format(fullname),\
-                            my_path + "/DATA/{}".format(fullname))
-                        print("{} FELIX copied to the DATA folder.".format(fullname))
-                        
-                        run(for_normall_saveDialog)
-
-                elif not os.path.isfile(my_path+"/{}".format(powerfile)):
-                    pownotfound(fname)
-
-                elif os.path.isfile(my_path+"/"+powerfile):
-                    shutil.copyfile(my_path + "/{}".format(powerfile),\
-                            my_path + "/DATA/{}".format(powerfile))
-                    print("{} Powerfile copied to the DATA folder.".format(powerfile))
-
-                    if os.path.isfile(my_path+"/DATA/"+fullname):
-
-                        run(for_normall_saveDialog)
-
-                    elif not os.path.isfile(my_path+"/"+fullname):
-                        filenotfound()
-
-                    elif os.path.isfile(my_path+"/"+fullname):
-                        shutil.copyfile(my_path + "/{}".format(fullname),\
-                            my_path + "/DATA/{}".format(fullname))
-                        print("{} FELIX copied to the DATA folder.".format(fullname))
-                        
-                        run(for_normall_saveDialog)
-            
-        elif not os.path.isfile(my_path+"/"+basefile):
-            base_filenotfound()
-
-        elif os.path.isfile(my_path+"/"+basefile):
-            shutil.copyfile(my_path + "/{}".format(basefile),\
-                        my_path + "/DATA/{}".format(basefile))
-            print("{} Basefile copied to the DATA folder.".format(basefile))
-            
-            if os.path.isfile(my_path+"/DATA/"+powerfile):
-
-                if os.path.isfile(my_path+"/DATA/"+fullname):
-
-                    run(for_normall_saveDialog)
-                
-                elif not os.path.isfile(my_path+"/{}".format(fullname)):
-                    filenotfound()
-                
-                elif os.path.isfile(my_path+"/"+fullname):
-                    shutil.copyfile(my_path + "/{}".format(fullname),\
-                        my_path + "/DATA/{}".format(fullname))
-                    print("{} FELIX copied to the DATA folder.".format(fullname))
-                    
-                    run(for_normall_saveDialog)
-
-            elif not os.path.isfile(my_path+"/{}".format(powerfile)):
-                pownotfound(fname)
-
-            elif os.path.isfile(my_path+"/"+powerfile):
-                shutil.copyfile(my_path + "/{}".format(powerfile),\
-                        my_path + "/DATA/{}".format(powerfile))
-                print("{} Powerfile copied to the DATA folder.".format(powerfile))
-
-                if os.path.isfile(my_path+"/DATA/"+fullname):
-
-                    run(for_normall_saveDialog)
-                elif not os.path.isfile(my_path+"/{}".format(fullname)):
-                    filenotfound()
-                elif os.path.isfile(my_path+"/"+fullname):
-                    shutil.copyfile(my_path + "/{}".format(fullname),\
-                        my_path + "/DATA/{}".format(fullname))
-                    print("{} FELIX copied to the DATA folder.".format(fullname))
-                    
-                    run(for_normall_saveDialog)
-
     try:
+        folders = ["DATA", "EXPORT", "OUT", "ToAvg"]
+        back_dir = dirname(location)
+        
+        if set(folders).issubset(os.listdir(back_dir)): 
+            os.chdir(back_dir)
+            my_path = os.getcwd()
+        
+        else: 
+            os.chdir(location)
+            my_path = os.getcwd() 
+            
+        if(fname.find('felix')>=0):
+            fname = fname.split('.')[0]
+
+        fullname = fname + ".felix"
+        basefile = fname + ".base"
+        powerfile = fname + ".pow"
+        files = [fullname, powerfile, basefile]
+
+        for dirs, filenames in zip(folders, files):
+            if not isdir(dirs): os.mkdir(dirs)
+            if isfile(filenames): move(my_path, filenames)
+
+        def completed(fileNameList):
+            for fname in fileNameList:
+                if os.path.isfile(my_path+"/OUT/{}.pdf".format(fname)) and save:
+                    ShowInfo("SAVED", "File %s.pdf saved in OUT/ directory"%fname)
+
+        def run(for_normall_saveDialog):
+
+            norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show)
+            if not for_normall_saveDialog:
+                if os.path.isfile(my_path+"/OUT/{}.pdf".format(fname)) and save:
+                    ShowInfo("SAVED", "File %s.pdf saved in OUT/ directory"%fname)
+
+        def normrun(basefile, powerfile, fullname, for_normall_saveDialog):
+
+            #File check
+            if not os.path.isfile(my_path+"/DATA/"+fullname):
+                if os.path.isfile(my_path+"/"+fullname):
+                    move(my_path, fullname)
+                else:
+                    return ErrorInfo("ERROR: ", "File %s NOT found"%fullname)
+
+            #Powefile check
+            if not os.path.isfile(my_path+"/DATA/"+powerfile):
+                if os.path.isfile(my_path+"/Pow/"+powerfile):
+                    move(my_path, powerfile)
+            
+                elif os.path.isfile(my_path+"/"+powerfile):
+                    move(my_path, powerfile)
+                
+                else:
+                    return ErrorInfo("ERROR: ", "Powerfile: %s NOT found"%powerfile)
+            
+            #Basefile check
+            if not os.path.isfile(my_path+"/DATA/"+basefile):
+                if os.path.isfile(my_path+"/"+basefile):
+                    move(my_path, basefile)
+                else:
+                    return ErrorInfo("ERROR: ", "Basefile: %s NOT found"%basefile)
+
+            #Normline run
+            run(for_normall_saveDialog)
+
         if not normall:
             for_normall_saveDialog = False
             normrun(basefile, powerfile, fullname, for_normall_saveDialog)
@@ -324,18 +263,11 @@ def normline_correction(fname, location, mname, temp, bwidth, ie, save, foravgsh
 
         if normall:
             for_normall_saveDialog = True
-            pwd = os.listdir(my_path + "/DATA")
             fileNameList = []
-
-            for f in pwd:
+            cwd = os.listdir(my_path)
+            for f in cwd:
                 if f.find(".base")>=0:
                     fileNameList.append(f.split(".base")[0])
-
-            cwd = os.listdir(my_path)
-            if len(fileNameList)<1:
-                for f in cwd:
-                    if f.find(".base")>=0:
-                        fileNameList.append(f.split(".base")[0])
 
             for fname in fileNameList:
                 fullname = fname + ".felix"
@@ -344,8 +276,8 @@ def normline_correction(fname, location, mname, temp, bwidth, ie, save, foravgsh
                 normrun(basefile, powerfile, fullname, for_normall_saveDialog)
                 
             completed(fileNameList)
-        
-    except:
-        filenotfound()
 
-    print("DONE")
+        print("DONE")
+        
+    except Exception as e:
+        ErrorInfo("ERROR:", e)

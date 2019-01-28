@@ -1,14 +1,13 @@
 #!/usr/bin/python3
 from tkinter import *
 from tkinter import ttk, messagebox, filedialog
-
 import os
 import shutil
+
+#FELion Module
 from FELion_baseline import baseline_correction
 
-from FELion_definitions import update
 
-###########
 def on_closing():
     if messagebox.askokcancel("Quit", "Do you want to quit?"):
       root.destroy()
@@ -18,6 +17,8 @@ def save_on():
     messagebox.showinfo("FILE SAVED", "File SAVED\nDon't press the Save button again unless different file!")
     root.quit()
     return
+
+
 
 LARGE_FONT= ("Verdana", 15)
 
@@ -35,7 +36,7 @@ class FELion_base(Tk):
     def __init__(self, *args, **kwargs):
 
         Tk.__init__(self, *args, **kwargs)
-        Tk.iconbitmap(self,default='C:/FELION-GUI/software/FELion_Icon.ico')
+        Tk.iconbitmap(self,default='C:/FELION-GUI/FELion_Icon.ico')
         Tk.wm_title(self, "FELion Baseline Correction v.2.0")
         Tk.wm_geometry(self, "900x600")
 
@@ -86,10 +87,6 @@ class StartPage_Base(Frame):
         button1 = ttk.Button(self, text="Baseline",
                             command=lambda: controller.show_frame(Baseline))
         button1.place(relx = x1, rely = y, width = width, height = height)
-
-        button2 = ttk.Button(self, text="Update Program",
-                            command=lambda: update())
-        button2.place(relx = x3, rely = y, width = 110, height = height)
 
         welcome_msg = """
         The FELion Spectrum analyser for analysing FELIX data:

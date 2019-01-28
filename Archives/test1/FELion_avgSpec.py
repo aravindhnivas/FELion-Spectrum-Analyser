@@ -1,23 +1,21 @@
 #!/usr/bin/python3
-
+import os
 import numpy as np
 import pylab as P
 import sys
+import copy 
 from os import path
 from scipy.optimize import leastsq
-
 from FELion_normline import norm_line_felix
 from FELion_normline import felix_binning
 from matplotlib.ticker import MultipleLocator, FormatStrFormatter, NullFormatter, NullLocator
 import matplotlib.pyplot as plt
-from FELion_definitions import *
 
 ## modules
 import os
-from os.path import dirname, isdir, isfile
 from tkinter import Tk, messagebox
-from tkfilebrowser import askopenfilenames
 
+DELTA=2.0
 
 def export_file(fname, wn, inten):
     f = open(fname.split(".pdf")[0] + '.dat','w')
@@ -92,43 +90,45 @@ def main(**kwargs):
 def avgSpec_plot(t, ts, lgs, minor, major, \
                 majorTickSize, outFilename,\
                 location, mname, temp, bwidth, ie, save,\
-                specificFiles, allFiles, \
-                xlabelsz, ylabelsz, fwidth, fheight, markersz, show, DELTA
+                specificFiles, allFiles
                 ):
+
+    # Custom definitions:
 
     def filesaved():
         if os.path.isfile(my_path+"/OUT/{}.pdf".format(outFilename)) and save:
-            ShowInfo("SAVED", "File %s.pdf saved"%outFilename)
+            #os.chdir(my_path+"/OUT")
+            if "/OUT/{}.pdf".format(outFilename).endswith(".pdf"):
+                root = Tk()
+                root.withdraw()
+                messagebox.showinfo("Information", "File '{}.pdf' Saved".format(outFilename))
+                root.destroy()
+
+    def filenotfound():
+        root = Tk()
+        root.withdraw()
+        messagebox.showerror("Error", "FILE NOT FOUND (or some of the file's .base files are missing)")
+        root.destroy()
+
+
+    #save = True
+    show = True
+    os.chdir(location)
+    my_path = os.getcwd()
 
     try:
-        folders = ["DATA", "EXPORT", "OUT", "ToAvg"]
-        back_dir = dirname(location)
-        
-        if set(folders).issubset(os.listdir(back_dir)): 
-            os.chdir(back_dir)
-            my_path = os.getcwd()
-        
-        else: 
-            os.chdir(location)
-            my_path = os.getcwd()
-        
-        if not isdir("ToAvg"): os.mkdir("ToAvg")
+        fig = plt.subplot(1,1,1)
+        plt.rcParams['figure.figsize'] = [6,4]
+        plt.rcParams['figure.dpi'] = 80
+        plt.rcParams['savefig.dpi'] = 100
+        plt.rcParams['font.size'] = ts # Title Size
+        plt.rcParams['legend.fontsize'] = lgs # Legend Size
 
-        figure = plt.figure(figsize=(fwidth, fheight), dpi = 100)
-        fig = figure.add_subplot(1,1,1)
-        plt.rcParams['font.size'] = ts
-        plt.rcParams['legend.fontsize'] = lgs
-
-        pwd = os.listdir(os.getcwd()+'/ToAvg')
-        f = []
-        filesz = lambda x: (os.stat(x).st_size)/1024.0
-        for i in pwd:
-            if i.find(".felix")>=0:
-                f.append(i)
-        fileNameList = []
-        for i in f:
-            if filesz(os.getcwd()+'/ToAvg/'+i)>4.0:
-                fileNameList.append(i)
+        pwd = os.listdir(my_path + "/DATA") # going into the data folder to fetch all the available data filename.
+        fileNameList = [] # creating a varaiable list : Don't add any data here. You can use the script as it is since it automatically takes the data in the DATA folder
+        for f in pwd:
+            if f.find(".felix")>=0:
+                fileNameList.append(f.split(".felix")[0])
 
         xs = np.array([],dtype='double')
         ys = np.array([],dtype='double')
@@ -138,38 +138,44 @@ def avgSpec_plot(t, ts, lgs, minor, major, \
             normshow = False
             for filelist in fileNameList:
                 a,b = norm_line_felix(filelist, mname, temp, bwidth, ie, save, foravgshow, normshow)
-                fig.plot(a, b, ls='', marker='o', ms=markersz, label=filelist)
+                fig.plot(a, b, ls='', marker='o', ms=1, label=filelist)
                 xs = np.append(xs,a)
                 ys = np.append(ys,b)
 
         fig.legend(title=t) #Set the fontsize for each label
-
         #Binning
         binns, inten = felix_binning(xs, ys, delta=DELTA)
         fig.plot(binns, inten, ls='-', marker='', c='k')
 
-        fig.set_xlabel(r"Calibrated lambda (cm-1)", fontsize=xlabelsz)
-        fig.set_ylabel(r"Normalized Intensity", fontsize=ylabelsz)
+        
+
+        #Set the Xlim values and fontsizes.
+        #fig.set_xlim([xmin,xmax])
+        fig.set_xlabel(r"Calibrated lambda (cm-1)", fontsize=10)
+        fig.set_ylabel(r"Normalized Intensity", fontsize=10)
         fig.tick_params(axis='both', which='major', labelsize=majorTickSize)
 
+        #Set the Grid value False if you don't need it.
         fig.grid(True)
+        #Set the no. of Minor and Major ticks.
         fig.xaxis.set_minor_locator(MultipleLocator(minor))
         fig.xaxis.set_major_locator(MultipleLocator(major))
 
         if save:
+            # Saving and exporting the Binned file.
             F = 'OUT/%s.pdf'%(outFilename)
             export_file(F, binns, inten)
             plt.savefig(F)
 
-            j ='OUT/%s.png'%(outFilename)
-            export_file(F, binns, inten)
-            plt.savefig(j)
-        
         if show:
             plt.show()
-        
+
         filesaved()
         plt.close()
+        print()
+        print("Completed.")
+        print()
+    except:
+        filenotfound()
+    return
 
-    except Exception as e:
-        ErrorInfo("ERROR", e)

@@ -11,37 +11,14 @@ from matplotlib.artist import Artist
 from matplotlib.mlab import dist_point_to_segment
 from scipy.interpolate import interp1d
 
-import os
-from os.path import dirname, isdir, isfile
+import os 
 import shutil
 from tkinter import Tk, messagebox
-
-from FELion_definitions import move, copy, ErrorInfo, ShowInfo
 
 #These 2 values are used when guessing the baseline:
 PPS = 5         #points around the value to average
 NUM_POINTS = 18
 baseline=None
-
-########################################################################################
-
-def ReadBase(fname):
-    #open file and skip sharps
-    interpol='cubic'
-    wl, cnt = [],[]
-    f = open('DATA/' + fname + '.base')
-    for line in f:
-        if line[0] == '#':
-            if line.find('INTERP')==1:
-                interpol = line.split('=')[-1].strip('\n')
-            continue
-        else:
-            x, y, = line.split()
-            wl.append(float(x))
-            cnt.append(float(y))
-    
-    f.close()
-    return np.array(wl), np.array(cnt), interpol
 
 # Class for Baseline Calibration
 class BaselineCalibrator(object):
@@ -189,8 +166,25 @@ class InteractivePoints(object):
         self.ax.draw_artist(self.line)
         self.ax.draw_artist(self.funcLine)
         self.canvas.blit(self.ax.bbox)
-################################################################################
+########################################################################################
 
+def ReadBase(fname):
+    #open file and skip sharps
+    interpol='cubic'
+    wl, cnt = [],[]
+    f = open('DATA/' + fname + '.base')
+    for line in f:
+        if line[0] == '#':
+            if line.find('INTERP')==1:
+                interpol = line.split('=')[-1].strip('\n')
+            continue
+        else:
+            x, y, = line.split()
+            wl.append(float(x))
+            cnt.append(float(y))
+    
+    f.close()
+    return np.array(wl), np.array(cnt), interpol
 
 def felix_read_file(fname):
     """
@@ -209,7 +203,7 @@ def felix_read_file(fname):
                 sa_factor=2.0
             continue
         else:
-            if len(line.split()) < 4: continue;
+            if len(line.split()) < 4: continue
             x, y, z, q, *rest = line.split()
             wl.append(float(x))
             cnt.append(float(z))
@@ -253,6 +247,8 @@ def SaveBase(fname, baseline):
     f.write("#BTYPE=cubic\n")
     for i in range(len(b[0])):
         f.write("{:8.3f}\t{:8.2f}\n".format(b[0][i], b[1][i]))
+    f.close()
+    return f, fname, baseline
 
 def main(fname=""):
     if fname == "":
@@ -328,31 +324,48 @@ def main(fname=""):
 
 def baseline_correction(fname, location):
 
-    try:
-        
-        folders = ["DATA", "EXPORT", "OUT", "ToAvg"]
-        back_dir = dirname(location)
-        
-        if set(folders).issubset(os.listdir(back_dir)): 
-            os.chdir(back_dir)
-            my_path = os.getcwd()
-        
-        else: 
-            os.chdir(location)
-            my_path = os.getcwd() 
-            
-        if(fname.find('felix')>=0):
+    os.chdir(location)
+    my_path = os.getcwd()
+
+    if(fname.find('felix')>=0):
             fname = fname.split('.')[0]
+            
+    filename = fname + ".felix"
+    powerfile = fname + ".pow"
 
-        filename = fname + ".felix"
-        basefile = fname + ".base"
-        powerfile = fname + ".pow"
-        files = [filename, powerfile, basefile]
+    # Custom definitions:
+    def filenotfound():
 
-        for dirs, filenames in zip(folders, files):
-            if not isdir(dirs): os.mkdir(dirs)
-            if isfile(filenames): move(my_path, filenames)
+        root = Tk()
+        root.withdraw()
+        messagebox.showerror("Error", "FILE '{}' NOT FOUND".format(filename))
+        root.destroy()
 
+        return
+
+    try:
+        if os.path.isdir('EXPORT'):
+            print("EXPORT folder exist")
+        else:
+            os.mkdir('EXPORT')
+            print("EXPORT folder created.")
+            
+        if os.path.isdir('OUT'):
+            print("OUT folder exist")
+        else:
+            os.mkdir('OUT')
+            print("OUT folder created.")
+
+        if os.path.isdir('DATA'):
+            print("DATA folder exist")
+        else:
+            os.mkdir('DATA')
+            print("DATA folder created.")
+
+        if os.path.isfile(filename):
+            print("File exist, Copying to the DATA folder to process.")
+            shutil.copyfile(my_path + "/{}".format(filename), my_path + "/DATA/{}".format(filename))
+        
         data = felix_read_file(fname)
 
         #Check wether the baslien file exists
@@ -381,13 +394,23 @@ def baseline_correction(fname, location):
         ax.set_ylabel("Counts")
         plt.show()
         
+        #Powerfile check
+        
+        if not os.path.isfile(powerfile):
+            print("NOTE: You don't have .pow file so you can't plot the data yet but you can make the baseline.")
+        elif os.path.isfile(powerfile):
+            shutil.copyfile(my_path + "/{}".format(powerfile), my_path + "/DATA/{}".format(powerfile))
+            print("{} Powerfile copied to the DATA folder.".format(powerfile))
+        
         print("\n{}.base Baseline Saved.".format(fname))
-
         if baseline != None:
             SaveBase(fname, baseline)
-    
-    except Exception as e:
-        ErrorInfo("ERROR: ", e)
+        
+    except:
+        if not os.path.isfile(filename):
+            filenotfound()
+
+    return
 
 if __name__ == "__main__":
     main()
