@@ -16,6 +16,7 @@ from FELion_sa import FELion_Sa
 from FELion_definitions import *
 
 from tkfilebrowser import askopenfilenames
+from os.path import join
 
 def outFile(fname, location, file):
         try:
@@ -66,9 +67,10 @@ class FELion(Tk):
     def __init__(self, *args, **kwargs):
 
         Tk.__init__(self, *args, **kwargs)
+
         Tk.iconbitmap(self,default='C:/FELion-GUI/software/FELion_Icon.ico')
         Tk.wm_title(self, "FELion-Spectrum Analyser v.2.0")
-        Tk.wm_geometry(self, "900x600")
+        Tk.wm_geometry(self, "1000x600")
        
         container = Frame(self)
         container.pack(side="top", fill="both", expand = True)
@@ -1001,6 +1003,21 @@ def on_closing():
     if messagebox.askokcancel("Quit", "Do you want to quit?"):
         app.destroy()
 
+###################################################################################################################################################
+# Main Program
+
 app = FELion()
+
+icons_locations = "D:/FELion-Spectrum-Analyser/testing/"
 app.protocol("WM_DELETE_WINDOW", on_closing)
+
+shutdown = PhotoImage(file = join(icons_locations, "power.png"))
+restarticon = PhotoImage(file = join(icons_locations, "restart.png"))
+
+power = ttk.Button(app, image=shutdown, text = 'power', command = lambda: app.destroy())
+restart = ttk.Button(app, image=restarticon, text = 'restart', command = lambda: os.execl(sys.executable, sys.executable, *sys.argv))
+
+restart.place(relx = 0.95, rely = 0.05)
+power.place(relx = 0.95, rely = 0.15)
+
 app.mainloop()

@@ -134,6 +134,9 @@ class StartPage(Frame):
                             command=lambda: update())
         button5.place(relx = x5, rely = y, width = 110, height = height)
 
+        button6 = ttk.Button(self, text = "Restart", command = lambda: os.execl(sys.executable, sys.executable, *sys.argv))
+        button6.place(relx = x5, rely = 0.1, width = 110, height = height)
+
         welcome_msg = """
         The FELion Spectrum analyser for analysing FELIX data using Python;
 
