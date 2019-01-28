@@ -891,13 +891,29 @@ class Plot(Frame):
         # opening multiple files
         self.filelist = []
         def openfilelist(self):
-                self.filelist = askopenfilenames(self, initialdir='/', initialfile='tmp',
+
+                self.openlist = askopenfilenames(self, initialdir='/', initialfile='tmp',
                                 filetypes=[("All files", "*"), ("All files", "*")])
                 
-                self.filelist = list(self.filelist)
+                for i in self.openlist:
+
+                        location = i.split(os.sep)
+                        
+                        file = location[-1]
+                        self.filelist.append(file)
+
+                        del location[-1]
+                        self.location = os.sep.join(location)
+        
+                filelist_label.config(text = '\n'.join(self.filelist))
+                current_location.config(text = self.location)
+
                 return self.filelist
                 
-        openfiles = ttk.Button(self, text = "open", command = lambda: openfilelist(self))
+        openfiles = ttk.Button(self, text = "Select File(s)", command = lambda: openfilelist(self))
+
+        filelist_label1 = Label(self, text = 'Filelists: ')
+        filelist_label = Label(self)
         
 
         plotbutton = ttk.Button(self, text="Plot", \
@@ -956,8 +972,10 @@ class Plot(Frame):
         polyfit_entry.place(relx = m_x6+0.06,  rely = m_y3, width = smallwidth, height = height)
         fit.place(relx = m_x7,  rely = m_y3, width = smallwidth, height = height)
 
-        combine_entry.place(relx = m_x1,  rely = m_y4, relwidth = 0.6, height = height)
-        openfiles.place(relx = m_x1,  rely = m_y5, relwidth = 0.6, height = height)
+        #combine_entry.place(relx = m_x1,  rely = m_y4, relwidth = 0.6, height = height)
+        openfiles.place(relx = m_x1,  rely = m_y4, width = width, height = height)
+        filelist_label1.place(relx = m_x1,  rely = m_y5, width = width, height = height)
+        filelist_label.place(relx = m_x2,  rely = m_y5)
 
 def on_closing():
     if messagebox.askokcancel("Quit", "Do you want to quit?"):
