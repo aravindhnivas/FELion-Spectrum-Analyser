@@ -15,7 +15,7 @@ from FELion_power import FELion_Power
 from FELion_sa import FELion_Sa
 from FELion_definitions import *
 
-from tkfilebrowser import askopenfilenames
+from tkinter.filedialog import askopenfilenames
 from os.path import join
 
 def outFile(fname, location, file):
@@ -372,18 +372,18 @@ class Normline(Frame):
         self.filelist = []
         def openfilelist(self):
                 self.filelist = []
-                self.openlist = askopenfilenames(self, initialdir=self.location, initialfile='tmp',
+                self.openlist = askopenfilenames(initialdir=self.location, initialfile='tmp',
                                 filetypes=[("Felix Files", "*.felix"), ("All files", "*")])
                 
                 for i in self.openlist:
 
-                        location = i.split(os.sep)
+                        location = i.split("/")
                         
                         file = location[-1]
                         self.filelist.append(file)
 
                         del location[-1]
-                        self.location = os.sep.join(location)
+                        self.location = "/".join(location)
         
                 filelist_label.config(text = '\n'.join(self.filelist))
                 current_location.config(text = self.location)
@@ -530,18 +530,18 @@ class Mass(Frame):
         self.filelist = []
         def openfilelist(self):
                 self.filelist = []
-                self.openlist = askopenfilenames(self, initialdir=self.location, initialfile='tmp',
+                self.openlist = askopenfilenames(initialdir=self.location, initialfile='tmp',
                                 filetypes=[("Mass files", "*.mass"), ("All files", "*")])
                 
                 for i in self.openlist:
 
-                        location = i.split(os.sep)
+                        location = i.split("/")
                         
                         file = location[-1]
                         self.filelist.append(file)
 
                         del location[-1]
-                        self.location = os.sep.join(location)
+                        self.location = "/".join(location)
         
                 filelist_label.config(text = '\n'.join(self.filelist))
                 current_location.config(text = self.location)
@@ -916,18 +916,18 @@ class Plot(Frame):
         self.filelist = []
         def openfilelist(self):
                 self.filelist = []
-                self.openlist = askopenfilenames(self, initialdir=self.location, initialfile='tmp',
+                self.openlist = askopenfilenames(initialdir=self.location, initialfile='tmp',
                                 filetypes=[("All files", "*"), ("All files", "*")])
                 
                 for i in self.openlist:
 
-                        location = i.split(os.sep)
+                        location = i.split("/")
 
                         file = location[-1]
                         self.filelist.append(file)
 
                         del location[-1]
-                        self.location = os.sep.join(location)
+                        self.location = "/".join(location)
         
                 filelist_label.config(text = '\n'.join(self.filelist))
                 current_location.config(text = self.location)
