@@ -326,7 +326,7 @@ def main(fname=""):
         SaveBase(fname, baseline)
     return
 
-def baseline_correction(fname, location):
+def baseline_correction(fname, location, save):
 
     try:
         
@@ -381,11 +381,10 @@ def baseline_correction(fname, location):
         ax.set_ylabel("Counts")
         plt.show()
         
-        print("\n{}.base Baseline Saved.".format(fname))
-
-        if baseline != None:
-            SaveBase(fname, baseline)
-    
+        if save:    
+            if baseline != None:
+                SaveBase(fname, baseline)
+        
     except Exception as e:
         ErrorInfo("ERROR: ", e)
 
