@@ -188,7 +188,7 @@ def main(s=True, plotShow=False):
     print(a, b)
     print("\nProcess Completed.\n")
 
-def normline_correction(fname, location, mname, temp, bwidth, ie, save, foravgshow, normall, show):
+def normline_correction(fname, location, mname, temp, bwidth, ie, save, foravgshow, normall, fileNameList, show):
 
     try:
         folders = ["DATA", "EXPORT", "OUT"]
@@ -263,13 +263,14 @@ def normline_correction(fname, location, mname, temp, bwidth, ie, save, foravgsh
 
         if normall:
             for_normall_saveDialog = True
-            fileNameList = []
-            cwd = os.listdir(my_path)
-            for f in cwd:
-                if f.find(".base")>=0:
-                    fileNameList.append(f.split(".base")[0])
+            #fileNameList = []
+            #cwd = os.listdir(my_path)
+            #for f in cwd:
+            #    if f.find(".base")>=0:
+            #        fileNameList.append(f.split(".base")[0])
 
             for fname in fileNameList:
+                fname = fname.split(".")[0]
                 fullname = fname + ".felix"
                 powerfile = fname + ".pow"
                 basefile = fname + ".base"
