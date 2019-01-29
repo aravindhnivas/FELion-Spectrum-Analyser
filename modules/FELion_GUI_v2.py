@@ -836,6 +836,13 @@ class Plot(Frame):
 
                         if norm:
                                 plt.ylabel("Normalised (Scaled to 1) Intensity")
+
+                        elif not combine and filename.split(".")[-1] == "pow":
+                                plt.ylabel("Power (mJ)")
+                        
+                        elif combine and filelist[0].split(".")[-1] == "pow":
+                                plt.ylabel("Power (mJ)")
+
                         else:
                                 plt.ylabel("Intensity")
                         
