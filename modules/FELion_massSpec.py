@@ -83,7 +83,7 @@ def massSpec(fname, mname, temp, bwidth, ie, location,\
             plt.xlabel('mass [u]')
             plt.ylabel('ion counts /{} ms'.format(bwidth))
             plt.grid(True)
-            plt.title("Filename: {}, for {}, at temp: {}K, B0: {}ms and IE(eV): {}".format(fname, mname, temp, bwidth, ie))
+            plt.title("%s"%avgname)
             
             plt.tight_layout()
 
