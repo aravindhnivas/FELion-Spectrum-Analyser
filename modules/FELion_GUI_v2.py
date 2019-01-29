@@ -824,11 +824,11 @@ class Plot(Frame):
 
                                         if norm:
                                                 if log: plt.semilogy(x, normy, label = i.split(".")[0])
-                                                else:   plt.plot(x, normy, label = i.split(".")[0])
+                                                else:   plt.plot(x, normy,".-", label = i.split(".")[0])
 
                                         else:
                                                 if log: plt.semilogy(x,y, label = i.split(".")[0])
-                                                else:   plt.plot(x,y, label = i.split(".")[0])
+                                                else:   plt.plot(x,y,".-", label = i.split(".")[0])
 
 
                         plt.legend()
