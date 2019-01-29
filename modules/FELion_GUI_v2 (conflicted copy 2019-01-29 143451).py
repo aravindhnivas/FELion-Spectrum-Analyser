@@ -369,7 +369,7 @@ class Normline(Frame):
         power_button = ttk.Button(self, text = "Power", \
                 command = lambda: FELion_Power(self.fname, self.location))
 
-        baseline = ttk.Button(self, text="Baseline", \
+        show_baseline = ttk.Button(self, text="Baseline", \
                 command = lambda: show_baseline(self.fname, self.location, mname.get()))
 
         self.filelist = []
@@ -472,9 +472,8 @@ class Normline(Frame):
         normallCheck.place(relx = n_x6,  rely = a_y4, width = width+45, height = height)
 
         normline_button.place(relx = n_x6,  rely = a_y5, width = width, height = height)
-        sa_button.place(relx = n_x6,  rely = a_y6, width = 30, height = height)
-        power_button.place(relx = n_x6+0.05,  rely = a_y6, width = 50, height = height)
-        baseline.place(relx = n_x6,  rely = a_y7, width = width, height = height)
+        sa_button.place(relx = n_x6,  rely = a_y6, width = width, height = height)
+        power_button.place(relx = n_x6,  rely = a_y7, width = width, height = height)
         
         openfiles.place(relx = n_x6+0.15,  rely = a_y4, width = width, height = height)
         avg_button.place(relx = n_x6+0.15,  rely = a_y5, width = width, height = height)
