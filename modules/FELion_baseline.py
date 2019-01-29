@@ -384,6 +384,7 @@ def baseline_correction(fname, location, save):
         if save:    
             if baseline != None:
                 SaveBase(fname, baseline)
+                print("\n{}.base Baseline Saved.".format(fname))
         
     except Exception as e:
         ErrorInfo("ERROR: ", e)
