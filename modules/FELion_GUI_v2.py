@@ -246,7 +246,7 @@ class Normline(Frame):
                                         self.fname, self.location,\
                                         mname.get(), temp.get(), bwidth.get(), ie.get(),\
                                         normavg_saveCheck_value.get(),\
-                                        foravgshow, normallCheck_value.get(), norm_show_value.get()
+                                        foravgshow, normallCheck_value.get(),self.filelist, norm_show_value.get()
                                         )
                                         )
         
