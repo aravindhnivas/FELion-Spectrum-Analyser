@@ -18,6 +18,8 @@ from FELion_definitions import *
 from tkinter.filedialog import askopenfilenames
 from os.path import join
 
+import numpy as np
+
 def outFile(fname, location, file):
         try:
                 os.chdir(location)

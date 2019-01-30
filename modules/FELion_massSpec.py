@@ -35,16 +35,10 @@ def massSpec(fname, mname, temp, bwidth, ie, location,\
                 shutil.copyfile(my_path + "/{}".format(filename), my_path + "/MassSpec_DATA/{}".format(filename))
             else:
                 shutil.copyfile(my_path + "/{}".format(filename), my_path + "/MassSpec_DATA/{}".format(filename))
+           
+            mass = np.genfromtxt(filename)
+            x, y = mass[:,0], mass[:,1]
 
-            f = open(filename)
-            x, y = [],[]
-            for i in f:
-                if not i[0] == "#" and not i == "\n":
-                    a, b = i.split()
-                    x.append(float(a))
-                    y.append(float(b))
-            f.close()
-            
             plt.grid(True)
             plt.semilogy(x, y)
             plt.xlabel('Mass [u]')
@@ -66,14 +60,8 @@ def massSpec(fname, mname, temp, bwidth, ie, location,\
                 return ErrorInfo("Select Files: ", "Click Select File(s)")
             for file in filelist:
 
-                f = open(file)
-                x, y = [],[]
-                for i in f:
-                    if not i[0] == "#" and not i == "\n":
-                        a, b = i.split()
-                        x.append(float(a))
-                        y.append(float(b))
-                f.close()
+                mass = np.genfromtxt(filename)
+                x, y = mass[:,0], mass[:,1]
                 
                 plt.grid(True)
                 plt.semilogy(x, y, label = file.split('.')[0])
