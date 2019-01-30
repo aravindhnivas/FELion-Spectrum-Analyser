@@ -105,16 +105,16 @@ def norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show):
         plt.close()
 
         # save baseline
-
-        base1 = plt.figure(dpi = 100)
-        base = base1.add_subplot(1,1,1)
-        baseCal.plot(base)
-        base.plot(data[0], data[1], ls='', marker='o', ms=3, markeredgecolor='r', c='r')
-        plt.xlabel("Wavenumber (cm-1)")
-        plt.ylabel("Counts")
-        plt.title("Baseline: Filename: {}, for {} ".format(fname, mname))
-        plt.savefig('OUT/'+fname+'_baseline.png')
-        plt.close()
+        if save:
+            base1 = plt.figure(dpi = 100)
+            base = base1.add_subplot(1,1,1)
+            baseCal.plot(base)
+            base.plot(data[0], data[1], ls='', marker='o', ms=3, markeredgecolor='r', c='r')
+            plt.xlabel("Wavenumber (cm-1)")
+            plt.ylabel("Counts")
+            plt.title("Baseline: Filename: {}, for {} ".format(fname, mname))
+            plt.savefig('OUT/'+fname+'_baseline.png')
+            plt.close()
 
     if foravgshow:
         saCal = SpectrumAnalyserCalibrator(fname)
@@ -188,7 +188,7 @@ def main(s=True, plotShow=False):
     print(a, b)
     print("\nProcess Completed.\n")
 
-def normline_correction(fname, location, mname, temp, bwidth, ie, save, foravgshow, normall, show):
+def normline_correction(fname, location, mname, temp, bwidth, ie, save, foravgshow, normall, fileNameList, show):
 
     try:
         folders = ["DATA", "EXPORT", "OUT"]
@@ -216,8 +216,10 @@ def normline_correction(fname, location, mname, temp, bwidth, ie, save, foravgsh
 
         def completed(fileNameList):
             for fname in fileNameList:
+                fname = fname.split(".")[0]
                 if os.path.isfile(my_path+"/OUT/{}.pdf".format(fname)) and save:
                     ShowInfo("SAVED", "File %s.pdf saved in OUT/ directory"%fname)
+
 
         def run(for_normall_saveDialog):
 
@@ -260,16 +262,11 @@ def normline_correction(fname, location, mname, temp, bwidth, ie, save, foravgsh
             for_normall_saveDialog = False
             normrun(basefile, powerfile, fullname, for_normall_saveDialog)
 
-
         if normall:
             for_normall_saveDialog = True
-            fileNameList = []
-            cwd = os.listdir(my_path)
-            for f in cwd:
-                if f.find(".base")>=0:
-                    fileNameList.append(f.split(".base")[0])
 
             for fname in fileNameList:
+                fname = fname.split(".")[0]
                 fullname = fname + ".felix"
                 powerfile = fname + ".pow"
                 basefile = fname + ".base"
@@ -281,3 +278,35 @@ def normline_correction(fname, location, mname, temp, bwidth, ie, save, foravgsh
         
     except Exception as e:
         ErrorInfo("ERROR:", e)
+
+def show_baseline(fname, location, mname):
+
+    try:
+        folders = ["DATA", "EXPORT", "OUT"]
+        back_dir = dirname(location)
+        
+        if set(folders).issubset(os.listdir(back_dir)): 
+            os.chdir(back_dir)
+        
+        else: 
+            os.chdir(location)
+            
+        if(fname.find('felix')>=0):
+            fname = fname.split('.')[0]
+
+        data = felix_read_file(fname)
+        baseCal = BaselineCalibrator(fname)
+
+        base1 = plt.figure(dpi = 100)
+        base = base1.add_subplot(1,1,1)
+        baseCal.plot(base)
+        base.plot(data[0], data[1], ls='', marker='o', ms=3, markeredgecolor='r', c='r')
+        plt.xlabel("Wavenumber (cm-1)")
+        plt.ylabel("Counts")
+        plt.title("Baseline: Filename: {}, for {} ".format(fname, mname))
+        plt.show()
+        #plt.savefig('OUT/'+fname+'_baseline.png')
+        plt.close()
+
+    except Exception as e:
+        ErrorInfo("Error: ", e)
