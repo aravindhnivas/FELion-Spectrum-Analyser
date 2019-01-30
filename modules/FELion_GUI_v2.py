@@ -789,20 +789,9 @@ class Plot(Frame):
                         os.chdir(self.location)
 
                         def fopen(self, filename):
-                                f = open(filename)
-                                x, y, normy = [],[], []
-                                for i in f:
-                                        if not i[0] == "#" and not i == "\n":
-                                                a, b = i.split()
-                                                x.append(float(a))
-                                                y.append(float(b))
-
-                                # normalising (Feature Scaling (0,1) range):
-                                for j in y:
-                                        j = (j-min(y))/(max(y)-min(y))
-                                        normy.append(j)
-                                
-                                f.close()
+                                data = np.genfromtxt(filename)
+                                x, y = data[:,0], data[:,1]
+                                normy = (y-min(y))/(max(y)-min(y))
                                 return x, y, normy
 
                         plt.grid(True)
