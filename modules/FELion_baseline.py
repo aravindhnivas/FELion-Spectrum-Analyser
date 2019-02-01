@@ -190,8 +190,6 @@ class InteractivePoints(object):
         self.ax.draw_artist(self.funcLine)
         self.canvas.blit(self.ax.bbox)
 ################################################################################
-
-
 def felix_read_file(fname):
     """
     Reads data from felix meassurement file
@@ -226,7 +224,6 @@ def felix_read_file(fname):
     
     res = np.take(data, indices, 1)
     return res
-
 
 def GuessBaseLine(data):
     """
