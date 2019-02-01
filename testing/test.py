@@ -2,26 +2,47 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
+from scipy.interpolate import interp1d
 
-class LineBuilder:
-    def __init__(self, line):
-        self.line = line
-        self.xs = list(line.get_xdata())
-        self.ys = list(line.get_ydata())
-        self.cid = line.figure.canvas.mpl_connect('button_press_event', self)
+class InteractivePoints(object):
+    """
+    Line editor
+    Keys:
+      'd' delete the vertex under point
+      'a' insert a vertex at point
+    """
 
-    def __call__(self, event):
-        print('click', event)
-        if event.inaxes!=self.line.axes: return
-        self.xs.append(event.xdata)
-        self.ys.append(event.ydata)
-        self.line.set_data(self.xs, self.ys)
-        self.line.figure.canvas.draw()
+    epsilon = 5  # max pixel distance to count as a vertex hit
 
-fig = plt.figure()
-ax = fig.add_subplot(111)
-ax.set_title('click to build line segments')
-line, = ax.plot([0], [0])  # empty line
-linebuilder = LineBuilder(line)
+    def __init__(self, figure, ax, xs, ys):
+        self.ax = ax
+        canvas = figure.canvas
 
-plt.show()
+        self.line = Line2D(xs, ys, marker='s', ls='', ms=6, c='b', markeredgecolor='b', animated=True)
+        self.ax.add_line(self.line)
+        
+        #Interpolated Line:
+        self.inter_xs = np.arange(xs[0], xs[-1])
+        self.funcLine = Line2D([], [], marker='', ls='-', c='b', animated=True)
+        self.ax.add_line(self.funcLine)
+        self.redraw_f_line()
+
+        self._ind = None  # the active vert
+
+        #canvas.mpl_connect('draw_event', self.draw_callback)
+        #canvas.mpl_connect('button_press_event', self.button_press_callback)
+        #anvas.mpl_connect('key_press_event', self.key_press_callback)
+        #canvas.mpl_connect('button_release_event', self.button_release_callback)
+        #canvas.mpl_connect('motion_notify_event', self.motion_notify_callback)
+        self.canvas = canvas
+
+    def redraw_f_line(self):
+        Bx, By = self.line.get_data()
+        self.inter_xs = np.arange(Bx.min(), Bx.max())
+
+        f = interp1d(Bx, By, kind='cubic')
+        self.funcLine.set_data((self.inter_xs, f(self.inter_xs))) 
+
+fig, ax = plt.subplots()
+InteractivePoints()
