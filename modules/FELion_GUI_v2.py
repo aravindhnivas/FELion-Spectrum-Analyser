@@ -15,10 +15,11 @@ from FELion_power import FELion_Power
 from FELion_sa import FELion_Sa
 from FELion_definitions import *
 
-from tkinter.filedialog import askopenfilenames
+from tkinter.filedialog import askopenfilenames, askopenfilename
 from os.path import join
 
 import numpy as np
+from just_plot import *
 
 def outFile(fname, location, file):
         try:
@@ -964,6 +965,25 @@ class Plot(Frame):
         save.set(True)
         save_check = ttk.Checkbutton(self, text = "Save", variable = save)
 
+        self.theory = ''
+        #self.exp = ''
+        def theory_btn(self):
+                root = Tk()
+                root.withdraw()
+
+                self.theory = askopenfilename(initialdir=self.location, initialfile='*.*',\
+                        title = "theory file", filetypes=[("All files", "*"), ("All files", "*")])
+                #self.exp = askopenfilename(initialdir=self.location, initialfile='*.*',\
+                #        title = "exp file", filetypes=[("All files", "*"), ("All files", "*")])
+                
+                root.destroy()
+                theory_exp(self.theory,self.fname, self.location, save.get(), show_value.get())
+
+                return
+        
+        theory = ttk.Button(self, text = 'Theory_File',\
+                command = lambda: theory_btn(self))
+        
 
         mass_diff = 0.12
         mass_smalldiff = 0.06
@@ -992,6 +1012,7 @@ class Plot(Frame):
         combineCheck.place(relx = m_x1,  rely = m_y3, width = width, height = height)
         plotbutton.place(relx = m_x4,  rely = m_y2, width = width, height = height)
         timescan_plotbutton.place(relx = m_x5+0.06,  rely = m_y2, width = width, height = height)
+        theory.place(relx = m_x5+0.06+0.12,  rely = m_y2, width = width, height = height)
 
         show.place(relx = m_x4,  rely = m_y3, width = width, height = height)
         log.place(relx = m_x3,  rely = m_y3, width = width, height = height)
