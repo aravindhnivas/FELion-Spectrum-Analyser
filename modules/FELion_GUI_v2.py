@@ -191,9 +191,8 @@ class Normline(Frame):
         # Opening a Directory:
         self.location = "/"
         self.fname = ""
-
         def open_dir(self):
-
+            
             root = Tk()
             root.withdraw()
 
@@ -208,8 +207,8 @@ class Normline(Frame):
             root.destroy()
             current_location.config(text = self.location)
             filename_label.config(text = self.fname)
-            return
-  
+            if not self.fname=="": trap_time(self)
+
         # Labels and buttons:
         browse_loc = ttk.Button(self, text = "Browse File")
         browse_loc.config(command = lambda: open_dir(self))
@@ -402,15 +401,17 @@ class Normline(Frame):
 
         self.trap_time, self.B0_width = float(), int()
         def trap_time(self):
-                self.trap_time, self.B0_width = normline_correction(self.fname, self.location,\
-                        mname.get(), temp.get(), bwidth.get(), ie.get(),\
-                        normavg_saveCheck_value.get(),\
-                        foravgshow, normallCheck_value.get(),self.filelist, norm_show_value.get()
-                        )
-                self.trap_time, self.B0_width = self.trap_time[-1], self.B0_width[-1]
-
-        if not self.fname == "": trap_time(self)
-        trap_width_label = Label(self, text = 'Trap: %.2f\nB0: %i'%(self.trap_time, self.B0_width))
+                with open(join(self.location,self.fname), 'r') as f:
+                        info = f.readlines()
+                self.trap_time = [info[-21].split('#')[3].strip(),\
+                        int(info[-21].split('#')[4].strip())/1000000]
+                self.B0_width = [info[-46].split('#')[3].strip(),\
+                        int(int(info[-46].split('#')[4].strip())/1000)]
+                
+                trap_width_label.config(text = 'Trap: %.2f\nB0: %i'%(self.trap_time[-1], self.B0_width[-1]))
+                bwidth.set(self.B0_width[-1])
+        
+        trap_width_label = Label(self)
 
         norm_diff = 0.12
         norm_smalldiff = 0.06
