@@ -253,6 +253,7 @@ class Normline(Frame):
                                         )
                                         )
         
+        
 
         # Save checkbutton for normall:
         normallCheck_value = BooleanVar()
@@ -399,7 +400,18 @@ class Normline(Frame):
         openfiles = ttk.Button(self, text = "Select File(s)", command = lambda: openfilelist(self))
         filelist_label = Label(self)
 
-        
+        self.trap_time, self.B0_width = float(), int()
+        def trap_time(self):
+                self.trap_time, self.B0_width = normline_correction(self.fname, self.location,\
+                        mname.get(), temp.get(), bwidth.get(), ie.get(),\
+                        normavg_saveCheck_value.get(),\
+                        foravgshow, normallCheck_value.get(),self.filelist, norm_show_value.get()
+                        )
+                self.trap_time, self.B0_width = self.trap_time[-1], self.B0_width[-1]
+
+        if not self.fname == "": trap_time(self)
+        trap_width_label = Label(self, text = 'Trap: %.2f\nB0: %i'%(self.trap_time, self.B0_width))
+
         norm_diff = 0.12
         norm_smalldiff = 0.06
 
@@ -411,7 +423,6 @@ class Normline(Frame):
         n_x6 = n_x5 + norm_diff
         n_x7 = n_x6 + norm_smalldiff
 
-
         n_y1 = 0.1
         ynorm_diff = 0.1
         n_y2 = n_y1 + ynorm_diff
@@ -420,13 +431,14 @@ class Normline(Frame):
         n_y5 = n_y4 + ynorm_diff
         n_y6 = n_y5 + ynorm_diff
 
-
         browse_loc.place(relx = n_x1,  rely =n_y1, width = width, height = height)
         fname_label.place(relx = n_x1,  rely =n_y2, width = width, height = height)
         molecule_name_label.place(relx = n_x1,  rely = n_y3, width = width, height = height)
         temp_label.place(relx = n_x1,  rely = n_y4, width = width, height = height)
         bwidth_label.place(relx = n_x1,  rely =n_y5, width = width, height = height)
         ion_enrg_label.place(relx = n_x1,  rely = n_y6, width = width, height = height)
+        
+        trap_width_label.place(relx = n_x1,  rely = n_y6+0.1, width = width, height = height)
 
         current_location.place(relx = n_x2,  rely = n_y1, relwidth = 0.5, height = height)
         filename_label.place(relx = n_x2,  rely = n_y2, width = width, height = height)
