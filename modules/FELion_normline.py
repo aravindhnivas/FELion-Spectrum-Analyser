@@ -266,9 +266,9 @@ def normline_correction(fname, location, mname, temp, bwidth, ie,\
 
             with open(join(my_path,'DATA',fullname), 'r') as f:
                 info = f.readlines()
-            trap_time_'%s'%fname = [info[-21].split('#')[3].strip(),\
+            trap_time = [info[-21].split('#')[3].strip(),\
                 int(info[-21].split('#')[4].strip())/1000000]
-            B0_Width'%s'%fname = [info[-46].split('#')[3].strip(),\
+            B0_Width = [info[-46].split('#')[3].strip(),\
                 int(int(info[-46].split('#')[4].strip())/1000)]
 
         if normall:
@@ -291,7 +291,7 @@ def normline_correction(fname, location, mname, temp, bwidth, ie,\
             completed(fileNameList)
 
         print("DONE")
-        return trap_time_'%s'%fname, B0_Width'%s'%fname
+        return trap_time, B0_Width
         
     except Exception as e:
         ErrorInfo("ERROR:", e)
