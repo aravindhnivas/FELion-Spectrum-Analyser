@@ -60,7 +60,7 @@ def massSpec(fname, mname, temp, bwidth, ie, location,\
                 return ErrorInfo("Select Files: ", "Click Select File(s)")
             for file in filelist:
 
-                mass = np.genfromtxt(filename)
+                mass = np.genfromtxt(file)
                 x, y = mass[:,0], mass[:,1]
                 
                 plt.grid(True)
