@@ -189,7 +189,8 @@ def main(s=True, plotShow=False):
     print(a, b)
     print("\nProcess Completed.\n")
 
-def normline_correction(fname, location, mname, temp, bwidth, ie, save, foravgshow, normall, fileNameList, show):
+def normline_correction(fname, location, mname, temp, bwidth, ie,\
+    save, foravgshow, normall, fileNameList, show):
 
     try:
         folders = ["DATA", "EXPORT", "OUT"]
@@ -263,6 +264,13 @@ def normline_correction(fname, location, mname, temp, bwidth, ie, save, foravgsh
             for_normall_saveDialog = False
             normrun(basefile, powerfile, fullname, for_normall_saveDialog)
 
+            with open(join(my_path,'DATA',fullname), 'r') as f:
+                info = f.readlines()
+            trap_time_'%s'%fname = [info[-21].split('#')[3].strip(),\
+                int(info[-21].split('#')[4].strip())/1000000]
+            B0_Width'%s'%fname = [info[-46].split('#')[3].strip(),\
+                int(int(info[-46].split('#')[4].strip())/1000)]
+
         if normall:
             for_normall_saveDialog = True
 
@@ -272,10 +280,18 @@ def normline_correction(fname, location, mname, temp, bwidth, ie, save, foravgsh
                 powerfile = fname + ".pow"
                 basefile = fname + ".base"
                 normrun(basefile, powerfile, fullname, for_normall_saveDialog)
+
+                '''with open(join(my_path,'DATA',fullname), 'r') as f:
+                    info = f.readlines()
+                trap_time'%s'%fname = [info[-21].split('#')[3].strip(),\
+                    int(info[-21].split('#')[4].strip())/1000000]
+                B0_Width'%s'%fname = [info[-46].split('#')[3].strip(),\
+                    int(int(info[-46].split('#')[4].strip())/1000)]'''
                 
             completed(fileNameList)
 
         print("DONE")
+        return trap_time_'%s'%fname, B0_Width'%s'%fname
         
     except Exception as e:
         ErrorInfo("ERROR:", e)
