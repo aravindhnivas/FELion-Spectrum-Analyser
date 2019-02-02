@@ -16,7 +16,8 @@ import os
 import matplotlib.pyplot as plt
 from tkinter import Tk, messagebox
 from FELion_definitions import *
-from os.path import dirname, isdir, isfile
+from os.path import dirname, isdir, isfile, join
+import shutil
 
 ################################################################################
 
@@ -240,7 +241,7 @@ def normline_correction(fname, location, mname, temp, bwidth, ie, save, foravgsh
             #Powefile check
             if not os.path.isfile(my_path+"/DATA/"+powerfile):
                 if os.path.isfile(my_path+"/Pow/"+powerfile):
-                    move(my_path, powerfile)
+                    shutil.move(join(my_path, "Pow", powerfile), join(my_path,"DATA"))
             
                 elif os.path.isfile(my_path+"/"+powerfile):
                     move(my_path, powerfile)
