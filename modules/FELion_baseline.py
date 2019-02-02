@@ -20,7 +20,7 @@ from FELion_definitions import move, copy, ErrorInfo, ShowInfo
 
 #These 2 values are used when guessing the baseline:
 PPS = 5         #points around the value to average
-NUM_POINTS = 18
+NUM_POINTS = 2
 baseline=None
 
 ########################################################################################
