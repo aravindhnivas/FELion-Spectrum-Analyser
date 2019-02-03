@@ -884,6 +884,7 @@ class Plot(Frame):
         # Opening a Directory:
         self.location = "/"
         self.fname = ""
+        self.filename = ""
 
         def open_dir(self):
 
@@ -891,7 +892,7 @@ class Plot(Frame):
             root.withdraw()
 
             root.filename =  filedialog.askopenfilename(initialdir = self.location, title = "Select file", filetypes = (("all files","*.*"), ("all files","*.*")))
-            filename = root.filename
+            filename, self.filename = root.filename, root.filename
             filename = filename.split("/")
 
             self.fname = filename[-1]
@@ -955,7 +956,7 @@ class Plot(Frame):
                 filelist_label.config(text = '\n'.join(self.filelist))
                 current_location.config(text = self.location)
 
-                return self.filelist
+                return self.filelist, self.location
                 
         openfiles = ttk.Button(self, text = "Select File(s)", command = lambda: openfilelist(self))
         filelist_label = Label(self)
@@ -985,24 +986,11 @@ class Plot(Frame):
         save.set(True)
         save_check = ttk.Checkbutton(self, text = "Save", variable = save)
 
-        self.theory = ''
-        #self.exp = ''
-        def theory_btn(self):
-                root = Tk()
-                root.withdraw()
-
-                self.theory = askopenfilename(initialdir=self.location, initialfile='*.*',\
-                        title = "theory file", filetypes=[("All files", "*"), ("All files", "*")])
-                #self.exp = askopenfilename(initialdir=self.location, initialfile='*.*',\
-                #        title = "exp file", filetypes=[("All files", "*"), ("All files", "*")])
-                
-                root.destroy()
-                theory_exp(self.theory,self.fname, self.location, save.get(), show_value.get())
-
-                return
-        
         theory = ttk.Button(self, text = 'Theory_File',\
-                command = lambda: theory_btn(self))
+                command = lambda: theory_exp(\
+                        self.filelist,\
+                        self.filename, \
+                        self.location, save.get(), show_value.get()))
         
 
         mass_diff = 0.12
