@@ -22,7 +22,7 @@ def theory_exp(theory,exp, location, save, show):
     plt.title('Theory vs Exp: %s'%exp)
     plt.xlabel('Wavenumber $cm^{-1}$')
     plt.ylabel('Normalised Intensity \n(Theory Inten. is norm. to Exp.)')
-    plt.xlim(xmax = xe.max(), xmin = xe.min())
+    plt.xlim(xmax = xe.max()+50, xmin = xe.min()-50)
     plt.ylim(ymin=0)
     plt.tight_layout()
     if save: plt.savefig('theory-exp_%s.png'%exp.split('.')[0])
