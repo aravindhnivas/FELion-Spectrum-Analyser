@@ -13,14 +13,14 @@ def theory_exp(filelists,exp,location, save, show):
         xe, ye = e[:,0], e[:,1]
 
         plt.plot(xe,ye, label='Exp')
-        for i in filelists:
+        for i, c, l in zip(filelists, ('k','r'), (5,5)):
                 t = np.genfromtxt(i, comments='F')
                 xt, yt = t[:,0], t[:,1]
                 yt = (yt/yt.max())*ye.max()
-                plt.vlines(xt, ymin=0, ymax=yt, lw = 5, label = i.split('/')[-1].split('.')[0])
+                plt.vlines(xt, ymin=0, ymax=yt,\
+                        lw = l, color = c,\
+                        label = i.split('/')[-1].split('.')[0])
         
-        
-
         plt.legend()
         plt.title('Theory vs Exp: %s'%exp.split('/')[-1].split('.')[0])
         plt.xlabel('Wavenumber $cm^{-1}$')
