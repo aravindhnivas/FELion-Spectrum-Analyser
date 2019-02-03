@@ -403,12 +403,21 @@ class Normline(Frame):
         def trap_time(self):
                 with open(join(self.location,self.fname), 'r') as f:
                         info = f.readlines()
+                filename = np.genfromtxt(info)
+                x, y = filename[:,0], filename[:,1]
+                self.range_min = x.min()
+                self.range_max = x.max()
+                self.count = y.max()
                 self.trap_time = [info[-21].split('#')[3].strip(),\
                         int(info[-21].split('#')[4].strip())/1000000]
                 self.B0_width = [info[-46].split('#')[3].strip(),\
                         int(int(info[-46].split('#')[4].strip())/1000)]
                 
-                trap_width_label.config(text = 'Trap: %.2f\nB0: %i'%(self.trap_time[-1], self.B0_width[-1]))
+                trap_width_label.config(\
+                        text = 'Trap: %.2f\tB0: %i\nRange: [%i, %i]\ncounts: %i'\
+                                %(self.trap_time[-1], self.B0_width[-1],\
+                                self.range_min,self.range_max, self.count)
+                                )
                 bwidth.set(self.B0_width[-1])
         
         trap_width_label = Label(self)
@@ -439,7 +448,7 @@ class Normline(Frame):
         bwidth_label.place(relx = n_x1,  rely =n_y5, width = width, height = height)
         ion_enrg_label.place(relx = n_x1,  rely = n_y6, width = width, height = height)
         
-        trap_width_label.place(relx = n_x1,  rely = n_y6+0.1, width = width, height = height)
+        trap_width_label.place(relx = n_x1,  rely = n_y6+0.1)
 
         current_location.place(relx = n_x2,  rely = n_y1, relwidth = 0.5, height = height)
         filename_label.place(relx = n_x2,  rely = n_y2, width = width, height = height)
