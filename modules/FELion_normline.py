@@ -276,7 +276,7 @@ def normline_correction(fname, location, mname, temp, bwidth, ie,\
             completed(fileNameList)
 
         print("DONE")
-        return 
+
     except Exception as e:
         ErrorInfo("ERROR:", e)
 
