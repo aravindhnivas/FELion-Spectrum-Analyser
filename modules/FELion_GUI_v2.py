@@ -404,7 +404,7 @@ class Normline(Frame):
                 with open(join(self.location,self.fname), 'r') as f:
                         info = f.readlines()
                 filename = np.genfromtxt(info)
-                x, y = filename[:,0], filename[:,1]
+                x, y = filename[:,0], filename[:,2]
                 self.range_min = x.min()
                 self.range_max = x.max()
                 self.count = y.max()
