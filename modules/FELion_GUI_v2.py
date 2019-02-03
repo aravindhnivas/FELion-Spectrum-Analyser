@@ -207,7 +207,7 @@ class Normline(Frame):
             root.destroy()
             current_location.config(text = self.location)
             filename_label.config(text = self.fname)
-            if not self.fname=="": trap_time(self)
+            if not self.fname=="" and not normallCheck_value.get(): trap_time(self)
 
         # Labels and buttons:
         browse_loc = ttk.Button(self, text = "Browse File")
@@ -252,8 +252,6 @@ class Normline(Frame):
                                         )
                                         )
         
-        
-
         # Save checkbutton for normall:
         normallCheck_value = BooleanVar()
         normallCheck_value.set(False)
