@@ -7,6 +7,7 @@ import os
 def theory_exp(theory,exp, location, save, show):
 
     os.chdir(location)
+    print(theory.split('/')[-1])
     
     t = np.genfromtxt(theory, comments='F')
     e = np.genfromtxt(exp)
@@ -15,7 +16,7 @@ def theory_exp(theory,exp, location, save, show):
 
     plt.figure(dpi=100)
 
-    plt.vlines(xt, ymin=0, ymax=yt, lw = 5, label = 'Theory')
+    plt.vlines(xt, ymin=0, ymax=yt, lw = 5, label = theory.split('/')[-1].split('.')[0])
     plt.plot(xe,ye, label='Exp')
 
     plt.legend()
