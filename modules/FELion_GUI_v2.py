@@ -992,6 +992,7 @@ class Plot(Frame):
                         self.filename, \
                         self.location, save.get(), show_value.get()))
         
+        powerplot = ttk.Button(self, text='PowerPlot', command = lambda: power_plot(self.filelist, self.location, save.get(), show_value.get()))
 
         mass_diff = 0.12
         mass_smalldiff = 0.06
@@ -1032,6 +1033,7 @@ class Plot(Frame):
         openfiles.place(relx = m_x1,  rely = m_y4, width = width, height = height)
         filelist_label.place(relx = m_x1,  rely = m_y5)
         save_check.place(relx = m_x3,  rely = m_y4, width = width, height = height)
+        powerplot.place(relx = m_x3,  rely = m_y5, width = width, height = height)
 
 #Closing Program
 def on_closing():

@@ -32,36 +32,37 @@ def theory_exp(filelists,exp,location, save, show):
         if show: plt.show()
         plt.close()
 
-def power_plot(powerfile, location, show, save, fname):
+def power_plot(powerfiles, location, save,show):
 
-    os.chdir(location)
-    f = open(powerfile)
-    
-    for i in f:
-        if i.find('#SHOTS')>=0:
-            shots=i.strip().split('=')[-1]
-            break
-    f.close()
-    
-    shots = np.float(shots)
-    
-    power_file = np.genfromtxt(powerfile)
-    power_file_extrapolate = interpolate(power_file[:,0], power_file[:,1], kind = 'linear', fill_value = 'extrapolate')
-    temp = np.genfromtxt(fname)
-    x = temp[:,0]
-    power_extrapolated = power_file_extrapolate(x)
+        os.chdir(location)
+        plt.figure()
+        for powerfile in powerfiles:
+                f = open(powerfile)
+                for i in f:
+                        if i.find('#SHOTS')>=0:
+                                shots=i.strip().split('=')[-1]
+                                break
+                f.close()
 
-    plt.figure()
-    plt.title("Power calibration\n Filename: %s"%powerfile, fontsize = v['mainfont'])
+                shots = np.float(shots)
 
-    plt.plot(power_file[:,0], power_file[:,1], 'ok',ms=7, label='power from .pow file')
-    plt.plot(x, power_extrapolated, '-', label='extrapolated values')
-    plt.legend()
-    plt.title('Power Extrapolation from .pow file')
-    plt.ylabel('Power (mJ)')
+                power_file = np.genfromtxt(powerfile)
+                power_file_extrapolate = interpolate(power_file[:,0], power_file[:,1], kind = 'linear', fill_value = 'extrapolate')
 
-    if show: plt.show()
-    if save: plt.savefig('%s.png'%power_file)
-    plt.close()
-    
-    return power_extrapolated
+                temp = np.genfromtxt(powerfile.split('.')[0]+'.felix')
+                x = temp[:,0]
+
+                power_extrapolated = power_file_extrapolate(x)
+
+                plt.title("Power calibration\n Filename: %s"%powerfile)
+
+                plt.plot(power_file[:,0], power_file[:,1], 'ok',ms=7)
+                plt.plot(x, power_extrapolated, '-', label=powerfile+':'+str(shots))
+        
+        plt.legend()
+        plt.title('Power from .pow file')
+        plt.ylabel('Power (mJ)')
+
+        if show: plt.show()
+        if save: plt.savefig('power_combined.png')
+        plt.close()
