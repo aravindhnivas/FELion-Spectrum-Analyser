@@ -19,7 +19,7 @@ def timescanplot(fname, location, deg, fit):
     iterations = np.array([int(i.split()[-1].strip()) for i in file if '#mass' in i.split()])
     length = len(iterations)
 
-    data = np.genfromtxt(file, skip_header = skip[0]+1)
+    data = np.genfromtxt(fname, skip_header = skip[0]+1)
 
     cycle = int(len(data)/iterations.sum())
     time = data[:,1][:cycle]
