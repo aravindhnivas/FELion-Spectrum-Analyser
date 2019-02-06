@@ -20,7 +20,7 @@ from FELion_definitions import move, copy, ErrorInfo, ShowInfo
 
 #These 2 values are used when guessing the baseline:
 PPS = 5         #points around the value to average
-NUM_POINTS = 18
+NUM_POINTS = 2
 baseline=None
 
 ########################################################################################
@@ -190,8 +190,6 @@ class InteractivePoints(object):
         self.ax.draw_artist(self.funcLine)
         self.canvas.blit(self.ax.bbox)
 ################################################################################
-
-
 def felix_read_file(fname):
     """
     Reads data from felix meassurement file
@@ -226,7 +224,6 @@ def felix_read_file(fname):
     
     res = np.take(data, indices, 1)
     return res
-
 
 def GuessBaseLine(data):
     """
@@ -326,7 +323,7 @@ def main(fname=""):
         SaveBase(fname, baseline)
     return
 
-def baseline_correction(fname, location):
+def baseline_correction(fname, location, save):
 
     try:
         
@@ -381,11 +378,11 @@ def baseline_correction(fname, location):
         ax.set_ylabel("Counts")
         plt.show()
         
-        print("\n{}.base Baseline Saved.".format(fname))
-
-        if baseline != None:
-            SaveBase(fname, baseline)
-    
+        if save:    
+            if baseline != None:
+                SaveBase(fname, baseline)
+                print("\n{}.base Baseline Saved.".format(fname))
+        
     except Exception as e:
         ErrorInfo("ERROR: ", e)
 

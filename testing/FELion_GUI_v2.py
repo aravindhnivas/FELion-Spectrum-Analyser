@@ -10,13 +10,16 @@ from timescan_plot import timescanplot
 #FELion modules
 from FELion_massSpec import massSpec
 from FELion_avgSpec import avgSpec_plot
-from FELion_normline import normline_correction
+from FELion_normline import normline_correction, show_baseline
 from FELion_power import FELion_Power
 from FELion_sa import FELion_Sa
 from FELion_definitions import *
 
-from tkfilebrowser import askopenfilenames
+from tkinter.filedialog import askopenfilenames, askopenfilename
 from os.path import join
+
+import numpy as np
+from just_plot import *
 
 def outFile(fname, location, file):
         try:
@@ -188,9 +191,8 @@ class Normline(Frame):
         # Opening a Directory:
         self.location = "/"
         self.fname = ""
-
         def open_dir(self):
-
+            
             root = Tk()
             root.withdraw()
 
@@ -205,8 +207,8 @@ class Normline(Frame):
             root.destroy()
             current_location.config(text = self.location)
             filename_label.config(text = self.fname)
-            return
-  
+            if not self.fname=="" and not normallCheck_value.get(): trap_time(self)
+
         # Labels and buttons:
         browse_loc = ttk.Button(self, text = "Browse File")
         browse_loc.config(command = lambda: open_dir(self))
@@ -246,11 +248,10 @@ class Normline(Frame):
                                         self.fname, self.location,\
                                         mname.get(), temp.get(), bwidth.get(), ie.get(),\
                                         normavg_saveCheck_value.get(),\
-                                        foravgshow, normallCheck_value.get(), norm_show_value.get()
+                                        foravgshow, normallCheck_value.get(),self.filelist, norm_show_value.get()
                                         )
                                         )
         
-
         # Save checkbutton for normall:
         normallCheck_value = BooleanVar()
         normallCheck_value.set(False)
@@ -369,21 +370,24 @@ class Normline(Frame):
         power_button = ttk.Button(self, text = "Power", \
                 command = lambda: FELion_Power(self.fname, self.location))
 
-        
+        baseline = ttk.Button(self, text="Baseline", \
+                command = lambda: show_baseline(self.fname, self.location, mname.get()))
+
+        self.filelist = []
         def openfilelist(self):
                 self.filelist = []
-                self.openlist = askopenfilenames(self, initialdir=self.location, initialfile='tmp',
+                self.openlist = askopenfilenames(initialdir=self.location, initialfile='tmp',
                                 filetypes=[("Felix Files", "*.felix"), ("All files", "*")])
                 
                 for i in self.openlist:
 
-                        location = i.split(os.sep)
+                        location = i.split("/")
                         
                         file = location[-1]
                         self.filelist.append(file)
 
                         del location[-1]
-                        self.location = os.sep.join(location)
+                        self.location = "/".join(location)
         
                 filelist_label.config(text = '\n'.join(self.filelist))
                 current_location.config(text = self.location)
@@ -393,7 +397,29 @@ class Normline(Frame):
         openfiles = ttk.Button(self, text = "Select File(s)", command = lambda: openfilelist(self))
         filelist_label = Label(self)
 
+        self.trap_time, self.B0_width = float(), int()
+        def trap_time(self):
+                with open(join(self.location,self.fname), 'r') as f:
+                        info = f.readlines()
+                filename = np.genfromtxt(info)
+                x, y = filename[:,0], filename[:,2]
+                self.range_min = x.min()
+                self.range_max = x.max()
+                self.count = y.max()
+                self.trap_time = [info[-21].split('#')[3].strip(),\
+                        int(info[-21].split('#')[4].strip())/1000000]
+                self.B0_width = [info[-46].split('#')[3].strip(),\
+                        int(int(info[-46].split('#')[4].strip())/1000)]
+                
+                trap_width_label.config(\
+                        text = 'Trap: %.2f\tB0: %i\nRange: [%i, %i]\ncounts: %i'\
+                                %(self.trap_time[-1], self.B0_width[-1],\
+                                self.range_min,self.range_max, self.count)
+                                )
+                bwidth.set(self.B0_width[-1])
         
+        trap_width_label = Label(self)
+
         norm_diff = 0.12
         norm_smalldiff = 0.06
 
@@ -405,7 +431,6 @@ class Normline(Frame):
         n_x6 = n_x5 + norm_diff
         n_x7 = n_x6 + norm_smalldiff
 
-
         n_y1 = 0.1
         ynorm_diff = 0.1
         n_y2 = n_y1 + ynorm_diff
@@ -414,13 +439,14 @@ class Normline(Frame):
         n_y5 = n_y4 + ynorm_diff
         n_y6 = n_y5 + ynorm_diff
 
-
         browse_loc.place(relx = n_x1,  rely =n_y1, width = width, height = height)
         fname_label.place(relx = n_x1,  rely =n_y2, width = width, height = height)
         molecule_name_label.place(relx = n_x1,  rely = n_y3, width = width, height = height)
         temp_label.place(relx = n_x1,  rely = n_y4, width = width, height = height)
         bwidth_label.place(relx = n_x1,  rely =n_y5, width = width, height = height)
         ion_enrg_label.place(relx = n_x1,  rely = n_y6, width = width, height = height)
+        
+        trap_width_label.place(relx = n_x1,  rely = n_y6+0.1)
 
         current_location.place(relx = n_x2,  rely = n_y1, relwidth = 0.5, height = height)
         filename_label.place(relx = n_x2,  rely = n_y2, width = width, height = height)
@@ -466,11 +492,12 @@ class Normline(Frame):
 
         normavg_saveCheck.place(relx = n_x6,  rely = a_y3, width = width, height = height)
         norm_show.place(relx = n_x6+0.15,  rely = a_y3, width = width, height = height)
-        #normallCheck.place(relx = n_x6,  rely = a_y4, width = width+45, height = height)
+        normallCheck.place(relx = n_x6,  rely = a_y4, width = width+45, height = height)
 
-        normline_button.place(relx = n_x6,  rely = a_y4, width = width, height = height)
-        sa_button.place(relx = n_x6,  rely = a_y5, width = width, height = height)
-        power_button.place(relx = n_x6,  rely = a_y6, width = width, height = height)
+        normline_button.place(relx = n_x6,  rely = a_y5, width = width, height = height)
+        sa_button.place(relx = n_x6,  rely = a_y6, width = 30, height = height)
+        power_button.place(relx = n_x6+0.05,  rely = a_y6, width = 50, height = height)
+        baseline.place(relx = n_x6,  rely = a_y7, width = width, height = height)
         
         openfiles.place(relx = n_x6+0.15,  rely = a_y4, width = width, height = height)
         avg_button.place(relx = n_x6+0.15,  rely = a_y5, width = width, height = height)
@@ -526,21 +553,22 @@ class Mass(Frame):
         # Labels and buttons:
         browse_loc = ttk.Button(self, text = "Browse File")
         browse_loc.config(command = lambda: open_dir(self))
-   
+        
+        self.filelist = []
         def openfilelist(self):
                 self.filelist = []
-                self.openlist = askopenfilenames(self, initialdir=self.location, initialfile='tmp',
+                self.openlist = askopenfilenames(initialdir=self.location, initialfile='tmp',
                                 filetypes=[("Mass files", "*.mass"), ("All files", "*")])
                 
                 for i in self.openlist:
 
-                        location = i.split(os.sep)
+                        location = i.split("/")
                         
                         file = location[-1]
                         self.filelist.append(file)
 
                         del location[-1]
-                        self.location = os.sep.join(location)
+                        self.location = "/".join(location)
         
                 filelist_label.config(text = '\n'.join(self.filelist))
                 current_location.config(text = self.location)
@@ -782,20 +810,9 @@ class Plot(Frame):
                         os.chdir(self.location)
 
                         def fopen(self, filename):
-                                f = open(filename)
-                                x, y, normy = [],[], []
-                                for i in f:
-                                        if not i[0] == "#" and not i == "\n":
-                                                a, b = i.split()
-                                                x.append(float(a))
-                                                y.append(float(b))
-
-                                # normalising (Feature Scaling (0,1) range):
-                                for j in y:
-                                        j = (j-min(y))/(max(y)-min(y))
-                                        normy.append(j)
-                                
-                                f.close()
+                                data = np.genfromtxt(filename)
+                                x, y = data[:,0], data[:,1]
+                                normy = (y-min(y))/(max(y)-min(y))
                                 return x, y, normy
 
                         plt.grid(True)
@@ -819,11 +836,11 @@ class Plot(Frame):
 
                                         if norm:
                                                 if log: plt.semilogy(x, normy, label = i.split(".")[0])
-                                                else:   plt.plot(x, normy, label = i.split(".")[0])
+                                                else:   plt.plot(x, normy,".-", label = i.split(".")[0])
 
                                         else:
                                                 if log: plt.semilogy(x,y, label = i.split(".")[0])
-                                                else:   plt.plot(x,y, label = i.split(".")[0])
+                                                else:   plt.plot(x,y,".-", label = i.split(".")[0])
 
 
                         plt.legend()
@@ -831,6 +848,13 @@ class Plot(Frame):
 
                         if norm:
                                 plt.ylabel("Normalised (Scaled to 1) Intensity")
+
+                        elif not combine and filename.split(".")[-1] == "pow":
+                                plt.ylabel("Power (mJ)")
+                        
+                        elif combine and filelist[0].split(".")[-1] == "pow":
+                                plt.ylabel("Power (mJ)")
+
                         else:
                                 plt.ylabel("Intensity")
                         
@@ -860,6 +884,7 @@ class Plot(Frame):
         # Opening a Directory:
         self.location = "/"
         self.fname = ""
+        self.filename = ""
 
         def open_dir(self):
 
@@ -867,7 +892,7 @@ class Plot(Frame):
             root.withdraw()
 
             root.filename =  filedialog.askopenfilename(initialdir = self.location, title = "Select file", filetypes = (("all files","*.*"), ("all files","*.*")))
-            filename = root.filename
+            filename, self.filename = root.filename, root.filename
             filename = filename.split("/")
 
             self.fname = filename[-1]
@@ -909,26 +934,29 @@ class Plot(Frame):
         fit_value.set(True)
         fit = ttk.Checkbutton(self, text = "", variable = fit_value)
 
+
         # opening multiple files
+        
+        self.filelist = []
         def openfilelist(self):
                 self.filelist = []
-                self.openlist = askopenfilenames(self, initialdir=self.location, initialfile='tmp',
+                self.openlist = askopenfilenames(initialdir=self.location, initialfile='tmp',
                                 filetypes=[("All files", "*"), ("All files", "*")])
                 
                 for i in self.openlist:
 
-                        location = i.split(os.sep)
+                        location = i.split("/")
 
                         file = location[-1]
                         self.filelist.append(file)
 
                         del location[-1]
-                        self.location = os.sep.join(location)
+                        self.location = "/".join(location)
         
                 filelist_label.config(text = '\n'.join(self.filelist))
                 current_location.config(text = self.location)
 
-                return self.filelist
+                return self.filelist, self.location
                 
         openfiles = ttk.Button(self, text = "Select File(s)", command = lambda: openfilelist(self))
         filelist_label = Label(self)
@@ -958,6 +986,13 @@ class Plot(Frame):
         save.set(True)
         save_check = ttk.Checkbutton(self, text = "Save", variable = save)
 
+        theory = ttk.Button(self, text = 'Theory_File',\
+                command = lambda: theory_exp(\
+                        self.filelist,\
+                        self.filename, \
+                        self.location, save.get(), show_value.get()))
+        
+        powerplot = ttk.Button(self, text='PowerPlot', command = lambda: power_plot(self.filelist, self.location, save.get(), show_value.get()))
 
         mass_diff = 0.12
         mass_smalldiff = 0.06
@@ -986,6 +1021,7 @@ class Plot(Frame):
         combineCheck.place(relx = m_x1,  rely = m_y3, width = width, height = height)
         plotbutton.place(relx = m_x4,  rely = m_y2, width = width, height = height)
         timescan_plotbutton.place(relx = m_x5+0.06,  rely = m_y2, width = width, height = height)
+        theory.place(relx = m_x5+0.06+0.12,  rely = m_y2, width = width, height = height)
 
         show.place(relx = m_x4,  rely = m_y3, width = width, height = height)
         log.place(relx = m_x3,  rely = m_y3, width = width, height = height)
@@ -997,6 +1033,7 @@ class Plot(Frame):
         openfiles.place(relx = m_x1,  rely = m_y4, width = width, height = height)
         filelist_label.place(relx = m_x1,  rely = m_y5)
         save_check.place(relx = m_x3,  rely = m_y4, width = width, height = height)
+        powerplot.place(relx = m_x3,  rely = m_y5, width = width, height = height)
 
 #Closing Program
 def on_closing():
@@ -1008,7 +1045,7 @@ def on_closing():
 
 app = FELion()
 
-icons_locations = "D:/FELion-Spectrum-Analyser/testing/"
+icons_locations = "C:/FELion-GUI/software/"
 app.protocol("WM_DELETE_WINDOW", on_closing)
 
 shutdown = PhotoImage(file = join(icons_locations, "power.png"))
