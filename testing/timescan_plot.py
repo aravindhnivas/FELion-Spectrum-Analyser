@@ -1,18 +1,13 @@
 #!/usr/bin/python3
 
 import matplotlib.pyplot as plt
-import math
 import os
 import numpy as np
-from scipy.optimize import curve_fit
 
+def timescanplot(fname, location):
 
-def func(x, a, b, c):
-    #return a * np.exp(-b * x) + c
-    return a * np.log(b * x) + c
-
-def timescanplot(fname, location, deg, fit):
     os.chdir(location)
+
     with open(fname, 'r') as f: file = f.readlines()
     
     skip = [num for num, line in enumerate(file) if 'ALL:' in line.split()]

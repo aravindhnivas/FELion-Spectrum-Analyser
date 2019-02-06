@@ -972,7 +972,7 @@ class Plot(Frame):
                 )
 
         timescan_plotbutton = ttk.Button(self, text="TimeScan", \
-                command = lambda: timescanplot(self.fname, self.location, deg.get(), fit_value.get()))
+                command = lambda: timescanplot(self.fname, self.location))
 
         ployfit_label = Label(self, text = "Polyfit deg:", font=("Times", 10, "bold"))
 
