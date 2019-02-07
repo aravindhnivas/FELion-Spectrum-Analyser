@@ -64,6 +64,7 @@ def func(x, a, b, c):
 def depletionPlot(files, location, save, show):
 
     os.chdir(location)
+    
     plt.rcParams['figure.figsize']=(10,10)
     plt.rcParams['figure.dpi']=100
 
