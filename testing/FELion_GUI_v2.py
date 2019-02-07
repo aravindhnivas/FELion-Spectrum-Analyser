@@ -5,7 +5,8 @@ import os
 import shutil
 import datetime
 import matplotlib.pyplot as plt
-from timescan_plot import timescanplot
+
+from timescan_plot import timescanplot, depletionPlot
 
 #FELion modules
 from FELion_massSpec import massSpec
@@ -930,9 +931,9 @@ class Plot(Frame):
         log_value.set(False)
         log = ttk.Checkbutton(self, text = "Log", variable = log_value)
 
-        fit_value = BooleanVar()
-        fit_value.set(True)
-        fit = ttk.Checkbutton(self, text = "", variable = fit_value)
+        #fit_value = BooleanVar()
+        #fit_value.set(True)
+        #fit = ttk.Checkbutton(self, text = "", variable = fit_value)
 
 
         # opening multiple files
@@ -961,7 +962,6 @@ class Plot(Frame):
         openfiles = ttk.Button(self, text = "Select File(s)", command = lambda: openfilelist(self))
         filelist_label = Label(self)
         
-
         plotbutton = ttk.Button(self, text="Plot", \
                 command = lambda: normalising(\
                 self, self.fname, combineCheck_value.get(), \
@@ -972,14 +972,14 @@ class Plot(Frame):
                 )
 
         timescan_plotbutton = ttk.Button(self, text="TimeScan", \
-                command = lambda: timescanplot(self.fname, self.location))
+                command = lambda: timescanplot(self.fname, self.location, save.get(), show_value.get()))
 
-        ployfit_label = Label(self, text = "Polyfit deg:", font=("Times", 10, "bold"))
+        #ployfit_label = Label(self, text = "Polyfit deg:", font=("Times", 10, "bold"))
 
-        deg = IntVar()
-        deg.set(3)
-        polyfit_entry = Entry(self, bg = "white", bd = 5, \
-                textvariable = deg, justify = LEFT, font=("Times", 12, "italic"))
+        #deg = IntVar()
+        #deg.set(3)
+        #polyfit_entry = Entry(self, bg = "white", bd = 5, \
+        #        textvariable = deg, justify = LEFT, font=("Times", 12, "italic"))
 
         # Save checkbutton:
         save = BooleanVar()
@@ -993,7 +993,8 @@ class Plot(Frame):
                         self.location, save.get(), show_value.get()))
         
         powerplot = ttk.Button(self, text='PowerPlot', command = lambda: power_plot(self.filelist, self.location, save.get(), show_value.get()))
-
+        depletion_btn = ttk.Button(self, text='DepletionPlot', command = lambda: depletionPlot(self.filelist, self.location, save.get(), show_value.get()))
+        
         mass_diff = 0.12
         mass_smalldiff = 0.06
 
@@ -1025,10 +1026,13 @@ class Plot(Frame):
 
         show.place(relx = m_x4,  rely = m_y3, width = width, height = height)
         log.place(relx = m_x3,  rely = m_y3, width = width, height = height)
+
+        depletion_btn.place(relx = m_x5+0.06,  rely = m_y3, width = width, height = height)
         
-        ployfit_label.place(relx = m_x5+0.06,  rely = m_y3, width = width, height = height)
-        polyfit_entry.place(relx = m_x6+0.06,  rely = m_y3, width = smallwidth, height = height)
-        fit.place(relx = m_x7,  rely = m_y3, width = smallwidth, height = height)
+        #ployfit_label.place(relx = m_x5+0.06,  rely = m_y3, width = width, height = height)
+        #polyfit_entry.place(relx = m_x6+0.06,  rely = m_y3, width = smallwidth, height = height)
+        #fit.place(relx = m_x7,  rely = m_y3, width = smallwidth, height = height)
+
 
         openfiles.place(relx = m_x1,  rely = m_y4, width = width, height = height)
         filelist_label.place(relx = m_x1,  rely = m_y5)
