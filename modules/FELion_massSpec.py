@@ -67,7 +67,7 @@ def massSpec(fname, mname, temp, bwidth, ie, location,\
             plt.tight_layout()
             plt.legend()
 
-            cursor = Cursor(ax, useblit=True, color='red', linewidth=2)
+            cursor = Cursor(ax, useblit=True, color='red', linewidth=1)
 
             if save_fig:
                 plt.savefig(my_path + "/MassSpec_DATA/{}.png".format(fname))
@@ -77,6 +77,9 @@ def massSpec(fname, mname, temp, bwidth, ie, location,\
                 plt.show()
 
         if combine:
+            
+            fig, ax = plt.subplots(1)
+            
             if filelist == []: 
                 return ErrorInfo("Select Files: ", "Click Select File(s)")
             for file in filelist:
@@ -87,7 +90,7 @@ def massSpec(fname, mname, temp, bwidth, ie, location,\
                 m_res = mass_resolution(file)
                 
                 plt.grid(True)
-                plt.semilogy(x, y, label = '%s: res: %.1f'%(file.split('.')[0], m_res))
+                ax.semilogy(x, y, label = '%s: res: %.1f'%(file.split('.')[0], m_res))
             
                 plt.legend()
 
@@ -97,6 +100,7 @@ def massSpec(fname, mname, temp, bwidth, ie, location,\
             plt.title("%s"%avgname)
             
             plt.tight_layout()
+            cursor = Cursor(ax, useblit=True, color='red', linewidth=1)
 
             if save_fig:
                 plt.savefig(join(my_path,"MassSpec_DATA","%s.png"%avgname))
