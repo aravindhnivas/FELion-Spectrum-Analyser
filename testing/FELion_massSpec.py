@@ -8,6 +8,7 @@ from tkinter import Tk, messagebox
 
 from FELion_definitions import ShowInfo, copy, move, ErrorInfo
 from os.path import join, isdir
+from matplotlib.widgets import Cursor
 
 def massSpec(fname, mname, temp, bwidth, ie, location,\
             filelist, avgname, combine, save_fig):
@@ -54,8 +55,10 @@ def massSpec(fname, mname, temp, bwidth, ie, location,\
             x, y = mass[:,0], mass[:,1]
             m_res = mass_resolution(filename)
 
+            fig, ax = plt.subplots(1)
+
             plt.grid(True)
-            plt.semilogy(x, y, label = '%s: res: %.1f'%(filename.split('.')[0], m_res))
+            ax.semilogy(x, y, label = '%s: res: %.1f'%(filename.split('.')[0], m_res))
             plt.xlabel('Mass [u]')
             plt.ylabel('Ion counts /{} ms'.format(bwidth))
             plt.title("Filename: {}, for {}, at temp: {}K, B0: {}ms and IE(eV): {}"\
@@ -63,6 +66,7 @@ def massSpec(fname, mname, temp, bwidth, ie, location,\
 
             plt.tight_layout()
             plt.legend()
+            cursor = Cursor(ax, useblit=True, color='red', linewidth=2)
 
             if save_fig:
                 plt.savefig(my_path + "/MassSpec_DATA/{}.png".format(fname))
