@@ -27,7 +27,7 @@ def massSpec(fname, mname, temp, bwidth, ie, location,\
             if os.path.isfile(my_path+"/MassSpec_DATA/{}.png".format(name)):
                 ShowInfo("SAVED", "File %s.png saved \nin MassSpec_DATA directory"%name)
 
-        def mass_resolution(filename):
+        '''def mass_resolution(filename):
             with open(filename, 'r') as f:
                 f = f.readlines()
 
@@ -39,7 +39,9 @@ def massSpec(fname, mname, temp, bwidth, ie, location,\
                 return mass_res
             else:
                 print('ERROR: parameter found here was %s instead of m03_ao13_reso\nPlease adjust the change in script'%res_name)
-                return
+                return'''
+
+        
 
         if not combine:
             
@@ -53,16 +55,26 @@ def massSpec(fname, mname, temp, bwidth, ie, location,\
            
             mass = np.genfromtxt(filename)
             x, y = mass[:,0], mass[:,1]
-            m_res = mass_resolution(filename)
+            #m_res = mass_resolution(filename)
+
+            var = {'trap_time': 'm04_ao04_sa_delay', 'res':'m03_ao13_reso', 'q2_float':'m04_ao09_qd2_float', 'b0':'m03_ao09_width'}
+            with open(fname, 'r') as f:
+                f = np.array(f.readlines())
+            for i in f:
+                if not len(i.strip())==0 and i.split()[0]=='#':
+                    for j in var:
+                        if var[j] in i.split():
+                            var[j] = float(i.split()[-3])
+            m_res, m_b0 = round(var['res']), int(var['b0']/1000)
 
             fig, ax = plt.subplots(1)
 
             plt.grid(True)
             ax.semilogy(x, y, label = '%s: res: %.1f'%(filename.split('.')[0], m_res))
             plt.xlabel('Mass [u]')
-            plt.ylabel('Ion counts /{} ms'.format(bwidth))
+            plt.ylabel('Ion counts /{} ms'.format(m_b0))
             plt.title("Filename: {}, for {}, at temp: {}K, B0: {}ms and IE(eV): {}"\
-                        .format(fname, mname, temp, bwidth, ie))
+                        .format(fname, mname, temp, m_b0, ie))
 
             plt.tight_layout()
             plt.legend()
