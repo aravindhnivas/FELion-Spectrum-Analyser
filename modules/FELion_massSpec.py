@@ -50,13 +50,13 @@ def massSpec(fname, mname, temp, bwidth, ie, location,\
                     for j in var:
                         if var[j] in i.split():
                             var[j] = float(i.split()[-3])
-            m_res, m_b0 = round(var['res']), int(var['b0']/1000)
+            m_res, m_b0, trap = round(var['res']), int(var['b0']/1000), int(var['trap_time']/1000)
             print(var)
 
             fig, ax = plt.subplots(1)
 
             plt.grid(True)
-            ax.semilogy(x, y, label = '%s: res: %.1f'%(filename.split('.')[0], m_res))
+            ax.semilogy(x, y, label = '%s: res: %.1f; trap:%ims'%(filename.split('.')[0], m_res, trap))
             plt.xlabel('Mass [u]')
             plt.ylabel('Ion counts /{} ms'.format(m_b0))
             plt.title("Filename: {}, for {}, at temp: {}K, B0: {}ms and IE(eV): {}"\
