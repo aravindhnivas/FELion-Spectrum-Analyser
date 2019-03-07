@@ -58,7 +58,7 @@ def massSpec(fname, mname, temp, bwidth, ie, location,\
             #m_res = mass_resolution(filename)
 
             var = {'trap_time': 'm04_ao04_sa_delay', 'res':'m03_ao13_reso', 'q2_float':'m04_ao09_qd2_float', 'b0':'m03_ao09_width'}
-            with open(fname, 'r') as f:
+            with open(filename, 'r') as f:
                 f = np.array(f.readlines())
             for i in f:
                 if not len(i.strip())==0 and i.split()[0]=='#':
