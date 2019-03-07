@@ -8,7 +8,7 @@ from tkinter import Tk, messagebox
 
 from FELion_definitions import ShowInfo, copy, move, ErrorInfo
 from os.path import join, isdir
-from matplotlib.widgets import Cursor
+from matplotlib.widgets import Cursor, RadioButtons
 
 def massSpec(fname, mname, temp, bwidth, ie, location,\
             filelist, avgname, combine, save_fig):
@@ -56,7 +56,7 @@ def massSpec(fname, mname, temp, bwidth, ie, location,\
             fig, ax = plt.subplots(1)
 
             plt.grid(True)
-            ax.semilogy(x, y, label = '%s: res: %.1f; trap:%ims'%(filename.split('.')[0], m_res, trap))
+            ax.plot(x, y, label = '%s: res: %.1f; trap:%ims'%(filename.split('.')[0], m_res, trap))
             plt.xlabel('Mass [u]')
             plt.ylabel('Ion counts /{} ms'.format(m_b0))
             plt.title("Filename: {}, for {}, at temp: {}K, B0: {}ms and IE(eV): {}"\
@@ -66,6 +66,22 @@ def massSpec(fname, mname, temp, bwidth, ie, location,\
             plt.legend()
 
             cursor = Cursor(ax, useblit=True, color='red', linewidth=1)
+            
+            # Choosing btwn liner and log scale
+
+            plt.subplots_adjust(left=0.3)
+
+            axcolor = 'lightgoldenrodyellow'
+            rax = plt.axes([0.05, 0.7, 0.15, 0.15], facecolor=axcolor)
+            radio = RadioButtons(rax, ('linear', 'log'))
+
+            def y_format(label):
+                y_fmt = {'linear': 'linear', 'log':'log'}
+                fmt = y_fmt[label]
+                ax.set_yscale(fmt)
+                plt.draw()
+                
+            radio.on_clicked(y_format)
 
             if save_fig:
                 plt.savefig(my_path + "/MassSpec_DATA/{}.png".format(fname))
