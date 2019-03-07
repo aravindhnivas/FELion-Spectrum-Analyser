@@ -58,6 +58,8 @@ def massSpec(fname, mname, temp, bwidth, ie, location,\
             #m_res = mass_resolution(filename)
 
             var = {'trap_time': 'm04_ao04_sa_delay', 'res':'m03_ao13_reso', 'q2_float':'m04_ao09_qd2_float', 'b0':'m03_ao09_width'}
+            print(var)
+            
             with open(filename, 'r') as f:
                 f = np.array(f.readlines())
             for i in f:
@@ -66,6 +68,8 @@ def massSpec(fname, mname, temp, bwidth, ie, location,\
                         if var[j] in i.split():
                             var[j] = float(i.split()[-3])
             m_res, m_b0 = round(var['res']), int(var['b0']/1000)
+
+            print(var)
 
             fig, ax = plt.subplots(1)
 
