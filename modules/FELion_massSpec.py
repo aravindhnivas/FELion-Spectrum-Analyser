@@ -27,22 +27,6 @@ def massSpec(fname, mname, temp, bwidth, ie, location,\
             if os.path.isfile(my_path+"/MassSpec_DATA/{}.png".format(name)):
                 ShowInfo("SAVED", "File %s.png saved \nin MassSpec_DATA directory"%name)
 
-        '''def mass_resolution(filename):
-            with open(filename, 'r') as f:
-                f = f.readlines()
-
-            res_name = f[-14].split('\t\t')[2].split('#')[-1].strip()
-            mass_res = round(float(f[-14].split('\t\t')[3].split('#')[-1].strip()), 2)
-
-            if res_name == 'm03_ao13_reso':
-                print('Mass Resolution: %s'%mass_res)
-                return mass_res
-            else:
-                print('ERROR: parameter found here was %s instead of m03_ao13_reso\nPlease adjust the change in script'%res_name)
-                return'''
-
-        
-
         if not combine:
             
             filename = fname + ".mass"
@@ -55,11 +39,10 @@ def massSpec(fname, mname, temp, bwidth, ie, location,\
            
             mass = np.genfromtxt(filename)
             x, y = mass[:,0], mass[:,1]
-            #m_res = mass_resolution(filename)
 
             var = {'trap_time': 'm04_ao04_sa_delay', 'res':'m03_ao13_reso', 'q2_float':'m04_ao09_qd2_float', 'b0':'m03_ao09_width'}
             print(var)
-            
+
             with open(filename, 'r') as f:
                 f = np.array(f.readlines())
             for i in f:
