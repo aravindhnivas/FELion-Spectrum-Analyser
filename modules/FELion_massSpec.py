@@ -79,7 +79,6 @@ def massSpec(fname, mname, temp, bwidth, ie, location,\
             
             # Choosing btwn liner and log scale
             plt.subplots_adjust(left=0.3)
-
             axcolor = 'lightgoldenrodyellow'
             rax = plt.axes([0.05, 0.7, 0.15, 0.15], facecolor=axcolor)
             radio = RadioButtons(rax, ( 'log', 'linear'))
