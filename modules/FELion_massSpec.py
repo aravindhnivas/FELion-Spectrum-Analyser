@@ -14,6 +14,10 @@ def massSpec(fname, mname, temp, bwidth, ie, location,\
             filelist, avgname, combine, save_fig):
 
     try:
+
+        plt.rcParams['figure.figsize']=(10,5)
+        plt.rcParams['figure.dpi']=100
+
         os.chdir(location)
         my_path = os.getcwd()
 
@@ -28,13 +32,14 @@ def massSpec(fname, mname, temp, bwidth, ie, location,\
                 ShowInfo("SAVED", "File %s.png saved \nin MassSpec_DATA directory"%name)
         
         def y_format(label):
-                y_fmt = {'linear': 'linear', 'log':'log'}
+                y_fmt = {'log':'log', 'linear': 'linear'}
                 fmt = y_fmt[label]
                 ax.set_yscale(fmt)
                 plt.draw()
 
-        if not combine:
-            
+        fig, ax = plt.subplots()
+        
+        if not combine:            
             filename = fname + ".mass"
 
             if not os.path.isdir("MassSpec_DATA"):
@@ -59,27 +64,25 @@ def massSpec(fname, mname, temp, bwidth, ie, location,\
             m_res, m_b0, trap = round(var['res']), int(var['b0']/1000), int(var['trap_time']/1000)
             print(var)
 
-            fig, ax = plt.subplots()
-
             plt.grid(True)
             ax.plot(x, y, label = '%s: res: %.1f; trap:%ims'%(filename.split('.')[0], m_res, trap))
             plt.xlabel('Mass [u]')
             plt.ylabel('Ion counts /{} ms'.format(m_b0))
-            plt.title("Filename: {}, for {}, at temp: {}K, B0: {}ms and IE(eV): {}"\
-                        .format(fname, mname, temp, m_b0, ie))
-
+            plt.title("Filename: {}, for {}, at temp: {}K, and IE(eV): {}"\
+                        .format(fname, mname, temp, ie),
+                        fontsize = 12)
+            ax.set_yscale('log')
             plt.tight_layout()
             plt.legend()
 
             cursor = Cursor(ax, useblit=True, color='red', linewidth=1)
             
             # Choosing btwn liner and log scale
-
             plt.subplots_adjust(left=0.3)
 
             axcolor = 'lightgoldenrodyellow'
             rax = plt.axes([0.05, 0.7, 0.15, 0.15], facecolor=axcolor)
-            radio = RadioButtons(rax, ('linear', 'log'))
+            radio = RadioButtons(rax, ( 'log', 'linear'))
             radio.on_clicked(y_format)
 
             if save_fig:
@@ -90,9 +93,6 @@ def massSpec(fname, mname, temp, bwidth, ie, location,\
                 plt.show()
 
         if combine:
-            
-            fig, ax = plt.subplots(1)
-
             if filelist == []: 
                 return ErrorInfo("Select Files: ", "Click Select File(s)")
             for file in filelist:
@@ -113,26 +113,25 @@ def massSpec(fname, mname, temp, bwidth, ie, location,\
                 m_res, m_b0, trap = round(var['res']), int(var['b0']/1000), int(var['trap_time']/1000)
                 print(var)
 
-                
-                plt.grid(True)
-                ax.plot(x, y, label = '%s: res: %.1f; trap:%ims'%(filename.split('.')[0], m_res, trap))
+                ax.plot(x, y, label = '%s: res: %.1f; trap:%ims, B0:%ims'%(file.split('.')[0], m_res, trap, m_b0))
+
+            plt.grid(True)
+            ax.set_xlabel('mass [u]')
+            ax.set_ylabel('ion counts')
+            plt.grid(True)
+            ax.set_title("%s"%avgname, fontsize=12)
+            ax.set_yscale('log')
+            plt.tight_layout()
+            ax.legend()
             
-                plt.legend()
-            
+            cursor = Cursor(ax, useblit=True, color='red', linewidth=1)
+
             # Choosing btwn liner and log scale
             plt.subplots_adjust(left=0.3)
-
             axcolor = 'lightgoldenrodyellow'
             rax = plt.axes([0.05, 0.7, 0.15, 0.15], facecolor=axcolor)
-            radio = RadioButtons(rax, ('linear', 'log'))                
-            radio.on_clicked(y_format)
-
-            plt.xlabel('mass [u]')
-            plt.ylabel('ion counts /{} ms'.format(bwidth))
-            plt.grid(True)
-            plt.title("%s"%avgname)
-            plt.tight_layout()
-            cursor = Cursor(ax, useblit=True, color='red', linewidth=1)
+            radio = RadioButtons(rax, ( 'log', 'linear'))               
+            radio.on_clicked(y_format) 
 
             if save_fig:
                 plt.savefig(join(my_path,"MassSpec_DATA","%s.png"%avgname))
