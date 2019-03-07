@@ -7,11 +7,14 @@ import matplotlib.ticker as ticker
 from scipy.optimize import curve_fit
 
 def timescanplot(fname, location, save, show, depletion=False):
+
     os.chdir(location)
     with open(fname, 'r') as f: file = f.readlines()
     
     skip = [num for num, line in enumerate(file) if 'ALL:' in line.split()]
-    iterations = np.array([int(i.split()[-1].strip()) for i in file if '#mass' in i.split()])
+
+    iterations = np.array([int(i.split()[-1]) for i in file if not len(i.strip())==0 and i.split()[0].startswith('#mass')])
+
     length = len(iterations)
 
     data = np.genfromtxt(fname, skip_header = skip[0]+1)
