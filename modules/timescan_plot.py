@@ -39,7 +39,7 @@ def timescanplot(fname, location, save, show, depletion=False):
         temp1 = []
         
     mean = [[np.array(temp2[i][j]).mean() for j in range(cycle)]for i in range(length)]
-    error = [[(np.array(temp2[i][j]).std()/np.sqrt(iterations[i])) for j in range(cycle)]for i in range(length)]
+    error = [[(np.array(temp2[i][j]).std()) for j in range(cycle)]for i in range(length)]
     mass, mean, error = np.array(mass), np.array(mean), np.array(error)
 
     if depletion: return mass, iterations, mean, error, time
