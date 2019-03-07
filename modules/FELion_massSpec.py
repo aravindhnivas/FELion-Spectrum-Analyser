@@ -51,7 +51,6 @@ def massSpec(fname, mname, temp, bwidth, ie, location,\
                         if var[j] in i.split():
                             var[j] = float(i.split()[-3])
             m_res, m_b0 = round(var['res']), int(var['b0']/1000)
-
             print(var)
 
             fig, ax = plt.subplots(1)
