@@ -1,3 +1,17 @@
+#!/usr/bin/python3
+
+import os
+import matplotlib.pyplot as plt
+from matplotlib.widgets import Slider
+
+import numpy as np
+
+from scipy.optimize import curve_fit
+
+from uncertainties import ufloat as uf
+from uncertainties import unumpy as unp
+from timescan_plot import timescanplot
+
 def depletionPlot(files, location, save, show, power_values, n):
     
     power_values = np.array(power_values)
@@ -264,4 +278,4 @@ def depletionPlot(files, location, save, show, power_values, n):
     
     if save: plt.savefig("Depletion.pdf", bbox_inches='tight')
     if show: plt.show()
-    #plt.close('all')
+    plt.close('all')
