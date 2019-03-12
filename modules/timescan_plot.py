@@ -7,7 +7,6 @@ import matplotlib.ticker as ticker
 from scipy.optimize import curve_fit
 
 def timescanplot(fname, location, save, show, depletion=False):
-
     os.chdir(location)
     with open(fname, 'r') as f: file = f.readlines()
     
@@ -16,6 +15,7 @@ def timescanplot(fname, location, save, show, depletion=False):
     length = len(iterations)
 
     data = np.genfromtxt(fname, skip_header = skip[0]+1)
+
     cycle = int(len(data)/iterations.sum())
     time = data[:,1][:cycle]
 
@@ -42,6 +42,7 @@ def timescanplot(fname, location, save, show, depletion=False):
     if depletion: return mass, iterations, mean, error, time
 
     plt.figure(figsize=(15,5), dpi=100)
+
     for i in range(length):
         lg = "%i:%i"%(mass[i], iterations[i])
         plt.errorbar(time, mean[i],error[i],fmt='.-', label = lg)
@@ -54,4 +55,5 @@ def timescanplot(fname, location, save, show, depletion=False):
 
     if save: plt.savefig(fname.split('.')[0]+'.png')
     if show: plt.show()
+    
     plt.close()
