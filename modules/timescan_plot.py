@@ -3,7 +3,6 @@
 import matplotlib.pyplot as plt
 import os
 import numpy as np
-import matplotlib.ticker as ticker
 from scipy.optimize import curve_fit
 
 def timescanplot(fname, location, save, show, depletion=False):
