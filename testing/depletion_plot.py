@@ -57,11 +57,7 @@ def depletionPlot(files, location, save, show, power_values, n):
         #depletion values; y-axis
         depletion_on, depletion_on_err = counts[on], stde[on]
         depletion_off, depletion_off_err = counts[off], stde[off]
-        
-        #depletion values with uncertainities
-        udepletion_on = unp.uarray(depletion_on, depletion_on_err)
-        udepletion_off = unp.uarray(depletion_off, depletion_off_err)
-        
+
         # power values; x-axis
         power_on = (power_values[on]*n*time)/1000. # divide by 1000 for mJ to J conversion 
         power_off = (power_values[off]*n*time)/1000.
@@ -282,4 +278,4 @@ def depletionPlot(files, location, save, show, power_values, n):
     
     if save: plt.savefig("Depletion.pdf", bbox_inches='tight')
     if show: plt.show()
-    plt.close('all')
+    plt.close()
