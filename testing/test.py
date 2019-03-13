@@ -1,176 +1,117 @@
-"""
-This is an example to show how to build cross-GUI applications using
-matplotlib event handling to interact with objects on the canvas
+#!/usr/bin/python3
 
-"""
+import os
+import matplotlib.pyplot as plt
+from matplotlib.widgets import Slider
 import numpy as np
-from matplotlib.lines import Line2D
-from matplotlib.artist import Artist
-from matplotlib.mlab import dist_point_to_segment
+from scipy.optimize import curve_fit
+
+from uncertainties import ufloat as uf
+from uncertainties import unumpy as unp
+from timescan_plot import timescanplot
 
 
-class PolygonInteractor(object):
-    """
-    An polygon editor.
+class plot:
+    def __init__(self, i, l, fig):
+        self.i = i
+        self.l = l
+        self.fig = fig
+    
+    def plotting(self):
+        ## off plotting
+        self.y_off0 = N_OFF(x, K_OFF[self.i], N[self.i])
+        self.g_off0, = axs.plot(x, self.y_off0, label = 'N_OFF: [{:.2f}mJ], K_OFF={:.2fP}/J, N={:.2fP}'.format(power_values[self.i+1], uK_OFF[self.i], uN[self.i]))
 
-    Key-bindings
+        # on plotting
+        self.y_on0 = N_ON((x, K_OFF[self.i]), Na0[self.i], Nn0[self.i], K_ON[self.i])
+        self.g_on0, = axs.plot(x, self.y_on0, label = 'N_ON: [{:.2f}mJ], K_ON={:.2fP}/J, N={:.2fP}, Na0={:.2fP}, Nn0={:.2fP}'.format(power_values[self.i], uK_ON[self.i], uNa0[self.i]+uNn0[self.i], uNa0[self.i], uNn0[self.i]))
 
-      't' toggle vertex markers on and off.  When vertex markers are on,
-          you can move them, delete them
+        # deletion plot
+        self.udepletion_new = 1 - uy_ON(x, uNa0[self.i], uNn0[self.i], uK_OFF[self.i], uK_ON[self.i])/uy_OFF(x, uN[self.i], uK_OFF[self.i])
+        self.depletion_new, self.depletion_error_new = unp.nominal_values(self.udepletion_new), unp.std_devs(self.udepletion_new)
 
-      'd' delete the vertex under point
+        self.depletion0, = depletion_plot.plot(x, self.depletion_new, '--')
 
-      'i' insert a vertex at point.  You must be within epsilon of the
-          line connecting two existing vertices
+        self.X = (x, K_ON[self.i])
+        self.depletion_fitted = Depletion(X, A[self.i])
+        self.depletion1, = depletion_plot.plot(x, self.depletion_fitted,
+                                         label = 'A = {:.2fP}, K_ON = {:.2fP}/J'.format(uA[self.i], uK_ON[self.i])
+                                         )
 
-    """
+        # controlling fitting parameters
+        axcolor = 'lightgoldenrodyellow'
 
-    showverts = True
-    epsilon = 5  # max pixel distance to count as a vertex hit
+        self.koff_g = plt.axes([self.l, 0.12, 0.2, 0.015], facecolor=axcolor) #[left, bottom, width, height]
+        self.n_g = plt.axes([self.l, 0.10, 0.2, 0.015], facecolor=axcolor)
 
-    def __init__(self, ax, poly):
-        if poly.figure is None:
-            raise RuntimeError('You must first add the polygon to a figure or canvas before defining the interactor')
-        self.ax = ax
-        canvas = poly.figure.canvas
-        self.poly = poly
+        self.kon_g = plt.axes([self.l, 0.08, 0.2, 0.015], facecolor=axcolor)
+        self.na_g = plt.axes([self.l, 0.06, 0.2, 0.015], facecolor=axcolor)
+        self.nn_g = plt.axes([self.l, 0.04, 0.2, 0.015], facecolor=axcolor)
 
-        x, y = zip(*self.poly.xy)
-        self.line = Line2D(x, y, marker='o', markerfacecolor='r', animated=True)
-        self.ax.add_line(self.line)
-        #self._update_line(poly)
+        self.koff_slider = Slider(self.koff_g, '$K_{OFF}$', 0, K_OFF[self.i]+10, valinit = K_OFF[self.i])
+        self.n_slider = Slider(self.n_g, 'N', 0, N[self.i]+(N[self.i]/2), valinit = N[self.i])
 
-        cid = self.poly.add_callback(self.poly_changed)
-        self._ind = None  # the active vert
+        self.kon_slider = Slider(self.kon_g, '$K_{ON}$', 0, K_ON[self.i]+10, valinit = K_ON[self.i])
+        self.na_slider = Slider(self.na_g, '$Na_0$', 0, Na0[self.i]+(Na0[self.i]/2), valinit = Na0[self.i])
+        self.nn_slider = Slider(self.nn_g, '$Nn_0$', 0, Nn0[self.i]+(Nn0[self.i]/2), valinit = Nn0[self.i])
 
-        canvas.mpl_connect('draw_event', self.draw_callback)
-        canvas.mpl_connect('button_press_event', self.button_press_callback)
-        canvas.mpl_connect('key_press_event', self.key_press_callback)
-        canvas.mpl_connect('button_release_event', self.button_release_callback)
-        canvas.mpl_connect('motion_notify_event', self.motion_notify_callback)
-        self.canvas = canvas
+    def update(self, val):
 
-    def draw_callback(self, event):
-        self.background = self.canvas.copy_from_bbox(self.ax.bbox)
-        self.ax.draw_artist(self.poly)
-        self.ax.draw_artist(self.line)
-        self.canvas.blit(self.ax.bbox)
+        self.koff = self.koff_slider.val
+        self.ukoff = uf(self.koff, K_OFF_err[self.i])
 
-    def poly_changed(self, poly):
-        'this method is called whenever the polygon object is called'
-        # only copy the artist props to the line (except visibility)
-        vis = self.line.get_visible()
-        Artist.update_from(self.line, poly)
-        self.line.set_visible(vis)  # don't use the poly visibility state
+        self.n = self.n_slider.val
+        self.un = uf(self.n, N_err[self.i])
 
-    def get_ind_under_point(self, event):
-        'get the index of the vertex under point if within epsilon tolerance'
+        self.kon = self.kon_slider.val
+        self.ukon = uf(self.kon, K_ON_err[self.i])
 
-        # display coords
-        xy = np.asarray(self.poly.xy)
-        xyt = self.poly.get_transform().transform(xy)
-        xt, yt = xyt[:, 0], xyt[:, 1]
-        d = np.sqrt((xt - event.x)**2 + (yt - event.y)**2)
-        indseq = np.nonzero(np.equal(d, np.amin(d)))[0]
-        ind = indseq[0]
+        self.na = self.na_slider.val
+        self.una = uf(self.na, Na0_err[self.i])
 
-        if d[ind] >= self.epsilon:
-            ind = None
+        self.nn = self.nn_slider.val
+        self.unn = uf(self.nn, Nn0_err[self.i])
 
-        return ind
+        self.yoff = N_OFF(x, self.koff, self.n)
+        self.g_off0.set_ydata(self.yoff)
 
-    def button_press_callback(self, event):
-        'whenever a mouse button is pressed'
-        if not self.showverts:
-            return
-        if event.inaxes is None:
-            return
-        if event.button != 1:
-            return
-        self._ind = self.get_ind_under_point(event)
+        self.yon = N_ON((x, self.koff), self.na, self.nn, self.kon)
+        self.g_on0.set_ydata(self.yon)
 
-    def button_release_callback(self, event):
-        'whenever a mouse button is released'
-        if not self.showverts:
-            return
-        if event.button != 1:
-            return
-        self._ind = None
+        # depletion
+        self.udepletion_new1 = 1 - uy_ON(x, self.una, self.unn, self.ukoff, self.ukon)/uy_OFF(x, self.un, self.ukoff)
+        self.depletion_new1, self.depletion_error_new1 = unp.nominal_values(self.udepletion_new1), unp.std_devs(self.udepletion_new1)
+        self.depletion0.set_ydata(self.depletion_new1)
 
-    def key_press_callback(self, event):
-        'whenever a key is pressed'
-        if not event.inaxes:
-            return
-        if event.key == 't':
-            self.showverts = not self.showverts
-            self.line.set_visible(self.showverts)
-            if not self.showverts:
-                self._ind = None
-        elif event.key == 'd':
-            ind = self.get_ind_under_point(event)
-            if ind is not None:
-                self.poly.xy = [tup for i, tup in enumerate(self.poly.xy) if i != ind]
-                self.line.set_data(zip(*self.poly.xy))
-        elif event.key == 'i':
-            xys = self.poly.get_transform().transform(self.poly.xy)
-            p = event.x, event.y  # display coords
-            for i in range(len(xys) - 1):
-                s0 = xys[i]
-                s1 = xys[i + 1]
-                d = dist_point_to_segment(p, s0, s1)
-                if d <= self.epsilon:
-                    self.poly.xy = np.array(
-                        list(self.poly.xy[:i]) +
-                        [(event.xdata, event.ydata)] +
-                        list(self.poly.xy[i:]))
-                    self.line.set_data(zip(*self.poly.xy))
-                    break
+        self.X = (x, self.kon)
+        self.pop_depletion, self.poc_depletion = curve_fit(
+                Depletion, self.X , self.depletion_new1, 
+                sigma = self.depletion_error_new1, 
+                absolute_sigma = True
+            )
 
-        self.canvas.draw()
+        self.A_new1 = self.pop_depletion[0]
+        self.perr = np.sqrt(np.diag(self.poc_depletion))[0]
+        self.uA_new1 = uf(self.A_new1 , self.perr)
 
-    def motion_notify_callback(self, event):
-        'on mouse movement'
-        if not self.showverts:
-            return
-        if self._ind is None:
-            return
-        if event.inaxes is None:
-            return
-        if event.button != 1:
-            return
-        x, y = event.xdata, event.ydata
+        self.depletion_fitted_new = Depletion(self.X, self.A_new1)
+        self.depletion1.set_ydata(self.depletion_fitted_new)
 
-        self.poly.xy[self._ind] = x, y
-        if self._ind == 0:
-            self.poly.xy[-1] = x, y
-        elif self._ind == len(self.poly.xy) - 1:
-            self.poly.xy[0] = x, y
-        self.line.set_data(zip(*self.poly.xy))
+        self.k = self.i*2
+        legend.get_texts()[self.k].set_text('N_OFF: [{:.2f}mJ], K_OFF={:.2fP}/J, N={:.2fP}'.format(power_values[self.i+1], self.ukoff, self.un))
+        legend.get_texts()[self.k+1].set_text('N_ON: [{:.2f}mJ], K_ON={:.2fP}/J, N={:.2fP}, Na0={:.2fP}, Nn0={:.2fP}'.format(power_values[self.i], self.ukon, self.una+self.unn, self.una, self.unn))
+        depletion_legend.get_texts()[self.i].set_text('A = {:.2fP}, K_ON = {:.2fP}/J'.format(self.uA_new1, self.ukon))
 
-        self.canvas.restore_region(self.background)
-        self.ax.draw_artist(self.poly)
-        self.ax.draw_artist(self.line)
-        self.canvas.blit(self.ax.bbox)
+        self.fig.canvas.draw_idle()
 
+    self.koff_slider.on_changed(self.update)
+    self.n_slider.on_changed(self.update)
 
-if __name__ == '__main__':
-    import matplotlib.pyplot as plt
-    from matplotlib.patches import Polygon
+    self.kon_slider.on_changed(self.update)
+    self.na_slider.on_changed(self.update)
+    self.nn_slider.on_changed(self.update)
 
-    theta = np.arange(0, 2*np.pi, 0.1)
-    r = 1.5
+    widget_position = l = 0.05
+    for i in range(len(N)):
 
-    xs = r*np.cos(theta)
-    ys = r*np.sin(theta)
-
-    poly = Polygon(list(zip(xs, ys)), animated=True)
-
-    fig, ax = plt.subplots()
-    ax.add_patch(poly)
-    p = PolygonInteractor(ax, poly)
-
-    #ax.add_line(p.line)
-    ax.set_title('Click and drag a point to move it')
-    ax.set_xlim((-2, 2))
-    ax.set_ylim((-2, 2))
-    plt.show()
+        l += 0.25
