@@ -182,23 +182,23 @@ def depletionPlot(files, location, save, show, power_values, n):
         
         # controlling fitting parameters
         axcolor = 'lightgoldenrodyellow'
+        
+        koff_g = plt.axes([l, 0.12, 0.2, 0.015], facecolor=axcolor) #[left, bottom, width, height]
+        n_g = plt.axes([l, 0.10, 0.2, 0.015], facecolor=axcolor)
 
-        koff = plt.axes([l, 0.12, 0.2, 0.015], facecolor=axcolor) #[left, bottom, width, height]
-        n = plt.axes([l, 0.10, 0.2, 0.015], facecolor=axcolor)
+        kon_g = plt.axes([l, 0.08, 0.2, 0.015], facecolor=axcolor)
+        na_g = plt.axes([l, 0.06, 0.2, 0.015], facecolor=axcolor)
+        nn_g = plt.axes([l, 0.04, 0.2, 0.015], facecolor=axcolor)
 
-        kon = plt.axes([l, 0.08, 0.2, 0.015], facecolor=axcolor)
-        na = plt.axes([l, 0.06, 0.2, 0.015], facecolor=axcolor)
-        nn = plt.axes([l, 0.04, 0.2, 0.015], facecolor=axcolor)
+        koff_slider = Slider(koff_g, '$K_{OFF}$', 0, K_OFF[i]+10, valinit = K_OFF[i])
+        n_slider = Slider(n_g, 'N', 0, N[i]+(N[i]/2), valinit = N[i])
 
-        koff_slider = Slider(koff, '$K_{OFF}$', 0, K_OFF[i]+10, valinit = K_OFF[i])
-        n_slider = Slider(n, 'N', 0, N[i]+(N[i]/2), valinit = N[i])
-
-        kon_slider = Slider(kon, '$K_{ON}$', 0, K_ON[i]+10, valinit = K_ON[i])
-        na_slider = Slider(na, '$Na_0$', 0, Na0[i]+(Na0[i]/2), valinit = Na0[i])
-        nn_slider = Slider(nn, '$Nn_0$', 0, Nn0[i]+(Nn0[i]/2), valinit = Nn0[i])
+        kon_slider = Slider(kon_g, '$K_{ON}$', 0, K_ON[i]+10, valinit = K_ON[i])
+        na_slider = Slider(na_g, '$Na_0$', 0, Na0[i]+(Na0[i]/2), valinit = Na0[i])
+        nn_slider = Slider(nn_g, '$Nn_0$', 0, Nn0[i]+(Nn0[i]/2), valinit = Nn0[i])
                 
         def update(val):
-
+            
             koff = koff_slider.val
             ukoff = uf(koff, K_OFF_err[i])
 
@@ -245,6 +245,8 @@ def depletionPlot(files, location, save, show, power_values, n):
             depletion_legend.get_texts()[i].set_text('A = {:.2fP}, K_ON = {:.2fP}/J'.format(uA_new1, ukon))
 
             fig.canvas.draw_idle()
+            
+            return fig
 
         koff_slider.on_changed(update)
         n_slider.on_changed(update)
@@ -253,9 +255,11 @@ def depletionPlot(files, location, save, show, power_values, n):
         na_slider.on_changed(update)
         nn_slider.on_changed(update)
     
+        return koff_slider, n_slider, kon_slider, na_slider, nn_slider, koff_g, n_g, kon_g, na_g, nn_g, fig
+
     widget_position = l = 0.05
     for i in range(len(N)):
-        plot(i, l)
+        koff_slider, n_slider, kon_slider, na_slider, nn_slider, koff_g, n_g, kon_g, na_g, nn_g, fig = plot(i, l)
         l += 0.25
 
     ### setting labels
