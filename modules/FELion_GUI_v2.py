@@ -6,7 +6,8 @@ import shutil
 import datetime
 import matplotlib.pyplot as plt
 
-from timescan_plot import timescanplot, depletionPlot
+from timescan_plot import timescanplot
+from depletion_plot import depletionPlot
 
 #FELion modules
 from FELion_massSpec import massSpec
@@ -931,11 +932,6 @@ class Plot(Frame):
         log_value.set(False)
         log = ttk.Checkbutton(self, text = "Log", variable = log_value)
 
-        #fit_value = BooleanVar()
-        #fit_value.set(True)
-        #fit = ttk.Checkbutton(self, text = "", variable = fit_value)
-
-
         # opening multiple files
         
         self.filelist = []
@@ -974,13 +970,6 @@ class Plot(Frame):
         timescan_plotbutton = ttk.Button(self, text="TimeScan", \
                 command = lambda: timescanplot(self.fname, self.location, save.get(), show_value.get()))
 
-        #ployfit_label = Label(self, text = "Polyfit deg:", font=("Times", 10, "bold"))
-
-        #deg = IntVar()
-        #deg.set(3)
-        #polyfit_entry = Entry(self, bg = "white", bd = 5, \
-        #        textvariable = deg, justify = LEFT, font=("Times", 12, "italic"))
-
         # Save checkbutton:
         save = BooleanVar()
         save.set(True)
@@ -993,7 +982,13 @@ class Plot(Frame):
                         self.location, save.get(), show_value.get()))
         
         powerplot = ttk.Button(self, text='PowerPlot', command = lambda: power_plot(self.filelist, self.location, save.get(), show_value.get()))
-        depletion_btn = ttk.Button(self, text='DepletionPlot', command = lambda: depletionPlot(self.filelist, self.location, save.get(), show_value.get()))
+
+        # depletion plot power and n values:
+        power_n_value = StringVar()
+        power_n_value.set('power_on, power_of, n_shots')
+        power_n = Entry(self, bg = "white", bd = 5, textvariable=power_n_value, justify = LEFT, font=("Times", 12, "italic"))
+
+        depletion_btn = ttk.Button(self, text='DepletionPlot', command = lambda: depletionPlot(self.filelist, self.location, save.get(), show_value.get(), power_n_value.get()))
         
         mass_diff = 0.12
         mass_smalldiff = 0.06
@@ -1028,12 +1023,8 @@ class Plot(Frame):
         log.place(relx = m_x3,  rely = m_y3, width = width, height = height)
 
         depletion_btn.place(relx = m_x5+0.06,  rely = m_y3, width = width, height = height)
-        
-        #ployfit_label.place(relx = m_x5+0.06,  rely = m_y3, width = width, height = height)
-        #polyfit_entry.place(relx = m_x6+0.06,  rely = m_y3, width = smallwidth, height = height)
-        #fit.place(relx = m_x7,  rely = m_y3, width = smallwidth, height = height)
-
-
+        power_n.place(relx = m_x5+0.06+0.12,  rely = m_y3, width = width, height = height)
+ 
         openfiles.place(relx = m_x1,  rely = m_y4, width = width, height = height)
         filelist_label.place(relx = m_x1,  rely = m_y5)
         save_check.place(relx = m_x3,  rely = m_y4, width = width, height = height)
