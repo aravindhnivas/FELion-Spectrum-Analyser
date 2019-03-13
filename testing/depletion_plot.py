@@ -11,17 +11,19 @@ from uncertainties import unumpy as unp
 from timescan_plot import timescanplot
 from FELion_definitions import ShowInfo, ErrorInfo
 
-def depletionPlot(files, location, save, show, power_values, n):
+def depletionPlot(files, location, save, show, power_n):
 
     try:
 
         if len(files)>2: return ShowInfo('Info', 'Please select only 2-files')
+        print('#######################')
+        power_n = np.asarray(power_n.split(','), dtype = np.float)
+        power_values, n = power_n[:2], power_n[-1]
 
-        power_values = np.array(power_values)
         np.seterr(all='ignore')
         os.chdir(location)
         fig0, axs0 = plt.subplots()
-    
+
         lg_fontsize = 15
         title_fontsize = 15
         lb_size = 15
@@ -56,7 +58,7 @@ def depletionPlot(files, location, save, show, power_values, n):
         K_ON_err, Na0_err, Nn0_err = [], [], []
 
         fig, axs = plt.subplots(figsize=(25, 10), dpi=70)
-    
+
         plt.subplots_adjust(
             top = 0.95,
             bottom = 0.2,
@@ -295,7 +297,10 @@ def depletionPlot(files, location, save, show, power_values, n):
         depletion_plot.set_ylabel('Relative abundance of active isomer', fontsize= lb_size)
         depletion_plot.set_title('$D(ntE) = 1-N_{ON}/N_{OFF}$ fitted with $D(ntE) = A(1-e^{K_{ON}*ntE})$', fontsize = title_fontsize)
         
-        if save: plt.savefig("Depletion.pdf", bbox_inches='tight')
+        if save: 
+            plt.savefig("Depletion.pdf", bbox_inches='tight')
+            ShowInfo("SAVED", 'File Saved as Depletion.pdf')
+            
         if show: plt.show()
         plt.close()
 
