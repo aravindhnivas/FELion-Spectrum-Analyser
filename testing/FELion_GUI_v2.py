@@ -21,7 +21,6 @@ from tkinter.filedialog import askopenfilenames, askopenfilename
 from os.path import join
 
 import numpy as np
-from just_plot import *
 
 def outFile(fname, location, file):
         try:
@@ -169,7 +168,7 @@ class Normline(Frame):
 
     def __init__(self, parent, controller):
         Frame.__init__(self,parent, bg="sea green")
-        
+
         label = Label(self, text="Normline", \
                 font=LARGE_FONT, bg="sea green", bd = 1, relief = SOLID)
         label.place(relx = 0, rely = 0, relwidth = 1)
