@@ -11,7 +11,6 @@ from tempfile import TemporaryDirectory
 copy = lambda pathdir, x: (shutil.copyfile(join(pathdir, x), join(pathdir,"DATA" ,x)), print("%s copied to DATA folder" %x))
 move = lambda pathdir, x: (shutil.move(join(pathdir, x), join(pathdir,"DATA" ,x)), print("%s moved to DATA folder"%x))
 
-
 # Tkinter messagebox
 
 def ErrorInfo(error, msg):
@@ -45,7 +44,7 @@ def recursive_overwrite(src, dest, ignore=None):
     else:
         shutil.copyfile(src, dest)
 
-def update():
+def update(*args):
     try:
         t = "C:/FELion_update_cache"
         git.Repo.clone_from('https://github.com/aravindhnivas/FELion-Spectrum-Analyser', t, branch='master', depth=1)
@@ -58,16 +57,42 @@ def update():
 #################################################################################
 ############################### Tkinter functions ###############################
 
-##############################################################
 #################### constants ###############################
 constants = {
+
     'width':50,
     'height':50,
-    'font':('Times 12 bold'),
-    'bg':'white',
-    'bd':5,
+    'font':("Verdana", 10, "italic"),
+    'bg':'sea green',
+    'bd':0,
     'anchor':'w',
+    'relief':SOLID,
+    'relwidth': 0.05,
+    'relheight': 1,
+    'justify': 'left',
+
 }
+
+welcome_msg = """
+The FELion Spectrum analyser for analysing FELIX data using Python;
+
+It consists: the following functions:
+    1. Normline and Average Spectrum Plot
+    2. Mass Spectrum Plot
+    3. Powerfile Generator
+    4. Plot (For general X,Y plots:)
+    5. Update Program (For updating to the latest version from github)
+
+NOTE: Before using Normline and Average Spectrum plot functions: 
+Make sure you already did "Baseline Correction" using "FELion_Baseline" Program
+
+If error: Maybe, try to avoid using //server as the location
+
+The processed raw data output files can be found in "EXPORT" and "DATA" folder.
+The processed output files can be found in "OUT" and "MassSpec_DATA"
+
+Report bug/suggestion: aravindh@science.ru.nl
+"""
 
 #################### Variables ###############################
 
@@ -87,7 +112,6 @@ def var_check(kw):
     return kw
 ##############################################################
 
-
 class Entry_widgets(Frame):
     
     def __init__(self, parent, method,  *args, **kw):
@@ -102,7 +126,11 @@ class Entry_widgets(Frame):
                 
             self.value.set(self.txt)
             self.entry = Entry(self.parent, bg = kw['bg'], bd = kw['bd'], textvariable = self.value, font = kw['font'])
-            self.entry.place(relx = x, rely = y, anchor = kw['anchor'], width = kw['width'], height = kw['height'])
+
+            if 'relwidth' in kw:
+                self.entry.place(relx = x, rely = y, anchor = kw['anchor'], relwidth = kw['relwidth'], relheight = kw['relheight'])
+            else:
+                self.entry.place(relx = x, rely = y, anchor = kw['anchor'], width = kw['width'], height = kw['height'])
                 
         elif method == 'Check':
             self.value = BooleanVar()
@@ -131,16 +159,24 @@ class FELion_widgets(Frame):
         x, y = args[1], args[2]
         kw = var_check(kw)
         
-        self.label = Label(self.parent, text = self.txt, font = kw['font'])
-        self.label.place(relx = x, rely = y, anchor = kw['anchor'], width = kw['width'], height = kw['height'])
+        self.label = Label(self.parent, text = self.txt, justify = kw['justify'], font = kw['font'], bg = kw['bg'], bd = kw['bd'], relief = kw['relief'])
+        if 'relwidth' in kw:
+            self.label.place(relx = x, rely = y, anchor = kw['anchor'], relwidth = kw['relwidth'], relheight = kw['relheight'])
+        else:
+            self.label.place(relx = x, rely = y, anchor = kw['anchor'], width = kw['width'], height = kw['height'])
     
     def buttons(self, *args, **kw):
         btn_txt = args[0]
         x, y = args[1], args[2]
         func = args[3]
+        
         kw = var_check(kw)
         
-        self.button = ttk.Button(self.parent, text = btn_txt, command = lambda: func())
+        if len(args)>4:
+            func_parameters = args[4:]
+            self.button = ttk.Button(self.parent, text = btn_txt, command = lambda: func(*func_parameters))
+        else: 
+            self.button = ttk.Button(self.parent, text = btn_txt, command = lambda: func())   
         self.button.place(relx = x, rely = y, width = kw['width'], height = kw['height'])
 
     def open_dir(self, file_type):
