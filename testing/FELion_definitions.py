@@ -1,7 +1,8 @@
 #!/usr/bin/python3
 
 from tkinter import *
-from tkinter import ttk, messagebox, filedialog
+from tkinter import ttk, messagebox
+from tkinter.filedialog import askopenfilenames, askopenfilename
 import os, shutil, tempfile, git, subprocess, sys
 from os.path import isdir, dirname, join
 from tempfile import TemporaryDirectory
@@ -54,45 +55,120 @@ def update():
     except Exception as e:
         ErrorInfo("ERROR: ", e)
 
-# Tkinter functions:
-####################################
+#################################################################################
+############################### Tkinter functions ###############################
 
-#labels and enty:
-class my_label(Frame):
-    def __init__(self, parent, label):
+##############################################################
+#################### constants ###############################
+constants = {
+    'width':50,
+    'height':50,
+    'font':('Times 12 bold'),
+    'bg':'white',
+    'bd':5,
+    'anchor':'w',
+}
+
+#################### Variables ###############################
+
+felix_files_type = ("Felix Files", "*.felix")
+mass_files_type = ("Mass Files", "*.mass")
+time_files_type = ("Timescan Files", "*.scan")
+pow_files_type = ("Pow Files", "*.pow")
+all_files_type = ("All files", "*")
+
+
+#################### Definitions #############################
+
+def var_check(kw):
+    for i in constants:
+        if not i in list(kw.keys()):
+            kw[i] = constants[i]
+    return kw
+##############################################################
+
+
+class Entry_widgets(Frame):
+    
+    def __init__(self, parent, method,  *args, **kw):
         Frame.__init__(self, parent)
-
-        self.label = Label(self, text=label, font = ("Times", 12, "bold"))
-        self.label.pack()
-
-class my_entry(Frame):
-    def __init__(self, parent, entry):
-        Frame.__init__(self, parent)
-
-        self.entry = entry
-
-        if self.entry is int(): self.value = IntVar()
-        else: self.value = StringVar()
+        self.parent = parent
+        self.txt, x, y = args[0], args[1], args[2]
+        kw = var_check(kw)
         
-        self.value.set(entry)       
-        self.entry = Entry(self, textvariable = self.value, bg = "white",\
-                              bd = 5, font = ("Times", 12, "italic"))
+        if method == 'Entry':
+            if isinstance(self.txt, str): self.value = StringVar()
+            elif isinstance(self.txt, int): self.value = IntVar()
+                
+            self.value.set(self.txt)
+            self.entry = Entry(self.parent, bg = kw['bg'], bd = kw['bd'], textvariable = self.value, font = kw['font'])
+            self.entry.place(relx = x, rely = y, anchor = kw['anchor'], width = kw['width'], height = kw['height'])
+                
+        elif method == 'Check':
+            self.value = BooleanVar()
+            if 'default' in kw: self.value.set(kw['default'])
+            else: self.value.set(False)
+                
+            Check = ttk.Checkbutton(self.parent, text = self.txt, variable = self.value)
+            Check.place(relx = x, rely = y, width = kw['width'], height = kw['height'])
+     
+    def get(self):
+        return self.value.get()
 
-        self.entry.pack()
-
-#labels and entry combined:
-def labels_and_entry(self, *args, **kwargs):
-    label, entry = [i for i in args]
+class FELion_widgets(Frame):
     
-    v = {'lx': float(), 'ly': float(), 'ex': float(), 'ey':float(), 'l_rh': 0.05, 'l_rw': 0.1,
-                 'e_rw': 0.1, 'e_rh': 0.05}
+    def __init__(self, parent):
+        Frame.__init__(self, parent)
+        
+        ## Initial parameters:
+        self.parent = parent
+        self.location = "/"
+        self.fname = ""
+        self.filelist = []
+              
+    def labels(self, *args, **kw):
+        self.txt = args[0]
+        x, y = args[1], args[2]
+        kw = var_check(kw)
+        
+        self.label = Label(self.parent, text = self.txt, font = kw['font'])
+        self.label.place(relx = x, rely = y, anchor = kw['anchor'], width = kw['width'], height = kw['height'])
     
-    for i in kwargs:
-        if i in v:
-            v[i] = kwargs[i]
+    def buttons(self, *args, **kw):
+        btn_txt = args[0]
+        x, y = args[1], args[2]
+        func = args[3]
+        kw = var_check(kw)
+        
+        self.button = ttk.Button(self.parent, text = btn_txt, command = lambda: func())
+        self.button.place(relx = x, rely = y, width = kw['width'], height = kw['height'])
 
-    self.l1 = my_label(self, label)
-    self.l1.place(relx = v['lx'], rely = v['ly'], relheight = v['l_rh'], relwidth = v['l_rw'])
+    def open_dir(self, file_type):
+        root = Tk()
+        root.withdraw()
 
-    self.e1 = my_entry(self, entry)
-    self.e1.place(relx = v['ex'], rely = v['ey'], relheight = v['e_rh'], relwidth = v['e_rw'])
+        root.filename =  askopenfilename(initialdir = self.location, title = "Select file", filetypes = (file_type, ("all files","*.*")))
+        filename = root.filename
+        filename = filename.split("/")
+
+        self.fname = filename[-1]
+        del filename[-1]
+        
+        self.location = "/".join(filename)
+        root.destroy()
+        
+        return self.fname, self.location
+
+    def openfilelist(self, file_type):
+        self.filelist = [] # to prevent appending previously selected files
+        self.openlist = askopenfilenames(initialdir=self.location, initialfile='tmp',
+                        filetypes=[file_type, ("All files", "*")])
+
+        for i in self.openlist:
+            location = i.split("/")
+            file = location[-1]
+            self.filelist.append(file)
+            del location[-1]
+            self.location = "/".join(location)
+
+        return self.filelist, self.location
