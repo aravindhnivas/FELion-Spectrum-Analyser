@@ -110,6 +110,7 @@ def var_check(kw):
         if not i in list(kw.keys()):
             kw[i] = constants[i]
     return kw
+    
 ##############################################################
 
 class Entry_widgets(Frame):
@@ -186,7 +187,6 @@ class FELion_widgets(Frame):
             self.button.place(relx = x, rely = y, relwidth = kw['relwidth'], relheight = kw['relheight'])
         else:
             self.button.place(relx = x, rely = y, width = kw['width'], height = kw['height'])
-
 
     def open_dir(self, file_type):
         root = Tk()
