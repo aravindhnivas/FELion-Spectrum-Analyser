@@ -126,9 +126,9 @@ class StartPage(Frame):
 
                 x = 0.15
                 for name, pages_n in zip(pages, pages_name):
-                        self.widget.buttons(name , x, y, controller.show_frame, pages_n, height = height, width = width)
+                        self.widget.buttons(name , x, y, controller.show_frame, pages_n, relwidth = 0.1, relheight = 0.06)
                         x += 0.15
-                self.widget.buttons('Update' , x+0.07, y, update,'', height = height, width = width)
+                self.widget.buttons('Update' , x+0.07, y, update,'', relwidth = 0.1, relheight = 0.06)
                 self.widget.labels(welcome_msg, 0.1, 0.5, font = ("Verdana", 11, "italic"), bd = 0, relwidth = 0.8, relheight = 0.75)
 
 class Normline(Frame):
@@ -139,6 +139,7 @@ class Normline(Frame):
 
                 self.location = "/"
                 self.fname = ""
+                self.filelist = []
 
                 self.widget.labels('Normline', 0, 0.05, font = LARGE_FONT, bd = 1, relwidth = 1, relheight = 0.05)
 
@@ -147,15 +148,19 @@ class Normline(Frame):
 
                 x = 0.15
                 for name, pages_n in zip(pages, pages_name):
-                        self.widget.buttons(name , x, y, controller.show_frame, pages_n, height = height, width = width)
+                        self.widget.buttons(name , x, y, controller.show_frame, pages_n, relwidth = 0.1, relheight = 0.06)
                         x += 0.15
 
-                self.widget.buttons('Browse' , 0.1, 0.1, self.open_dir, height = height, width = width)
+                self.widget.buttons('Browse' , 0.1, 0.1, self.open_dir, relwidth = 0.1, relheight = 0.06)
                 self.widget.labels('Filename', 0.1, 0.24, bg = 'white', relwidth = 0.1, relheight = 0.06)
 
                 label1 = ('Molecule', 'TEMP(K)', 'B0 Width(ms)', 'IE(eV)')
-                entry1 = {'mname':'Molecule', 'temp':'-', 'bwidth':'-', 'ie':'-'}
-                
+                entry1 = {
+                        'mname':'Molecule', 
+                        'temp':'-', 
+                        'bwidth':'-', 
+                        'ie':'-'
+                }
 
                 y_ = 0.34
                 for i, e in zip(label1, entry1):
@@ -163,99 +168,38 @@ class Normline(Frame):
                         entry1[e] = Entry_widgets(self, 'Entry',  entry1[e] , 0.25, y_, bg = 'White', bd = 5,
                                                 relwidth = 0.1, relheight = 0.06)
                         y_ += 0.1
+                self.mname, self.temp, self.bwidth, self.ie = entry1['mname'].get(), entry1['temp'].get(), entry1['bwidth'].get(), entry1['ie'].get()
 
-                foravgshow = False
-                normline_button = ttk.Button(self, text="Normline")
-                normline_button.config(
-                        command = lambda: normline_correction(
-                                                self.fname, self.location,\
-                                                entry1['mname'].get(), entry1['temp'].get(), entry1['bwidth'].get(), entry1['ie'].get(),\
-                                                normavg_saveCheck_value.get(),\
-                                                foravgshow, normallCheck_value.get(),self.filelist, norm_show_value.get()
-                                                )
-                                                )
-                
-                # Save checkbutton for normall:
-                normallCheck_value = BooleanVar()
-                normallCheck_value.set(False)
-                normallCheck = ttk.Checkbutton(self, text = "Plot all files at once", variable = normallCheck_value)
-                
+                self.normavg_saveCheck_value = Entry_widgets(self, 'Check', 'Save', 0.7, 0.3, default = False, relwidth = 0.1, relheight = 0.06)
+                self.normallCheck_value = Entry_widgets(self, 'Check', 'Plot all', 0.7, 0.4, default = False, relwidth = 0.1, relheight = 0.06)
+                self.norm_show_value = Entry_widgets(self, 'Check', 'Show', 0.84, 0.3, default = True, relwidth = 0.1, relheight = 0.06)
 
-                # Show checkbutton for Normline:
-                norm_show_value = BooleanVar()
-                norm_show_value.set(True)
-                norm_show = ttk.Checkbutton(self, text = "Show", variable = norm_show_value)
-                
-
+                self.foravgshow = False
+                self.widget.buttons('Normline' , 0.7, 0.5, self.Normline_func, relwidth = 0.1, relheight = 0.06)
+   
                 # avg_labels's label:
-                avg_label = Label(self, text = "For Average Spectrum", font=("Times", 12, "italic"))
-
-                delta_label = Label(self, text = "DELTA", font = "Times 12 italic")
-
-                delta = IntVar()
-                delta.set(2)
-                delta_value = Entry(self, bg = "white", bd = 5, textvariable=delta, justify = LEFT, font=("Times", 12, "italic"))
-                
-                
+                self.widget.labels('For Average Spectrum', 0.4, 0.24, bg = 'white', bd = 2,  relwidth = 0.2, relheight = 0.06)
+                self.widget.labels('DELTA', 0.7, 0.24, bg = 'white', relwidth = 0.1, relheight = 0.06)
+                self.delta = Entry_widgets(self, 'Entry', 2, 0.84, 0.24, bg = 'White', bd = 5, relwidth = 0.1, relheight = 0.06)
 
                 # Avg_Spectrum Labels:
-                avg_title = Label(self, text = "Title:", font=("Times", 10, "bold"))
-                avg_ts_ls = Label(self, text = "Size\n(Title,Legend)", font=("Times", 10, "bold"))
-                avg_xaxis_count = Label(self, text = "X-axis\nticks div:", font=("Times", 10, "bold"))
-                avg_majorTick = Label(self, text = "Major TickSz,\nMarkerSz:", font=("Times", 10, "bold"))
+                label2 = ('Title', 'Size\n(Title,Legend)', 'X-axis\nticks div:', 'Major_TickSz,\nMarkerSz', 'X,Y,Wid,Ht', 'Output')
+                entry2 = {
+                        'title':'Title', 
+                        'Size_title_legend': '15, 10', 
+                        'X-axis_ticks': '20, 100', 
+                        'Major_ticks': '15, 2', 
+                        'x,y,w,h': '15, 15, 10, 5',
+                        'Output' : 'Average'
+                }
 
-                avg_xywf = Label(self, text = "X,Y,Wid,Ht", font=("Times", 10, "bold"))
+                y_ = 0.34
+                for i, e in zip(label2, entry2):
+                        self.widget.labels(i, 0.4, y_, bg = 'white', relwidth = 0.1, relheight = 0.06)
+                        entry2[e] = Entry_widgets(self, 'Entry',  entry2[e] , 0.55, y_, bg = 'White', bd = 5,
+                                                relwidth = 0.1, relheight = 0.06)
+                        y_ += 0.1
 
-                # avg_label's Entry widget:
-                i_avg_title = StringVar()
-                i_avg_ts = IntVar() 
-                i_avg_lgs = IntVar() 
-                i_avg_minor = IntVar() 
-                i_avg_major = IntVar() 
-                i_avg_majorTick = IntVar()
-
-                i_avg_xlabelsz = IntVar()
-                i_avg_ylabelsz= IntVar()
-                i_avg_fwidth= IntVar()
-                i_avg_fheight= IntVar()
-                i_avg_markersz = IntVar()
-                
-                        
-                i_avg_title.set("Title")
-                i_avg_ts.set(15)
-                i_avg_lgs.set(10)
-                i_avg_minor.set(20)
-                i_avg_major.set(100)
-                i_avg_majorTick.set(15)
-                i_avg_markersz.set(2)
-
-                i_avg_xlabelsz.set(15)
-                i_avg_ylabelsz.set(15)
-                i_avg_fwidth.set(10)
-                i_avg_fheight.set(5)
-
-                avg_title_Entry = Entry(self, bg = "white", bd = 5, textvariable=i_avg_title, justify = LEFT, font=("Times", 12, "italic"))
-                avg_ts_Entry = Entry(self, bg = "white", bd = 5, textvariable=i_avg_ts, justify = LEFT, font=("Times", 10, "bold"))
-                avg_lgs_Entry = Entry(self, bg = "white", bd = 5, textvariable=i_avg_lgs, justify = LEFT, font=("Times", 10, "bold"))
-                avg_minor_Entry = Entry(self, bg = "white", bd = 5, textvariable=i_avg_minor, justify = LEFT, font=("Times", 10, "bold"))
-                avg_major_Entry = Entry(self, bg = "white", bd = 5, textvariable=i_avg_major, justify = LEFT, font=("Times", 10, "bold"))
-                avg_majorTick_Entry = Entry(self, bg = "white", bd = 5, textvariable=i_avg_majorTick, justify = LEFT, font=("Times", 10, "bold"))
-                avg_markersize_Entry = Entry(self, bg = "white", bd = 5, textvariable=i_avg_markersz, justify = LEFT, font=("Times", 10, "bold"))
-
-
-                avg_xlabelsz = Entry(self, bg = "white", bd = 5, textvariable=i_avg_xlabelsz, justify = LEFT, font=("Times", 12, "italic"))
-                avg_ylabelsz = Entry(self, bg = "white", bd = 5, textvariable=i_avg_ylabelsz, justify = LEFT, font=("Times", 12, "italic"))
-                avg_fwidth = Entry(self, bg = "white", bd = 5, textvariable=i_avg_fwidth, justify = LEFT, font=("Times", 12, "italic"))
-                avg_fheight = Entry(self, bg = "white", bd = 5, textvariable=i_avg_fheight, justify = LEFT, font=("Times", 12, "italic"))
-
-                # avg spectrum output filename:
-                avg_outputFilename = Label(self, \
-                        text = "Out. filename\n(Average)", font=("Times", 10, "bold"))
-
-                output_filename = StringVar()
-                output_filename.set("Average")
-                avg_outputFilename_entry = Entry(self, bg = "white", bd = 5, \
-                        textvariable=output_filename, justify = LEFT, font=("Times", 12, "italic"))
 
                 #Avg_Spectrum Button
                 specificFiles_status = False
@@ -277,15 +221,9 @@ class Normline(Frame):
                                                                 i_avg_xlabelsz.get(), i_avg_ylabelsz.get(),\
                                                                 i_avg_fwidth.get(), i_avg_fheight.get(),\
                                                                 i_avg_markersz.get(), norm_show_value.get(),\
-                                                                delta.get(), self.filelist
+                                                                self.delta.get(), self.filelist
                                                                 )
                                                                 )
-
-                # Save checkbutton for normline and avgspec:
-                normavg_saveCheck_value = BooleanVar()
-                normavg_saveCheck_value.set(True)
-                normavg_saveCheck = ttk.Checkbutton(self, text = "Save", variable = normavg_saveCheck_value)
-                
 
                 # Spectrum Analyzer and power Analyzer Buttons:
                 sa_button = ttk.Button(self, text="SA", \
@@ -296,28 +234,9 @@ class Normline(Frame):
                 baseline = ttk.Button(self, text="Baseline", \
                         command = lambda: show_baseline(self.fname, self.location, mname.get()))
 
-                self.filelist = []
-                def openfilelist(self):
-                        self.filelist = []
-                        self.openlist = askopenfilenames(initialdir=self.location, initialfile='tmp',
-                                        filetypes=[("Felix Files", "*.felix"), ("All files", "*")])
-                        
-                        for i in self.openlist:
-
-                                location = i.split("/")
-                                
-                                file = location[-1]
-                                self.filelist.append(file)
-
-                                del location[-1]
-                                self.location = "/".join(location)
                 
-                        filelist_label.config(text = '\n'.join(self.filelist))
-                        current_location.config(text = self.location)
-
-                        return self.filelist
                         
-                openfiles = ttk.Button(self, text = "Select File(s)", command = lambda: openfilelist(self))
+                openfiles = ttk.Button(self, text = "Select File(s)", command = lambda: self.openfilelist())
                 filelist_label = Label(self)
 
                 self.trap_time, self.B0_width = float(), int()
@@ -362,23 +281,9 @@ class Normline(Frame):
                 n_y5 = n_y4 + ynorm_diff
                 n_y6 = n_y5 + ynorm_diff
 
-                #browse_loc.place(relx = n_x1,  rely =n_y1, width = width, height = height)
-                #fname_label.place(relx = n_x1,  rely =n_y2, width = width, height = height)
-                #molecule_name_label.place(relx = n_x1,  rely = n_y3, width = width, height = height)
-                #temp_label.place(relx = n_x1,  rely = n_y4, width = width, height = height)
-                #bwidth_label.place(relx = n_x1,  rely =n_y5, width = width, height = height)
-                #ion_enrg_label.place(relx = n_x1,  rely = n_y6, width = width, height = height)
-                
+               
                 trap_width_label.place(relx = n_x1,  rely = n_y6+0.1)
 
-                #self.current_location.place(relx = n_x2,  rely = n_y1, relwidth = 0.5, height = height)
-                #self.filename_label.place(relx = n_x2,  rely = n_y2, width = width, height = height)
-                #molecule_name.place(relx = n_x2,  rely = n_y3, width = width, height = height)
-                #temperature.place(relx = n_x2,  rely =n_y4, width = width, height = height)
-                #bo_Width.place(relx = n_x2,  rely = n_y5, width = width, height = height)
-                #ion_enrg.place(relx = n_x2,  rely =n_y6, width = width, height = height)
-
-                
                 a_y3 = n_y2 + ynorm_diff
                 a_y4 = a_y3 + ynorm_diff
                 a_y5 = a_y4 + ynorm_diff
@@ -386,38 +291,6 @@ class Normline(Frame):
                 a_y7 = a_y6 + ynorm_diff
                 a_y8 = a_y7 + ynorm_diff
 
-
-                avg_label.place(relx = n_x3,  rely = n_y2, relwidth = 0.2, height = 40)
-                delta_label.place(relx = n_x6,  rely = n_y2, width = width, height = 40)
-                delta_value.place(relx = n_x6+0.12,  rely = n_y2, width = width, height = 40)
-                
-                avg_title.place(relx = n_x3,  rely = a_y3, width = width, height = height)
-                avg_ts_ls.place(relx = n_x3,  rely = a_y4, width = width, height = height)
-                avg_xaxis_count.place(relx = n_x3,  rely = a_y5, width = width, height = height)
-                avg_majorTick.place(relx = n_x3,  rely = a_y6, width = width, height = height)
-
-                avg_title_Entry.place(relx = n_x4,  rely = a_y3, width = width, height = height)
-                avg_ts_Entry.place(relx = n_x4,  rely = a_y4, width = smallwidth, height = height)
-                avg_lgs_Entry.place(relx = n_x5,  rely = a_y4, width = smallwidth, height = height)
-                avg_minor_Entry.place(relx = n_x4,  rely = a_y5, width = smallwidth, height = height)
-                avg_major_Entry.place(relx = n_x5,  rely = a_y5, width = smallwidth, height = height)
-                avg_majorTick_Entry.place(relx = n_x4,  rely = a_y6, width = smallwidth, height = height)
-                avg_markersize_Entry.place(relx = n_x5,  rely = a_y6, width = smallwidth, height = height)
-
-                avg_outputFilename.place(relx = n_x3,  rely =a_y7, width = width, height = height)
-                avg_outputFilename_entry.place(relx = n_x4,  rely = a_y7, width = width, height = height)
-
-                avg_xywf.place(relx = n_x3,  rely =a_y8, width = width, height = height)
-                avg_xlabelsz.place(relx = n_x4,  rely =a_y8, width = smallwidth, height = height)
-                avg_ylabelsz.place(relx = n_x5,  rely =a_y8, width = smallwidth, height = height)
-                avg_fwidth.place(relx = n_x6-0.05,  rely =a_y8, width = smallwidth, height = height)
-                avg_fheight.place(relx = n_x7-0.05,  rely =a_y8, width = smallwidth, height = height)
-
-                normavg_saveCheck.place(relx = n_x6,  rely = a_y3, width = width, height = height)
-                norm_show.place(relx = n_x6+0.15,  rely = a_y3, width = width, height = height)
-                normallCheck.place(relx = n_x6,  rely = a_y4, width = width+45, height = height)
-
-                normline_button.place(relx = n_x6,  rely = a_y5, width = width, height = height)
                 sa_button.place(relx = n_x6,  rely = a_y6, width = 30, height = height)
                 power_button.place(relx = n_x6+0.05,  rely = a_y6, width = 50, height = height)
                 baseline.place(relx = n_x6,  rely = a_y7, width = width, height = height)
@@ -438,6 +311,36 @@ class Normline(Frame):
 
                 #self.filename_label.config(text = self.fname)
                 #if not self.fname=="" and not normallCheck_value.get(): trap_time(self)
+   
+        def openfilelist(self):
+                self.filelist = []
+                self.openlist = askopenfilenames(initialdir=self.location, initialfile='tmp',
+                                filetypes=[("Felix Files", "*.felix"), ("All files", "*")])
+                
+                for i in self.openlist:
+
+                        location = i.split("/")
+                        
+                        file = location[-1]
+                        self.filelist.append(file)
+
+                        del location[-1]
+                        self.location = "/".join(location)
+        
+                filelist_label.config(text = '\n'.join(self.filelist))
+                current_location.config(text = self.location)
+
+                return self.filelist
+
+        def Normline_func(self):
+                
+                normline_correction(
+                        self.fname, self.location,
+                        self.mname, self.temp, self.bwidth, self.ie,
+                        self.normavg_saveCheck_value.get(),
+                        self.foravgshow, self.normallCheck_value.get(), self.filelist, self.norm_show_value.get()
+                        )
+
 
 class Mass(Frame):
 

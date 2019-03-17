@@ -67,8 +67,8 @@ constants = {
     'bd':0,
     'anchor':'w',
     'relief':SOLID,
-    'relwidth': 0.05,
-    'relheight': 1,
+    'relwidth': 0.1,
+    'relheight': 0.06,
     'justify': 'left',
 
 }
@@ -123,6 +123,7 @@ class Entry_widgets(Frame):
         if method == 'Entry':
             if isinstance(self.txt, str): self.value = StringVar()
             elif isinstance(self.txt, int): self.value = IntVar()
+            elif isinstance(self.txt, tuple): self.value = StringVar()
                 
             self.value.set(self.txt)
             self.entry = Entry(self.parent, bg = kw['bg'], bd = kw['bd'], textvariable = self.value, font = kw['font'])
@@ -136,9 +137,13 @@ class Entry_widgets(Frame):
             self.value = BooleanVar()
             if 'default' in kw: self.value.set(kw['default'])
             else: self.value.set(False)
-                
-            Check = ttk.Checkbutton(self.parent, text = self.txt, variable = self.value)
-            Check.place(relx = x, rely = y, width = kw['width'], height = kw['height'])
+
+            self.Check = ttk.Checkbutton(self.parent, text = self.txt, variable = self.value)
+
+            if 'relwidth' in kw:
+                self.Check.place(relx = x, rely = y, relwidth = kw['relwidth'], relheight = kw['relheight'])
+            else:
+                self.Check.place(relx = x, rely = y, width = kw['width'], height = kw['height'])
      
     def get(self):
         return self.value.get()
@@ -176,8 +181,12 @@ class FELion_widgets(Frame):
             func_parameters = args[4:]
             self.button = ttk.Button(self.parent, text = btn_txt, command = lambda: func(*func_parameters))
         else: 
-            self.button = ttk.Button(self.parent, text = btn_txt, command = lambda: func())   
-        self.button.place(relx = x, rely = y, width = kw['width'], height = kw['height'])
+            self.button = ttk.Button(self.parent, text = btn_txt, command = lambda: func())  
+        if 'relwidth' in kw:
+            self.button.place(relx = x, rely = y, relwidth = kw['relwidth'], relheight = kw['relheight'])
+        else:
+            self.button.place(relx = x, rely = y, width = kw['width'], height = kw['height'])
+
 
     def open_dir(self, file_type):
         root = Tk()
