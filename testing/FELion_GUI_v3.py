@@ -55,62 +55,93 @@ def outFile(fname, location, file):
                 ErrorInfo("ERROR", e)
 
 LARGE_FONT= ("Verdana", 15)
+
 diff = 0.15
 x1 = 0.15
 x2 = x1 + diff
 x3 = x2 + diff
 x4 = x3 + diff
 x5 = x4 + diff + 0.07
-
 x = 0.15
 y = 0.9
 width, height = (100, 40)
 smallwidth = 50
 
 class FELion(Tk):
+        def __init__(self, *args, **kwargs):
 
-    def __init__(self, *args, **kwargs):
+                Tk.__init__(self, *args, **kwargs)
 
-        Tk.__init__(self, *args, **kwargs)
+                Tk.iconbitmap(self,default='C:/FELion-GUI/software/FELion_Icon.ico')
+                Tk.wm_title(self, "FELion-Spectrum Analyser v.2.0")
+                Tk.wm_geometry(self, "1000x600")
+        
+                container = Frame(self)
+                container.pack(side="top", fill="both", expand = True)
+                container.grid_rowconfigure(0, weight=1)
+                container.grid_columnconfigure(0, weight=1)
 
-        Tk.iconbitmap(self,default='C:/FELion-GUI/software/FELion_Icon.ico')
-        Tk.wm_title(self, "FELion-Spectrum Analyser v.2.0")
-        Tk.wm_geometry(self, "1000x600")
-       
-        container = Frame(self)
-        container.pack(side="top", fill="both", expand = True)
-        container.grid_rowconfigure(0, weight=1)
-        container.grid_columnconfigure(0, weight=1)
+                StatusBarFrame = Frame(self)
+                StatusBarFrame.pack(side = "bottom", fill = "both", expand = False)
 
-        StatusBarFrame = Frame(self)
-        StatusBarFrame.pack(side = "bottom", fill = "both", expand = False)
+                statusBar_left_text = "Version 2.0"
+                statusBar_left = Label(StatusBarFrame)
+                statusBar_left.config(text = statusBar_left_text, \
+                relief = SUNKEN, bd = 2, font = "Times 10 italic", pady = 5, anchor = "w")
+                statusBar_left.pack(side = "top", fill = "both", expand = True)
 
-        statusBar_left_text = "Version 2.0"
-        statusBar_left = Label(StatusBarFrame)
-        statusBar_left.config(text = statusBar_left_text, \
-        relief = SUNKEN, bd = 2, font = "Times 10 italic", pady = 5, anchor = "w")
-        statusBar_left.pack(side = "top", fill = "both", expand = True)
+                statusBar_right_text = "Developed at dr. Sandra's Lab FELIX"
+                statusBar_right = Label(StatusBarFrame)
+                statusBar_right.config(text = statusBar_right_text, \
+                relief = SUNKEN, bd = 2, font = "Times 10 italic", pady = 5, anchor = "e")
+                statusBar_right.pack(side = "top", fill = "both", expand = True)
 
-        statusBar_right_text = "Developed at dr. Sandra's Lab FELIX"
-        statusBar_right = Label(StatusBarFrame)
-        statusBar_right.config(text = statusBar_right_text, \
-        relief = SUNKEN, bd = 2, font = "Times 10 italic", pady = 5, anchor = "e")
-        statusBar_right.pack(side = "top", fill = "both", expand = True)
+                self.frames = {}
 
-        self.frames = {}
+                for F in (StartPage, Normline, Mass, Powerfile, Plot):
 
-        for F in (StartPage, Normline, Mass, Powerfile, Plot):
+                        frame = F(container, self)
+                        self.frames[F] = frame
+                        frame.grid(row=0, column=0, sticky="nsew")
 
-            frame = F(container, self)
-            self.frames[F] = frame
-            frame.grid(row=0, column=0, sticky="nsew")
+                self.show_frame(StartPage)
 
-        self.show_frame(StartPage)
+        def show_frame(self, cont):
 
-    def show_frame(self, cont):
+                frame = self.frames[cont]
+                frame.tkraise()
 
-        frame = self.frames[cont]
-        frame.tkraise()
+        def open_dir(self, cnt, x, y):
+                cnt.fname, cnt.location = cnt.widget.open_dir(felix_files_type)
+
+                cnt.widget.labels(
+                        cnt.location, x, y, 
+                        bd = 0, bg = 'white',
+                        relwidth = 0.5, relheight = 0.06
+                )
+
+                cnt.widget.labels(
+                        cnt.fname, x, y+0.1, 
+                        bd = 0, bg = 'white',
+                        relwidth = 0.15, relheight = 0.06
+                )
+
+        def openfilelist(self, cnt, x1, y1, x2, y2):
+                cnt.filelist, cnt.location = cnt.widget.openfilelist(felix_files_type)
+
+                cnt.widget.labels(
+                        cnt.location, 
+                        x1, y1, 
+                        bd = 0, bg = 'white',
+                        relwidth = 0.5, relheight = 0.06
+                )
+                        
+                cnt.widget.labels(
+                        '\n'.join(cnt.filelist), 
+                        x2, y2, 
+                        bd = 0, bg = 'white',
+                        relwidth = 0.15, relheight = 0.2
+                )
 
 class StartPage(Frame):
 
@@ -126,9 +157,9 @@ class StartPage(Frame):
 
                 x = 0.15
                 for name, pages_n in zip(pages, pages_name):
-                        self.widget.buttons(name , x, y, controller.show_frame, pages_n, relwidth = 0.1, relheight = 0.06)
+                        self.widget.buttons(name , x, y, controller.show_frame, pages_n, relwidth = 0.1)
                         x += 0.15
-                self.widget.buttons('Update' , x+0.07, y, update,'', relwidth = 0.1, relheight = 0.06)
+                self.widget.buttons('Update' , x+0.07, y, update,'', relwidth = 0.1)
                 self.widget.labels(welcome_msg, 0.1, 0.5, font = ("Verdana", 11, "italic"), bd = 0, relwidth = 0.8, relheight = 0.75)
 
 class Normline(Frame):
@@ -140,144 +171,96 @@ class Normline(Frame):
                 self.location = "/"
                 self.fname = ""
                 self.filelist = []
+                self.foravgshow = False
+                mname, temp, bwidth, ie = None, None, None, None
 
-                self.widget.labels('Normline', 0, 0.05, font = LARGE_FONT, bd = 1, relwidth = 1, relheight = 0.05)
+                self.widget.labels('Normline', 0, 0.05, font = LARGE_FONT, relwidth = 1, relheight = 0.05)
 
                 pages = ('Back to Home', 'Mass Spec', 'Powerfile', 'Plot')
                 pages_name = (StartPage, Mass, Powerfile, Plot)
 
                 x = 0.15
                 for name, pages_n in zip(pages, pages_name):
-                        self.widget.buttons(name , x, y, controller.show_frame, pages_n, relwidth = 0.1, relheight = 0.06)
+                        self.widget.buttons(name , x, y, controller.show_frame, pages_n, relwidth = 0.1)
                         x += 0.15
 
-                self.widget.buttons('Browse' , 0.1, 0.1, self.open_dir, relwidth = 0.1, relheight = 0.06)
-                self.widget.labels('Filename', 0.1, 0.24, bg = 'white', relwidth = 0.1, relheight = 0.06)
+                self.widget.buttons('Browse' , 0.1, 0.1, controller.open_dir, self, 0.22, 0.14,  relwidth = 0.1)
+                self.widget.labels('Filename', 0.1, 0.24, bg = 'white', relwidth = 0.1)
 
-                label1 = ('Molecule', 'TEMP(K)', 'B0 Width(ms)', 'IE(eV)')
-                entry1 = {
-                        'mname':'Molecule', 
-                        'temp':'-', 
-                        'bwidth':'-', 
-                        'ie':'-'
-                }
+                label1 = ('Molecule', 'TEMP(K)', 'B0 Width(ms)', 'IE(eV)', 'Trap(ms)')
 
                 y_ = 0.34
-                for i, e in zip(label1, entry1):
-                        self.widget.labels(i, 0.1, y_, bg = 'white', relwidth = 0.1, relheight = 0.06)
-                        entry1[e] = Entry_widgets(self, 'Entry',  entry1[e] , 0.25, y_, bg = 'White', bd = 5,
-                                                relwidth = 0.1, relheight = 0.06)
+                for i in label1:
+                        self.widget.labels(i, 0.1, y_, bg = 'white', relwidth = 0.1)
                         y_ += 0.1
+                
+                self.mname = Entry_widgets(self, 'Entry', 'Molecule', 0.25, 0.34, bg = 'White', bd = 5, relwidth = 0.1)
+                self.temp = Entry_widgets(self, 'Entry', 0, 0.25, 0.44, bg = 'White', bd = 5, relwidth = 0.1)
+                self.bwidth = Entry_widgets(self, 'Entry', 0, 0.25, 0.54, bg = 'White', bd = 5, relwidth = 0.1)
+                self.ie = Entry_widgets(self, 'Entry', 0, 0.25, 0.64, bg = 'White', bd = 5, relwidth = 0.1)
+                self.trap = Entry_widgets(self, 'Entry', 0, 0.25, 0.74, bg = 'White', bd = 5, relwidth = 0.1)
 
-                self.mname, self.temp, self.bwidth, self.ie = entry1['mname'].get(), entry1['temp'].get(), entry1['bwidth'].get(), entry1['ie'].get()
+                self.normavg_saveCheck_value = Entry_widgets(self, 'Check', 'Save', 0.7, 0.3, default = False, relwidth = 0.1)
+                self.normallCheck_value = Entry_widgets(self, 'Check', 'Plot all', 0.7, 0.4, default = False, relwidth = 0.1)
+                self.norm_show_value = Entry_widgets(self, 'Check', 'Show', 0.84, 0.3, default = True, relwidth = 0.1)
 
-                self.normavg_saveCheck_value = Entry_widgets(self, 'Check', 'Save', 0.7, 0.3, default = False, relwidth = 0.1, relheight = 0.06)
-                self.normallCheck_value = Entry_widgets(self, 'Check', 'Plot all', 0.7, 0.4, default = False, relwidth = 0.1, relheight = 0.06)
-                self.norm_show_value = Entry_widgets(self, 'Check', 'Show', 0.84, 0.3, default = True, relwidth = 0.1, relheight = 0.06)
-
-                self.foravgshow = False
-                self.widget.buttons('Normline' , 0.7, 0.5, self.Normline_func, relwidth = 0.1, relheight = 0.06)
+                
+                self.widget.buttons('Normline' , 0.7, 0.5, self.Normline_func, relwidth = 0.1)
    
                 # avg_labels's label:
-                self.widget.labels('For Average Spectrum', 0.4, 0.24, bg = 'white', bd = 2,  relwidth = 0.2, relheight = 0.06)
-                self.widget.labels('DELTA', 0.7, 0.24, bg = 'white', relwidth = 0.1, relheight = 0.06)
-                self.delta = Entry_widgets(self, 'Entry', 2, 0.84, 0.24, bg = 'White', bd = 5, relwidth = 0.1, relheight = 0.06)
+                self.widget.labels('For Average Spectrum', 0.4, 0.24, bg = 'white', bd = 2,  relwidth = 0.2)
+                self.widget.labels('DELTA', 0.7, 0.24, bg = 'white', relwidth = 0.1)
+                self.delta = Entry_widgets(self, 'Entry', 2, 0.84, 0.24, bg = 'White', bd = 5, relwidth = 0.1)
 
                 # Avg_Spectrum Labels:
-                label2 = ('Title', 'Size\n(Title,Legend)', 'X-axis\nticks div:', 'Major_TickSz,\nMarkerSz', 'X,Y,Wid,Ht', 'Output')
-                entry2 = {
-                        'title':'Title', 
-                        'Size_title_legend': '15, 10', 
-                        'X_axis_ticks': '20, 100', 
-                        'Major_ticks': '15, 2', 
-                        'xywh': '15, 15, 10, 5',
-                        'Output' : 'Average'
-                }
+                label2 = ('Title', 'Size\n(Title,Legend)', 'X-axis\nticks div:', 'Major_TickSz,\nMarkerSz', 'Output', 'X,Y,Wid,Ht', )
 
                 y_ = 0.34
-                for i, e in zip(label2, entry2):
-                        self.widget.labels(i, 0.4, y_, bg = 'white', relwidth = 0.1, relheight = 0.06)
-                        entry2[e] = Entry_widgets(self, 'Entry',  entry2[e] , 0.55, y_, bg = 'White', bd = 5,
-                                                relwidth = 0.1, relheight = 0.06)
+                for i in label2:
+                        self.widget.labels(i, 0.4, y_, bg = 'white', relwidth = 0.1)
                         y_ += 0.1
                 
                 #Avg_Spectrum Button
-                self.widget.buttons('Avg_spectrum' , 0.84, 0.5, self.Avg_spectrum_func, relwidth = 0.1, relheight = 0.06)
+                self.widget.buttons('Avg_spectrum' , 0.84, 0.5, self.Avg_spectrum_func, relwidth = 0.1)
 
-                self.avg_title = entry2['title'].get()
-                self.avg_ts = int(entry2['Size_title_legend'].get().split(',')[0].strip())
-                self.avg_lgs = int(entry2['Size_title_legend'].get().split(',')[1].strip())
+                self.avg_title = Entry_widgets(self, 'Entry',  'Title' , 0.55, 0.34, bg = 'White', bd = 2, relwidth = 0.1)
+                self.avg_ts = Entry_widgets(self, 'Entry',  15 , 0.55, 0.44, bg = 'White', bd = 2, relwidth = 0.05)
+                self.avg_lgs = Entry_widgets(self, 'Entry',  10 , 0.6, 0.44, bg = 'White', bd = 2, relwidth = 0.05)
 
-                self.avg_minor = int(entry2['X_axis_ticks'].get().split(',')[0].strip())
-                self.avg_major = int(entry2['X_axis_ticks'].get().split(',')[1].strip())
+                self.avg_minor = Entry_widgets(self, 'Entry',  20 , 0.55, 0.54, bg = 'White', bd = 2, relwidth = 0.05)
+                self.avg_major = Entry_widgets(self, 'Entry',  100 , 0.6, 0.54, bg = 'White', bd = 2, relwidth = 0.05)
 
-                self.avg_majorTick = int(entry2['Major_ticks'].get().split(',')[0].strip())
-                self.avg_markersz = int(entry2['Major_ticks'].get().split(',')[1].strip())
+                self.avg_majorTick = Entry_widgets(self, 'Entry',  15 , 0.55, 0.64, bg = 'White', bd = 2, relwidth = 0.05)
+                self.avg_markersz = Entry_widgets(self, 'Entry',  2 , 0.6, 0.64, bg = 'White', bd = 2, relwidth = 0.05)
 
-                self.output_filename = entry2['Output'].get()
+                self.output_filename = Entry_widgets(self, 'Entry',  'Average' , 0.55, 0.74, bg = 'White', bd = 2, relwidth = 0.1)
                 
-                self.avg_xlabelsz = int(entry2['xywh'].get().split(',')[0].strip())
-                self.avg_ylabelsz = int(entry2['xywh'].get().split(',')[1].strip())
-                self.avg_fwidth = int(entry2['xywh'].get().split(',')[2].strip())
-                self.avg_fheight = int(entry2['xywh'].get().split(',')[3].strip())
+                self.avg_xlabelsz = Entry_widgets(self, 'Entry',  15 , 0.55, 0.84, bg = 'White', bd = 2, relwidth = 0.05)
+                self.avg_ylabelsz = Entry_widgets(self, 'Entry',  15 , 0.6, 0.84, bg = 'White', bd = 2, relwidth = 0.05)
+                self.avg_fwidth = Entry_widgets(self, 'Entry',  10 , 0.65, 0.84, bg = 'White', bd = 2, relwidth = 0.05)
+                self.avg_fheight = Entry_widgets(self, 'Entry',  5 , 0.7, 0.84, bg = 'White', bd = 2, relwidth = 0.05)
 
                 # Spectrum Analyzer and power Analyzer Buttons:
-                self.widget.buttons('SA' , 0.7, 0.6, self.SA, relwidth = 0.05, relheight = 0.06)
-                self.widget.buttons('Power' , 0.75, 0.6, self.Power, relwidth = 0.05, relheight = 0.06)
-                self.widget.buttons('Baseline' , 0.7, 0.7, self.showBaseline, relwidth = 0.1, relheight = 0.06)
-                self.widget.buttons('Select File(s)' , 0.84, 0.4, self.openfilelist, relwidth = 0.05, relheight = 0.06)
-
-        def open_dir(self):
-                self.fname, self.location = self.widget.open_dir(felix_files_type)
-
-                self.widget.labels(
-                        self.location, 0.22, 0.14, 
-                        bd = 0, bg = 'white',
-                        relwidth = 0.5, relheight = 0.06
-                )
-
-                self.widget.labels(
-                        self.fname, 0.22, 0.24, 
-                        bd = 0, bg = 'white',
-                        relwidth = 0.15, relheight = 0.06
-                )
-   
-        def openfilelist(self):
-                self.filelist, self.location = self.widget.openfilelist(felix_files_type)
-
-                self.widget.labels(
-                        self.location, 
-                        0.22, 0.14, 
-                        bd = 0, bg = 'white',
-                        relwidth = 0.5, relheight = 0.06
-                )
-                        
-                self.widget.labels(
-                        '\n'.join(self.filelist), 
-                        0.84, 0.7, 
-                        bd = 0, bg = 'white',
-                        relwidth = 0.15, relheight = 0.2
-                )
-        
-                #filelist_label.config(text = '\n'.join(self.filelist))
-                #current_location.config(text = self.location)
-
-                return self.filelist
+                self.widget.buttons('SA' , 0.7, 0.6, self.SA, relwidth = 0.05)
+                self.widget.buttons('Power' , 0.75, 0.6, self.Power, relwidth = 0.05)
+                self.widget.buttons('Baseline' , 0.7, 0.7, self.showBaseline, relwidth = 0.1)
+                self.widget.buttons('Select File(s)' , 0.84, 0.4, controller.openfilelist, self, 0.22, 0.14, 0.84, 0.7, relwidth = 0.1)
 
         def Normline_func(self):
                 
                 normline_correction(
                         self.fname, self.location,
-                        self.mname, self.temp, self.bwidth, self.ie,
+                        self.mname.get(), self.temp.get(), self.bwidth.get(), self.ie.get(),
                         self.normavg_saveCheck_value.get(),
                         self.foravgshow, self.normallCheck_value.get(), self.filelist, self.norm_show_value.get()
                 )
         
         def Avg_spectrum_func(self):
                 avgSpec_plot(
-                        self.avg_title, self.avg_ts, self.avg_lgs, self.avg_minor, self.avg_major, self.avg_majorTick, self.avg_markersz,
-                        self.avg_xlabelsz, self.avg_ylabelsz, self.avg_fwidth, self.avg_fheight, self.output_filename,
-                        self.location, self.mname, self.temp, self.bwidth, self.ie,
+                        self.avg_title.get(), self.avg_ts.get(), self.avg_lgs.get(), self.avg_minor.get(), 
+                        self.avg_major.get(), self.avg_majorTick.get(), self.avg_markersz.get(),
+                        self.avg_xlabelsz.get(), self.avg_ylabelsz.get(), self.avg_fwidth.get(), self.avg_fheight.get(), self.output_filename.get(),
+                        self.location, self.mname.get(), self.temp.get(), self.bwidth.get(), self.ie.get(),
                         self.normavg_saveCheck_value.get(), self.norm_show_value.get(), self.delta.get(), self.filelist
                 )
 
@@ -286,7 +269,7 @@ class Normline(Frame):
         def Power(self):
                 FELion_Power(self.fname, self.location)
         def showBaseline(self):
-                show_baseline(self.fname, self.location, self.mname)
+                show_baseline(self.fname, self.location, self.mname.get())
 
 
 class Mass(Frame):
