@@ -168,6 +168,7 @@ class Normline(Frame):
                         entry1[e] = Entry_widgets(self, 'Entry',  entry1[e] , 0.25, y_, bg = 'White', bd = 5,
                                                 relwidth = 0.1, relheight = 0.06)
                         y_ += 0.1
+
                 self.mname, self.temp, self.bwidth, self.ie = entry1['mname'].get(), entry1['temp'].get(), entry1['bwidth'].get(), entry1['ie'].get()
 
                 self.normavg_saveCheck_value = Entry_widgets(self, 'Check', 'Save', 0.7, 0.3, default = False, relwidth = 0.1, relheight = 0.06)
@@ -187,9 +188,9 @@ class Normline(Frame):
                 entry2 = {
                         'title':'Title', 
                         'Size_title_legend': '15, 10', 
-                        'X-axis_ticks': '20, 100', 
+                        'X_axis_ticks': '20, 100', 
                         'Major_ticks': '15, 2', 
-                        'x,y,w,h': '15, 15, 10, 5',
+                        'xywh': '15, 15, 10, 5',
                         'Output' : 'Average'
                 }
 
@@ -199,136 +200,67 @@ class Normline(Frame):
                         entry2[e] = Entry_widgets(self, 'Entry',  entry2[e] , 0.55, y_, bg = 'White', bd = 5,
                                                 relwidth = 0.1, relheight = 0.06)
                         y_ += 0.1
-
-
+                
                 #Avg_Spectrum Button
-                specificFiles_status = False
-                allFiles_status = True
-                avg_button = ttk.Button(self, text="Avg_spectrum")
-                avg_button.config(command = lambda: avgSpec_plot(
-                                                                i_avg_title.get(), \
-                                                                i_avg_ts.get(), \
-                                                                i_avg_lgs.get(), \
-                                                                i_avg_minor.get(), \
-                                                                i_avg_major.get(), \
-                                                                i_avg_majorTick.get(), \
-                                                                output_filename.get(),\
-                                                                self.location,\
-                                                                mname.get(), temp.get(), bwidth.get(), ie.get(),\
-                                                                normavg_saveCheck_value.get(),\
-                                                                specificFiles_status,\
-                                                                allFiles_status,\
-                                                                i_avg_xlabelsz.get(), i_avg_ylabelsz.get(),\
-                                                                i_avg_fwidth.get(), i_avg_fheight.get(),\
-                                                                i_avg_markersz.get(), norm_show_value.get(),\
-                                                                self.delta.get(), self.filelist
-                                                                )
-                                                                )
+                self.widget.buttons('Avg_spectrum' , 0.84, 0.5, self.Avg_spectrum_func, relwidth = 0.1, relheight = 0.06)
+
+                self.avg_title = entry2['title'].get()
+                self.avg_ts = int(entry2['Size_title_legend'].get().split(',')[0].strip())
+                self.avg_lgs = int(entry2['Size_title_legend'].get().split(',')[1].strip())
+
+                self.avg_minor = int(entry2['X_axis_ticks'].get().split(',')[0].strip())
+                self.avg_major = int(entry2['X_axis_ticks'].get().split(',')[1].strip())
+
+                self.avg_majorTick = int(entry2['Major_ticks'].get().split(',')[0].strip())
+                self.avg_markersz = int(entry2['Major_ticks'].get().split(',')[1].strip())
+
+                self.output_filename = entry2['Output'].get()
+                
+                self.avg_xlabelsz = int(entry2['xywh'].get().split(',')[0].strip())
+                self.avg_ylabelsz = int(entry2['xywh'].get().split(',')[1].strip())
+                self.avg_fwidth = int(entry2['xywh'].get().split(',')[2].strip())
+                self.avg_fheight = int(entry2['xywh'].get().split(',')[3].strip())
 
                 # Spectrum Analyzer and power Analyzer Buttons:
-                sa_button = ttk.Button(self, text="SA", \
-                        command = lambda: FELion_Sa(self.fname, self.location))
-                power_button = ttk.Button(self, text = "Power", \
-                        command = lambda: FELion_Power(self.fname, self.location))
-
-                baseline = ttk.Button(self, text="Baseline", \
-                        command = lambda: show_baseline(self.fname, self.location, mname.get()))
-
-                
-                        
-                openfiles = ttk.Button(self, text = "Select File(s)", command = lambda: self.openfilelist())
-                filelist_label = Label(self)
-
-                self.trap_time, self.B0_width = float(), int()
-                def trap_time(self):
-                        with open(join(self.location,self.fname), 'r') as f:
-                                info = f.readlines()
-                        filename = np.genfromtxt(info)
-                        x, y = filename[:,0], filename[:,2]
-                        self.range_min = x.min()
-                        self.range_max = x.max()
-                        self.count = y.max()
-                        self.trap_time = [info[-21].split('#')[3].strip(),\
-                                int(info[-21].split('#')[4].strip())/1000000]
-                        self.B0_width = [info[-46].split('#')[3].strip(),\
-                                int(int(info[-46].split('#')[4].strip())/1000)]
-                        
-                        trap_width_label.config(\
-                                text = 'Trap: %.2f\tB0: %i\nRange: [%i, %i]\ncounts: %i'\
-                                        %(self.trap_time[-1], self.B0_width[-1],\
-                                        self.range_min,self.range_max, self.count)
-                                        )
-                        bwidth.set(self.B0_width[-1])
-                
-                trap_width_label = Label(self)
-
-                norm_diff = 0.12
-                norm_smalldiff = 0.06
-
-                n_x1 = 0.1
-                n_x2 = n_x1 + norm_diff
-                n_x3 = n_x2 + norm_diff +0.05
-                n_x4 = n_x3 + norm_diff
-                n_x5 = n_x4 + norm_smalldiff
-                n_x6 = n_x5 + norm_diff
-                n_x7 = n_x6 + norm_smalldiff
-
-                n_y1 = 0.1
-                ynorm_diff = 0.1
-                n_y2 = n_y1 + ynorm_diff
-                n_y3 = n_y2 + ynorm_diff +0.05
-                n_y4 = n_y3 + ynorm_diff
-                n_y5 = n_y4 + ynorm_diff
-                n_y6 = n_y5 + ynorm_diff
-
-               
-                trap_width_label.place(relx = n_x1,  rely = n_y6+0.1)
-
-                a_y3 = n_y2 + ynorm_diff
-                a_y4 = a_y3 + ynorm_diff
-                a_y5 = a_y4 + ynorm_diff
-                a_y6 = a_y5 + ynorm_diff
-                a_y7 = a_y6 + ynorm_diff
-                a_y8 = a_y7 + ynorm_diff
-
-                sa_button.place(relx = n_x6,  rely = a_y6, width = 30, height = height)
-                power_button.place(relx = n_x6+0.05,  rely = a_y6, width = 50, height = height)
-                baseline.place(relx = n_x6,  rely = a_y7, width = width, height = height)
-                
-                openfiles.place(relx = n_x6+0.15,  rely = a_y4, width = width, height = height)
-                avg_button.place(relx = n_x6+0.15,  rely = a_y5, width = width, height = height)
-                filelist_label.place(relx = n_x6+0.15,  rely = a_y6)
+                self.widget.buttons('SA' , 0.7, 0.6, self.SA, relwidth = 0.05, relheight = 0.06)
+                self.widget.buttons('Power' , 0.75, 0.6, self.Power, relwidth = 0.05, relheight = 0.06)
+                self.widget.buttons('Baseline' , 0.7, 0.7, self.showBaseline, relwidth = 0.1, relheight = 0.06)
+                self.widget.buttons('Select File(s)' , 0.84, 0.4, self.openfilelist, relwidth = 0.05, relheight = 0.06)
 
         def open_dir(self):
                 self.fname, self.location = self.widget.open_dir(felix_files_type)
 
-                self.widget.labels(self.location, 0.22, 0.14, 
+                self.widget.labels(
+                        self.location, 0.22, 0.14, 
                         bd = 0, bg = 'white',
-                        relwidth = 0.5, relheight = 0.06)
-                self.widget.labels(self.fname, 0.22, 0.24, 
-                        bd = 0, bg = 'white',
-                        relwidth = 0.15, relheight = 0.06)
+                        relwidth = 0.5, relheight = 0.06
+                )
 
-                #self.filename_label.config(text = self.fname)
-                #if not self.fname=="" and not normallCheck_value.get(): trap_time(self)
+                self.widget.labels(
+                        self.fname, 0.22, 0.24, 
+                        bd = 0, bg = 'white',
+                        relwidth = 0.15, relheight = 0.06
+                )
    
         def openfilelist(self):
-                self.filelist = []
-                self.openlist = askopenfilenames(initialdir=self.location, initialfile='tmp',
-                                filetypes=[("Felix Files", "*.felix"), ("All files", "*")])
-                
-                for i in self.openlist:
+                self.filelist, self.location = self.widget.openfilelist(felix_files_type)
 
-                        location = i.split("/")
+                self.widget.labels(
+                        self.location, 
+                        0.22, 0.14, 
+                        bd = 0, bg = 'white',
+                        relwidth = 0.5, relheight = 0.06
+                )
                         
-                        file = location[-1]
-                        self.filelist.append(file)
-
-                        del location[-1]
-                        self.location = "/".join(location)
+                self.widget.labels(
+                        '\n'.join(self.filelist), 
+                        0.84, 0.7, 
+                        bd = 0, bg = 'white',
+                        relwidth = 0.15, relheight = 0.2
+                )
         
-                filelist_label.config(text = '\n'.join(self.filelist))
-                current_location.config(text = self.location)
+                #filelist_label.config(text = '\n'.join(self.filelist))
+                #current_location.config(text = self.location)
 
                 return self.filelist
 
@@ -339,7 +271,22 @@ class Normline(Frame):
                         self.mname, self.temp, self.bwidth, self.ie,
                         self.normavg_saveCheck_value.get(),
                         self.foravgshow, self.normallCheck_value.get(), self.filelist, self.norm_show_value.get()
-                        )
+                )
+        
+        def Avg_spectrum_func(self):
+                avgSpec_plot(
+                        self.avg_title, self.avg_ts, self.avg_lgs, self.avg_minor, self.avg_major, self.avg_majorTick, self.avg_markersz,
+                        self.avg_xlabelsz, self.avg_ylabelsz, self.avg_fwidth, self.avg_fheight, self.output_filename,
+                        self.location, self.mname, self.temp, self.bwidth, self.ie,
+                        self.normavg_saveCheck_value.get(), self.norm_show_value.get(), self.delta.get(), self.filelist
+                )
+
+        def SA(self):
+                FELion_Sa(self.fname, self.location)
+        def Power(self):
+                FELion_Power(self.fname, self.location)
+        def showBaseline(self):
+                show_baseline(self.fname, self.location, self.mname)
 
 
 class Mass(Frame):

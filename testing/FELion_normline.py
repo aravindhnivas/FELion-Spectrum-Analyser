@@ -191,7 +191,6 @@ def main(s=True, plotShow=False):
 
 def normline_correction(*args):
     fname, location, mname, temp, bwidth, ie, save, foravgshow, normall, fileNameList, show = args
-    print(args)
 
     try:
         folders = ["DATA", "EXPORT", "OUT"]

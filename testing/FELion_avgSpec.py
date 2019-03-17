@@ -89,12 +89,11 @@ def main(**kwargs):
     print("Completed.")
     print()
 
-def avgSpec_plot(t, ts, lgs, minor, major, \
-                majorTickSize, outFilename,\
-                location, mname, temp, bwidth, ie, save,\
-                specificFiles, allFiles, \
-                xlabelsz, ylabelsz, fwidth, fheight, markersz, show, DELTA, fileNameList
-                ):
+def avgSpec_plot(*args):
+    t, ts, lgs, minor, major, majorTickSize, markersz,\
+    xlabelsz, ylabelsz, fwidth, fheight, outFilename,\
+    location, mname, temp, bwidth, ie,\
+    save, show, DELTA, fileNameList = args
 
     def filesaved():
         if os.path.isfile(my_path+"/OUT/{}.pdf".format(outFilename)) and save:
@@ -127,25 +126,22 @@ def avgSpec_plot(t, ts, lgs, minor, major, \
         xs = np.array([],dtype='double')
         ys = np.array([],dtype='double')
 
-        if all and not specificFiles:
+        foravgshow = True
+        normshow = False
+        for fname in fileNameList:
+            fname = fname.split(".")[0]
+            fullname = fname + ".felix"
+            basefile = fname + ".base"
+            powerfile = fname + ".pow"
+            files = [fullname, powerfile, basefile]
 
-            foravgshow = True
-            normshow = False
+            for filenames in files:
+                if isfile(filenames): move(my_path, filenames)
 
-            for fname in fileNameList:
-                fname = fname.split(".")[0]
-                fullname = fname + ".felix"
-                basefile = fname + ".base"
-                powerfile = fname + ".pow"
-                files = [fullname, powerfile, basefile]
-
-                for filenames in files:
-                    if isfile(filenames): move(my_path, filenames)
-
-                a,b = norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, normshow)
-                fig.plot(a, b, ls='', marker='o', ms=markersz, label=fname)
-                xs = np.append(xs,a)
-                ys = np.append(ys,b)
+            a,b = norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, normshow)
+            fig.plot(a, b, ls='', marker='o', ms=markersz, label=fname)
+            xs = np.append(xs,a)
+            ys = np.append(ys,b)
 
         fig.legend(title=t) #Set the fontsize for each label
 
