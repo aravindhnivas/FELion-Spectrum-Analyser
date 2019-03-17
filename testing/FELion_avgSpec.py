@@ -95,6 +95,8 @@ def avgSpec_plot(*args):
     location, mname, temp, bwidth, ie,\
     save, show, DELTA, fileNameList = args
 
+    print(args)
+
     def filesaved():
         if os.path.isfile(my_path+"/OUT/{}.pdf".format(outFilename)) and save:
             ShowInfo("SAVED", "File %s.pdf saved"%outFilename)
