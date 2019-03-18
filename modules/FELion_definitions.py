@@ -7,6 +7,7 @@ import os, shutil, tempfile, git, subprocess, sys
 from os.path import isdir, dirname, join
 from tempfile import TemporaryDirectory
 import datetime
+import numpy as np
 
 # General functions:
 copy = lambda pathdir, x: (shutil.copyfile(join(pathdir, x), join(pathdir,"DATA" ,x)), print("%s copied to DATA folder" %x))
@@ -141,6 +142,29 @@ def outFile(fname, location, file):
     except Exception as e:
             ErrorInfo("ERROR", e)
 
+def var_find(fname, location):
+    print('#############\nFile: %s\nLocation: %s\n#############'%(fname, location))
+
+    if not fname is '':
+        os.chdir(location)
+        var = {'res':'m03_ao13_reso', 'b0':'m03_ao09_width', 'trap': 'm04_ao04_sa_delay'}
+        print(var)
+
+        with open(fname, 'r') as f:
+            f = np.array(f.readlines())
+        for i in f:
+            if not len(i.strip())==0 and i.split()[0]=='#':
+                for j in var:
+                    if var[j] in i.split():
+                        var[j] = float(i.split()[-3])
+
+        res, b0, trap = round(var['res']), int(var['b0']/1000), int(var['trap']/1000)
+        print(var)
+
+        return res, b0, trap
+    else:
+        return 0, 0, 0
+
 ##############################################################
 
 class Entry_widgets(Frame):
@@ -183,6 +207,9 @@ class Entry_widgets(Frame):
      
     def get(self):
         return self.value.get()
+    
+    def set(self, txt):
+        self.value.set(txt)
     
     def power_get(self):
         return self.T.get("1.0", "end-1c")
