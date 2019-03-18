@@ -27,23 +27,25 @@ def massSpec(fname, location, mname, temp, bwidth, ie,\
             if os.path.isfile(my_path+"/MassSpec_DATA/{}.png".format(name)):
                 ShowInfo("SAVED", "File %s.png saved \nin MassSpec_DATA directory"%name)
 
-        def mass_resolution(filename):
-            with open(filename, 'r') as f:
-                f = f.readlines()
+        def var_find(fname):
+            var = {'res':'m03_ao13_reso', 'b0':'m03_ao09_width', 'trap': 'm04_ao04_sa_delay'}
+            print(var)
 
-            res_name = f[-14].split('\t\t')[2].split('#')[-1].strip()
-            mass_res = round(float(f[-14].split('\t\t')[3].split('#')[-1].strip()), 2)
+            with open(fname, 'r') as f:
+                f = np.array(f.readlines())
+            for i in f:
+                if not len(i.strip())==0 and i.split()[0]=='#':
+                    for j in var:
+                        if var[j] in i.split():
+                            var[j] = float(i.split()[-3])
 
-            if res_name == 'm03_ao13_reso':
-                print('Mass Resolution: %s'%mass_res)
-                return mass_res
-            else:
-                print('ERROR: parameter found here was %s instead of m03_ao13_reso\nPlease adjust the change in script'%res_name)
-                return
+            res, b0, trap = round(var['res']), int(var['b0']/1000), int(var['trap']/1000)
+            print(var)
+            return res, b0, trap
 
         if not combine:
-            
             filename = fname + ".mass"
+            res, b0, trap = var_find(filename)
 
             if not os.path.isdir("MassSpec_DATA"):
                 os.mkdir("MassSpec_DATA")
@@ -53,12 +55,11 @@ def massSpec(fname, location, mname, temp, bwidth, ie,\
            
             mass = np.genfromtxt(filename)
             x, y = mass[:,0], mass[:,1]
-            m_res = mass_resolution(filename)
 
             fig, ax = plt.subplots(1)
 
             plt.grid(True)
-            ax.semilogy(x, y, label = '%s: res: %.1f'%(filename.split('.')[0], m_res))
+            ax.semilogy(x, y, label = '%s: Res: %i, B0: %i ms, Trap: %i ms'%(fname, res, b0, trap))
             plt.xlabel('Mass [u]')
             plt.ylabel('Ion counts /{} ms'.format(bwidth))
             plt.title("Filename: {}, for {}, at temp: {}K, B0: {}ms and IE(eV): {}"\
@@ -66,7 +67,7 @@ def massSpec(fname, location, mname, temp, bwidth, ie,\
 
             plt.tight_layout()
             plt.legend()
-            cursor = Cursor(ax, useblit=True, color='red', linewidth=2)
+            cursor = Cursor(ax, useblit=True, color='red', linewidth=1)
 
             if save_fig:
                 plt.savefig(my_path + "/MassSpec_DATA/{}.png".format(fname))
@@ -74,6 +75,8 @@ def massSpec(fname, location, mname, temp, bwidth, ie,\
                 saveinfo(fname)
             else:
                 plt.show()
+            
+            plt.close()
 
         if combine:
             if filelist == []: 
@@ -82,18 +85,16 @@ def massSpec(fname, location, mname, temp, bwidth, ie,\
             fig1, ax1 = plt.subplots()
 
             for file in filelist:
+                res, b0, trap = var_find(file)
 
                 mass = np.genfromtxt(file)
                 x, y = mass[:,0], mass[:,1]
-
-                m_res = mass_resolution(file)
                 
                 plt.grid(True)
-                ax1.semilogy(x, y, label = '%s: res: %.1f'%(file.split('.')[0], m_res))
-            
+                ax1.semilogy(x, y, label = '%s: Res: %i, B0: %i ms, Trap: %i ms'%(file.split('.')[0], res, b0, trap))
                 plt.legend()
 
-            cursor = Cursor(ax1, useblit=True, color='red', linewidth=2)
+            cursor = Cursor(ax1, useblit=True, color='red', linewidth=1)
 
             plt.xlabel('mass [u]')
             plt.ylabel('ion counts /{} ms'.format(bwidth))
@@ -108,6 +109,7 @@ def massSpec(fname, location, mname, temp, bwidth, ie,\
                 saveinfo(avgname)
             else:
                 plt.show()
+            plt.close()
                 
     except Exception as e:
         ErrorInfo("ERROR", e)
