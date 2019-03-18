@@ -52,7 +52,7 @@ class BaselineCalibrator(object):
     def __init__(self, fname):
         
         self.Bx, self.By, self.interpol = ReadBase(fname)
-        self.f = interp1d(self.Bx, self.By, kind=self.interpol)
+        self.f = interp1d(self.Bx, self.By, kind=self.interpol, bounds_error = False)
 
     def val(self, x):
         return self.f(x)
@@ -99,7 +99,7 @@ class InteractivePoints(object):
         Bx, By = self.line.get_data()
         self.inter_xs = np.arange(Bx.min(), Bx.max())
 
-        f = interp1d(Bx, By, kind='cubic')
+        f = interp1d(Bx, By, kind='cubic', bounds_error = False)
         self.funcLine.set_data((self.inter_xs, f(self.inter_xs))) 
 
     def draw_callback(self, event):
