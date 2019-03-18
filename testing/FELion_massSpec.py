@@ -78,6 +78,9 @@ def massSpec(fname, location, mname, temp, bwidth, ie,\
         if combine:
             if filelist == []: 
                 return ErrorInfo("Select Files: ", "Click Select File(s)")
+
+            fig1, ax1 = plt.subplots()
+
             for file in filelist:
 
                 mass = np.genfromtxt(file)
@@ -86,9 +89,11 @@ def massSpec(fname, location, mname, temp, bwidth, ie,\
                 m_res = mass_resolution(file)
                 
                 plt.grid(True)
-                plt.semilogy(x, y, label = '%s: res: %.1f'%(file.split('.')[0], m_res))
+                ax1.semilogy(x, y, label = '%s: res: %.1f'%(file.split('.')[0], m_res))
             
                 plt.legend()
+
+            cursor = Cursor(ax1, useblit=True, color='red', linewidth=2)
 
             plt.xlabel('mass [u]')
             plt.ylabel('ion counts /{} ms'.format(bwidth))
