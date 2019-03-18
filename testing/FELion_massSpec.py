@@ -10,7 +10,7 @@ from FELion_definitions import ShowInfo, copy, move, ErrorInfo
 from os.path import join, isdir
 from matplotlib.widgets import Cursor
 
-def massSpec(fname, mname, temp, bwidth, ie, location,\
+def massSpec(fname, location, mname, temp, bwidth, ie,\
             filelist, avgname, combine, save_fig):
 
     try:
