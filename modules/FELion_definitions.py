@@ -1,15 +1,16 @@
 #!/usr/bin/python3
 
 from tkinter import *
-from tkinter import ttk, messagebox, filedialog
+from tkinter import ttk, messagebox
+from tkinter.filedialog import askopenfilenames, askopenfilename, askdirectory
 import os, shutil, tempfile, git, subprocess, sys
 from os.path import isdir, dirname, join
 from tempfile import TemporaryDirectory
+import datetime
 
 # General functions:
 copy = lambda pathdir, x: (shutil.copyfile(join(pathdir, x), join(pathdir,"DATA" ,x)), print("%s copied to DATA folder" %x))
 move = lambda pathdir, x: (shutil.move(join(pathdir, x), join(pathdir,"DATA" ,x)), print("%s moved to DATA folder"%x))
-
 
 # Tkinter messagebox
 
@@ -44,7 +45,7 @@ def recursive_overwrite(src, dest, ignore=None):
     else:
         shutil.copyfile(src, dest)
 
-def update():
+def update(*args):
     try:
         t = "C:/FELion_update_cache"
         git.Repo.clone_from('https://github.com/aravindhnivas/FELion-Spectrum-Analyser', t, branch='master', depth=1)
@@ -54,45 +55,213 @@ def update():
     except Exception as e:
         ErrorInfo("ERROR: ", e)
 
-# Tkinter functions:
-####################################
+#################################################################################
+############################### Tkinter functions ###############################
 
-#labels and enty:
-class my_label(Frame):
-    def __init__(self, parent, label):
+#################### constants ###############################
+constants = {
+
+    'width':50,
+    'height':50,
+    'font':("Verdana", 10, "italic"),
+    'bg':'white',
+    'bd':0,
+    'anchor':'w',
+    'relief':SOLID,
+    'relwidth': 0.1,
+    'relheight': 0.06,
+    'justify': 'left',
+
+}
+
+welcome_msg = """
+The FELion Spectrum analyser for analysing FELIX data using Python;
+
+It consists: the following functions:
+    1. Normline and Average Spectrum Plot
+    2. Mass Spectrum Plot
+    3. Powerfile Generator
+    4. Plot (For general X,Y plots:)
+    5. Update Program (For updating to the latest version from github)
+
+NOTE: Before using Normline and Average Spectrum plot functions: 
+Make sure you already did "Baseline Correction" using "FELion_Baseline" Program
+
+If error: Maybe, try to avoid using //server as the location
+
+The processed raw data output files can be found in "EXPORT" and "DATA" folder.
+The processed output files can be found in "OUT" and "MassSpec_DATA"
+
+Report bug/suggestion: aravindh@science.ru.nl
+"""
+#################### Variables ###############################
+
+felix_files_type = ("Felix Files", "*.felix")
+mass_files_type = ("Mass Files", "*.mass")
+time_files_type = ("Timescan Files", "*.scan")
+pow_files_type = ("Pow Files", "*.pow")
+all_files_type = ("All files", "*")
+LARGE_FONT= ("Verdana", 15)
+
+#################### Definitions #############################
+
+def var_check(kw):
+    for i in constants:
+        if not i in list(kw.keys()):
+            kw[i] = constants[i]
+    return kw
+
+def outFile(fname, location, file):
+    try:
+        os.chdir(location)
+        my_path = os.getcwd()
+
+        def saveinfo():
+                os.chdir(location)
+                if os.path.isfile(my_path+"/Pow/{}.pow".format(fname)):
+                        ShowInfo("SAVED", "File %s.pow saved in /Pow directory"%fname)
+ 
+        def write():
+                f = open(my_path+"/Pow/{}.pow".format(fname), "w")
+                f.write(file)
+                f.close()
+                saveinfo()
+
+        if not os.path.isdir("Pow"): os.mkdir("Pow") 
+
+        if os.path.isfile(my_path+"/Pow/{}.pow".format(fname)):
+                messagebox.showerror("OVERWRITE","File already exist")
+                if messagebox.askokcancel("OVERWRITE", \
+                        "Do yo want to overwrite the existing {}.pow file?".format(fname)):
+                        write()
+                        
+        else:
+                write()
+
+    except Exception as e:
+            ErrorInfo("ERROR", e)
+
+##############################################################
+
+class Entry_widgets(Frame):
+    
+    def __init__(self, parent, method,  *args, **kw):
         Frame.__init__(self, parent)
+        self.widget = FELion_widgets(self)
 
-        self.label = Label(self, text=label, font = ("Times", 12, "bold"))
-        self.label.pack()
-
-class my_entry(Frame):
-    def __init__(self, parent, entry):
-        Frame.__init__(self, parent)
-
-        self.entry = entry
-
-        if self.entry is int(): self.value = IntVar()
-        else: self.value = StringVar()
+        self.parent = parent
+        self.txt, x, y = args[0], args[1], args[2]
+        kw = var_check(kw)
         
-        self.value.set(entry)       
-        self.entry = Entry(self, textvariable = self.value, bg = "white",\
-                              bd = 5, font = ("Times", 12, "italic"))
+        if method == 'Entry':
+            if isinstance(self.txt, str): self.value = StringVar()
+            elif isinstance(self.txt, int): self.value = IntVar()
+            elif isinstance(self.txt, tuple): self.value = StringVar()
+                
+            self.value.set(self.txt)
+            self.entry = Entry(self.parent, bg = kw['bg'], bd = kw['bd'], textvariable = self.value, font = kw['font'])
+            self.entry.place(relx = x, rely = y, anchor = kw['anchor'], relwidth = kw['relwidth'], relheight = kw['relheight'])
+          
+        elif method == 'Check':
+            self.value = BooleanVar()
+            if 'default' in kw: self.value.set(kw['default'])
+            else: self.value.set(False)
 
-        self.entry.pack()
+            self.Check = ttk.Checkbutton(self.parent, text = self.txt, variable = self.value)
+            self.Check.place(relx = x, rely = y, relwidth = kw['relwidth'], relheight = kw['relheight'])
+        
+        elif method == 'power_box':
+            self.T = Text(self.parent)
+            self.S = Scrollbar(self.parent)
+            self.T.config(yscrollcommand = self.S.set)
+            self.S.config(command = self.T.yview)
+            
+            self.T.insert(END, self.txt)
 
-#labels and entry combined:
-def labels_and_entry(self, *args, **kwargs):
-    label, entry = [i for i in args]
+            self.T.place(relx = x,  rely = y, relwidth = 0.7, relheight = 0.4)
+            self.S.place(relx = x + 0.7,  rely = y, width = 15, relheight = 0.4)
+     
+    def get(self):
+        return self.value.get()
     
-    v = {'lx': float(), 'ly': float(), 'ex': float(), 'ey':float(), 'l_rh': 0.05, 'l_rw': 0.1,
-                 'e_rw': 0.1, 'e_rh': 0.05}
+    def power_get(self):
+        return self.T.get("1.0", "end-1c")
+
+class FELion_widgets(Frame):
     
-    for i in kwargs:
-        if i in v:
-            v[i] = kwargs[i]
+    def __init__(self, parent):
+        Frame.__init__(self, parent)
+        
+        ## Initial parameters:
+        self.parent = parent
+        self.location = "/"
+        self.fname = ""
+        self.filelist = []
+              
+    def labels(self, *args, **kw):
+        self.txt = args[0]
+        x, y = args[1], args[2]
+        kw = var_check(kw)
+        
+        self.label = Label(self.parent, text = self.txt, justify = kw['justify'], font = kw['font'], bg = kw['bg'], bd = kw['bd'], relief = kw['relief'])
 
-    self.l1 = my_label(self, label)
-    self.l1.place(relx = v['lx'], rely = v['ly'], relheight = v['l_rh'], relwidth = v['l_rw'])
+        self.label.place(relx = x, rely = y, anchor = kw['anchor'], relwidth = kw['relwidth'], relheight = kw['relheight'])
 
-    self.e1 = my_entry(self, entry)
-    self.e1.place(relx = v['ex'], rely = v['ey'], relheight = v['e_rh'], relwidth = v['e_rw'])
+    def buttons(self, *args, **kw):
+        btn_txt = args[0]
+        x, y = args[1], args[2]
+        func = args[3]
+        
+        kw = var_check(kw)
+        
+        if len(args)>4:
+            func_parameters = args[4:]
+            self.button = ttk.Button(self.parent, text = btn_txt, command = lambda: func(*func_parameters))
+        else: 
+            self.button = ttk.Button(self.parent, text = btn_txt, command = lambda: func())  
+        
+        self.button.place(relx = x, rely = y, relwidth = kw['relwidth'], relheight = kw['relheight'])
+
+    def open_dir(self, file_type):
+        root = Tk()
+        root.withdraw()
+
+        root.filename =  askopenfilename(initialdir = self.location, title = "Select file", filetypes = (file_type, ("all files","*.*")))
+        filename = root.filename
+        filename = filename.split("/")
+
+        self.full_name = root.filename
+
+        self.fname = filename[-1]
+        del filename[-1]
+        
+        self.location = "/".join(filename)
+        root.destroy()
+        
+        return self.fname, self.location
+
+    def openfilelist(self, file_type):
+        self.filelist = [] # to prevent appending previously selected files
+        self.openlist = askopenfilenames(initialdir=self.location, initialfile='tmp',
+                        filetypes=[file_type, ("All files", "*")])
+
+        for i in self.openlist:
+            location = i.split("/")
+            file = location[-1]
+            self.filelist.append(file)
+            del location[-1]
+            self.location = "/".join(location)
+
+        return self.filelist, self.location
+
+    def open_full_dir(self):
+
+        root = Tk()
+        root.withdraw()
+
+        root.directory =  askdirectory()
+        self.location = root.directory
+
+        root.destroy()
+        
+        return self.location

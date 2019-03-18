@@ -189,8 +189,8 @@ def main(s=True, plotShow=False):
     print(a, b)
     print("\nProcess Completed.\n")
 
-def normline_correction(fname, location, mname, temp, bwidth, ie,\
-    save, foravgshow, normall, fileNameList, show):
+def normline_correction(*args):
+    fname, location, mname, temp, bwidth, ie, save, foravgshow, normall, fileNameList, show = args
 
     try:
         folders = ["DATA", "EXPORT", "OUT"]
