@@ -33,7 +33,7 @@ x5 = x4 + diff + 0.07
 x = 0.15
 y = 0.9
 width, height = (100, 40)
-smallwidth = 50
+
 class FELion(Tk):
         def __init__(self, *args, **kwargs):
 
