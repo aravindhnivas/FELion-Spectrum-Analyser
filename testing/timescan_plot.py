@@ -72,7 +72,10 @@ def timescanplot(fname, location, save, show, depletion=False):
         plt.legend()
         plt.tight_layout()
 
-        if save: plt.savefig(fname.split('.')[0]+'.png')
+        if save:
+            file = fname.split('.')[0]
+            plt.savefig(file+'.png')
+            ShowInfo('Saved', 'File Saved as %s.png'%file)
         if show: plt.show()
         
         plt.close()

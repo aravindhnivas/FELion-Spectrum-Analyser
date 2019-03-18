@@ -80,8 +80,8 @@ def depletionPlot(files, location, save, show, power_n):
             depletion_off, depletion_off_err = counts[off], stde[off]
 
             # power values; x-axis
-            power_on = (power_values[on]*n*time)/1000. # divide by 1000 for mJ to J conversion 
-            power_off = (power_values[off]*n*time)/1000.
+            power_on = (power_values[i]*n*time)/1000. # divide by 1000 for mJ to J conversion 
+            power_off = (power_values[i+1]*n*time)/1000.
             power_max = power_values.max()*n*time.max()/1000.
             x = np.linspace(0, power_max, num=len(time))
             

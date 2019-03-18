@@ -94,7 +94,6 @@ The processed output files can be found in "OUT" and "MassSpec_DATA"
 
 Report bug/suggestion: aravindh@science.ru.nl
 """
-
 #################### Variables ###############################
 
 felix_files_type = ("Felix Files", "*.felix")
@@ -102,7 +101,7 @@ mass_files_type = ("Mass Files", "*.mass")
 time_files_type = ("Timescan Files", "*.scan")
 pow_files_type = ("Pow Files", "*.pow")
 all_files_type = ("All files", "*")
-
+LARGE_FONT= ("Verdana", 15)
 
 #################### Definitions #############################
 
@@ -230,6 +229,8 @@ class FELion_widgets(Frame):
         root.filename =  askopenfilename(initialdir = self.location, title = "Select file", filetypes = (file_type, ("all files","*.*")))
         filename = root.filename
         filename = filename.split("/")
+
+        self.full_name = root.filename
 
         self.fname = filename[-1]
         del filename[-1]

@@ -21,20 +21,11 @@ from tkinter.filedialog import askopenfilenames, askopenfilename
 from os.path import join
 
 import numpy as np
+from just_plot import theory_exp, power_plot
 
-LARGE_FONT= ("Verdana", 15)
-
-diff = 0.15
-x1 = 0.15
-x2 = x1 + diff
-x3 = x2 + diff
-x4 = x3 + diff
-x5 = x4 + diff + 0.07
-x = 0.15
-y = 0.9
-width, height = (100, 40)
 
 class FELion(Tk):
+        
         def __init__(self, *args, **kwargs):
 
                 Tk.__init__(self, *args, **kwargs)
@@ -51,7 +42,7 @@ class FELion(Tk):
                 StatusBarFrame = Frame(self)
                 StatusBarFrame.pack(side = "bottom", fill = "both", expand = False)
 
-                statusBar_left_text = "Version 2.0"
+                statusBar_left_text = "Version 3.0"
                 statusBar_left = Label(StatusBarFrame)
                 statusBar_left.config(text = statusBar_left_text, \
                 relief = SUNKEN, bd = 2, font = "Times 10 italic", pady = 5, anchor = "w")
@@ -80,6 +71,7 @@ class FELion(Tk):
 
         def open_dir(self, cnt, x, y, type_file):
                 cnt.fname, cnt.location = cnt.widget.open_dir(type_file)
+                cnt.full_name = os.sep.join([cnt.location, cnt.fname])
 
                 cnt.widget.labels(
                         cnt.location, x, y, 
@@ -136,7 +128,7 @@ class StartPage(Frame):
                 pages = ('Norm and Avg', 'Mass Spec', 'Powerfile', 'Plot')
                 pages_name = (Normline, Mass, Powerfile, Plot)
 
-                x = 0.15
+                x, y = 0.15, 0.9
                 for name, pages_n in zip(pages, pages_name):
                         self.widget.buttons(name , x, y, controller.show_frame, pages_n)
                         x += 0.15
@@ -154,7 +146,7 @@ class Normline(Frame):
                 pages = ('Back to Home', 'Mass Spec', 'Powerfile', 'Plot')
                 pages_name = (StartPage, Mass, Powerfile, Plot)
 
-                x = 0.15
+                x, y = 0.15, 0.9
                 for name, pages_n in zip(pages, pages_name):
                         self.widget.buttons(name , x, y, controller.show_frame, pages_n)
                         x += 0.15
@@ -251,7 +243,7 @@ class Mass(Frame):
                 pages = ('Back to Home', 'Norm and Avg', 'Powerfile', 'Plot')
                 pages_name = (StartPage, Normline, Powerfile, Plot)
 
-                x = 0.15
+                x, y = 0.15, 0.9
                 for name, pages_n in zip(pages, pages_name):
                         self.widget.buttons(name , x, y, controller.show_frame, pages_n)
                         x += 0.15
@@ -294,7 +286,7 @@ class Powerfile(Frame):
                 pages = ('Back to Home', 'Norm and Avg', 'Mass Spec', 'Plot')
                 pages_name = (StartPage, Normline, Mass, Plot)
 
-                x = 0.15
+                x, y = 0.15, 0.9
                 for name, pages_n in zip(pages, pages_name):
                         self.widget.buttons(name , x, y, controller.show_frame, pages_n)
                         x += 0.15
@@ -305,7 +297,7 @@ class Powerfile(Frame):
                 self.widget.buttons('Select Folder' , 0.1, 0.1, self.open_full_dir, 0.22, 0.14)
                 self.widget.labels('Filename:', 0.1, 0.3)
 
-                self.filename = Entry_widgets(self, 'Entry', self.date, 0.3, 0.3)
+                self.filename = Entry_widgets(self, 'Entry', self.date, 0.3, 0.3, bd = 5)
 
                 self.quote = """#POWER file\n# 10 Hz FELIX\n#\n#SHOTS=26\n#INTERP=linear\n#    IN_no_UM (if one deletes the "no" the firs number will be in \mu m\n# wavelength/cm-1      energy/pulse/mJ\n"""
                 self.power = Entry_widgets(self, 'power_box', self.quote, 0.15, 0.4)
@@ -326,252 +318,55 @@ class Powerfile(Frame):
 
 class Plot(Frame):
 
-    def __init__(self, parent, controller):
-        Frame.__init__(self,parent, bg="sea green")
+        def __init__(self, parent, controller):
+                Frame.__init__(self,parent, bg="sea green")
+
+                self.widget = FELion_widgets(self)
+
+                self.widget.labels('Plot', 0, 0.05, bg="sea green", font = LARGE_FONT, relwidth = 1, relheight = 0.05)
+
+                pages = ('Back to Home', 'Norm and Avg', 'Mass Spec', 'Powerfile')
+                pages_name = (StartPage, Normline, Mass, Powerfile)
+
+                x, y = 0.15, 0.9
+                for name, pages_n in zip(pages, pages_name):
+                        self.widget.buttons(name , x, y, controller.show_frame, pages_n)
+                        x += 0.15
         
-        label = Label(self, text="Plot", \
-                font=LARGE_FONT, bg="sea green", bd = 1, relief = SOLID)
-        label.place(relx = 0, rely = 0, relwidth = 1)
+                self.widget.buttons('Browse' , 0.1, 0.1, controller.open_dir, self, 0.22, 0.14, all_files_type)
+                self.widget.labels('Filename', 0.1, 0.24)
 
-        button1 = ttk.Button(self, text="Back to Home",
-                            command=lambda: controller.show_frame(StartPage))
-        button1.place(relx = x1, rely = y, width = width, height = height)
-
-        button2 = ttk.Button(self, text="Norm and Avg",
-                            command=lambda: controller.show_frame(Normline))
-        button2.place(relx = x2, rely = y, width = width, height = height)
-
-        button3 = ttk.Button(self, text="Mass Spec",
-                            command=lambda: controller.show_frame(Mass))
-        button3.place(relx = x3, rely = y, width = width, height = height)
-
-        button4 = ttk.Button(self, text="Powerfile",
-                            command=lambda: controller.show_frame(Mass))
-        button4.place(relx = x4, rely = y, width = width, height = height)
-
-
-        def normalising(self, filename, combine, norm, show, log, save):
-                try:
-                        os.chdir(self.location)
-
-                        def fopen(self, filename):
-                                data = np.genfromtxt(filename)
-                                x, y = data[:,0], data[:,1]
-                                normy = (y-min(y))/(max(y)-min(y))
-                                return x, y, normy
-
-                        plt.grid(True)
-
-                        if not combine:
-                                x, y, normy = fopen(self, filename)
-                                if norm:
-                                        if log: plt.semilogy(x, normy, label = filename.split(".")[0])
-                                        else:   plt.plot(x, normy, label = filename.split(".")[0])
-
-                                else:
-                                        if log: plt.semilogy(x,y, label = filename.split(".")[0])
-                                        else:   plt.plot(x,y, label = filename.split(".")[0])
-
-                        if combine:
-                                filelist = self.filelist
-
-                                for i in filelist:
-                                        i = i.strip()
-                                        x, y, normy = fopen(self, i)
-
-                                        if norm:
-                                                if log: plt.semilogy(x, normy, label = i.split(".")[0])
-                                                else:   plt.plot(x, normy,".-", label = i.split(".")[0])
-
-                                        else:
-                                                if log: plt.semilogy(x,y, label = i.split(".")[0])
-                                                else:   plt.plot(x,y,".-", label = i.split(".")[0])
-
-
-                        plt.legend()
-                        plt.xlabel("Wavenumber(cm-1)")
-
-                        if norm:
-                                plt.ylabel("Normalised (Scaled to 1) Intensity")
-
-                        elif not combine and filename.split(".")[-1] == "pow":
-                                plt.ylabel("Power (mJ)")
-                        
-                        elif combine and filelist[0].split(".")[-1] == "pow":
-                                plt.ylabel("Power (mJ)")
-
-                        else:
-                                plt.ylabel("Intensity")
-                        
-                        plt.tight_layout()
-
-                        if save:
-                                if combine:
-                                        plt.savefig('combined.png')
-                                        
-                                else:
-                                        plt.savefig(filename.split(".")[0]+".png")
-                                        
-
-                        if show:
-                                plt.show()
-                        
-                        if save and combine:
-                                ShowInfo("SAVED", "Filename: combined.png")
-                        if save and not combine:
-                                ShowInfo("SAVED:", "Filename: %s"%(filename.split(".")[0]+".png"))
-
-                        plt.close()
-                        return
-                except Exception as e:
-                        ErrorInfo("Error: ", e)
-
-        # Opening a Directory:
-        self.location = "/"
-        self.fname = ""
-        self.filename = ""
-
-        def open_dir(self):
-
-            root = Tk()
-            root.withdraw()
-
-            root.filename =  filedialog.askopenfilename(initialdir = self.location, title = "Select file", filetypes = (("all files","*.*"), ("all files","*.*")))
-            filename, self.filename = root.filename, root.filename
-            filename = filename.split("/")
-
-            self.fname = filename[-1]
-            del filename[-1]
-            self.location = "/".join(filename)
-
-            root.destroy()
-            current_location.config(text = self.location)
-            filename_label.config(text = self.fname)
-            return
-  
-        # Labels and buttons:
-        browse_loc = ttk.Button(self, text = "Browse File")
-        browse_loc.config(command = lambda: open_dir(self))
-
-        # Printing current location:
-        current_location = Label(self)
-        filename_label = Label(self)
-
-        filename = Label(self, text = "Filename: ", font=("Times", 10, "bold"))
-
-        normCheck_value = BooleanVar()
-        normCheck_value.set(False)
-        normCheck = ttk.Checkbutton(self, text = "Normalise", variable = normCheck_value)
-
-        combineCheck_value = BooleanVar()
-        combineCheck_value.set(False)
-        combineCheck = ttk.Checkbutton(self, text = "Combine", variable = combineCheck_value)
-
-        show_value = BooleanVar()
-        show_value.set(True)
-        show = ttk.Checkbutton(self, text = "Show", variable = show_value)
-
-        log_value = BooleanVar()
-        log_value.set(False)
-        log = ttk.Checkbutton(self, text = "Log", variable = log_value)
-
-        # opening multiple files
-        
-        self.filelist = []
-        def openfilelist(self):
+                self.location = "/"
+                self.fname = ""
                 self.filelist = []
-                self.openlist = askopenfilenames(initialdir=self.location, initialfile='tmp',
-                                filetypes=[("All files", "*"), ("All files", "*")])
-                
-                for i in self.openlist:
+                self.full_name = ''
 
-                        location = i.split("/")
+                self.widget.buttons('Select File(s)' , 0.1, 0.34, controller.openfilelist, self, 0.22, 0.14, 0.1, 0.55, all_files_type)
+                self.save = Entry_widgets(self, 'Check', 'Save', 0.4, 0.2, default = False)
+                self.show = Entry_widgets(self, 'Check', 'Show', 0.52, 0.2, default = True)
 
-                        file = location[-1]
-                        self.filelist.append(file)
+                self.widget.buttons('Timescan' , 0.4, 0.3, self.timescan_func)
+                self.widget.buttons('Depletion' , 0.52, 0.3, self.depletion_func)
+                self.depletion_power = Entry_widgets(self, 'Entry',  'power_on, power_off, n_shots' , 0.52, 0.4, bd = 5, relwidth = 0.25)
 
-                        del location[-1]
-                        self.location = "/".join(location)
-        
-                filelist_label.config(text = '\n'.join(self.filelist))
-                current_location.config(text = self.location)
+                self.widget.labels('Select Exp. file using Browse and theory file (max 2) from Select file(s)', 0.4, 0.5, bd = 2, relwidth = 0.5)
+                self.widget.buttons('Exp-Theory' , 0.4, 0.55, self.theory_func)
 
-                return self.filelist, self.location
-                
-        openfiles = ttk.Button(self, text = "Select File(s)", command = lambda: openfilelist(self))
-        filelist_label = Label(self)
-        
-        plotbutton = ttk.Button(self, text="Plot", \
-                command = lambda: normalising(\
-                self, self.fname, combineCheck_value.get(), \
-                #self.filelist,\
-                normCheck_value.get(), \
-                show_value.get(), log_value.get(), save.get()\
+
+        def timescan_func(self):
+                timescanplot(
+                        self.fname, self.location, self.save.get(), self.show.get()
                 )
+        def depletion_func(self):
+                depletionPlot(
+                        self.filelist, self.location, self.save.get(), self.show.get(), self.depletion_power.get()
+                )
+        def theory_func(self):
+                theory_exp(
+                        self.filelist, self.full_name, self.location, self.save.get(), self.show.get()
                 )
 
-        timescan_plotbutton = ttk.Button(self, text="TimeScan", \
-                command = lambda: timescanplot(self.fname, self.location, save.get(), show_value.get()))
 
-        # Save checkbutton:
-        save = BooleanVar()
-        save.set(True)
-        save_check = ttk.Checkbutton(self, text = "Save", variable = save)
-
-        theory = ttk.Button(self, text = 'Theory_File',\
-                command = lambda: theory_exp(\
-                        self.filelist,\
-                        self.filename, \
-                        self.location, save.get(), show_value.get()))
-        
-        powerplot = ttk.Button(self, text='PowerPlot', command = lambda: power_plot(self.filelist, self.location, save.get(), show_value.get()))
-
-        # depletion plot power and n values:
-        power_n_value = StringVar()
-        power_n_value.set('power_on, power_of, n_shots')
-        power_n = Entry(self, bg = "white", bd = 5, textvariable=power_n_value, justify = LEFT, font=("Times", 12, "italic"))
-
-        depletion_btn = ttk.Button(self, text='DepletionPlot', command = lambda: depletionPlot(self.filelist, self.location, save.get(), show_value.get(), power_n_value.get()))
-        
-        mass_diff = 0.12
-        mass_smalldiff = 0.06
-
-        m_x1 = 0.1
-        m_x2 = m_x1 + mass_diff
-        m_x3 = m_x2 + mass_diff +0.05
-        m_x4 = m_x3 + mass_diff
-        m_x5 = m_x4 + mass_smalldiff
-        m_x6 = m_x5 + mass_diff
-        m_x7 = m_x6 + mass_diff
-
-        m_y1 = 0.1
-        ymass_diff = 0.1
-        m_y2 = m_y1 + ymass_diff
-        m_y3 = m_y2 + ymass_diff +0.05
-        m_y4 = m_y3 + ymass_diff
-        m_y5 = m_y4 + ymass_diff
-        m_y6 = m_y5 + ymass_diff
-
-        browse_loc.place(relx = m_x1,  rely =m_y1, width = width, height = height)
-        filename.place(relx = m_x1,  rely =m_y2, width = width, height = height)
-        current_location.place(relx = m_x2,  rely = m_y1, relwidth = 0.5, height = height)
-        filename_label.place(relx = m_x2,  rely = m_y2, width = width, height = height)
-        normCheck.place(relx = m_x3,  rely = m_y2, width = width, height = height)
-        combineCheck.place(relx = m_x1,  rely = m_y3, width = width, height = height)
-        plotbutton.place(relx = m_x4,  rely = m_y2, width = width, height = height)
-        timescan_plotbutton.place(relx = m_x5+0.06,  rely = m_y2, width = width, height = height)
-        theory.place(relx = m_x5+0.06+0.12,  rely = m_y2, width = width, height = height)
-
-        show.place(relx = m_x4,  rely = m_y3, width = width, height = height)
-        log.place(relx = m_x3,  rely = m_y3, width = width, height = height)
-
-        depletion_btn.place(relx = m_x5+0.06,  rely = m_y3, width = width, height = height)
-        power_n.place(relx = m_x5+0.06+0.12,  rely = m_y3, width = width, height = height)
- 
-        openfiles.place(relx = m_x1,  rely = m_y4, width = width, height = height)
-        filelist_label.place(relx = m_x1,  rely = m_y5)
-        save_check.place(relx = m_x3,  rely = m_y4, width = width, height = height)
-        powerplot.place(relx = m_x3,  rely = m_y5, width = width, height = height)
 
 #Closing Program
 def on_closing():
