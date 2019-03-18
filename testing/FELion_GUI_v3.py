@@ -22,38 +22,6 @@ from os.path import join
 
 import numpy as np
 
-def outFile(fname, location, file):
-        try:
-                os.chdir(location)
-                my_path = os.getcwd()
- 
-                def saveinfo():
-                        os.chdir(location)
-                        if os.path.isfile(my_path+"/Pow/{}.pow".format(fname)):
-                                ShowInfo("SAVED", "File %s.pow saved in /Pow directory"%fname)
-                                
-
-                def write():
-                        f = open(my_path+"/Pow/{}.pow".format(fname), "w")
-                        f.write(file)
-                        f.close()
-                        saveinfo()
-
-                
-                if not os.path.isdir("Pow"): os.mkdir("Pow") 
-
-                if os.path.isfile(my_path+"/Pow/{}.pow".format(fname)):
-                        messagebox.showerror("OVERWRITE","File already exist")
-                        if messagebox.askokcancel("OVERWRITE", \
-                                "Do yo want to overwrite the existing {}.pow file?".format(fname)):
-                                write()
-                                
-                else:
-                        write()
-
-        except Exception as e:
-                ErrorInfo("ERROR", e)
-
 LARGE_FONT= ("Verdana", 15)
 
 diff = 0.15
@@ -316,86 +284,45 @@ class Mass(Frame):
         
 class Powerfile(Frame):
 
-    def __init__(self, parent, controller):
-        Frame.__init__(self,parent, bg="sea green")
-        
-        label = Label(self, text="Powerfile Generator", \
-                font=LARGE_FONT, bg="sea green", bd = 1, relief = SOLID)
-        label.place(relx = 0, rely = 0, relwidth = 1)
+        def __init__(self, parent, controller):
+                Frame.__init__(self,parent, bg="sea green")
 
-        button1 = ttk.Button(self, text="Back to Home",
-                            command=lambda: controller.show_frame(StartPage))
-        button1.place(relx = x1, rely = y, width = width, height = height)
+                self.widget = FELion_widgets(self)
 
-        button2 = ttk.Button(self, text="Norm and Avg",
-                            command=lambda: controller.show_frame(Normline))
-        button2.place(relx = x2, rely = y, width = width, height = height)
+                self.widget.labels('Powerfile Generator', 0, 0.05, bg="sea green", font = LARGE_FONT, relwidth = 1, relheight = 0.05)
 
-        button3 = ttk.Button(self, text="Mass Spec",
-                            command=lambda: controller.show_frame(Mass))
-        button3.place(relx = x3, rely = y, width = width, height = height)
+                pages = ('Back to Home', 'Norm and Avg', 'Mass Spec', 'Plot')
+                pages_name = (StartPage, Normline, Mass, Plot)
 
-        button4 = ttk.Button(self, text="Plot",
-                            command=lambda: controller.show_frame(Plot))
-        button4.place(relx = x4, rely = y, width = width, height = height)
+                x = 0.15
+                for name, pages_n in zip(pages, pages_name):
+                        self.widget.buttons(name , x, y, controller.show_frame, pages_n)
+                        x += 0.15
 
-        # Labels and buttons:
+                self.location = "/"
+                self.date = datetime.datetime.now().strftime("%d_%m_%y-#")
 
-        # Opening a Directory:
-        self.location = "/"
-        date = datetime.datetime.now()
-        self.fname = date.strftime("%d_%m_%y-#")
+                self.widget.buttons('Select Folder' , 0.1, 0.1, self.open_full_dir, 0.22, 0.14)
+                self.widget.labels('Filename:', 0.1, 0.3)
 
-        def open_dir(self):
+                self.filename = Entry_widgets(self, 'Entry', self.date, 0.3, 0.3)
 
-            root = Tk()
-            root.withdraw()
+                self.quote = """#POWER file\n# 10 Hz FELIX\n#\n#SHOTS=26\n#INTERP=linear\n#    IN_no_UM (if one deletes the "no" the firs number will be in \mu m\n# wavelength/cm-1      energy/pulse/mJ\n"""
+                self.power = Entry_widgets(self, 'power_box', self.quote, 0.15, 0.4)
 
-            root.directory =  filedialog.askdirectory()
-            self.location = root.directory
+                self.widget.buttons('Save' , 0.5, 0.3, self.power_box)
+      
+        def open_full_dir(self, x, y):
+                self.location = self.widget.open_full_dir()
 
-            root.destroy()
-            location_entry.config(text = self.location)
-            return
-
-        location_entry = Label(self)
-  
-        # Labels and buttons:
-        location_label = ttk.Button(self, text = "Select Folder")
-        location_label.config(command = lambda: open_dir(self))
-
-        #Label for Entry Box;
-        user_input_label = Label(self, text = "Filename:", font=("Times", 10, "bold"))
-
-        #Entry Box;
-        init_msg = self.fname #initialising message
-        content = StringVar()   #defining Stringvar()
-        user_input = Entry(self, bg = "white", bd = 5, textvariable=content, justify = LEFT)
-        user_input.config(font=("Times", 12, "italic"))
-        user_input.focus_set()
-        content.set(init_msg)
-
-        #Baseline
-        save_button = ttk.Button(self, text="Save")
-        save_button.config(command = lambda: outFile(content.get(), self.location, T.get("1.0", "end-1c")))
-
-        T = Text(self)
-        S = Scrollbar(self)
-        T.config(yscrollcommand=S.set)
-        S.config(command=T.yview)
-        
-        quote = """#POWER file\n# 10 Hz FELIX\n#\n#SHOTS=26\n#INTERP=linear\n#    IN_no_UM (if one deletes the "no" the firs number will be in \mu m\n# wavelength/cm-1      energy/pulse/mJ\n"""
-        T.insert(END, quote)
-
-        location_label.place(relx = 0.1,  rely = 0.1, width = 100, height = 40)
-        location_entry.place(relx = 0.3,  rely = 0.1, relwidth = 0.5, height = 40)
-
-        user_input_label.place(relx = 0.1,  rely = 0.3, width = 100, height = 40)
-        user_input.place(relx = 0.3,  rely = 0.3, width = 100, height = 40)
-        save_button.place(relx = 0.5,  rely = 0.3, width = 100, height = 40)
-
-        T.place(relx = 0.15,  rely = 0.4, relwidth = 0.7, relheight = 0.4)
-        S.place(relx = 0.85,  rely = 0.4, width = 15, relheight = 0.4)
+                self.widget.labels(
+                        self.location, x, y, 
+                        bd = 0,
+                        relwidth = 0.5, relheight = 0.06
+                )
+                
+        def power_box(self):
+                outFile(self.filename.get(), self.location, self.power.power_get())
 
 class Plot(Frame):
 
