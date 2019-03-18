@@ -66,7 +66,6 @@ x = 0.15
 y = 0.9
 width, height = (100, 40)
 smallwidth = 50
-
 class FELion(Tk):
         def __init__(self, *args, **kwargs):
 
@@ -111,37 +110,51 @@ class FELion(Tk):
                 frame = self.frames[cont]
                 frame.tkraise()
 
-        def open_dir(self, cnt, x, y):
-                cnt.fname, cnt.location = cnt.widget.open_dir(felix_files_type)
+        def open_dir(self, cnt, x, y, type_file):
+                cnt.fname, cnt.location = cnt.widget.open_dir(type_file)
 
                 cnt.widget.labels(
                         cnt.location, x, y, 
-                        bd = 0, bg = 'white',
+                        bd = 0,
                         relwidth = 0.5, relheight = 0.06
                 )
 
                 cnt.widget.labels(
                         cnt.fname, x, y+0.1, 
-                        bd = 0, bg = 'white',
+                        bd = 0,
                         relwidth = 0.15, relheight = 0.06
                 )
 
-        def openfilelist(self, cnt, x1, y1, x2, y2):
-                cnt.filelist, cnt.location = cnt.widget.openfilelist(felix_files_type)
+        def openfilelist(self, cnt, x1, y1, x2, y2, type_file):
+                cnt.filelist, cnt.location = cnt.widget.openfilelist(type_file)
 
                 cnt.widget.labels(
                         cnt.location, 
                         x1, y1, 
-                        bd = 0, bg = 'white',
+                        bd = 0,
                         relwidth = 0.5, relheight = 0.06
                 )
                         
                 cnt.widget.labels(
                         '\n'.join(cnt.filelist), 
                         x2, y2, 
-                        bd = 0, bg = 'white',
+                        bd = 0,
                         relwidth = 0.15, relheight = 0.2
                 )
+
+        def init_labels(self, cnt):
+                label1 = ('Molecule', 'TEMP(K)', 'B0 Width(ms)', 'IE(eV)', 'Trap(ms)')
+
+                y_ = 0.34
+                for i in label1:
+                        cnt.widget.labels(i, 0.1, y_)
+                        y_ += 0.1
+                
+                cnt.mname = Entry_widgets(cnt, 'Entry', 'Molecule', 0.25, 0.34, bd = 5)
+                cnt.temp = Entry_widgets(cnt, 'Entry', 0, 0.25, 0.44, bd = 5)
+                cnt.bwidth = Entry_widgets(cnt, 'Entry', 0, 0.25, 0.54, bd = 5)
+                cnt.ie = Entry_widgets(cnt, 'Entry', 0, 0.25, 0.64, bd = 5)
+                cnt.trap = Entry_widgets(cnt, 'Entry', 0, 0.25, 0.74, bd = 5)
 
 class StartPage(Frame):
 
@@ -150,17 +163,17 @@ class StartPage(Frame):
 
                 self.widget = FELion_widgets(self)
 
-                self.widget.labels('Start Page', 0, 0.05, font = LARGE_FONT, relwidth = 1, relheight = 0.05)
+                self.widget.labels('Start Page', 0, 0.05, bg="sea green", font = LARGE_FONT, relwidth = 1, relheight = 0.05)
 
                 pages = ('Norm and Avg', 'Mass Spec', 'Powerfile', 'Plot')
                 pages_name = (Normline, Mass, Powerfile, Plot)
 
                 x = 0.15
                 for name, pages_n in zip(pages, pages_name):
-                        self.widget.buttons(name , x, y, controller.show_frame, pages_n, relwidth = 0.1)
+                        self.widget.buttons(name , x, y, controller.show_frame, pages_n)
                         x += 0.15
-                self.widget.buttons('Update' , x+0.07, y, update,'', relwidth = 0.1)
-                self.widget.labels(welcome_msg, 0.1, 0.5, font = ("Verdana", 11, "italic"), bd = 0, relwidth = 0.8, relheight = 0.75)
+                self.widget.buttons('Update' , x+0.07, y, update,'')
+                self.widget.labels(welcome_msg, 0.1, 0.5, bg="sea green", font = ("Verdana", 11, "italic"), bd = 0, relwidth = 0.8, relheight = 0.75)
 
 class Normline(Frame):
 
@@ -168,83 +181,71 @@ class Normline(Frame):
                 Frame.__init__(self,parent, bg="sea green")
                 self.widget = FELion_widgets(self)
 
-                self.location = "/"
-                self.fname = ""
-                self.filelist = []
-                self.foravgshow = False
-                mname, temp, bwidth, ie = None, None, None, None
-
-                self.widget.labels('Normline', 0, 0.05, font = LARGE_FONT, relwidth = 1, relheight = 0.05)
+                self.widget.labels('Normline', 0, 0.05, bg="sea green", font = LARGE_FONT, relwidth = 1, relheight = 0.05)
 
                 pages = ('Back to Home', 'Mass Spec', 'Powerfile', 'Plot')
                 pages_name = (StartPage, Mass, Powerfile, Plot)
 
                 x = 0.15
                 for name, pages_n in zip(pages, pages_name):
-                        self.widget.buttons(name , x, y, controller.show_frame, pages_n, relwidth = 0.1)
+                        self.widget.buttons(name , x, y, controller.show_frame, pages_n)
                         x += 0.15
 
-                self.widget.buttons('Browse' , 0.1, 0.1, controller.open_dir, self, 0.22, 0.14,  relwidth = 0.1)
-                self.widget.labels('Filename', 0.1, 0.24, bg = 'white', relwidth = 0.1)
+                self.widget.buttons('Browse' , 0.1, 0.1, controller.open_dir, self, 0.22, 0.14, felix_files_type)
+                self.widget.labels('Filename', 0.1, 0.24)
 
-                label1 = ('Molecule', 'TEMP(K)', 'B0 Width(ms)', 'IE(eV)', 'Trap(ms)')
+                self.location = "/"
+                self.fname = ""
+                self.filelist = []
+                self.foravgshow = False
 
-                y_ = 0.34
-                for i in label1:
-                        self.widget.labels(i, 0.1, y_, bg = 'white', relwidth = 0.1)
-                        y_ += 0.1
-                
-                self.mname = Entry_widgets(self, 'Entry', 'Molecule', 0.25, 0.34, bg = 'White', bd = 5, relwidth = 0.1)
-                self.temp = Entry_widgets(self, 'Entry', 0, 0.25, 0.44, bg = 'White', bd = 5, relwidth = 0.1)
-                self.bwidth = Entry_widgets(self, 'Entry', 0, 0.25, 0.54, bg = 'White', bd = 5, relwidth = 0.1)
-                self.ie = Entry_widgets(self, 'Entry', 0, 0.25, 0.64, bg = 'White', bd = 5, relwidth = 0.1)
-                self.trap = Entry_widgets(self, 'Entry', 0, 0.25, 0.74, bg = 'White', bd = 5, relwidth = 0.1)
+                controller.init_labels(self)
 
-                self.normavg_saveCheck_value = Entry_widgets(self, 'Check', 'Save', 0.7, 0.3, default = False, relwidth = 0.1)
-                self.normallCheck_value = Entry_widgets(self, 'Check', 'Plot all', 0.7, 0.4, default = False, relwidth = 0.1)
-                self.norm_show_value = Entry_widgets(self, 'Check', 'Show', 0.84, 0.3, default = True, relwidth = 0.1)
+                self.normavg_saveCheck_value = Entry_widgets(self, 'Check', 'Save', 0.7, 0.3, default = False)
+                self.normallCheck_value = Entry_widgets(self, 'Check', 'Plot all', 0.7, 0.4, default = False)
+                self.norm_show_value = Entry_widgets(self, 'Check', 'Show', 0.84, 0.3, default = True)
 
                 
-                self.widget.buttons('Normline' , 0.7, 0.5, self.Normline_func, relwidth = 0.1)
+                self.widget.buttons('Normline' , 0.7, 0.5, self.Normline_func)
    
                 # avg_labels's label:
-                self.widget.labels('For Average Spectrum', 0.4, 0.24, bg = 'white', bd = 2,  relwidth = 0.2)
-                self.widget.labels('DELTA', 0.7, 0.24, bg = 'white', relwidth = 0.1)
-                self.delta = Entry_widgets(self, 'Entry', 2, 0.84, 0.24, bg = 'White', bd = 5, relwidth = 0.1)
+                self.widget.labels('For Average Spectrum', 0.4, 0.24, bd = 2,  relwidth = 0.2)
+                self.widget.labels('DELTA', 0.7, 0.24)
+                self.delta = Entry_widgets(self, 'Entry', 2, 0.84, 0.24, bd = 5)
 
                 # Avg_Spectrum Labels:
                 label2 = ('Title', 'Size\n(Title,Legend)', 'X-axis\nticks div:', 'Major_TickSz,\nMarkerSz', 'Output', 'X,Y,Wid,Ht', )
 
                 y_ = 0.34
                 for i in label2:
-                        self.widget.labels(i, 0.4, y_, bg = 'white', relwidth = 0.1)
+                        self.widget.labels(i, 0.4, y_)
                         y_ += 0.1
                 
                 #Avg_Spectrum Button
-                self.widget.buttons('Avg_spectrum' , 0.84, 0.5, self.Avg_spectrum_func, relwidth = 0.1)
+                self.widget.buttons('Avg_spectrum' , 0.84, 0.5, self.Avg_spectrum_func)
 
-                self.avg_title = Entry_widgets(self, 'Entry',  'Title' , 0.55, 0.34, bg = 'White', bd = 2, relwidth = 0.1)
-                self.avg_ts = Entry_widgets(self, 'Entry',  15 , 0.55, 0.44, bg = 'White', bd = 2, relwidth = 0.05)
-                self.avg_lgs = Entry_widgets(self, 'Entry',  10 , 0.6, 0.44, bg = 'White', bd = 2, relwidth = 0.05)
+                self.avg_title = Entry_widgets(self, 'Entry',  'Title' , 0.55, 0.34, bd = 2)
+                self.avg_ts = Entry_widgets(self, 'Entry',  15 , 0.55, 0.44, bd = 2, relwidth = 0.05)
+                self.avg_lgs = Entry_widgets(self, 'Entry',  10 , 0.6, 0.44, bd = 2, relwidth = 0.05)
 
-                self.avg_minor = Entry_widgets(self, 'Entry',  20 , 0.55, 0.54, bg = 'White', bd = 2, relwidth = 0.05)
-                self.avg_major = Entry_widgets(self, 'Entry',  100 , 0.6, 0.54, bg = 'White', bd = 2, relwidth = 0.05)
+                self.avg_minor = Entry_widgets(self, 'Entry',  20 , 0.55, 0.54, bd = 2, relwidth = 0.05)
+                self.avg_major = Entry_widgets(self, 'Entry',  100 , 0.6, 0.54, bd = 2, relwidth = 0.05)
 
-                self.avg_majorTick = Entry_widgets(self, 'Entry',  15 , 0.55, 0.64, bg = 'White', bd = 2, relwidth = 0.05)
-                self.avg_markersz = Entry_widgets(self, 'Entry',  2 , 0.6, 0.64, bg = 'White', bd = 2, relwidth = 0.05)
+                self.avg_majorTick = Entry_widgets(self, 'Entry',  15 , 0.55, 0.64, bd = 2, relwidth = 0.05)
+                self.avg_markersz = Entry_widgets(self, 'Entry',  2 , 0.6, 0.64, bd = 2, relwidth = 0.05)
 
-                self.output_filename = Entry_widgets(self, 'Entry',  'Average' , 0.55, 0.74, bg = 'White', bd = 2, relwidth = 0.1)
+                self.output_filename = Entry_widgets(self, 'Entry',  'Average' , 0.55, 0.74, bd = 2)
                 
-                self.avg_xlabelsz = Entry_widgets(self, 'Entry',  15 , 0.55, 0.84, bg = 'White', bd = 2, relwidth = 0.05)
-                self.avg_ylabelsz = Entry_widgets(self, 'Entry',  15 , 0.6, 0.84, bg = 'White', bd = 2, relwidth = 0.05)
-                self.avg_fwidth = Entry_widgets(self, 'Entry',  10 , 0.65, 0.84, bg = 'White', bd = 2, relwidth = 0.05)
-                self.avg_fheight = Entry_widgets(self, 'Entry',  5 , 0.7, 0.84, bg = 'White', bd = 2, relwidth = 0.05)
+                self.avg_xlabelsz = Entry_widgets(self, 'Entry',  15 , 0.55, 0.84, bd = 2, relwidth = 0.05)
+                self.avg_ylabelsz = Entry_widgets(self, 'Entry',  15 , 0.6, 0.84, bd = 2, relwidth = 0.05)
+                self.avg_fwidth = Entry_widgets(self, 'Entry',  10 , 0.65, 0.84, bd = 2, relwidth = 0.05)
+                self.avg_fheight = Entry_widgets(self, 'Entry',  5 , 0.7, 0.84, bd = 2, relwidth = 0.05)
 
                 # Spectrum Analyzer and power Analyzer Buttons:
                 self.widget.buttons('SA' , 0.7, 0.6, self.SA, relwidth = 0.05)
                 self.widget.buttons('Power' , 0.75, 0.6, self.Power, relwidth = 0.05)
-                self.widget.buttons('Baseline' , 0.7, 0.7, self.showBaseline, relwidth = 0.1)
-                self.widget.buttons('Select File(s)' , 0.84, 0.4, controller.openfilelist, self, 0.22, 0.14, 0.84, 0.7, relwidth = 0.1)
+                self.widget.buttons('Baseline' , 0.7, 0.7, self.showBaseline)
+                self.widget.buttons('Select File(s)' , 0.84, 0.4, controller.openfilelist, self, 0.22, 0.14, 0.84, 0.7, felix_files_type)
 
         def Normline_func(self):
                 
@@ -271,199 +272,47 @@ class Normline(Frame):
         def showBaseline(self):
                 show_baseline(self.fname, self.location, self.mname.get())
 
-
 class Mass(Frame):
 
-    def __init__(self, parent, controller):
-        Frame.__init__(self,parent, bg="sea green")
-        
-        label = Label(self, text="Mass Spectrum", \
-                font=LARGE_FONT, bg="sea green", bd = 1, relief = SOLID)
-        label.place(relx = 0, rely = 0, relwidth = 1)
+        def __init__(self, parent, controller):
+                Frame.__init__(self,parent, bg="sea green")
+                self.widget = FELion_widgets(self)
 
-        button1 = ttk.Button(self, text="Back to Home",
-                            command=lambda: controller.show_frame(StartPage))
-        button1.place(relx = x1, rely = y, width = width, height = height)
+                self.widget.labels('Mass Spectrum', 0, 0.05, bg="sea green", font = LARGE_FONT, relwidth = 1, relheight = 0.05)
 
-        button2 = ttk.Button(self, text="Norm and Avg",
-                            command=lambda: controller.show_frame(Normline))
-        button2.place(relx = x2, rely = y, width = width, height = height)
+                pages = ('Back to Home', 'Norm and Avg', 'Powerfile', 'Plot')
+                pages_name = (StartPage, Normline, Powerfile, Plot)
 
-        button3 = ttk.Button(self, text="Powerfile",
-                            command=lambda: controller.show_frame(Powerfile))
-        button3.place(relx = x3, rely = y, width = width, height = height)
+                x = 0.15
+                for name, pages_n in zip(pages, pages_name):
+                        self.widget.buttons(name , x, y, controller.show_frame, pages_n)
+                        x += 0.15
 
-        button4 = ttk.Button(self, text="Plot",
-                            command=lambda: controller.show_frame(Plot))
-        button4.place(relx = x4, rely = y, width = width, height = height)
+                self.widget.buttons('Browse' , 0.1, 0.1, controller.open_dir, self, 0.22, 0.14, mass_files_type)
+                self.widget.labels('Mass File', 0.1, 0.24)
 
-        # Opening a Directory:
-        self.location = "/"
-        self.fname = ""
-
-        def open_dir(self):
-
-            root = Tk()
-            root.withdraw()
-
-            root.filename =  filedialog.askopenfilename(initialdir = self.location, title = "Select file", filetypes = (("Mass files","*.mass"),("all files","*.*")))
-            filename = root.filename
-            filename = filename.split("/")
-
-            self.fname = filename[-1]
-            del filename[-1]
-            self.location = "/".join(filename)
-
-            root.destroy()
-            current_location.config(text = self.location)
-            filename_label.config(text = self.fname)
-            return
-  
-        # Labels and buttons:
-        browse_loc = ttk.Button(self, text = "Browse File")
-        browse_loc.config(command = lambda: open_dir(self))
-        
-        self.filelist = []
-        def openfilelist(self):
+                self.location = "/"
+                self.fname = ""
                 self.filelist = []
-                self.openlist = askopenfilenames(initialdir=self.location, initialfile='tmp',
-                                filetypes=[("Mass files", "*.mass"), ("All files", "*")])
-                
-                for i in self.openlist:
 
-                        location = i.split("/")
-                        
-                        file = location[-1]
-                        self.filelist.append(file)
+                controller.init_labels(self)
 
-                        del location[-1]
-                        self.location = "/".join(location)
-        
-                filelist_label.config(text = '\n'.join(self.filelist))
-                current_location.config(text = self.location)
+                self.save = Entry_widgets(self, 'Check', 'Save', 0.4, 0.2, default = False)
+                self.combine = Entry_widgets(self, 'Check', 'Combine', 0.6, 0.2, default = False)
 
-                return self.filelist
-                
-        openfiles = ttk.Button(self, text = "Select File(s)", command = lambda: openfilelist(self))
-        filelist_label = Label(self)
+                self.widget.buttons('Select File(s)' , 0.75, 0.2, controller.openfilelist, self, 0.22, 0.14, 0.84, 0.7, mass_files_type)
 
-        # Printing current location:
-        current_location = Label(self)
-        filename_label = Label(self)
+                self.widget.labels('Output', 0.6, 0.3)
+                self.output_filename = Entry_widgets(self, 'Entry',  'Average' , 0.75, 0.3, bd = 2)
 
-        massSpec_label = Label(self, text = "Mass_file: ", font=("Times", 10, "bold"))
+                self.widget.buttons('Mass Spec' , 0.5, 0.5, self.MassSpec_func)
 
-        # the compund details:
-        molecule_name_label = Label(self, text = "Molecule", font=("Times", 10, "bold"))
-        temp_label = Label(self, text = "TEMP(K)", font=("Times", 10, "bold"))
-        bwidth_label = Label(self, text = "B0 Width(ms)", font=("Times", 10, "bold"))
-        ion_enrg_label = Label(self, text = "IE(eV)", font=("Times", 10, "bold"))
-
-        mname = StringVar()
-        temp = StringVar()
-        bwidth = StringVar()
-        ie = StringVar()
-
-        mname.set("Molecule")
-        temp.set("-")
-        bwidth.set("-")
-        ie.set("-")
-
-        molecule_name = Entry(self, bg = "white", bd = 5, textvariable=mname, justify = LEFT, font=("Times", 12, "italic"))
-        temperature = Entry(self, bg = "white", bd = 5, textvariable=temp, justify = LEFT, font=("Times", 12, "italic"))
-        bo_Width = Entry(self, bg = "white", bd = 5, textvariable=bwidth, justify = LEFT, font=("Times", 12, "italic"))
-        ion_enrg = Entry(self, bg = "white", bd = 5, textvariable=ie, justify = LEFT, font=("Times", 12, "italic"))
-      
-        mass_button = ttk.Button(self, text="MassSpec", \
-                                        command = lambda: massSpec(\
-                                        self.fname, mname.get(), temp.get(), bwidth.get(), ie.get(),\
-                                        self.location,\
-                                        self.filelist,\
-                                        output_filename.get(),\
-                                        mass_method_value.get(),\
-                                        mass_saveCheck_value.get()
-                                        )
-                                )
-
-        # Save checkbutton:
-        mass_saveCheck_value = BooleanVar()
-        mass_saveCheck_value.set(True)
-        mass_saveCheck = ttk.Checkbutton(self, text = "Save", variable = mass_saveCheck_value)
-
-        #Combine Mass spec:
-        def combine_func(self, combine):
-                if not combine:
-                        display_label.config(text = "Single mode active:")
-                if combine:
-                        display_label.config(text = "Combine mode active:")
-                        
-                
-        display_label = Label(self, font=("Times", 12, "italic"), bg = "sea green")
-        
-        mass_method_value = BooleanVar()
-        single_mass = ttk.Radiobutton(self, text = "Single: ", \
-                variable = mass_method_value, value = False, \
-                command = lambda: combine_func(self, mass_method_value.get()))
-        combine_mass = ttk.Radiobutton(self, text = "Combine: ", \
-                variable = mass_method_value, value = True, \
-                command = lambda: combine_func(self, mass_method_value.get()))
-
-        # avg spectrum output filename:
-        avg_outputFilename = Label(self, \
-                text = "Output filename\n(Combine mode)", font=("Times", 10, "bold"))
-
-        output_filename = StringVar()
-        output_filename.set("Average")
-        avg_outputFilename_entry = Entry(self, bg = "white", bd = 5, \
-                textvariable=output_filename, justify = LEFT, font=("Times", 12, "italic"))
-
-           
-        mass_diff = 0.12
-        mass_smalldiff = 0.06
-
-        m_x1 = 0.1
-        m_x2 = m_x1 + mass_diff
-        m_x3 = m_x2 + mass_diff +0.05
-        m_x4 = m_x3 + mass_diff
-        m_x5 = m_x4 + mass_smalldiff
-        m_x6 = m_x5 + mass_diff
-        m_x7 = m_x6 + mass_diff
-
-        m_y1 = 0.1
-        ymass_diff = 0.1
-        m_y2 = m_y1 + ymass_diff
-        m_y3 = m_y2 + ymass_diff +0.05
-        m_y4 = m_y3 + ymass_diff
-        m_y5 = m_y4 + ymass_diff
-        m_y6 = m_y5 + ymass_diff
-
-        browse_loc.place(relx = m_x1,  rely =m_y1, width = width, height = height)
-        massSpec_label.place(relx = m_x1,  rely =m_y2, width = width, height = height)
-        molecule_name_label.place(relx = m_x1,  rely = m_y3, width = width, height = height)
-        temp_label.place(relx = m_x1,  rely = m_y4, width = width, height = height)
-        bwidth_label.place(relx = m_x1,  rely =m_y5, width = width, height = height)
-        ion_enrg_label.place(relx = m_x1,  rely = m_y6, width = width, height = height)
-
-        current_location.place(relx = m_x2,  rely = m_y1, relwidth = 0.5, height = height)
-        filename_label.place(relx = m_x2,  rely = m_y2, width = width, height = height)
-        molecule_name.place(relx = m_x2,  rely = m_y3, width = width, height = height)
-        temperature.place(relx = m_x2,  rely =m_y4, width = width, height = height)
-        bo_Width.place(relx = m_x2,  rely = m_y5, width = width, height = height)
-        ion_enrg.place(relx = m_x2,  rely =m_y6, width = width, height = height)
-
-        single_mass.place(relx = m_x4,  rely = m_y2, width = width, height = height)
-        
-        display_label.place(relx = m_x6+0.01,  rely = m_y1, relwidth = 0.25, height = height)
-
-        mass_saveCheck.place(relx = m_x3,  rely = m_y2, width = width, height = height)
-        mass_button.place(relx = m_x3+0.05,  rely = m_y3, width = width, height = height)
-
-        avg_outputFilename.place(relx = m_x3,  rely = m_y6, width = width+30, height = height)
-        avg_outputFilename_entry.place(relx = m_x4+0.05,  rely = m_y6, width = width, height = height)
-
-        combine_mass.place(relx = m_x6+0.01,  rely = m_y2, width = width, height = height)
-        openfiles.place(relx = m_x6+0.01,  rely = m_y3, width = width, height = height)
-        filelist_label.place(relx = m_x6+0.01,  rely = m_y4)
+        def MassSpec_func(self):
+                massSpec(
+                        self.fname, self.location,
+                        self.mname.get(), self.temp.get(), self.bwidth.get(), self.ie.get(),
+                        self.filelist, self.output_filename.get(), self.combine.get(), self.save.get()
+                )
         
 class Powerfile(Frame):
 
