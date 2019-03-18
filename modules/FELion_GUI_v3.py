@@ -366,15 +366,12 @@ class Plot(Frame):
                         self.filelist, self.full_name, self.location, self.save.get(), self.show.get()
                 )
 
-
-
 #Closing Program
 def on_closing():
     if messagebox.askokcancel("Quit", "Do you want to quit?"):
         app.destroy()
 
 ###################################################################################################################################################
-# Main Program
 
 app = FELion()
 
