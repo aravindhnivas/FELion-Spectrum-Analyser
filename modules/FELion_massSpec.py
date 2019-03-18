@@ -6,9 +6,11 @@ import os
 import shutil
 from tkinter import Tk, messagebox
 
-from FELion_definitions import ShowInfo, copy, move, ErrorInfo
+from FELion_definitions import ShowInfo, copy, move, ErrorInfo, var_find
 from os.path import join, isdir
 from matplotlib.widgets import Cursor
+
+
 
 def massSpec(fname, location, mname, temp, bwidth, ie,\
             filelist, avgname, combine, save_fig):
@@ -27,25 +29,9 @@ def massSpec(fname, location, mname, temp, bwidth, ie,\
             if os.path.isfile(my_path+"/MassSpec_DATA/{}.png".format(name)):
                 ShowInfo("SAVED", "File %s.png saved \nin MassSpec_DATA directory"%name)
 
-        def var_find(fname):
-            var = {'res':'m03_ao13_reso', 'b0':'m03_ao09_width', 'trap': 'm04_ao04_sa_delay'}
-            print(var)
-
-            with open(fname, 'r') as f:
-                f = np.array(f.readlines())
-            for i in f:
-                if not len(i.strip())==0 and i.split()[0]=='#':
-                    for j in var:
-                        if var[j] in i.split():
-                            var[j] = float(i.split()[-3])
-
-            res, b0, trap = round(var['res']), int(var['b0']/1000), int(var['trap']/1000)
-            print(var)
-            return res, b0, trap
-
         if not combine:
             filename = fname + ".mass"
-            res, b0, trap = var_find(filename)
+            res, b0, trap = var_find(filename, location)
 
             if not os.path.isdir("MassSpec_DATA"):
                 os.mkdir("MassSpec_DATA")
@@ -61,9 +47,9 @@ def massSpec(fname, location, mname, temp, bwidth, ie,\
             plt.grid(True)
             ax.semilogy(x, y, label = '%s: Res: %i, B0: %i ms, Trap: %i ms'%(fname, res, b0, trap))
             plt.xlabel('Mass [u]')
-            plt.ylabel('Ion counts /{} ms'.format(bwidth))
+            plt.ylabel('Ion counts /{} ms'.format(b0))
             plt.title("Filename: {}, for {}, at temp: {}K, B0: {}ms and IE(eV): {}"\
-                        .format(fname, mname, temp, bwidth, ie))
+                        .format(fname, mname, temp, b0, ie))
 
             plt.tight_layout()
             plt.legend()
@@ -97,7 +83,7 @@ def massSpec(fname, location, mname, temp, bwidth, ie,\
             cursor = Cursor(ax1, useblit=True, color='red', linewidth=1)
 
             plt.xlabel('mass [u]')
-            plt.ylabel('ion counts /{} ms'.format(bwidth))
+            plt.ylabel('ion counts /{} ms'.format(b0))
             plt.grid(True)
             plt.title("%s"%avgname)
             
@@ -109,7 +95,6 @@ def massSpec(fname, location, mname, temp, bwidth, ie,\
                 saveinfo(avgname)
             else:
                 plt.show()
-            plt.close()
-                
+            plt.close()                
     except Exception as e:
         ErrorInfo("ERROR", e)
