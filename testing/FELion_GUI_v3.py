@@ -31,7 +31,7 @@ class FELion(Tk):
                 Tk.__init__(self, *args, **kwargs)
 
                 Tk.iconbitmap(self,default='C:/FELion-GUI/software/FELion_Icon.ico')
-                Tk.wm_title(self, "FELion-Spectrum Analyser v.2.0")
+                Tk.wm_title(self, "FELion-Spectrum Analyser v.3.0")
                 Tk.wm_geometry(self, "1000x600")
         
                 container = Frame(self)
@@ -365,8 +365,6 @@ class Plot(Frame):
                 theory_exp(
                         self.filelist, self.full_name, self.location, self.save.get(), self.show.get()
                 )
-
-
 
 #Closing Program
 def on_closing():
