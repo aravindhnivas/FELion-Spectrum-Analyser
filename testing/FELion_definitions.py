@@ -2,10 +2,11 @@
 
 from tkinter import *
 from tkinter import ttk, messagebox
-from tkinter.filedialog import askopenfilenames, askopenfilename
+from tkinter.filedialog import askopenfilenames, askopenfilename, askdirectory
 import os, shutil, tempfile, git, subprocess, sys
 from os.path import isdir, dirname, join
 from tempfile import TemporaryDirectory
+import datetime
 
 # General functions:
 copy = lambda pathdir, x: (shutil.copyfile(join(pathdir, x), join(pathdir,"DATA" ,x)), print("%s copied to DATA folder" %x))
@@ -111,12 +112,44 @@ def var_check(kw):
             kw[i] = constants[i]
     return kw
 
+def outFile(fname, location, file):
+    try:
+        os.chdir(location)
+        my_path = os.getcwd()
+
+        def saveinfo():
+                os.chdir(location)
+                if os.path.isfile(my_path+"/Pow/{}.pow".format(fname)):
+                        ShowInfo("SAVED", "File %s.pow saved in /Pow directory"%fname)
+ 
+        def write():
+                f = open(my_path+"/Pow/{}.pow".format(fname), "w")
+                f.write(file)
+                f.close()
+                saveinfo()
+
+        if not os.path.isdir("Pow"): os.mkdir("Pow") 
+
+        if os.path.isfile(my_path+"/Pow/{}.pow".format(fname)):
+                messagebox.showerror("OVERWRITE","File already exist")
+                if messagebox.askokcancel("OVERWRITE", \
+                        "Do yo want to overwrite the existing {}.pow file?".format(fname)):
+                        write()
+                        
+        else:
+                write()
+
+    except Exception as e:
+            ErrorInfo("ERROR", e)
+
 ##############################################################
 
 class Entry_widgets(Frame):
     
     def __init__(self, parent, method,  *args, **kw):
         Frame.__init__(self, parent)
+        self.widget = FELion_widgets(self)
+
         self.parent = parent
         self.txt, x, y = args[0], args[1], args[2]
         kw = var_check(kw)
@@ -129,8 +162,7 @@ class Entry_widgets(Frame):
             self.value.set(self.txt)
             self.entry = Entry(self.parent, bg = kw['bg'], bd = kw['bd'], textvariable = self.value, font = kw['font'])
             self.entry.place(relx = x, rely = y, anchor = kw['anchor'], relwidth = kw['relwidth'], relheight = kw['relheight'])
-
-                
+          
         elif method == 'Check':
             self.value = BooleanVar()
             if 'default' in kw: self.value.set(kw['default'])
@@ -138,10 +170,23 @@ class Entry_widgets(Frame):
 
             self.Check = ttk.Checkbutton(self.parent, text = self.txt, variable = self.value)
             self.Check.place(relx = x, rely = y, relwidth = kw['relwidth'], relheight = kw['relheight'])
+        
+        elif method == 'power_box':
+            self.T = Text(self.parent)
+            self.S = Scrollbar(self.parent)
+            self.T.config(yscrollcommand = self.S.set)
+            self.S.config(command = self.T.yview)
+            
+            self.T.insert(END, self.txt)
 
+            self.T.place(relx = x,  rely = y, relwidth = 0.7, relheight = 0.4)
+            self.S.place(relx = x + 0.7,  rely = y, width = 15, relheight = 0.4)
      
     def get(self):
         return self.value.get()
+    
+    def power_get(self):
+        return self.T.get("1.0", "end-1c")
 
 class FELion_widgets(Frame):
     
@@ -178,7 +223,6 @@ class FELion_widgets(Frame):
         
         self.button.place(relx = x, rely = y, relwidth = kw['relwidth'], relheight = kw['relheight'])
 
-
     def open_dir(self, file_type):
         root = Tk()
         root.withdraw()
@@ -208,3 +252,15 @@ class FELion_widgets(Frame):
             self.location = "/".join(location)
 
         return self.filelist, self.location
+
+    def open_full_dir(self):
+
+        root = Tk()
+        root.withdraw()
+
+        root.directory =  askdirectory()
+        self.location = root.directory
+
+        root.destroy()
+        
+        return self.location
