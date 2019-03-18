@@ -1,15 +1,18 @@
 #!/usr/bin/python3
+
 from tkinter import *
 from tkinter import ttk, messagebox, filedialog
 import os
 import shutil
 import datetime
+
 import matplotlib.pyplot as plt
 
 from timescan_plot import timescanplot
 from depletion_plot import depletionPlot
 
 #FELion modules
+
 from FELion_massSpec import massSpec
 from FELion_avgSpec import avgSpec_plot
 from FELion_normline import normline_correction, show_baseline
@@ -85,6 +88,10 @@ class FELion(Tk):
                         relwidth = 0.15, relheight = 0.06
                 )
 
+                cnt.res, cnt.b0, cnt.trap_ms = var_find(cnt.fname, cnt.location)
+                cnt.bwidth.set(cnt.b0)
+                cnt.trap.set(cnt.trap_ms)
+
         def openfilelist(self, cnt, x1, y1, x2, y2, type_file):
                 cnt.filelist, cnt.location = cnt.widget.openfilelist(type_file)
 
@@ -139,6 +146,13 @@ class Normline(Frame):
 
         def __init__(self, parent, controller):
                 Frame.__init__(self,parent, bg="sea green")
+                self.location = "/"
+                self.fname = ""
+                self.filelist = []
+                self.foravgshow = False
+                self.b0 = 0
+                self.trap = 0
+
                 self.widget = FELion_widgets(self)
 
                 self.widget.labels('Normline', 0, 0.05, bg="sea green", font = LARGE_FONT, relwidth = 1, relheight = 0.05)
@@ -153,12 +167,7 @@ class Normline(Frame):
 
                 self.widget.buttons('Browse' , 0.1, 0.1, controller.open_dir, self, 0.22, 0.14, felix_files_type)
                 self.widget.labels('Filename', 0.1, 0.24)
-
-                self.location = "/"
-                self.fname = ""
-                self.filelist = []
-                self.foravgshow = False
-
+                
                 controller.init_labels(self)
 
                 self.normavg_saveCheck_value = Entry_widgets(self, 'Check', 'Save', 0.7, 0.3, default = False)
@@ -273,7 +282,7 @@ class Mass(Frame):
                         self.mname.get(), self.temp.get(), self.bwidth.get(), self.ie.get(),
                         self.filelist, self.output_filename.get(), self.combine.get(), self.save.get()
                 )
-        
+       
 class Powerfile(Frame):
 
         def __init__(self, parent, controller):
