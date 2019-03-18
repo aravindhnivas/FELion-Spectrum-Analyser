@@ -63,7 +63,7 @@ constants = {
     'width':50,
     'height':50,
     'font':("Verdana", 10, "italic"),
-    'bg':'sea green',
+    'bg':'white',
     'bd':0,
     'anchor':'w',
     'relief':SOLID,
@@ -110,7 +110,7 @@ def var_check(kw):
         if not i in list(kw.keys()):
             kw[i] = constants[i]
     return kw
-    
+
 ##############################################################
 
 class Entry_widgets(Frame):
@@ -128,11 +128,8 @@ class Entry_widgets(Frame):
                 
             self.value.set(self.txt)
             self.entry = Entry(self.parent, bg = kw['bg'], bd = kw['bd'], textvariable = self.value, font = kw['font'])
+            self.entry.place(relx = x, rely = y, anchor = kw['anchor'], relwidth = kw['relwidth'], relheight = kw['relheight'])
 
-            if 'relwidth' in kw:
-                self.entry.place(relx = x, rely = y, anchor = kw['anchor'], relwidth = kw['relwidth'], relheight = kw['relheight'])
-            else:
-                self.entry.place(relx = x, rely = y, anchor = kw['anchor'], width = kw['width'], height = kw['height'])
                 
         elif method == 'Check':
             self.value = BooleanVar()
@@ -140,11 +137,8 @@ class Entry_widgets(Frame):
             else: self.value.set(False)
 
             self.Check = ttk.Checkbutton(self.parent, text = self.txt, variable = self.value)
+            self.Check.place(relx = x, rely = y, relwidth = kw['relwidth'], relheight = kw['relheight'])
 
-            if 'relwidth' in kw:
-                self.Check.place(relx = x, rely = y, relwidth = kw['relwidth'], relheight = kw['relheight'])
-            else:
-                self.Check.place(relx = x, rely = y, width = kw['width'], height = kw['height'])
      
     def get(self):
         return self.value.get()
@@ -166,11 +160,9 @@ class FELion_widgets(Frame):
         kw = var_check(kw)
         
         self.label = Label(self.parent, text = self.txt, justify = kw['justify'], font = kw['font'], bg = kw['bg'], bd = kw['bd'], relief = kw['relief'])
-        if 'relwidth' in kw:
-            self.label.place(relx = x, rely = y, anchor = kw['anchor'], relwidth = kw['relwidth'], relheight = kw['relheight'])
-        else:
-            self.label.place(relx = x, rely = y, anchor = kw['anchor'], width = kw['width'], height = kw['height'])
-    
+
+        self.label.place(relx = x, rely = y, anchor = kw['anchor'], relwidth = kw['relwidth'], relheight = kw['relheight'])
+
     def buttons(self, *args, **kw):
         btn_txt = args[0]
         x, y = args[1], args[2]
@@ -183,10 +175,9 @@ class FELion_widgets(Frame):
             self.button = ttk.Button(self.parent, text = btn_txt, command = lambda: func(*func_parameters))
         else: 
             self.button = ttk.Button(self.parent, text = btn_txt, command = lambda: func())  
-        if 'relwidth' in kw:
-            self.button.place(relx = x, rely = y, relwidth = kw['relwidth'], relheight = kw['relheight'])
-        else:
-            self.button.place(relx = x, rely = y, width = kw['width'], height = kw['height'])
+        
+        self.button.place(relx = x, rely = y, relwidth = kw['relwidth'], relheight = kw['relheight'])
+
 
     def open_dir(self, file_type):
         root = Tk()
