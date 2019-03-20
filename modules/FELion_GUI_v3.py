@@ -20,7 +20,7 @@ import numpy as np
 # Custom function modules
 from timescan_plot import timescanplot
 from depletion_plot import depletionPlot
-from just_plot import theory_exp, power_plot
+from just_plot import theory_exp, power_plot, plot
 from FELion_definitions import *
 
 #FELion modules
@@ -362,12 +362,13 @@ class Plot(Frame):
 
                 self.widget.buttons('Timescan' , 0.4, 0.3, self.timescan_func)
                 self.widget.buttons('Depletion' , 0.52, 0.3, self.depletion_func)
-                self.depletion_power = Entry_widgets(self, 'Entry',  'power_on, power_off, n_shots' , 0.52, 0.4, bd = 5, relwidth = 0.25)
+                self.depletion_power = Entry_widgets(self, 'Entry',  'power_on, power_off, n_shots' , 0.65, 0.33, bd = 5, relwidth = 0.25)
 
-                self.widget.labels('Select Exp. file using Browse and theory file (max 2) from Select file(s)', 0.4, 0.5, bd = 2, relwidth = 0.5)
+                self.widget.labels('First Select Exp. file using Browse, then theory file using from Select file(s)', 0.4, 0.5, bd = 2, relwidth = 0.55)
                 self.widget.buttons('Exp-Theory' , 0.4, 0.55, self.theory_func)
 
-                self.widget.buttons('PowerPlot' , 0.65, 0.3, self.powerplot_func)
+                self.widget.buttons('PowerPlot' , 0.4, 0.4, self.powerplot_func)
+                self.widget.buttons('JustPlot' , 0.52, 0.4, self.just_plot_func)
 
 
         def timescan_func(self):
@@ -386,6 +387,11 @@ class Plot(Frame):
                 power_plot(
                         self.filelist, self.location, self.save.get(), self.show.get()
                 )
+        def just_plot_func(self):
+                plot(
+                        self.filelist, self.location, self.save.get(), self.show.get()
+                )
+                
 
 #Closing Program
 def on_closing():
