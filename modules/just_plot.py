@@ -63,9 +63,8 @@ def power_plot(powerfiles, location, save,show):
         if save: plt.savefig('power_combined.png')
         plt.close()
 
-
-
 def plot(filelist, location, save, show):
+        
         os.chdir(location)
 
         for i in filelist:
