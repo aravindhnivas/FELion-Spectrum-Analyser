@@ -106,7 +106,6 @@ all_files_type = ("All files", "*")
 LARGE_FONT= ("Verdana", 15)
 
 #################### Definitions #############################
-
 def var_check(kw):
     for i in constants:
         if not i in list(kw.keys()):
@@ -165,7 +164,6 @@ def var_find(fname, location):
         return res, b0, trap
     else:
         return 0, 0, 0
-
 ##############################################################
 
 class Entry_widgets(Frame):
@@ -205,6 +203,8 @@ class Entry_widgets(Frame):
 
             self.T.place(relx = x,  rely = y, relwidth = 0.7, relheight = 0.4)
             self.S.place(relx = x + 0.7,  rely = y, width = 15, relheight = 0.4)
+        
+        
      
     def get(self):
         return self.value.get()
@@ -219,8 +219,6 @@ class FELion_widgets(Frame):
     
     def __init__(self, parent):
         Frame.__init__(self, parent)
-        
-        ## Initial parameters:
         self.parent = parent
         self.location = "/"
         self.fname = ""
@@ -234,6 +232,13 @@ class FELion_widgets(Frame):
         self.label = Label(self.parent, text = self.txt, justify = kw['justify'], font = kw['font'], bg = kw['bg'], bd = kw['bd'], relief = kw['relief'])
 
         self.label.place(relx = x, rely = y, anchor = kw['anchor'], relwidth = kw['relwidth'], relheight = kw['relheight'])
+
+        if 'bind' in kw and kw['bind']:
+            on_enter = lambda x: kw['cnt'].statusBar_left.config(text = kw['enter'])
+            on_leave = lambda x: kw['cnt'].statusBar_left.config(text = kw['cnt'].statusBar_left_text)
+
+            self.label.bind('<Enter>', on_enter)
+            self.label.bind('<Leave>', on_leave)
 
     def buttons(self, *args, **kw):
         btn_txt = args[0]
@@ -249,6 +254,13 @@ class FELion_widgets(Frame):
             self.button = ttk.Button(self.parent, text = btn_txt, command = lambda: func())  
         
         self.button.place(relx = x, rely = y, relwidth = kw['relwidth'], relheight = kw['relheight'])
+
+        if 'bind' in kw and kw['bind']:
+            on_enter = lambda x: kw['cnt'].statusBar_left.config(text = kw['enter'])
+            on_leave = lambda x: kw['cnt'].statusBar_left.config(text = kw['cnt'].statusBar_left_text)
+
+            self.button.bind('<Enter>', on_enter)
+            self.button.bind('<Leave>', on_leave)
 
     def open_dir(self, file_type):
         root = Tk()
