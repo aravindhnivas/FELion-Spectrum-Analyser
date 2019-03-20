@@ -45,20 +45,20 @@ class FELion(Tk):
                 container.grid_rowconfigure(0, weight=1)
                 container.grid_columnconfigure(0, weight=1)
 
-                StatusBarFrame = Frame(self)
-                StatusBarFrame.pack(side = "bottom", fill = "both", expand = False)
+                self.StatusBarFrame = Frame(self)
+                self.StatusBarFrame.pack(side = "bottom", fill = "both", expand = False)
 
-                statusBar_left_text = "Version 3.0"
-                statusBar_left = Label(StatusBarFrame)
-                statusBar_left.config(text = statusBar_left_text, \
+                self.statusBar_left_text = "Version 3.0"
+                self.statusBar_left = Label(self.StatusBarFrame)
+                self.statusBar_left.config(text = self.statusBar_left_text, \
                 relief = SUNKEN, bd = 2, font = "Times 10 italic", pady = 5, anchor = "w")
-                statusBar_left.pack(side = "top", fill = "both", expand = True)
+                self.statusBar_left.pack(side = "top", fill = "both", expand = True)
 
-                statusBar_right_text = "Developed at dr. Sandra's Lab FELIX"
-                statusBar_right = Label(StatusBarFrame)
-                statusBar_right.config(text = statusBar_right_text, \
+                self.statusBar_right_text = "Developed at dr. Sandra's Lab FELIX"
+                self.statusBar_right = Label(self.StatusBarFrame)
+                self.statusBar_right.config(text = self.statusBar_right_text, \
                 relief = SUNKEN, bd = 2, font = "Times 10 italic", pady = 5, anchor = "e")
-                statusBar_right.pack(side = "top", fill = "both", expand = True)
+                self.statusBar_right.pack(side = "top", fill = "both", expand = True)
 
                 self.frames = {}
 
@@ -360,16 +360,15 @@ class Plot(Frame):
                 self.save = Entry_widgets(self, 'Check', 'Save', 0.4, 0.2, default = False)
                 self.show = Entry_widgets(self, 'Check', 'Show', 0.52, 0.2, default = True)
 
-                self.widget.buttons('Timescan' , 0.4, 0.3, self.timescan_func)
-                self.widget.buttons('Depletion' , 0.52, 0.3, self.depletion_func)
+                self.widget.buttons('Timescan' , 0.4, 0.3, self.timescan_func, bind = True, enter = 'Plot timescan files', cnt = controller)
+                self.widget.buttons('Depletion' , 0.52, 0.3, self.depletion_func, bind = True, enter = 'Select two timescan files to see the depletion', cnt = controller)
                 self.depletion_power = Entry_widgets(self, 'Entry',  'power_on, power_off, n_shots' , 0.65, 0.33, bd = 5, relwidth = 0.25)
 
-                self.widget.labels('First Select Exp. file using Browse, then theory file using Select file(s)', 0.4, 0.5, bd = 2, relwidth = 0.5)
-                self.widget.buttons('Exp-Theory' , 0.4, 0.55, self.theory_func)
+                theory_msg = 'First Select Exp. file using Browse, then theory file using Select file(s)'
+                self.widget.buttons('Exp-Theory' , 0.4, 0.55, self.theory_func, bind = True, enter = theory_msg, cnt = controller)
 
-                self.widget.buttons('PowerPlot' , 0.4, 0.4, self.powerplot_func)
-                self.widget.buttons('JustPlot' , 0.52, 0.4, self.just_plot_func)
-
+                self.widget.buttons('PowerPlot' , 0.4, 0.4, self.powerplot_func, bind = True, enter = 'For plotting .pow files', cnt = controller)
+                self.widget.buttons('JustPlot' , 0.52, 0.4, self.just_plot_func, bind = True, enter = 'Use it to plot any file(s) with two columns', cnt = controller)
 
         def timescan_func(self):
                 timescanplot(
@@ -392,7 +391,6 @@ class Plot(Frame):
                         self.filelist, self.location, self.save.get(), self.show.get()
                 )
                 
-
 #Closing Program
 def on_closing():
     if messagebox.askokcancel("Quit", "Do you want to quit?"):
