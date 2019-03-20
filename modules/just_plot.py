@@ -13,9 +13,8 @@ def theory_exp(filelists, exp, location, save, show):
         plt.figure(dpi=100)
         e = np.genfromtxt(exp)
         xe, ye = e[:,0], e[:,1]
-
         plt.plot(xe,ye, 'k', label='Exp')
-        #for i, c, l in zip(filelists, ('k','r'), (5,5)):
+
         for n ,i in enumerate(filelists):
                 t = np.genfromtxt(i, comments='F')
                 xt, yt = t[:,0], t[:,1]
@@ -29,7 +28,7 @@ def theory_exp(filelists, exp, location, save, show):
         plt.xlim(xmax = xe.max()+50, xmin = xe.min()-50)
         plt.ylim(ymin=0)
         plt.tight_layout()
-        if save: plt.savefig('theory-exp_%s.png'%exp.split('/')[-1].split('.')[0])
+        if save: plt.savefig('theory-exp_%s.png'%exp.split('\\')[-1].split('.')[0])
         if show: plt.show()
         plt.close()
 
