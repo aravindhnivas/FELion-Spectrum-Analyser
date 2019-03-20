@@ -364,7 +364,7 @@ class Plot(Frame):
                 self.widget.buttons('Depletion' , 0.52, 0.3, self.depletion_func)
                 self.depletion_power = Entry_widgets(self, 'Entry',  'power_on, power_off, n_shots' , 0.65, 0.33, bd = 5, relwidth = 0.25)
 
-                self.widget.labels('First Select Exp. file using Browse, then theory file using from Select file(s)', 0.4, 0.5, bd = 2, relwidth = 0.55)
+                self.widget.labels('First Select Exp. file using Browse, then theory file using Select file(s)', 0.4, 0.5, bd = 2, relwidth = 0.5)
                 self.widget.buttons('Exp-Theory' , 0.4, 0.55, self.theory_func)
 
                 self.widget.buttons('PowerPlot' , 0.4, 0.4, self.powerplot_func)
