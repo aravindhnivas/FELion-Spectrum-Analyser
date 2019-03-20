@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -37,14 +38,11 @@ def power_plot(powerfiles, location, save,show):
         os.chdir(location)
         plt.figure()
         for powerfile in powerfiles:
-                f = open(powerfile)
-                for i in f:
-                        if i.find('#SHOTS')>=0:
-                                shots=i.strip().split('=')[-1]
-                                break
-                f.close()
-
-                shots = np.float(shots)
+                with open(powerfile, 'r') as f:
+                        for i in f:
+                                if i.find('#SHOTS')>=0:
+                                        shots = int(i.strip().split('=')[-1])
+                                        break
 
                 power_file = np.genfromtxt(powerfile)
                 power_file_extrapolate = interpolate(power_file[:,0], power_file[:,1], kind = 'linear', fill_value = 'extrapolate')
@@ -53,15 +51,14 @@ def power_plot(powerfiles, location, save,show):
                 x = temp[:,0]
 
                 power_extrapolated = power_file_extrapolate(x)
-
-                plt.title("Power calibration\n Filename: %s"%powerfile)
-
                 plt.plot(power_file[:,0], power_file[:,1], 'ok',ms=7)
                 plt.plot(x, power_extrapolated, '-', label=powerfile+':'+str(shots))
         
         plt.legend()
-        plt.title('Power from .pow file')
+        plt.grid(True)
+        plt.title('Power change during scan')
         plt.ylabel('Power (mJ)')
+        plt.xlabel('Wavenumber $cm^{-1}$')
 
         if show: plt.show()
         if save: plt.savefig('power_combined.png')
