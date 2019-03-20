@@ -1,31 +1,34 @@
 #!/usr/bin/python3
 
+## Imported Modules Informations
+
+# tkinter modules
 from tkinter import *
 from tkinter import ttk, messagebox, filedialog
+from tkinter.filedialog import askopenfilenames, askopenfilename
+
+# Built-In modules
 import os
+from os.path import join
 import shutil
 import datetime
 
+# Data analysis and plotting modules
 import matplotlib.pyplot as plt
+import numpy as np
 
+# Custom function modules
 from timescan_plot import timescanplot
 from depletion_plot import depletionPlot
+from just_plot import theory_exp, power_plot
+from FELion_definitions import *
 
 #FELion modules
-
 from FELion_massSpec import massSpec
 from FELion_avgSpec import avgSpec_plot
 from FELion_normline import normline_correction, show_baseline
 from FELion_power import FELion_Power
 from FELion_sa import FELion_Sa
-from FELion_definitions import *
-
-from tkinter.filedialog import askopenfilenames, askopenfilename
-from os.path import join
-
-import numpy as np
-from just_plot import theory_exp, power_plot
-
 
 class FELion(Tk):
         
@@ -74,7 +77,7 @@ class FELion(Tk):
 
         def open_dir(self, cnt, x, y, type_file):
                 cnt.fname, cnt.location = cnt.widget.open_dir(type_file)
-                cnt.full_name = os.sep.join([cnt.location, cnt.fname])
+                cnt.full_name = join(cnt.location, cnt.fname)
 
                 cnt.widget.labels(
                         cnt.location, x, y, 
@@ -123,6 +126,9 @@ class FELion(Tk):
                 cnt.ie = Entry_widgets(cnt, 'Entry', 0, 0.25, 0.64, bd = 5)
                 cnt.trap = Entry_widgets(cnt, 'Entry', 0, 0.25, 0.74, bd = 5)
 
+        def __repr__(self):
+                return 'FELion Tkinter Tk() Class'
+    
 class StartPage(Frame):
 
         def __init__(self, parent, controller):
@@ -361,6 +367,8 @@ class Plot(Frame):
                 self.widget.labels('Select Exp. file using Browse and theory file (max 2) from Select file(s)', 0.4, 0.5, bd = 2, relwidth = 0.5)
                 self.widget.buttons('Exp-Theory' , 0.4, 0.55, self.theory_func)
 
+                self.widget.buttons('PowerPlot' , 0.65, 0.3, self.powerplot_func)
+
 
         def timescan_func(self):
                 timescanplot(
@@ -373,6 +381,10 @@ class Plot(Frame):
         def theory_func(self):
                 theory_exp(
                         self.filelist, self.full_name, self.location, self.save.get(), self.show.get()
+                )
+        def powerplot_func(self):
+                power_plot(
+                        self.filelist, self.location, self.save.get(), self.show.get()
                 )
 
 #Closing Program
@@ -390,10 +402,12 @@ app.protocol("WM_DELETE_WINDOW", on_closing)
 shutdown = PhotoImage(file = join(icons_locations, "power.png"))
 restarticon = PhotoImage(file = join(icons_locations, "restart.png"))
 
-power = ttk.Button(app, image=shutdown, text = 'power', command = lambda: app.destroy())
-restart = ttk.Button(app, image=restarticon, text = 'restart', command = lambda: os.execl(sys.executable, sys.executable, *sys.argv))
+power = ttk.Button(app, image = shutdown, text = 'power', command = lambda: app.destroy())
+restart = ttk.Button(app, image = restarticon, text = 'restart', command = lambda: os.execl(sys.executable, sys.executable, *sys.argv))
 
 restart.place(relx = 0.95, rely = 0.05)
 power.place(relx = 0.95, rely = 0.15)
 
 app.mainloop()
+
+###################################################################################################################################################
