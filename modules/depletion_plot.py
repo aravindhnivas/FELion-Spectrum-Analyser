@@ -16,6 +16,7 @@ def depletionPlot(files, location, save, show, power_n):
     try:
 
         if len(files)>2: return ShowInfo('Info', 'Please select only 2-files')
+        if isinstance(power_n, str): return ErrorInfo("Error", 'Please enter the Power_on, power_off and n_shots value.')
         print('#######################')
         power_n = np.asarray(power_n.split(','), dtype = np.float)
         power_values, n = power_n[:2], power_n[-1]

@@ -62,7 +62,6 @@ def update(*args):
 
 #################### constants ###############################
 constants = {
-
     'width':50,
     'height':50,
     'font':("Verdana", 10, "italic"),
@@ -73,7 +72,7 @@ constants = {
     'relwidth': 0.1,
     'relheight': 0.06,
     'justify': 'left',
-
+    'label': '',
 }
 
 welcome_msg = """
@@ -143,7 +142,7 @@ def outFile(fname, location, file):
             ErrorInfo("ERROR", e)
 
 def var_find(fname, location):
-    print('#############\nFile: %s\nLocation: %s\n#############'%(fname, location))
+    print(f'###############\nFile: {fname}\nLocation: {location}\n###############')
 
     if not fname is '':
         os.chdir(location)
@@ -165,6 +164,131 @@ def var_find(fname, location):
     else:
         return 0, 0, 0
 ##############################################################
+class FELion_widgets(Frame):
+    
+    def __init__(self, parent, *args, **kw):
+        Frame.__init__(self, parent)
+        self.parent = parent
+        self.location = "/"
+        self.fname = ""
+        self.filelist = []
+
+        if 'cnt' in kw:
+            self.cnt = kw['cnt']
+              
+    def labels(self, *args, **kw):
+        txt = args[0]
+        x, y = args[1], args[2]
+        kw = var_check(kw)
+        
+        self.parent.txt = Label(self.parent, text = txt, justify = kw['justify'], font = kw['font'], bg = kw['bg'], bd = kw['bd'], relief = kw['relief'])
+        self.parent.txt.place(relx = x, rely = y, anchor = kw['anchor'], relwidth = kw['relwidth'], relheight = kw['relheight'])
+
+        return self.parent.txt
+
+    def buttons(self, *args, **kw):
+        btn_txt = args[0]
+        x, y = args[1], args[2]
+        func = args[3]
+        
+        kw = var_check(kw)
+        
+        if len(args)>4:
+            func_parameters = args[4:]
+            self.button = ttk.Button(self.parent, text = btn_txt, command = lambda: func(*func_parameters))
+        else: 
+            self.button = ttk.Button(self.parent, text = btn_txt, command = lambda: func())  
+        
+        self.button.place(relx = x, rely = y, relwidth = kw['relwidth'], relheight = kw['relheight'])
+
+        if 'help' in kw:
+            on_enter = lambda x: self.cnt.statusBar_left.config(text = kw['help'])
+            on_leave = lambda x: self.cnt.statusBar_left.config(text = self.cnt.statusBar_left_text)
+
+            self.button.bind('<Enter>', on_enter)
+            self.button.bind('<Leave>', on_leave)
+
+    def entries(self, method,  *args, **kw):
+        txt, x, y = args[0], args[1], args[2]
+        kw = var_check(kw)
+        
+        if method == 'Entry':
+            if isinstance(txt, str): self.parent.txt = StringVar()
+            elif isinstance(txt, int): self.parent.txt = IntVar()
+                
+            self.parent.txt.set(txt)
+            self.parent.entry = Entry(self.parent, bg = kw['bg'], bd = kw['bd'], textvariable = self.parent.txt, font = kw['font'])
+            self.parent.entry.place(relx = x, rely = y, anchor = kw['anchor'], relwidth = kw['relwidth'], relheight = kw['relheight'])
+            
+            return self.parent.txt
+
+        elif method == 'Check':
+            self.parent.txt = BooleanVar()
+            if 'default' in kw: self.parent.txt.set(kw['default'])
+            else: self.parent.txt.set(False)
+
+            self.parent.Check = ttk.Checkbutton(self.parent, text = txt, variable = self.parent.txt)
+            self.parent.Check.place(relx = x, rely = y, relwidth = kw['relwidth'], relheight = kw['relheight'])
+
+            return self.parent.txt
+        
+        elif method == 'power_box':
+            self.parent.T = Text(self.parent)
+            self.parent.S = Scrollbar(self.parent)
+            self.parent.T.config(yscrollcommand = self.parent.S.set)
+            self.parent.S.config(command = self.parent.T.yview)
+            
+            self.parent.T.insert(END, txt)
+
+            self.parent.T.place(relx = x,  rely = y, relwidth = 0.7, relheight = 0.4)
+            self.parent.S.place(relx = x + 0.7,  rely = y, width = 15, relheight = 0.4)
+
+            return self.parent.T
+
+    def open_dir(self, file_type):
+        root = Tk()
+        root.withdraw()
+
+        root.filename =  askopenfilename(initialdir = self.location, title = "Select file", filetypes = (file_type, ("all files","*.*")))
+        filename = root.filename
+        filename = filename.split("/")
+
+        self.full_name = root.filename
+
+        self.fname = filename[-1]
+        del filename[-1]
+        
+        self.location = "/".join(filename)
+        root.destroy()
+        
+        return self.fname, self.location
+
+    def openfilelist(self, file_type):
+        self.filelist = [] # to prevent appending previously selected files
+        self.openlist = askopenfilenames(initialdir=self.location, initialfile='tmp',
+                        filetypes=[file_type, ("All files", "*")])
+
+        for i in self.openlist:
+            location = i.split("/")
+            file = location[-1]
+            self.filelist.append(file)
+            del location[-1]
+            self.location = "/".join(location)
+
+        return self.filelist, self.location
+
+    def open_full_dir(self):
+        root = Tk()
+        root.withdraw()
+        root.directory =  askdirectory()
+        self.location = root.directory
+        root.destroy()
+        return self.location
+
+
+###DUMPED##
+
+'''
 
 class Entry_widgets(Frame):
     
@@ -203,9 +327,7 @@ class Entry_widgets(Frame):
 
             self.T.place(relx = x,  rely = y, relwidth = 0.7, relheight = 0.4)
             self.S.place(relx = x + 0.7,  rely = y, width = 15, relheight = 0.4)
-        
-        
-     
+   
     def get(self):
         return self.value.get()
     
@@ -214,94 +336,4 @@ class Entry_widgets(Frame):
     
     def power_get(self):
         return self.T.get("1.0", "end-1c")
-
-class FELion_widgets(Frame):
-    
-    def __init__(self, parent):
-        Frame.__init__(self, parent)
-        self.parent = parent
-        self.location = "/"
-        self.fname = ""
-        self.filelist = []
-              
-    def labels(self, *args, **kw):
-        self.txt = args[0]
-        x, y = args[1], args[2]
-        kw = var_check(kw)
-        
-        self.label = Label(self.parent, text = self.txt, justify = kw['justify'], font = kw['font'], bg = kw['bg'], bd = kw['bd'], relief = kw['relief'])
-
-        self.label.place(relx = x, rely = y, anchor = kw['anchor'], relwidth = kw['relwidth'], relheight = kw['relheight'])
-
-        if 'bind' in kw and kw['bind']:
-            on_enter = lambda x: kw['cnt'].statusBar_left.config(text = kw['enter'])
-            on_leave = lambda x: kw['cnt'].statusBar_left.config(text = kw['cnt'].statusBar_left_text)
-
-            self.label.bind('<Enter>', on_enter)
-            self.label.bind('<Leave>', on_leave)
-
-    def buttons(self, *args, **kw):
-        btn_txt = args[0]
-        x, y = args[1], args[2]
-        func = args[3]
-        
-        kw = var_check(kw)
-        
-        if len(args)>4:
-            func_parameters = args[4:]
-            self.button = ttk.Button(self.parent, text = btn_txt, command = lambda: func(*func_parameters))
-        else: 
-            self.button = ttk.Button(self.parent, text = btn_txt, command = lambda: func())  
-        
-        self.button.place(relx = x, rely = y, relwidth = kw['relwidth'], relheight = kw['relheight'])
-
-        if 'bind' in kw and kw['bind']:
-            on_enter = lambda x: kw['cnt'].statusBar_left.config(text = kw['enter'])
-            on_leave = lambda x: kw['cnt'].statusBar_left.config(text = kw['cnt'].statusBar_left_text)
-
-            self.button.bind('<Enter>', on_enter)
-            self.button.bind('<Leave>', on_leave)
-
-    def open_dir(self, file_type):
-        root = Tk()
-        root.withdraw()
-
-        root.filename =  askopenfilename(initialdir = self.location, title = "Select file", filetypes = (file_type, ("all files","*.*")))
-        filename = root.filename
-        filename = filename.split("/")
-
-        self.full_name = root.filename
-
-        self.fname = filename[-1]
-        del filename[-1]
-        
-        self.location = "/".join(filename)
-        root.destroy()
-        
-        return self.fname, self.location
-
-    def openfilelist(self, file_type):
-        self.filelist = [] # to prevent appending previously selected files
-        self.openlist = askopenfilenames(initialdir=self.location, initialfile='tmp',
-                        filetypes=[file_type, ("All files", "*")])
-
-        for i in self.openlist:
-            location = i.split("/")
-            file = location[-1]
-            self.filelist.append(file)
-            del location[-1]
-            self.location = "/".join(location)
-
-        return self.filelist, self.location
-
-    def open_full_dir(self):
-
-        root = Tk()
-        root.withdraw()
-
-        root.directory =  askdirectory()
-        self.location = root.directory
-
-        root.destroy()
-        
-        return self.location
+'''
