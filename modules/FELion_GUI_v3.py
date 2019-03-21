@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-
 ## Imported Modules Informations
 
 # tkinter modules
@@ -33,10 +32,9 @@ from FELion_sa import FELion_Sa
 class FELion(Tk):
         
         def __init__(self, *args, **kwargs):
-
                 Tk.__init__(self, *args, **kwargs)
 
-                Tk.iconbitmap(self,default='C:/FELion-GUI/software/FELion_Icon.ico')
+                Tk.iconbitmap(self, default='C:/FELion-GUI/software/FELion_Icon.ico')
                 Tk.wm_title(self, "FELion-Spectrum Analyser v.3.0")
                 Tk.wm_geometry(self, "1000x600")
         
@@ -75,7 +73,7 @@ class FELion(Tk):
                 frame = self.frames[cont]
                 frame.tkraise()
 
-        def open_dir(self, cnt, x, y, type_file):
+        def open_dir(self, cnt, type_file):
                 cnt.fname, cnt.location = cnt.widget.open_dir(type_file)
                 cnt.full_name = join(cnt.location, cnt.fname)
 
@@ -86,7 +84,6 @@ class FELion(Tk):
                         cnt.res, cnt.b0, cnt.trap_ms = var_find(cnt.fname, cnt.location)
                         cnt.bwidth.set(cnt.b0)
                         cnt.trap.set(cnt.trap_ms)
-
 
         def openfilelist(self, cnt, type_file):
                 cnt.filelist, cnt.location = cnt.widget.openfilelist(type_file)
@@ -138,8 +135,8 @@ class Normline(Frame):
                 self.fname = ""
                 self.filelist = []
                 self.foravgshow = False
-                self.b0 = 0
-                self.trap = 0
+                self.b0, self.trap = None, None
+                self.mname, self.temp, self.bwidth, self.ie = None, None, None, None
 
                 self.widget = FELion_widgets(self)
 
@@ -153,7 +150,7 @@ class Normline(Frame):
                         self.widget.buttons(name , x, y, controller.show_frame, pages_n)
                         x += 0.15
 
-                self.widget.buttons('Browse' , 0.1, 0.1, controller.open_dir, self, 0.22, 0.14, felix_files_type)
+                self.widget.buttons('Browse' , 0.1, 0.1, controller.open_dir, self, felix_files_type)
                 self.widget.labels('Filename', 0.1, 0.24)
                 
                 controller.init_labels(self)
@@ -241,6 +238,7 @@ class Mass(Frame):
                 self.location = "/"
                 self.fname = ""
                 self.filelist = []
+                self.mname, self.temp, self.bwidth, self.ie = None, None, None, None
 
                 self.widget = FELion_widgets(self)
 
@@ -254,7 +252,7 @@ class Mass(Frame):
                         self.widget.buttons(name , x, y, controller.show_frame, pages_n)
                         x += 0.15
 
-                self.widget.buttons('Browse' , 0.1, 0.1, controller.open_dir, self, 0.22, 0.14, mass_files_type)
+                self.widget.buttons('Browse' , 0.1, 0.1, controller.open_dir, self, mass_files_type)
                 self.widget.labels('Mass File', 0.1, 0.24)
 
                 self.location_label = self.widget.labels(self.location, 0.22, 0.14, bd = 0, relwidth = 0.7, relheight = 0.06)
@@ -341,7 +339,7 @@ class Plot(Frame):
                         self.widget.buttons(name , x, y, controller.show_frame, pages_n)
                         x += 0.15
         
-                self.widget.buttons('Browse' , 0.1, 0.1, controller.open_dir, self, 0.22, 0.14, all_files_type)
+                self.widget.buttons('Browse' , 0.1, 0.1, controller.open_dir, self, all_files_type)
                 self.widget.labels('Filename', 0.1, 0.24)
 
                 self.location_label = self.widget.labels(self.location, 0.22, 0.14, bd = 0, relwidth = 0.7, relheight = 0.06)
@@ -390,8 +388,8 @@ def on_closing():
         app.destroy()
 
 ###################################################################################################################################################
-
 app = FELion()
+app.tk.call('tk', 'scaling', 4.0)
 
 icons_locations = "C:/FELion-GUI/software/"
 app.protocol("WM_DELETE_WINDOW", on_closing)
@@ -406,5 +404,4 @@ restart.place(relx = 0.95, rely = 0.05)
 power.place(relx = 0.95, rely = 0.15)
 
 app.mainloop()
-
 ###################################################################################################################################################
