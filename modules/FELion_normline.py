@@ -93,23 +93,8 @@ def norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show):
             fname = fname.replace('.','_')
             plt.savefig('OUT/'+fname+'.pdf')
             export_file(fname, wavelength, intensity)
-
         if show:
             plt.show()
-        
-        plt.close()
-
-        # save baseline
-        if save:
-            base1 = plt.figure(dpi = 100)
-            base = base1.add_subplot(1,1,1)
-            baseCal.plot(base)
-            base.plot(data[0], data[1], ls='', marker='o', ms=3, markeredgecolor='r', c='r')
-            plt.xlabel("Wavenumber (cm-1)")
-            plt.ylabel("Counts")
-            plt.title(f'{fname}: {mname} at {temp}K with B0:{round(bwidth)} and IE:{ie}eV')
-            plt.savefig('OUT/'+fname+'_baseline.png')
-            plt.close()
 
     if foravgshow:
         saCal = SpectrumAnalyserCalibrator(fname)
@@ -215,7 +200,6 @@ def normline_correction(*args):
                 if isfile(join(my_path, 'OUT', f'{fname}.pdf')) and save:
                     ShowInfo("SAVED", "File %s.pdf saved in OUT/ directory"%fname)
 
-
         def run(for_normall_saveDialog):
 
             norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show)
@@ -273,7 +257,7 @@ def normline_correction(*args):
     except Exception as e:
         ErrorInfo("ERROR:", e)
 
-def show_baseline(fname, location, mname):
+def show_baseline(fname, location, mname, temp, bwidth, ie):
 
     try:
         folders = ["DATA", "EXPORT", "OUT"]
@@ -297,9 +281,9 @@ def show_baseline(fname, location, mname):
         base.plot(data[0], data[1], ls='', marker='o', ms=3, markeredgecolor='r', c='r')
         plt.xlabel("Wavenumber (cm-1)")
         plt.ylabel("Counts")
-        plt.title("Baseline: Filename: {}, for {} ".format(fname, mname))
+        plt.title(f'{fname}: {mname} at {temp}K with B0:{round(bwidth)}ms and IE:{ie}eV')
+        plt.savefig('OUT/'+fname+'_baseline.png')
         plt.show()
-        #plt.savefig('OUT/'+fname+'_baseline.png')
         plt.close()
 
     except Exception as e:
