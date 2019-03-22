@@ -87,7 +87,7 @@ def norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show):
         cx.set_xlabel("wn (cm-1)")
         
         #ax.set_title("Filename: {}, for {}, at temp: {}K,\nB0: {}ms and IE(eV): {}".format(fname, mname, temp, bwidth, ie))
-        ax.set_title(f'{fname}: {mname} at {temp}K with B0:{bwidth}ms and IE:{ie}eV')
+        ax.set_title(f'{fname}: {mname} at {temp}K with B0:{round(bwidth)}ms and IE:{ie}eV')
 
         if save:
             fname = fname.replace('.','_')
