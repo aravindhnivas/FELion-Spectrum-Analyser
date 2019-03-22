@@ -376,7 +376,7 @@ def baseline_correction(fname, location, save):
             print("Reading baseline from .base file!")
             xs, ys, *rest = ReadBase(fname)
         
-        ShowInfo('Info', "NOTE: Press 'X' to save the baseline\nThen Close the plot Manually")
+        #ShowInfo('Info', "NOTE: Press 'X' to save the baseline\nThen Close the plot Manually")
 
         fig, ax = plt.subplots()
 
