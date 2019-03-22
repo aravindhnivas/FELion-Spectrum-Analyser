@@ -157,7 +157,7 @@ def var_find(fname, location):
                     if var[j] in i.split():
                         var[j] = float(i.split()[-3])
 
-        res, b0, trap = round(var['res']), int(var['b0']/1000), int(var['trap']/1000)
+        res, b0, trap = round(var['res'], 1), int(var['b0']/1000), int(var['trap']/1000)
         print(var)
 
         return res, b0, trap
