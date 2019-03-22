@@ -225,7 +225,7 @@ class Normline(Frame):
         def Power(self):
                 FELion_Power(self.fname, self.location)
         def showBaseline(self):
-                show_baseline(self.fname, self.location, self.mname.get(), self.temp.get(), self.bwidth.get(), self.ie.get())
+                show_baseline(self.fname, self.location, self.mname.get(), self.temp.get(), self.bwidth.get(), self.ie.get(), self.trap.get())
 
 class Mass(Frame):
 
