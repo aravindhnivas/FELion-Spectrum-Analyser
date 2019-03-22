@@ -1,16 +1,10 @@
 #!/usr/bin/python3
+
 import numpy as np
-import pylab as P
-import sys
-import copy 
-from scipy.optimize import leastsq
-from scipy.interpolate import interp1d
 from FELion_baseline import felix_read_file, BaselineCalibrator
 from FELion_power import PowerCalibrator
 from FELion_sa import SpectrumAnalyserCalibrator
 import os
-
-
 
 # Custom inport:
 import matplotlib.pyplot as plt
@@ -176,7 +170,7 @@ def main(s=True, plotShow=False):
     powerfile = raw_filename + ".pow"
     fname = filename
 
-    if os.path.isfile(powerfile):
+    if isfile(powerfile):
         shutil.copyfile(my_path + "/{}".format(powerfile), my_path + "/DATA/{}".format(powerfile))
         print("Powerfile copied to the DATA folder.")
     else:
@@ -217,7 +211,7 @@ def normline_correction(*args):
         def completed(fileNameList):
             for fname in fileNameList:
                 fname = fname.split(".")[0]
-                if os.path.isfile(my_path+"/OUT/{}.pdf".format(fname)) and save:
+                if isfile(join(my_path, 'OUT', f'{fname}.pdf')) and save:
                     ShowInfo("SAVED", "File %s.pdf saved in OUT/ directory"%fname)
 
 
@@ -225,32 +219,32 @@ def normline_correction(*args):
 
             norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show)
             if not for_normall_saveDialog:
-                if os.path.isfile(my_path+"/OUT/{}.pdf".format(fname)) and save:
+                if isfile(my_path+"/OUT/{}.pdf".format(fname)) and save:
                     ShowInfo("SAVED", "File %s.pdf saved in OUT/ directory"%fname)
 
         def normrun(basefile, powerfile, fullname, for_normall_saveDialog):
 
             #File check
-            if not os.path.isfile(my_path+"/DATA/"+fullname):
-                if os.path.isfile(my_path+"/"+fullname):
+            if not isfile(my_path+"/DATA/"+fullname):
+                if isfile(my_path+"/"+fullname):
                     move(my_path, fullname)
                 else:
                     return ErrorInfo("ERROR: ", "File %s NOT found"%fullname)
 
             #Powefile check
-            if not os.path.isfile(my_path+"/DATA/"+powerfile):
-                if os.path.isfile(my_path+"/Pow/"+powerfile):
+            if not isfile(my_path+"/DATA/"+powerfile):
+                if isfile(my_path+"/Pow/"+powerfile):
                     shutil.move(join(my_path, "Pow", powerfile), join(my_path,"DATA"))
             
-                elif os.path.isfile(my_path+"/"+powerfile):
+                elif isfile(my_path+"/"+powerfile):
                     move(my_path, powerfile)
                 
                 else:
                     return ErrorInfo("ERROR: ", "Powerfile: %s NOT found"%powerfile)
             
             #Basefile check
-            if not os.path.isfile(my_path+"/DATA/"+basefile):
-                if os.path.isfile(my_path+"/"+basefile):
+            if not isfile(my_path+"/DATA/"+basefile):
+                if isfile(my_path+"/"+basefile):
                     move(my_path, basefile)
                 else:
                     return ErrorInfo("ERROR: ", "Basefile: %s NOT found"%basefile)
