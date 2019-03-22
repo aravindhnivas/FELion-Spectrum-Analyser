@@ -37,7 +37,7 @@ def massSpec(fname, location, mname, temp, bwidth, ie,\
             fig, ax = plt.subplots(1)
 
             plt.grid(True)
-            ax.semilogy(x, y, label = f'{fname}: Res: {res}; B0: {b0}; Trap: {trap}')
+            ax.semilogy(x, y, label = f'{fname}: Res: {res}; B0: {b0}ms; Trap: {trap}ms')
             plt.xlabel('Mass [u]')
             plt.ylabel('Ion counts /{} ms'.format(b0))
             plt.title("Filename: {}, for {}, at temp: {}K, B0: {}ms and IE(eV): {}"\
@@ -70,7 +70,7 @@ def massSpec(fname, location, mname, temp, bwidth, ie,\
                 x, y = mass[:,0], mass[:,1]
                 
                 plt.grid(True)
-                ax1.semilogy(x, y, label = f'{file}: Res: {res}; B0: {b0}; Trap: {trap}')
+                ax1.semilogy(x, y, label = f'{file}: Res: {res}; B0: {b0}ms; Trap: {trap}ms')
                 plt.legend()
 
             cursor = Cursor(ax1, useblit=True, color='red', linewidth=1)
