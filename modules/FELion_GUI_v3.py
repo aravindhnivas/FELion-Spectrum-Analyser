@@ -93,7 +93,6 @@ class FELion(Tk):
 
         def init_labels(self, cnt):
                 label1 = ('Molecule', 'TEMP(K)', 'B0 Width(ms)', 'IE(eV)', 'Trap(ms)')
-
                 y_ = 0.34
                 for i in label1:
                         cnt.widget.labels(i, 0.1, y_)
@@ -104,6 +103,29 @@ class FELion(Tk):
                 cnt.bwidth = cnt.widget.entries('Entry', 0, 0.25, 0.54, bd = 5)
                 cnt.ie = cnt.widget.entries('Entry', 0, 0.25, 0.64, bd = 5)
                 cnt.trap = cnt.widget.entries('Entry', 0, 0.25, 0.74, bd = 5)
+
+                label2 = ('Title', 'Size\n(Title,Legend)', 'X-axis\nticks div:', 'Major_TickSz,\nMarkerSz', 'Output', 'X,Y,Wid,Ht', )
+                y_ = 0.34
+                for i in label2:
+                        cnt.widget.labels(i, 0.4, y_)
+                        y_ += 0.1
+
+                cnt.avg_title = cnt.widget.entries('Entry',  'Title' , 0.55, 0.34, bd = 2)
+                cnt.avg_ts = cnt.widget.entries('Entry',  15 , 0.55, 0.44, bd = 2, relwidth = 0.05)
+                cnt.avg_lgs = cnt.widget.entries('Entry',  10 , 0.6, 0.44, bd = 2, relwidth = 0.05)
+
+                cnt.avg_minor = cnt.widget.entries('Entry',  20 , 0.55, 0.54, bd = 2, relwidth = 0.05)
+                cnt.avg_major = cnt.widget.entries('Entry',  100 , 0.6, 0.54, bd = 2, relwidth = 0.05)
+
+                cnt.avg_majorTick = cnt.widget.entries('Entry',  15 , 0.55, 0.64, bd = 2, relwidth = 0.05)
+                cnt.avg_markersz = cnt.widget.entries('Entry',  2 , 0.6, 0.64, bd = 2, relwidth = 0.05)
+
+                cnt.output_filename = cnt.widget.entries('Entry',  'Average' , 0.55, 0.74, bd = 2)
+                
+                cnt.avg_xlabelsz = cnt.widget.entries('Entry',  15 , 0.55, 0.84, bd = 2, relwidth = 0.05)
+                cnt.avg_ylabelsz = cnt.widget.entries('Entry',  15 , 0.6, 0.84, bd = 2, relwidth = 0.05)
+                cnt.avg_fwidth = cnt.widget.entries('Entry',  10 , 0.65, 0.84, bd = 2, relwidth = 0.05)
+                cnt.avg_fheight = cnt.widget.entries('Entry',  5 , 0.7, 0.84, bd = 2, relwidth = 0.05)
 
         def __repr__(self):
                 return 'FELion Tkinter Tk() Class'
@@ -170,34 +192,9 @@ class Normline(Frame):
                 self.widget.labels('For Average Spectrum', 0.4, 0.24, bd = 2,  relwidth = 0.2)
                 self.widget.labels('DELTA', 0.7, 0.24)
                 self.delta = self.widget.entries('Entry', 2, 0.84, 0.24, bd = 5)
-
-                # Avg_Spectrum Labels:
-                label2 = ('Title', 'Size\n(Title,Legend)', 'X-axis\nticks div:', 'Major_TickSz,\nMarkerSz', 'Output', 'X,Y,Wid,Ht', )
-
-                y_ = 0.34
-                for i in label2:
-                        self.widget.labels(i, 0.4, y_)
-                        y_ += 0.1
                 
                 #Avg_Spectrum Button
                 self.widget.buttons('Avg_spectrum' , 0.84, 0.5, self.Avg_spectrum_func)
-
-                self.avg_title = self.widget.entries('Entry',  'Title' , 0.55, 0.34, bd = 2)
-                self.avg_ts = self.widget.entries('Entry',  15 , 0.55, 0.44, bd = 2, relwidth = 0.05)
-                self.avg_lgs = self.widget.entries('Entry',  10 , 0.6, 0.44, bd = 2, relwidth = 0.05)
-
-                self.avg_minor = self.widget.entries('Entry',  20 , 0.55, 0.54, bd = 2, relwidth = 0.05)
-                self.avg_major = self.widget.entries('Entry',  100 , 0.6, 0.54, bd = 2, relwidth = 0.05)
-
-                self.avg_majorTick = self.widget.entries('Entry',  15 , 0.55, 0.64, bd = 2, relwidth = 0.05)
-                self.avg_markersz = self.widget.entries('Entry',  2 , 0.6, 0.64, bd = 2, relwidth = 0.05)
-
-                self.output_filename = self.widget.entries('Entry',  'Average' , 0.55, 0.74, bd = 2)
-                
-                self.avg_xlabelsz = self.widget.entries('Entry',  15 , 0.55, 0.84, bd = 2, relwidth = 0.05)
-                self.avg_ylabelsz = self.widget.entries('Entry',  15 , 0.6, 0.84, bd = 2, relwidth = 0.05)
-                self.avg_fwidth = self.widget.entries('Entry',  10 , 0.65, 0.84, bd = 2, relwidth = 0.05)
-                self.avg_fheight = self.widget.entries('Entry',  5 , 0.7, 0.84, bd = 2, relwidth = 0.05)
 
                 # Spectrum Analyzer and power Analyzer Buttons:
                 self.widget.buttons('SA' , 0.7, 0.6, self.SA, relwidth = 0.05)
@@ -266,16 +263,17 @@ class Mass(Frame):
                 self.widget.buttons('Select File(s)' , 0.75, 0.2, controller.openfilelist, self, mass_files_type)
                 self.flist_label = self.widget.labels('Filelists', 0.84, 0.7, bd = 0, relwidth = 0.15, relheight = 0.2)
 
-                self.widget.labels('Output', 0.6, 0.3)
-                self.output_filename = self.widget.entries('Entry',  'Average' , 0.75, 0.3, bd = 2)
+                self.avg_minor.set(1)
+                self.avg_major.set(10)
 
-                self.widget.buttons('Mass Spec' , 0.5, 0.5, self.MassSpec_func)
+                self.widget.buttons('Mass Spec' , 0.7, 0.3, self.MassSpec_func)
 
         def MassSpec_func(self):
                 massSpec(
-                        self.fname, self.location,
-                        self.mname.get(), self.temp.get(), self.bwidth.get(), self.ie.get(),
-                        self.filelist, self.output_filename.get(), self.combine.get(), self.save.get()
+                        self.avg_title.get(), self.avg_ts.get(), self.avg_lgs.get(), self.avg_minor.get(), self.avg_major.get(), self.avg_majorTick.get(),
+                        self.avg_xlabelsz.get(), self.avg_ylabelsz.get(), self.avg_fwidth.get(), self.avg_fheight.get(), self.output_filename.get(),
+                        self.location, self.mname.get(), self.temp.get(), self.ie.get(),
+                        self.save.get(), self.combine.get(), self.fname, self.filelist
                 )
        
 class Powerfile(Frame):
