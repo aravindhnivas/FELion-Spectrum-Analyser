@@ -257,7 +257,7 @@ def normline_correction(*args):
     except Exception as e:
         ErrorInfo("ERROR:", e)
 
-def show_baseline(fname, location, mname, temp, bwidth, ie):
+def show_baseline(fname, location, mname, temp, bwidth, ie, trap):
 
     try:
         folders = ["DATA", "EXPORT", "OUT"]
@@ -279,9 +279,11 @@ def show_baseline(fname, location, mname, temp, bwidth, ie):
         base = base1.add_subplot(1,1,1)
         baseCal.plot(base)
         base.plot(data[0], data[1], ls='', marker='o', ms=3, markeredgecolor='r', c='r')
-        plt.xlabel("Wavenumber (cm-1)")
-        plt.ylabel("Counts")
-        plt.title(f'{fname}: {mname} at {temp}K with B0:{round(bwidth)}ms and IE:{ie}eV')
+        base.set_xlabel("Wavenumber (cm-1)")
+        base.set_ylabel("Counts")
+        base.set_title(f'{fname}: {mname} at {temp}K and IE:{ie}eV')
+        base.grid(True)
+        base.legend(title = f'Trap:{trap}ms; B0:{round(bwidth)}ms')
         plt.savefig('OUT/'+fname+'_baseline.png')
         plt.show()
         plt.close()
