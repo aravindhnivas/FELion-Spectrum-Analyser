@@ -21,10 +21,6 @@ def massSpec(fname, location, mname, temp, bwidth, ie,\
         if fname.find(".mass")>=0:
             fname = fname.split(".")[0]
 
-        def saveinfo(name):
-            if isfile(join(my_path, 'MassSpec_DATA', f'{name}.png')):
-                ShowInfo("SAVED", f"File {name}.png saved \nin MassSpec_DATA directory")
-
         if not combine:
             filename = fname + ".mass"
             res, b0, trap = var_find(filename, location)
@@ -52,7 +48,6 @@ def massSpec(fname, location, mname, temp, bwidth, ie,\
             cursor = Cursor(ax, useblit=True, color='red', linewidth=1)
 
             if save_fig:
-                #plt.savefig(my_path + "/MassSpec_DATA/{}.png".format(fname))
                 ShowInfo("SAVED", f"File {fname}.png saved \nin MassSpec_DATA directory")
                 plt.savefig(join(my_path, 'MassSpec_DATA', f'{fname}.png'))
                 plt.show()
@@ -75,7 +70,7 @@ def massSpec(fname, location, mname, temp, bwidth, ie,\
                 x, y = mass[:,0], mass[:,1]
                 
                 plt.grid(True)
-                ax1.semilogy(x, y, label = '%s: Res: %i, B0: %i ms, Trap: %i ms'%(file.split('.')[0], res, b0, trap))
+                ax1.semilogy(x, y, label = f'{file}: Res: {res}; B0: {b0}; Trap: {trap}')
                 plt.legend()
 
             cursor = Cursor(ax1, useblit=True, color='red', linewidth=1)
@@ -88,12 +83,9 @@ def massSpec(fname, location, mname, temp, bwidth, ie,\
             plt.tight_layout()
 
             if save_fig:
-                #plt.savefig(join(my_path, "MassSpec_DATA","%s.png"%avgname))
                 ShowInfo("SAVED", f"File {avgname}.png saved \nin MassSpec_DATA directory")
                 plt.savefig(join(my_path, 'MassSpec_DATA', f'{avgname}.png'))
                 plt.show()
-                
-                #saveinfo(avgname)
             else:
                 plt.show()
             plt.close()                
