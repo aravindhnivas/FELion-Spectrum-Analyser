@@ -1,9 +1,11 @@
 #!/usr/bin/python3
+
 from tkinter import *
 from tkinter import ttk, messagebox, filedialog
 import os
 import shutil
 from FELion_baseline import baseline_correction
+
 from FELion_definitions import update
 from os.path import join
 
@@ -152,8 +154,8 @@ class Baseline(Frame):
         baseline_button.config(command = lambda: baseline_correction(self.fname, self.location, save_check.get()))
 
         #Save progm button
-        saveButton = ttk.Button(self, text = "click to save")
-        saveButton.config(command = lambda: save_on())
+        #saveButton = ttk.Button(self, text = "click to save")
+        #saveButton.config(command = lambda: save_on())
 
         #SaveAs progm button
         save_check = BooleanVar()
@@ -177,7 +179,7 @@ class Baseline(Frame):
 
         user_input_label.place(relx = b_x1,  rely = b_y2, width = 100, height = 40)
         baseline_button.place(relx = b_x1,  rely = b_y3, width = 100, height = 40)
-        saveButton.place(relx = b_x2,  rely = b_y3, width = 100, height = 40)
+        #saveButton.place(relx = b_x2,  rely = b_y3, width = 100, height = 40)
         save.place(relx = b_x2+0.2,  rely = b_y3, width = 100, height = 40)
         #saveAsButton.place(relx = b_x2,  rely = b_y4, width = 100, height = 40)
 

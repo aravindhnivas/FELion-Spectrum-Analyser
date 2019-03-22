@@ -3,6 +3,7 @@ import sys
 import copy
 import matplotlib
 matplotlib.use('TkAgg')
+#from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import numpy as np
 import pylab as P
 import matplotlib.pyplot as plt
@@ -11,8 +12,10 @@ from matplotlib.artist import Artist
 from matplotlib.mlab import dist_point_to_segment
 from scipy.interpolate import interp1d
 
+from matplotlib.figure import Figure as fig
+
 import os
-from os.path import dirname, isdir, isfile
+from os.path import dirname, isdir, isfile, join
 import shutil
 from tkinter import Tk, messagebox
 
@@ -20,8 +23,8 @@ from FELion_definitions import move, copy, ErrorInfo, ShowInfo
 
 #These 2 values are used when guessing the baseline:
 PPS = 5         #points around the value to average
-NUM_POINTS = 2
-baseline=None
+NUM_POINTS = 10
+baseline = None
 
 ########################################################################################
 
@@ -73,9 +76,13 @@ class InteractivePoints(object):
 
     epsilon = 5  # max pixel distance to count as a vertex hit
 
-    def __init__(self, figure, ax, xs, ys):
+    def __init__(self, figure, ax, xs, ys, data, save, fname):
         self.ax = ax
         canvas = figure.canvas
+        self.data = data
+        self.save = save
+        self.fname = fname
+        self.figure = figure
 
         self.line = Line2D(xs, ys, marker='s', ls='', ms=6, c='b', markeredgecolor='b', animated=True)
         self.ax.add_line(self.line)
@@ -139,7 +146,7 @@ class InteractivePoints(object):
 
     def key_press_callback(self, event):
         'whenever a key is pressed'
-        global data, baseline
+        #global data, baseline
         if not event.inaxes:
             return
         elif event.key == 'w':
@@ -147,10 +154,10 @@ class InteractivePoints(object):
             if ind is not None:
                 xy = np.asarray(self.line.get_data())
                 #makes average of few points around the cursor
-                i = data[0].searchsorted(event.xdata)
-                if i + PPS > data[0].size:
-                    i = data[0].size - PPS
-                xy[1][ind] = data[1][i:i+PPS].mean()
+                i = self.data[0].searchsorted(event.xdata)
+                if i + PPS > self.data[0].size:
+                    i = self.data[0].size - PPS
+                xy[1][ind] = self.data[1][i:i+PPS].mean()
                 self.line.set_data((xy[0], xy[1]))
         elif event.key == 'd':
             ind = self.get_ind_under_point(event)
@@ -162,9 +169,18 @@ class InteractivePoints(object):
             xy = np.asarray(self.line.get_data())
             xy = np.append(xy,[[event.xdata], [event.ydata]], axis=1)
             self.line.set_data((xy[0], xy[1]))
-        elif event.key == 'q':
+
+        elif event.key == 'x':
             baseline = self.line.get_data()
-            plt.close('all')
+
+            print(f'New Baseline: {baseline}')
+            if self.save:
+                SaveBase(self.fname, baseline)
+                if isfile(join(os.getcwd(), 'DATA', f'{self.fname}.base')):
+                    print(f'{self.fname}.base is SAVED')
+                    ShowInfo('SAVED', f'{self.fname}.base file is saved in /DATA directory')
+                    #plt.close(self.figure)
+            #plt.close('all')
         
         self.redraw_f_line()
         self.canvas.draw()
@@ -336,7 +352,7 @@ def baseline_correction(fname, location, save):
         
         else: 
             os.chdir(location)
-            my_path = os.getcwd() 
+            my_path = os.getcwd()
             
         if(fname.find('felix')>=0):
             fname = fname.split('.')[0]
@@ -359,10 +375,12 @@ def baseline_correction(fname, location, save):
         else:
             print("Reading baseline from .base file!")
             xs, ys, *rest = ReadBase(fname)
+        
+        ShowInfo('Info', "NOTE: Press 'X' to save the baseline\nThen Close the plot Manually")
 
         fig, ax = plt.subplots()
 
-        p = InteractivePoints(fig, ax, xs, ys)
+        p = InteractivePoints(fig, ax, xs, ys, data, save, fname)
         ax.plot(data[0], data[1], ls='', marker='o', ms=5, markeredgecolor='r', c='r')
 
         print("\nUSAGE:\nBlue baseline points are dragable...\
@@ -370,18 +388,14 @@ def baseline_correction(fname, location, save):
         'a' - adds a point at current cursor position\n\
         'd' - delets a point at current cursor position\n\
         'w' - moves the point to the 'average' value at given x position\n\
-        'q' - stores baseline in .base file and quits!\n")
+        'x' - stores baseline in .base file and quits!\n")
 
         ax.set_title('BASELINE points are drag-able!')
         ax.set_xlim((data[0][0]-70, data[0][-1]+70))
         ax.set_xlabel("wavenumber (cm-1)")
         ax.set_ylabel("Counts")
         plt.show()
-        
-        if save:    
-            if baseline != None:
-                SaveBase(fname, baseline)
-                print("\n{}.base Baseline Saved.".format(fname))
+        #plt.close('all')
         
     except Exception as e:
         ErrorInfo("ERROR: ", e)
