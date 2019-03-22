@@ -13,7 +13,8 @@ def theory_exp(filelists, exp, location, save, show):
         plt.figure(dpi=100)
         e = np.genfromtxt(exp)
         xe, ye = e[:,0], e[:,1]
-        plt.plot(xe,ye, 'k', alpha = 0.5, label='Exp')
+        exp = exp.split('\\')[-1].split('.')[0]
+        plt.plot(xe,ye, 'k', alpha = 0.5, label=f'Exp:{exp}.felix')
 
         for n ,i in enumerate(filelists):
                 t = np.genfromtxt(i, comments='F')
@@ -22,13 +23,14 @@ def theory_exp(filelists, exp, location, save, show):
                 plt.vlines(xt, ymin=0, ymax=yt, color = colors[n], lw = 5, label = i.split('/')[-1].split('.')[0])
         
         plt.legend()
-        plt.title('Theory vs Exp: %s'%exp.split('\\')[-1].split('.')[0])
+        plt.grid(True)
+        plt.title('Theory vs Experiment')
         plt.xlabel('Wavenumber $cm^{-1}$')
         plt.ylabel('Normalised Intensity \n(Theory Inten. is norm. to Exp.)')
         plt.xlim(xmax = xe.max()+50, xmin = xe.min()-50)
         plt.ylim(ymin=0)
         plt.tight_layout()
-        if save: plt.savefig('theory-exp_%s.png'%exp.split('\\')[-1].split('.')[0])
+        if save: plt.savefig('theory-exp_%s.png'%exp)
         if show: plt.show()
         plt.close()
 
