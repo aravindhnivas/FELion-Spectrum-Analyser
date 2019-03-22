@@ -214,7 +214,7 @@ class FELion_widgets(Frame):
         
         if method == 'Entry':
             if isinstance(txt, str): self.parent.txt = StringVar()
-            elif isinstance(txt, int): self.parent.txt = IntVar()
+            elif isinstance(txt, int): self.parent.txt = DoubleVar()
                 
             self.parent.txt.set(txt)
             self.parent.entry = Entry(self.parent, bg = kw['bg'], bd = kw['bd'], textvariable = self.parent.txt, font = kw['font'])
