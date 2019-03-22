@@ -107,7 +107,7 @@ def norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show):
             base.plot(data[0], data[1], ls='', marker='o', ms=3, markeredgecolor='r', c='r')
             plt.xlabel("Wavenumber (cm-1)")
             plt.ylabel("Counts")
-            plt.title("Baseline: Filename: {}, for {} ".format(fname, mname))
+            plt.title(f'{fname}: {mname} at {temp}K with B0:{round(bwidth)} and IE:{ie}eV')
             plt.savefig('OUT/'+fname+'_baseline.png')
             plt.close()
 
