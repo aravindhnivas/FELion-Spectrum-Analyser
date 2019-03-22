@@ -13,13 +13,13 @@ def theory_exp(filelists, exp, location, save, show):
         plt.figure(dpi=100)
         e = np.genfromtxt(exp)
         xe, ye = e[:,0], e[:,1]
-        plt.plot(xe,ye, 'k', label='Exp')
+        plt.plot(xe,ye, 'k', alpha = 0.5, label='Exp')
 
         for n ,i in enumerate(filelists):
                 t = np.genfromtxt(i, comments='F')
                 xt, yt = t[:,0], t[:,1]
                 yt = (yt/yt.max())*ye.max()
-                plt.vlines(xt, ymin=0, ymax=yt, color = colors[n], label = i.split('/')[-1].split('.')[0])
+                plt.vlines(xt, ymin=0, ymax=yt, color = colors[n], lw = 5, label = i.split('/')[-1].split('.')[0])
         
         plt.legend()
         plt.title('Theory vs Exp: %s'%exp.split('\\')[-1].split('.')[0])
