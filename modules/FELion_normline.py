@@ -219,7 +219,7 @@ def normline_correction(*args):
 
             norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show)
             if not for_normall_saveDialog:
-                if isfile(my_path+"/OUT/{}.pdf".format(fname)) and save:
+                if isfile(join(my_path, 'OUT', f'{fname}.pdf')) and save:
                     ShowInfo("SAVED", "File %s.pdf saved in OUT/ directory"%fname)
 
         def normrun(basefile, powerfile, fullname, for_normall_saveDialog):
