@@ -29,7 +29,6 @@ def export_file(fname, wn, inten):
         f.write("{:8.3f}\t{:8.2f}\n".format(wn[i], inten[i]))
     #f.close()
 
-
 def norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show):
 
     """
@@ -128,7 +127,6 @@ def norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show):
         else:
             intensity = (data[1]-baseCal.val(data[0])) / powCal.power(data[0]) / powCal.shots(data[0])
         return wavelength, intensity
-
     
 def felix_binning(xs, ys, delta=1):
     """
@@ -171,7 +169,6 @@ def felix_binning(xs, ys, delta=1):
 
     return binsx, data_binned 
 
-
 def main(s=True, plotShow=False):
     my_path = os.getcwd()
     raw_filename = str(input("Enter the file name (without .felix): "))
@@ -191,6 +188,7 @@ def main(s=True, plotShow=False):
 
 def normline_correction(*args):
     fname, location, mname, temp, bwidth, ie, save, foravgshow, normall, fileNameList, show = args
+    print(f'PlotAll-->{normall}\nShow-->{show}\nSave-->{save}')
 
     try:
         folders = ["DATA", "EXPORT", "OUT"]
