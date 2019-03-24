@@ -76,6 +76,7 @@ def plot(filelist, location, save, show):
 
         plt.legend()
         plt.xlabel("Wavenumber(cm-1)")
+        plt.grid(True)
 
         if show: plt.show()
         
