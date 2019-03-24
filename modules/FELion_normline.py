@@ -95,6 +95,7 @@ def norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show):
             export_file(fname, wavelength, intensity)
         if show:
             plt.show()
+        plt.close()
 
     if foravgshow:
         saCal = SpectrumAnalyserCalibrator(fname)
