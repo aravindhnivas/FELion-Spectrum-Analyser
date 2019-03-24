@@ -29,6 +29,7 @@ from FELion_normline import normline_correction, show_baseline
 from FELion_power import FELion_Power
 from FELion_sa import FELion_Sa
 
+# Make the window not to change the scale of this tkinter dpi application
 import ctypes
 ctypes.windll.shcore.SetProcessDpiAwareness(0)
 
