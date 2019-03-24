@@ -29,6 +29,9 @@ from FELion_normline import normline_correction, show_baseline
 from FELion_power import FELion_Power
 from FELion_sa import FELion_Sa
 
+import ctypes
+ctypes.windll.shcore.SetProcessDpiAwareness(0)
+
 class FELion(Tk):
         
         def __init__(self, *args, **kwargs):
