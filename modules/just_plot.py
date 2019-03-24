@@ -6,18 +6,18 @@ import os
 from scipy.interpolate import interp1d as interpolate
 from FELion_definitions import colors, ShowInfo
 
-def theory_exp(filelists, exp, location, save, show):
+def theory_exp(filelists, exp, location, save, show, dpi):
 
         os.chdir(location)
 
-        plt.figure(dpi=100)
+        plt.figure(dpi = dpi)
         e = np.genfromtxt(exp)
         xe, ye = e[:,0], e[:,1]
         exp = exp.split('\\')[-1].split('.')[0]
         plt.plot(xe,ye, 'k', alpha = 0.5, label=f'Exp:{exp}.felix')
 
         for n ,i in enumerate(filelists):
-                t = np.genfromtxt(i, comments='F')
+                t = np.genfromtxt(i)
                 xt, yt = t[:,0], t[:,1]
                 yt = (yt/yt.max())*ye.max()
                 plt.vlines(xt, ymin=0, ymax=yt, color = colors[n], lw = 5, label = i.split('/')[-1].split('.')[0])
@@ -34,10 +34,10 @@ def theory_exp(filelists, exp, location, save, show):
         if show: plt.show()
         plt.close()
 
-def power_plot(powerfiles, location, save,show):
+def power_plot(powerfiles, location, save, show, dpi):
 
         os.chdir(location)
-        plt.figure()
+        plt.figure(dpi = dpi)
         for powerfile in powerfiles:
                 with open(powerfile, 'r') as f:
                         for i in f:
@@ -65,18 +65,20 @@ def power_plot(powerfiles, location, save,show):
         if save: plt.savefig('power_combined.png')
         plt.close()
 
-def plot(filelist, location, save, show):
+def plot(filelist, location, save, show, dpi):
         
         os.chdir(location)
+
+        fig, ax = plt.subplots(dpi = dpi)
 
         for i in filelist:
                 data = np.genfromtxt(i)
                 x, y = data[:,0], data[:,1]
-                plt.plot(x, y, label = i)
+                ax.plot(x, y, label = i)
 
-        plt.legend()
-        plt.xlabel("Wavenumber(cm-1)")
-        plt.grid(True)
+        ax.legend()
+        ax.set_xlabel("Wavenumber(cm-1)")
+        ax.grid(True)
 
         if show: plt.show()
         

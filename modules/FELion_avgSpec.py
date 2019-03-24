@@ -27,7 +27,7 @@ def avgSpec_plot(*args):
     t, ts, lgs, minor, major, majorTickSize, markersz,\
     xlabelsz, ylabelsz, fwidth, fheight, outFilename,\
     location, mname, temp, bwidth, ie,\
-    save, show, DELTA, fileNameList = args
+    save, show, DELTA, fileNameList, dpi = args
 
     def filesaved():
         if os.path.isfile(my_path+"/OUT/{}.pdf".format(outFilename)) and save:
@@ -52,7 +52,7 @@ def avgSpec_plot(*args):
         for dirs in folders:
             if not isdir(dirs): os.mkdir(dirs)
 
-        figure = plt.figure(figsize=(fwidth, fheight), dpi = 100)
+        figure = plt.figure(figsize=(fwidth, fheight), dpi = dpi)
         fig = figure.add_subplot(1,1,1)
         plt.rcParams['font.size'] = ts
         plt.rcParams['legend.fontsize'] = lgs

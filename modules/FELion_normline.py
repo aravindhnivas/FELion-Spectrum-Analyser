@@ -23,7 +23,7 @@ def export_file(fname, wn, inten):
         f.write("{:8.3f}\t{:8.2f}\n".format(wn[i], inten[i]))
     #f.close()
 
-def norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show):
+def norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show, dpi):
 
     """
     Reads data from felix meassurement file and 
@@ -46,9 +46,9 @@ def norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show):
 
     if not foravgshow:
         #plt.rcParams['figure.figsize'] = [8,10]
-        plt.rcParams['figure.dpi'] = 80
-        plt.rcParams['savefig.dpi'] = 100
-        fig = plt.figure(figsize=(8,10), )
+        #plt.rcParams['figure.dpi'] = 80
+        #plt.rcParams['savefig.dpi'] = 100
+        fig = plt.figure(figsize=(8,10), dpi = dpi)
         ax = fig.add_subplot(3,1,1)
         bx = fig.add_subplot(3,1,2)
         cx = fig.add_subplot(3,1,3)
@@ -168,7 +168,7 @@ def main(s=True, plotShow=False):
     print("\nProcess Completed.\n")
 
 def normline_correction(*args):
-    fname, location, mname, temp, bwidth, ie, save, foravgshow, normall, fileNameList, show = args
+    fname, location, mname, temp, bwidth, ie, save, foravgshow, normall, fileNameList, show, dpi = args
     print(f'PlotAll-->{normall}\nShow-->{show}\nSave-->{save}')
 
     try:
@@ -203,7 +203,7 @@ def normline_correction(*args):
 
         def run(for_normall_saveDialog):
 
-            norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show)
+            norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show, dpi)
             if not for_normall_saveDialog:
                 if isfile(join(my_path, 'OUT', f'{fname}.pdf')) and save:
                     ShowInfo("SAVED", "File %s.pdf saved in OUT/ directory"%fname)
@@ -258,7 +258,7 @@ def normline_correction(*args):
     except Exception as e:
         ErrorInfo("ERROR:", e)
 
-def show_baseline(fname, location, mname, temp, bwidth, ie, trap):
+def show_baseline(fname, location, mname, temp, bwidth, ie, trap, dpi):
 
     try:
         folders = ["DATA", "EXPORT", "OUT"]
@@ -276,7 +276,7 @@ def show_baseline(fname, location, mname, temp, bwidth, ie, trap):
         data = felix_read_file(fname)
         baseCal = BaselineCalibrator(fname)
 
-        base1 = plt.figure(dpi = 100)
+        base1 = plt.figure(dpi = dpi)
         base = base1.add_subplot(1,1,1)
         baseCal.plot(base)
         base.plot(data[0], data[1], ls='', marker='o', ms=3, markeredgecolor='r', c='r')

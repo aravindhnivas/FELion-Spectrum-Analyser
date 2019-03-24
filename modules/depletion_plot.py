@@ -11,7 +11,7 @@ from uncertainties import unumpy as unp
 from timescan_plot import timescanplot
 from FELion_definitions import ShowInfo, ErrorInfo
 
-def depletionPlot(files, location, save, show, power_n):
+def depletionPlot(files, location, save, show, power_n, dpi):
 
     try:
 
@@ -27,7 +27,7 @@ def depletionPlot(files, location, save, show, power_n):
 
         np.seterr(all='ignore')
         os.chdir(location)
-        fig0, axs0 = plt.subplots()
+        fig0, axs0 = plt.subplots(dpi = dpi)
 
         lg_fontsize = 15
         title_fontsize = 15
@@ -35,7 +35,7 @@ def depletionPlot(files, location, save, show, power_n):
         
         counts, stde = [], []
         for f in files:        
-            mass, iterations, t_res, t_b0, mean, error, time = timescanplot(f, location, save, show, depletion=True)
+            mass, iterations, t_res, t_b0, mean, error, time = timescanplot(f, location, save, show, dpi, depletion=True)
             axs0.errorbar(time, mean[0], yerr = error[0], label = '{}; {}:[{}], B0:{}ms, Res:{}'.format(f, mass[0], iterations[0], t_b0, t_res))
             
             time = time[1:]/1000
@@ -62,7 +62,7 @@ def depletionPlot(files, location, save, show, power_n):
         K_ON, Na0, Nn0 = [], [], []
         K_ON_err, Na0_err, Nn0_err = [], [], []
 
-        fig, axs = plt.subplots(figsize=(25, 10), dpi=70)
+        fig, axs = plt.subplots(figsize=(25, 10), dpi = 70)
 
         plt.subplots_adjust(
             top = 0.95,

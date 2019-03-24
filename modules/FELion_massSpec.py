@@ -20,7 +20,7 @@ def massSpec(*args):
     t, ts, lgs, minor, major, majorTickSize, \
     xlabelsz, ylabelsz, fwidth, fheight, avgname,\
     location, mname, temp, ie,\
-    save, combine, fname, filelist = args
+    save, combine, fname, filelist, dpi = args
 
     try:
         os.chdir(location)
@@ -44,7 +44,7 @@ def massSpec(*args):
             mass = np.genfromtxt(filename)
             x, y = mass[:,0], mass[:,1]
 
-            fig, ax = plt.subplots(figsize = (fwidth, fheight), dpi = 100)
+            fig, ax = plt.subplots(figsize = (fwidth, fheight), dpi = dpi)
     
             ax.semilogy(x, y, label = f'{fname}: Res: {res}; B0: {b0}ms; Trap: {trap}ms')
             cursor = Cursor(ax, useblit=True, color='red', linewidth=1)
@@ -75,7 +75,7 @@ def massSpec(*args):
             if filelist == []: 
                 return ErrorInfo("Select Files: ", "Click Select File(s)")
 
-            fig1, ax1 = plt.subplots(figsize = (fwidth, fheight), dpi = 100)
+            fig1, ax1 = plt.subplots(figsize = (fwidth, fheight), dpi = dpi)
 
             for file in filelist:
                 res, b0, trap = var_find(file, location)

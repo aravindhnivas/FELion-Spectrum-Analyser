@@ -96,10 +96,12 @@ class FELion(Tk):
                 if hasattr(cnt, 'flist_label'): cnt.flist_label.config(text = '\n'.join(cnt.filelist))
 
         def init_labels(self, cnt):
-                label1 = ('Molecule', 'TEMP(K)', 'B0 Width(ms)', 'IE(eV)', 'Trap(ms)')
+                label1 = ('Molecule', 'TEMP(K)', 'B0 Width(ms)', 'IE(eV)', 'Trap(ms)', 'DPI')
+                label2 = ('Title', 'Size\n(Title,Legend)', 'X-axis\nticks div:', 'Major_TickSz,\nMarkerSz', 'Output', 'X,Y,Wid,Ht', )
                 y_ = 0.34
-                for i in label1:
+                for i, j in zip(label1, label2):
                         cnt.widget.labels(i, 0.1, y_)
+                        cnt.widget.labels(j, 0.4, y_)
                         y_ += 0.1
                 
                 cnt.mname = cnt.widget.entries('Entry', 'Molecule', 0.25, 0.34, bd = 5)
@@ -107,12 +109,7 @@ class FELion(Tk):
                 cnt.bwidth = cnt.widget.entries('Entry', 0, 0.25, 0.54, bd = 5)
                 cnt.ie = cnt.widget.entries('Entry', 0, 0.25, 0.64, bd = 5)
                 cnt.trap = cnt.widget.entries('Entry', 0, 0.25, 0.74, bd = 5)
-
-                label2 = ('Title', 'Size\n(Title,Legend)', 'X-axis\nticks div:', 'Major_TickSz,\nMarkerSz', 'Output', 'X,Y,Wid,Ht', )
-                y_ = 0.34
-                for i in label2:
-                        cnt.widget.labels(i, 0.4, y_)
-                        y_ += 0.1
+                cnt.dpi = cnt.widget.entries('Entry', 100, 0.25, 0.84, bd = 5)
 
                 cnt.avg_title = cnt.widget.entries('Entry',  'Title' , 0.55, 0.34, bd = 2)
                 cnt.avg_ts = cnt.widget.entries('Entry',  15 , 0.55, 0.44, bd = 2, relwidth = 0.05)
@@ -212,7 +209,7 @@ class Normline(Frame):
                         self.fname, self.location,
                         self.mname.get(), self.temp.get(), self.bwidth.get(), self.ie.get(),
                         self.normavg_saveCheck_value.get(),
-                        self.foravgshow, self.normallCheck_value.get(), self.filelist, self.norm_show_value.get()
+                        self.foravgshow, self.normallCheck_value.get(), self.filelist, self.norm_show_value.get(), self.dpi.get()
                 )
         
         def Avg_spectrum_func(self):
@@ -221,7 +218,7 @@ class Normline(Frame):
                         self.avg_major.get(), self.avg_majorTick.get(), self.avg_markersz.get(),
                         self.avg_xlabelsz.get(), self.avg_ylabelsz.get(), self.avg_fwidth.get(), self.avg_fheight.get(), self.output_filename.get(),
                         self.location, self.mname.get(), self.temp.get(), self.bwidth.get(), self.ie.get(),
-                        self.normavg_saveCheck_value.get(), self.norm_show_value.get(), self.delta.get(), self.filelist
+                        self.normavg_saveCheck_value.get(), self.norm_show_value.get(), self.delta.get(), self.filelist, self.dpi.get()
                 )
 
         def SA(self):
@@ -229,7 +226,7 @@ class Normline(Frame):
         def Power(self):
                 FELion_Power(self.fname, self.location)
         def showBaseline(self):
-                show_baseline(self.fname, self.location, self.mname.get(), self.temp.get(), self.bwidth.get(), self.ie.get(), self.trap.get())
+                show_baseline(self.fname, self.location, self.mname.get(), self.temp.get(), self.bwidth.get(), self.ie.get(), self.trap.get(), self.dpi.get())
 
 class Mass(Frame):
 
@@ -277,7 +274,7 @@ class Mass(Frame):
                         self.avg_title.get(), self.avg_ts.get(), self.avg_lgs.get(), self.avg_minor.get(), self.avg_major.get(), self.avg_majorTick.get(),
                         self.avg_xlabelsz.get(), self.avg_ylabelsz.get(), self.avg_fwidth.get(), self.avg_fheight.get(), self.output_filename.get(),
                         self.location, self.mname.get(), self.temp.get(), self.ie.get(),
-                        self.save.get(), self.combine.get(), self.fname, self.filelist
+                        self.save.get(), self.combine.get(), self.fname, self.filelist, self.dpi.get()
                 )
        
 class Powerfile(Frame):
@@ -353,6 +350,9 @@ class Plot(Frame):
                 self.save = self.widget.entries('Check', 'Save', 0.4, 0.2, default = False)
                 self.show = self.widget.entries('Check', 'Show', 0.52, 0.2, default = True)
 
+                self.widget.labels('DPI', 0.65, 0.23)
+                self.dpi = self.widget.entries('Entry', 100, 0.75, 0.23, bd = 5)
+
                 self.widget.buttons('Timescan' , 0.4, 0.3, self.timescan_func,help = 'Plot timescan files')
                 self.widget.buttons('Depletion' , 0.52, 0.3, self.depletion_func, help = 'Select two timescan files to see the depletion; and enter power_on, power_off and n')
                 self.depletion_power = self.widget.entries('Entry',  'power_on, power_off, n_shots' , 0.65, 0.33, bd = 5, relwidth = 0.25)
@@ -365,23 +365,23 @@ class Plot(Frame):
 
         def timescan_func(self):
                 timescanplot(
-                        self.fname, self.location, self.save.get(), self.show.get()
+                        self.fname, self.location, self.save.get(), self.show.get(), self.dpi.get()
                 )
         def depletion_func(self):
                 depletionPlot(
-                        self.filelist, self.location, self.save.get(), self.show.get(), self.depletion_power.get()
+                        self.filelist, self.location, self.save.get(), self.show.get(), self.depletion_power.get(), self.dpi.get()
                 )
         def theory_func(self):
                 theory_exp(
-                        self.filelist, self.full_name, self.location, self.save.get(), self.show.get()
+                        self.filelist, self.full_name, self.location, self.save.get(), self.show.get(), self.dpi.get()
                 )
         def powerplot_func(self):
                 power_plot(
-                        self.filelist, self.location, self.save.get(), self.show.get()
+                        self.filelist, self.location, self.save.get(), self.show.get(), self.dpi.get()
                 )
         def just_plot_func(self):
                 plot(
-                        self.filelist, self.location, self.save.get(), self.show.get()
+                        self.filelist, self.location, self.save.get(), self.show.get(), self.dpi.get()
                 )
                 
 #Closing Program

@@ -7,7 +7,7 @@ from scipy.optimize import curve_fit
 from FELion_definitions import ShowInfo, ErrorInfo
 
 
-def timescanplot(fname, location, save, show, depletion=False):
+def timescanplot(fname, location, save, show, dpi, depletion = False):
 
     try:
 
@@ -60,7 +60,7 @@ def timescanplot(fname, location, save, show, depletion=False):
 
         if depletion: return mass, iterations, t_res, t_b0,  mean, error, time
 
-        plt.figure(figsize=(15,5), dpi=100)
+        plt.figure(figsize=(15,5), dpi = dpi)
 
         for i in range(length):
             lg = "%.2f:[%i]; B0: %i ms, Res: %i"%(mass[i], iterations[i], t_b0, t_res)
