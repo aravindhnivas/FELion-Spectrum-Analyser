@@ -57,11 +57,10 @@ def avgSpec_plot(*args):
         plt.rcParams['font.size'] = ts
         plt.rcParams['legend.fontsize'] = lgs
 
-        xs = np.array([],dtype='double')
-        ys = np.array([],dtype='double')
+        xs = np.array([], dtype='double')
+        ys = np.array([], dtype='double')
 
         foravgshow = True
-        normshow = False
         for fname in fileNameList:
             fname = fname.split(".")[0]
             fullname = fname + ".felix"
