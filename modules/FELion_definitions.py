@@ -5,7 +5,7 @@ from tkinter import ttk, messagebox
 from tkinter.filedialog import askopenfilenames, askopenfilename, askdirectory
 import os, shutil, tempfile, git, subprocess, sys
 from os.path import isdir, dirname, join
-from tempfile import TemporaryDirectory
+
 import datetime
 import numpy as np
 
@@ -184,6 +184,13 @@ class FELion_widgets(Frame):
         self.parent.txt = Label(self.parent, text = txt, justify = kw['justify'], font = kw['font'], bg = kw['bg'], bd = kw['bd'], relief = kw['relief'])
         self.parent.txt.place(relx = x, rely = y, anchor = kw['anchor'], relwidth = kw['relwidth'], relheight = kw['relheight'])
 
+        if 'help' in kw:
+            on_enter = lambda x: self.cnt.statusBar_left.config(text = kw['help'])
+            on_leave = lambda x: self.cnt.statusBar_left.config(text = self.cnt.statusBar_left_text)
+
+            self.parent.txt.bind('<Enter>', on_enter)
+            self.parent.txt.bind('<Leave>', on_leave)
+
         return self.parent.txt
 
     def buttons(self, *args, **kw):
@@ -220,6 +227,14 @@ class FELion_widgets(Frame):
             self.parent.entry = Entry(self.parent, bg = kw['bg'], bd = kw['bd'], textvariable = self.parent.txt, font = kw['font'])
             self.parent.entry.place(relx = x, rely = y, anchor = kw['anchor'], relwidth = kw['relwidth'], relheight = kw['relheight'])
             
+            if 'help' in kw:
+                on_enter = lambda x: self.cnt.statusBar_left.config(text = kw['help'])
+                on_leave = lambda x: self.cnt.statusBar_left.config(text = self.cnt.statusBar_left_text)
+
+                self.parent.entry.bind('<Enter>', on_enter)
+                self.parent.entry.bind('<Leave>', on_leave)
+            
+            
             return self.parent.txt
 
         elif method == 'Check':
@@ -229,6 +244,13 @@ class FELion_widgets(Frame):
 
             self.parent.Check = ttk.Checkbutton(self.parent, text = txt, variable = self.parent.txt)
             self.parent.Check.place(relx = x, rely = y, relwidth = kw['relwidth'], relheight = kw['relheight'])
+
+            if 'help' in kw:
+                on_enter = lambda x: self.cnt.statusBar_left.config(text = kw['help'])
+                on_leave = lambda x: self.cnt.statusBar_left.config(text = self.cnt.statusBar_left_text)
+
+                self.parent.Check.bind('<Enter>', on_enter)
+                self.parent.Check.bind('<Leave>', on_leave)
 
             return self.parent.txt
         
@@ -283,6 +305,4 @@ class FELion_widgets(Frame):
         root.directory =  askdirectory()
         self.location = root.directory
         root.destroy()
-        return self.location
-
-        
+        return self.location        
