@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 
+## Importing Modules
+
 # FELion-Modules
 from FELion_baseline import felix_read_file, BaselineCalibrator
 from FELion_power import PowerCalibrator
@@ -12,8 +14,13 @@ import numpy as np
 
 # Embedding Matplotlib in tkinter window
 from tkinter import *
+from tkinter import ttk
+
+# Matplotlib Modules for tkinter
+import matplotlib
+matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
-from matplotlib.backend_bases import key_press_handler  # Implement the default Matplotlib key bindings.
+from matplotlib.backend_bases import key_press_handler
 from matplotlib.figure import Figure
 
 # Built-In modules
@@ -96,15 +103,32 @@ def norm_line_felix(fname, mname, temp, bwidth, ie, foravgshow, dpi, parent):
         toolbar.update()
         canvas.get_tk_widget().pack(side = TOP, fill = BOTH, expand = 1)
 
-        frame = Frame(root)
+        frame = Frame(root, bg = 'light grey')
         frame.pack(side = 'bottom', fill = 'both', expand = True)
+
+        label = Label(frame, text = 'Save as:')
+        label.pack(side = 'left', padx = 15, ipadx = 10, ipady = 5)
 
         name = StringVar()
         filename = Entry(frame, textvariable = name)
-        filename.place(relx = 0, rely = 0)
+        name.set(fname)
+        filename.pack(side = 'left')
+
+        def save_func():
+            fig.savefig(f'OUT/{name.get()}.pdf')
+            export_file(fname, wavelength, intensity)
+            if isfile(f'OUT/{name.get()}.pdf'): ShowInfo('SAVED', f'File: {name.get()}.pdf saved in OUT/ directory')
+
+        button = ttk.Button(frame, text = 'Save', command = lambda: save_func())
+        button.pack(side = 'left', padx = 15, ipadx = 10, ipady = 5)
 
         def on_key_press(event): 
             key_press_handler(event, canvas, toolbar)
+
+            if event.key == 'c':
+                fig.savefig(f'OUT/{name.get()}.pdf')
+                export_file(fname, wavelength, intensity)
+                if isfile(f'OUT/{name.get()}.pdf'): ShowInfo('SAVED', f'File: {name.get()}.pdf saved in OUT/ directory')
 
         canvas.mpl_connect("key_press_event", on_key_press)
         root.mainloop()
