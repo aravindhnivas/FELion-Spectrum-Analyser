@@ -198,6 +198,7 @@ def normline_correction(*args):
         if not normall:
             if filecheck(my_path, basefile, powerfile, fullname):
                 norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show, dpi)
+            if save and isfile(join(my_path, 'OUT', f'{fname}.pdf')): ShowInfo('SAVED', f'File {fname}.pdf for {fullname} saved in /OUT directory.')
 
         if normall:
             print(f'\nFile Lists-->{fileNameList}\nTotal files-->{len(fileNameList)}')
@@ -209,10 +210,14 @@ def normline_correction(*args):
                 fullname = fname + ".felix"
                 powerfile = fname + ".pow"
                 basefile = fname + ".base"
+
                 if filecheck(my_path, basefile, powerfile, fullname):
                     print(f'\nRunning File-->{fullname}')
                     norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show, dpi)
+
                 print('\nNext File')
+
+            if save: ShowInfo('SAVED', f'Files are saved in /OUT directory.')
 
         print("DONE")
 
