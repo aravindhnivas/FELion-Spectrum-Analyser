@@ -1,17 +1,20 @@
 #!/usr/bin/python3
 
-import numpy as np
+# FELion-Modules
 from FELion_baseline import felix_read_file, BaselineCalibrator
 from FELion_power import PowerCalibrator
 from FELion_sa import SpectrumAnalyserCalibrator
-import os
+from FELion_definitions import ShowInfo, ErrorInfo, filecheck, move
 
-# Custom inport:
+# DATA Analysis modules:
 import matplotlib.pyplot as plt
+import numpy as np
 from tkinter import Tk, messagebox
-from FELion_definitions import *
+
+# Built-In modules
+import os, shutil
 from os.path import dirname, isdir, isfile, join
-import shutil
+
 
 ################################################################################
 
@@ -21,7 +24,7 @@ def export_file(fname, wn, inten):
     f.write("#wn (cm-1)       intensity\n")
     for i in range(len(wn)):
         f.write("{:8.3f}\t{:8.2f}\n".format(wn[i], inten[i]))
-    #f.close()
+    f.close()
 
 def norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show, dpi):
 
@@ -45,10 +48,7 @@ def norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show, dpi)
     PD=True
 
     if not foravgshow:
-        #plt.rcParams['figure.figsize'] = [8,10]
-        #plt.rcParams['figure.dpi'] = 80
-        #plt.rcParams['savefig.dpi'] = 100
-        fig = plt.figure(figsize=(8,10), dpi = dpi)
+        fig = plt.figure(figsize=(8, 8), dpi = dpi)
         ax = fig.add_subplot(3,1,1)
         bx = fig.add_subplot(3,1,2)
         cx = fig.add_subplot(3,1,3)
@@ -66,12 +66,10 @@ def norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show, dpi)
         powCal = PowerCalibrator(fname)
         powCal.plot(bx2, ax2)
 
-
         #Get the spectrum analyser
         saCal = SpectrumAnalyserCalibrator(fname)
         saCal.plot(bx)
-        bx.set_ylabel("SA")
-        
+        bx.set_ylabel("SA")   
 
         #Calibrate X for all the data points
         wavelength = saCal.sa_cm(data[0])
@@ -86,15 +84,16 @@ def norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show, dpi)
         cx.plot(wavelength, intensity, ls='-', marker='o', ms=2, c='r', markeredgecolor='k', markerfacecolor='k')
         cx.set_xlabel("wn (cm-1)")
         
-        #ax.set_title("Filename: {}, for {}, at temp: {}K,\nB0: {}ms and IE(eV): {}".format(fname, mname, temp, bwidth, ie))
         ax.set_title(f'{fname}: {mname} at {temp}K with B0:{round(bwidth)}ms and IE:{ie}eV')
 
         if save:
             fname = fname.replace('.','_')
             plt.savefig('OUT/'+fname+'.pdf')
             export_file(fname, wavelength, intensity)
+
         if show:
             plt.show()
+
         plt.close()
 
     if foravgshow:
@@ -167,9 +166,10 @@ def main(s=True, plotShow=False):
     print(a, b)
     print("\nProcess Completed.\n")
 
+
 def normline_correction(*args):
     fname, location, mname, temp, bwidth, ie, save, foravgshow, normall, fileNameList, show, dpi = args
-    print(f'PlotAll-->{normall}\nShow-->{show}\nSave-->{save}')
+    print(f'\nPlotAll-->{normall}\nShow-->{show}\nSave-->{save}')
 
     try:
         folders = ["DATA", "EXPORT", "OUT"]
@@ -195,63 +195,24 @@ def normline_correction(*args):
             if not isdir(dirs): os.mkdir(dirs)
             if isfile(filenames): move(my_path, filenames)
 
-        def completed(fileNameList):
-            for fname in fileNameList:
-                fname = fname.split(".")[0]
-                if isfile(join(my_path, 'OUT', f'{fname}.pdf')) and save:
-                    ShowInfo("SAVED", "File %s.pdf saved in OUT/ directory"%fname)
-
-        def run(for_normall_saveDialog):
-
-            norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show, dpi)
-            if not for_normall_saveDialog:
-                if isfile(join(my_path, 'OUT', f'{fname}.pdf')) and save:
-                    ShowInfo("SAVED", "File %s.pdf saved in OUT/ directory"%fname)
-
-        def normrun(basefile, powerfile, fullname, for_normall_saveDialog):
-
-            #File check
-            if not isfile(my_path+"/DATA/"+fullname):
-                if isfile(my_path+"/"+fullname):
-                    move(my_path, fullname)
-                else:
-                    return ErrorInfo("ERROR: ", "File %s NOT found"%fullname)
-
-            #Powefile check
-            if not isfile(my_path+"/DATA/"+powerfile):
-                if isfile(my_path+"/Pow/"+powerfile):
-                    shutil.move(join(my_path, "Pow", powerfile), join(my_path,"DATA"))
-            
-                elif isfile(my_path+"/"+powerfile):
-                    move(my_path, powerfile)
-                
-                else:
-                    return ErrorInfo("ERROR: ", "Powerfile: %s NOT found"%powerfile)
-            
-            #Basefile check
-            if not isfile(my_path+"/DATA/"+basefile):
-                if isfile(my_path+"/"+basefile):
-                    move(my_path, basefile)
-                else:
-                    return ErrorInfo("ERROR: ", "Basefile: %s NOT found"%basefile)
-
-            #Normline run
-            run(for_normall_saveDialog)
-
         if not normall:
-            for_normall_saveDialog = False
-            normrun(basefile, powerfile, fullname, for_normall_saveDialog)
+            if filecheck(my_path, basefile, powerfile, fullname):
+                norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show, dpi)
 
         if normall:
-            for_normall_saveDialog = True
+            print(f'\nFile Lists-->{fileNameList}\nTotal files-->{len(fileNameList)}')
+
+            if len(fileNameList) is 0: return ShowInfo('Select File(s)', 'Please select Files')
 
             for fname in fileNameList:
                 fname = fname.split(".")[0]
                 fullname = fname + ".felix"
                 powerfile = fname + ".pow"
                 basefile = fname + ".base"
-                normrun(basefile, powerfile, fullname, for_normall_saveDialog)
-            completed(fileNameList)
+                if filecheck(my_path, basefile, powerfile, fullname):
+                    print(f'\nRunning File-->{fullname}')
+                    norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show, dpi)
+                print('\nNext File')
 
         print("DONE")
 
