@@ -83,7 +83,7 @@ def norm_line_felix(fname, mname, temp, bwidth, ie, foravgshow, dpi, parent):
 
         cx.plot(wavelength, intensity, ls='-', marker='o', ms=2, c='r', markeredgecolor='k', markerfacecolor='k')
         cx.set_xlabel("wn (cm-1)")
-        cx.set_ylabel("Normalised/PowerCalibrated Intensity")
+        cx.set_ylabel("PowerCalibrated Intensity")
         
         ax.set_title(f'{fname}: {mname} at {temp}K with B0:{round(bwidth)}ms and IE:{ie}eV')
 
