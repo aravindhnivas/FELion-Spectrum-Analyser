@@ -391,8 +391,7 @@ class Plot(Frame):
                 smooth_avg(
                         self.filelist, self.location, self.save.get(), self.show.get(), self.dpi.get(), self.show_original.get()
                 )
-
-                
+              
 #Closing Program
 def on_closing():
     if messagebox.askokcancel("Quit", "Do you want to quit?"):
