@@ -9,7 +9,12 @@ from FELion_definitions import ShowInfo, ErrorInfo, filecheck, move
 # DATA Analysis modules:
 import matplotlib.pyplot as plt
 import numpy as np
-from tkinter import Tk, messagebox
+
+# Embedding Matplotlib in tkinter window
+import tkinter as tk
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
+from matplotlib.backend_bases import key_press_handler  # Implement the default Matplotlib key bindings.
+from matplotlib.figure import Figure
 
 # Built-In modules
 import os, shutil
@@ -48,7 +53,12 @@ def norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show, dpi)
     PD=True
 
     if not foravgshow:
-        fig = plt.figure(figsize=(8, 8), dpi = dpi)
+        root = tk.Toplevel()
+        root.wm_title("Normalised")
+
+        ################################ PLOTTING DETAILS ########################################
+
+        fig = Figure(figsize=(8, 8), dpi = dpi)
         ax = fig.add_subplot(3,1,1)
         bx = fig.add_subplot(3,1,2)
         cx = fig.add_subplot(3,1,3)
@@ -86,15 +96,19 @@ def norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show, dpi)
         
         ax.set_title(f'{fname}: {mname} at {temp}K with B0:{round(bwidth)}ms and IE:{ie}eV')
 
-        if save:
-            fname = fname.replace('.','_')
-            plt.savefig('OUT/'+fname+'.pdf')
-            export_file(fname, wavelength, intensity)
+        ##################################################################################################
+        ##################################################################################################
 
-        if show:
-            plt.show()
+        # Drawing in the tkinter window
+        canvas = FigureCanvasTkAgg(fig, master = root)
+        canvas.draw()
+        canvas.get_tk_widget().pack(side = tk.TOP, fill = tk.BOTH, expand=1)
 
-        plt.close()
+        toolbar = NavigationToolbar2Tk(canvas, root)
+        toolbar.update()
+        canvas.get_tk_widget().pack(side = tk.TOP, fill = tk.BOTH, expand=1)
+
+        tk.mainloop()
 
     if foravgshow:
         saCal = SpectrumAnalyserCalibrator(fname)
