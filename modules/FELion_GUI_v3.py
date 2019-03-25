@@ -19,7 +19,7 @@ import numpy as np
 # Custom function modules
 from timescan_plot import timescanplot
 from depletion_plot import depletionPlot
-from just_plot import theory_exp, power_plot, plot
+from just_plot import theory_exp, power_plot, plot, smooth_avg
 from FELion_definitions import *
 
 #FELion modules
@@ -349,6 +349,7 @@ class Plot(Frame):
 
                 self.save = self.widget.entries('Check', 'Save', 0.4, 0.2, default = False)
                 self.show = self.widget.entries('Check', 'Show', 0.52, 0.2, default = True)
+                self.plot_vlines = self.widget.entries('Check', 'Vlines', 0.65, 0.4, default = False)
 
                 self.widget.labels('DPI', 0.65, 0.23)
                 self.dpi = self.widget.entries('Entry', 100, 0.75, 0.23, bd = 5)
@@ -362,6 +363,9 @@ class Plot(Frame):
 
                 self.widget.buttons('PowerPlot' , 0.4, 0.4, self.powerplot_func, help = 'For plotting .pow files')
                 self.widget.buttons('JustPlot' , 0.52, 0.4, self.just_plot_func, help = 'Use it to plot any file(s) with two columns')
+                self.widget.buttons('Avg-Theory' , 0.52, 0.55, self.avg_theory_func)
+                self.show_original = self.widget.entries('Check', 'Original', 0.52, 0.65, default = False)
+
 
         def timescan_func(self):
                 timescanplot(
@@ -381,8 +385,13 @@ class Plot(Frame):
                 )
         def just_plot_func(self):
                 plot(
-                        self.filelist, self.location, self.save.get(), self.show.get(), self.dpi.get()
+                        self.filelist, self.location, self.save.get(), self.show.get(), self.dpi.get(), self.plot_vlines.get()
                 )
+        def avg_theory_func(self):
+                smooth_avg(
+                        self.filelist, self.location, self.save.get(), self.show.get(), self.dpi.get(), self.show_original.get()
+                )
+
                 
 #Closing Program
 def on_closing():

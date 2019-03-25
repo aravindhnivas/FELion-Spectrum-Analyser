@@ -1,10 +1,20 @@
 #!/usr/bin/python3
 
+# Impoerting Modules
+
+# DATA analysis modules
 import matplotlib.pyplot as plt
 import numpy as np
-import os
 from scipy.interpolate import interp1d as interpolate
+from scipy.signal import savgol_filter as fit
+from glob2 import glob
+
+# FELion Module
 from FELion_definitions import colors, ShowInfo
+
+# Built-In Module
+import os
+
 
 def theory_exp(filelists, exp, location, save, show, dpi):
 
@@ -65,19 +75,75 @@ def power_plot(powerfiles, location, save, show, dpi):
         if save: plt.savefig('power_combined.png')
         plt.close()
 
-def plot(filelist, location, save, show, dpi):
+def plot(filelist, location, save, show, dpi, vline):
         
         os.chdir(location)
 
         fig, ax = plt.subplots(dpi = dpi)
-
-        for i in filelist:
+        n = 0
+        for i in filelist:   
                 data = np.genfromtxt(i)
                 x, y = data[:,0], data[:,1]
-                ax.plot(x, y, label = i)
+                if not vline: ax.plot(x, y, label = i)
+                else: ax.vlines(x, ymin=0, ymax=y, color = colors[n], lw = 2, label = i)
+                print(f'Color-->{colors[n]}\n')
+                n += 1
 
         ax.legend()
         ax.set_xlabel("Wavenumber(cm-1)")
+        ax.grid(True)
+
+        if show: plt.show()
+        
+        if save: 
+                plt.savefig('combined.png')
+                ShowInfo("SAVED:", "Filename: combined.png")
+
+        plt.close()
+
+
+def smooth_avg(filelist, location, save, show, dpi, original_show):
+        
+        os.chdir(location)
+        dat = [i for i in filelist if i.find('.dat')>=0]
+        tsv = [i for i in filelist if i.find('.tsv')>=0]
+
+        fig, ax = plt.subplots(dpi = dpi)
+
+        y_list = []
+        n = 0
+        for i in dat:
+                if i.find('.dat')>=0:
+                        data = np.genfromtxt(i)
+                        x, y = data[:,0], data[:,1]
+                        
+                        y_fit = np.array(fit(y, 21, 3))
+                        y_list.append(y_fit.max())
+                        if original_show: 
+                                ax.plot(x, y, label = f'{i}_Original')
+                                ax.plot(x, y_fit, label = f'{i}_fit')
+                        else: ax.plot(x, y_fit, '--' , alpha = 0.7, label = f'{i}')
+        
+        y_list = np.array(y_list)
+
+        n = 0
+        for i in tsv:
+                data = np.genfromtxt(i)
+                x, y = data[:,0], data[:,1]
+                print(f'Y:{y.shape}')
+                y = y/y.max()*y_list.max()
+                ax.vlines(x, ymin = 0, ymax = y, color = colors[n], lw = 2, label = i)
+                n += 1
+
+        #ax.legend()
+        box = ax.get_position()
+        ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
+
+        # Put a legend to the right of the current axis
+        ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+
+        ax.set_xlabel("Wavenumber(cm-1)")
+        ax.set_ylabel("Nomalised")
         ax.grid(True)
 
         if show: plt.show()

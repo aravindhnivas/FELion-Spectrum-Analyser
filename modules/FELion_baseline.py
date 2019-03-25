@@ -10,12 +10,11 @@ import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 from matplotlib.artist import Artist
 from matplotlib.mlab import dist_point_to_segment
+
 from scipy.interpolate import interp1d
-
-from matplotlib.figure import Figure as fig
-
 import os
 from os.path import dirname, isdir, isfile, join
+
 import shutil
 from tkinter import Tk, messagebox
 
