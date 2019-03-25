@@ -27,7 +27,7 @@ def avgSpec_plot(*args):
     t, ts, lgs, minor, major, majorTickSize, markersz,\
     xlabelsz, ylabelsz, fwidth, fheight, outFilename,\
     location, mname, temp, bwidth, ie,\
-    save, show, DELTA, fileNameList, dpi = args
+    save, show, DELTA, fileNameList, dpi, parent = args
 
     def filesaved():
         if os.path.isfile(my_path+"/OUT/{}.pdf".format(outFilename)) and save:
@@ -72,7 +72,7 @@ def avgSpec_plot(*args):
             for filenames in files:
                 if isfile(filenames): move(my_path, filenames)
 
-            a,b = norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, normshow, dpi)
+            a,b = norm_line_felix(fname, mname, temp, bwidth, ie, foravgshow, dpi, parent)
             fig.plot(a, b, ls='', marker='o', ms=markersz, label=fname)
             xs = np.append(xs,a)
             ys = np.append(ys,b)

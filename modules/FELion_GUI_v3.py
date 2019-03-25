@@ -134,7 +134,7 @@ class FELion(Tk):
 class StartPage(Frame):
 
         def __init__(self, parent, controller):
-                Frame.__init__(self,parent, bg="sea green")
+                Frame.__init__(self, parent, bg="sea green")
 
                 self.widget = FELion_widgets(self)
 
@@ -153,7 +153,9 @@ class StartPage(Frame):
 class Normline(Frame):
 
         def __init__(self, parent, controller):
-                Frame.__init__(self,parent, bg="sea green")
+                Frame.__init__(self, parent, bg="sea green")
+
+                self.parent = parent
                 self.location = "/"
                 self.fname = ""
                 self.filelist = []
@@ -206,10 +208,7 @@ class Normline(Frame):
         def Normline_func(self):
                 
                 normline_correction(
-                        self.fname, self.location,
-                        self.mname.get(), self.temp.get(), self.bwidth.get(), self.ie.get(),
-                        self.normavg_saveCheck_value.get(),
-                        self.foravgshow, self.normallCheck_value.get(), self.filelist, self.norm_show_value.get(), self.dpi.get()
+                        self.fname, self.location, self.mname.get(), self.temp.get(), self.bwidth.get(), self.ie.get(), self.foravgshow, self.dpi.get(), self.parent
                 )
         
         def Avg_spectrum_func(self):
@@ -218,7 +217,7 @@ class Normline(Frame):
                         self.avg_major.get(), self.avg_majorTick.get(), self.avg_markersz.get(),
                         self.avg_xlabelsz.get(), self.avg_ylabelsz.get(), self.avg_fwidth.get(), self.avg_fheight.get(), self.output_filename.get(),
                         self.location, self.mname.get(), self.temp.get(), self.bwidth.get(), self.ie.get(),
-                        self.normavg_saveCheck_value.get(), self.norm_show_value.get(), self.delta.get(), self.filelist, self.dpi.get()
+                        self.normavg_saveCheck_value.get(), self.norm_show_value.get(), self.delta.get(), self.filelist, self.dpi.get(), self.parent
                 )
 
         def SA(self):

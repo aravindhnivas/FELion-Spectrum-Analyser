@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Embedding Matplotlib in tkinter window
-import tkinter as tk
+from tkinter import *
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from matplotlib.backend_bases import key_press_handler  # Implement the default Matplotlib key bindings.
 from matplotlib.figure import Figure
@@ -19,7 +19,6 @@ from matplotlib.figure import Figure
 # Built-In modules
 import os, shutil
 from os.path import dirname, isdir, isfile, join
-
 
 ################################################################################
 
@@ -31,30 +30,14 @@ def export_file(fname, wn, inten):
         f.write("{:8.3f}\t{:8.2f}\n".format(wn[i], inten[i]))
     f.close()
 
-def norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show, dpi):
-
-    """
-    Reads data from felix meassurement file and 
-    calculates the calibrated wavenumber and calibrated/normalised
-    intensity for every single poitnt
-    1. for this to work, baseline, power and num_shots data has to be present! 
-
-    Input: filename       save = False by default (produce output pdf file)
-    Output: data[0,1]     0 - wavenumber, 1 - intensity
-    """
-
-    if(fname.find('DATA')):
-        fname = fname.split('/')[-1]
-
-    if(fname.find('felix')):
-        fname = fname.split('.')[0]
+def norm_line_felix(fname, mname, temp, bwidth, ie, foravgshow, dpi, parent):
     
     data = felix_read_file(fname)
     PD=True
 
     if not foravgshow:
-        root = tk.Toplevel()
-        root.wm_title("Normalised")
+        root = Toplevel(master = parent)
+        root.wm_title("Power Calibrated/Normalised Spectrum")
 
         ################################ PLOTTING DETAILS ########################################
 
@@ -79,7 +62,7 @@ def norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show, dpi)
         #Get the spectrum analyser
         saCal = SpectrumAnalyserCalibrator(fname)
         saCal.plot(bx)
-        bx.set_ylabel("SA")   
+        bx.set_ylabel("SA")
 
         #Calibrate X for all the data points
         wavelength = saCal.sa_cm(data[0])
@@ -93,8 +76,13 @@ def norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show, dpi)
 
         cx.plot(wavelength, intensity, ls='-', marker='o', ms=2, c='r', markeredgecolor='k', markerfacecolor='k')
         cx.set_xlabel("wn (cm-1)")
+        cx.set_ylabel("Normalised/PowerCalibrated Intensity")
         
         ax.set_title(f'{fname}: {mname} at {temp}K with B0:{round(bwidth)}ms and IE:{ie}eV')
+
+        ax.grid(True)
+        bx.grid(True)
+        cx.grid(True)
 
         ##################################################################################################
         ##################################################################################################
@@ -102,13 +90,24 @@ def norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show, dpi)
         # Drawing in the tkinter window
         canvas = FigureCanvasTkAgg(fig, master = root)
         canvas.draw()
-        canvas.get_tk_widget().pack(side = tk.TOP, fill = tk.BOTH, expand=1)
+        canvas.get_tk_widget().pack(side = TOP, fill = BOTH, expand = 1)
 
         toolbar = NavigationToolbar2Tk(canvas, root)
         toolbar.update()
-        canvas.get_tk_widget().pack(side = tk.TOP, fill = tk.BOTH, expand=1)
+        canvas.get_tk_widget().pack(side = TOP, fill = BOTH, expand = 1)
 
-        tk.mainloop()
+        frame = Frame(root)
+        frame.pack(side = 'bottom', fill = 'both', expand = True)
+
+        name = StringVar()
+        filename = Entry(frame, textvariable = name)
+        filename.place(relx = 0, rely = 0)
+
+        def on_key_press(event): 
+            key_press_handler(event, canvas, toolbar)
+
+        canvas.mpl_connect("key_press_event", on_key_press)
+        root.mainloop()
 
     if foravgshow:
         saCal = SpectrumAnalyserCalibrator(fname)
@@ -182,8 +181,7 @@ def main(s=True, plotShow=False):
 
 
 def normline_correction(*args):
-    fname, location, mname, temp, bwidth, ie, save, foravgshow, normall, fileNameList, show, dpi = args
-    print(f'\nPlotAll-->{normall}\nShow-->{show}\nSave-->{save}')
+    fname, location, mname, temp, bwidth, ie, foravgshow, dpi, parent = args
 
     try:
         folders = ["DATA", "EXPORT", "OUT"]
@@ -209,29 +207,9 @@ def normline_correction(*args):
             if not isdir(dirs): os.mkdir(dirs)
             if isfile(filenames): move(my_path, filenames)
 
-        if not normall:
-            if filecheck(my_path, basefile, powerfile, fullname):
-                norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show, dpi)
-            if save and isfile(join(my_path, 'OUT', f'{fname}.pdf')): ShowInfo('SAVED', f'File {fname}.pdf for {fullname} saved in /OUT directory.')
-
-        if normall:
-            print(f'\nFile Lists-->{fileNameList}\nTotal files-->{len(fileNameList)}')
-
-            if len(fileNameList) is 0: return ShowInfo('Select File(s)', 'Please select Files')
-
-            for fname in fileNameList:
-                fname = fname.split(".")[0]
-                fullname = fname + ".felix"
-                powerfile = fname + ".pow"
-                basefile = fname + ".base"
-
-                if filecheck(my_path, basefile, powerfile, fullname):
-                    print(f'\nRunning File-->{fullname}')
-                    norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show, dpi)
-
-                print('\nNext File')
-
-            if save: ShowInfo('SAVED', f'Files are saved in /OUT directory.')
+        if filecheck(my_path, basefile, powerfile, fullname):
+            print(f'\nFilename-->{fullname}\nLocation-->{my_path}')
+            norm_line_felix(fname, mname, temp, bwidth, ie, foravgshow, dpi, parent)
 
         print("DONE")
 
