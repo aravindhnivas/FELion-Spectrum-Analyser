@@ -4,19 +4,18 @@ from tkinter import *
 from tkinter import ttk, messagebox
 from tkinter.filedialog import askopenfilenames, askopenfilename, askdirectory
 import os, shutil, tempfile, git, subprocess, sys
-from os.path import isdir, dirname, join
-from tempfile import TemporaryDirectory
+from os.path import isdir, dirname, join, isfile
+
 import datetime
+import numpy as np
 
 # General functions:
 copy = lambda pathdir, x: (shutil.copyfile(join(pathdir, x), join(pathdir,"DATA" ,x)), print("%s copied to DATA folder" %x))
 move = lambda pathdir, x: (shutil.move(join(pathdir, x), join(pathdir,"DATA" ,x)), print("%s moved to DATA folder"%x))
 
-copy1 = lambda pathdir, folder, file: (shutil.copyfile(join(pathdir, file), join(pathdir, folder ,file)), print("%s copied to %s folder" %(file, folder)))
-move1 = lambda pathdir, folder, file: (shutil.move(join(pathdir, file), join(pathdir, folder ,file)), print("%s moved to %s folder"%(file, folder)))
+colors = ['C0', 'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'C9']
 
 # Tkinter messagebox
-
 def ErrorInfo(error, msg):
     root = Tk()
     root.withdraw()
@@ -28,6 +27,38 @@ def ShowInfo(info, msg):
     root.withdraw()
     messagebox.showinfo(str(info), str(msg))
     root.destroy()
+
+
+# Normline Filecheck method
+
+def filecheck(my_path, basefile, powerfile, fullname):
+    
+    #File check
+    if not isfile(join(my_path, "DATA", fullname)):
+        if isfile(join(my_path, fullname)):
+            move(my_path, fullname)
+        else:
+            return ErrorInfo("ERROR: ", "File %s NOT found"%fullname)
+
+    #Powefile check
+    if not isfile(join(my_path, "DATA", powerfile)):
+        if isfile(join(my_path, 'Pow', powerfile)):
+            shutil.move(join(my_path, "Pow", powerfile), join(my_path,"DATA"))
+
+        elif isfile(join(my_path, powerfile)):
+            move(my_path, powerfile)
+        
+        else:
+            return ErrorInfo("ERROR: ", "Powerfile: %s NOT found"%powerfile)
+
+    #Basefile check
+    if not isfile(join(my_path, "DATA", basefile)):
+        if isfile(join(my_path, basefile)):
+            move(my_path, basefile)
+        else:
+            return ErrorInfo("ERROR: ", "Basefile: %s NOT found"%basefile)
+
+    return True
 
 # Update modules
 
@@ -63,7 +94,6 @@ def update(*args):
 
 #################### constants ###############################
 constants = {
-
     'width':50,
     'height':50,
     'font':("Verdana", 10, "italic"),
@@ -74,7 +104,7 @@ constants = {
     'relwidth': 0.1,
     'relheight': 0.06,
     'justify': 'left',
-
+    'label': '',
 }
 
 welcome_msg = """
@@ -107,7 +137,6 @@ all_files_type = ("All files", "*")
 LARGE_FONT= ("Verdana", 15)
 
 #################### Definitions #############################
-
 def var_check(kw):
     for i in constants:
         if not i in list(kw.keys()):
@@ -144,71 +173,57 @@ def outFile(fname, location, file):
     except Exception as e:
             ErrorInfo("ERROR", e)
 
+def var_find(fname, location):
+    print(f'###############\nFile: {fname}\nLocation: {location}\n###############')
+
+    if not fname is '':
+        os.chdir(location)
+        var = {'res':'m03_ao13_reso', 'b0':'m03_ao09_width', 'trap': 'm04_ao04_sa_delay'}
+        print(var)
+
+        with open(fname, 'r') as f:
+            f = np.array(f.readlines())
+        for i in f:
+            if not len(i.strip())==0 and i.split()[0]=='#':
+                for j in var:
+                    if var[j] in i.split():
+                        var[j] = float(i.split()[-3])
+
+        res, b0, trap = round(var['res'], 1), int(var['b0']/1000), int(var['trap']/1000)
+        print(var)
+
+        return res, b0, trap
+    else:
+        return 0, 0, 0
 ##############################################################
-
-class Entry_widgets(Frame):
-    
-    def __init__(self, parent, method,  *args, **kw):
-        Frame.__init__(self, parent)
-        self.widget = FELion_widgets(self)
-
-        self.parent = parent
-        self.txt, x, y = args[0], args[1], args[2]
-        kw = var_check(kw)
-        
-        if method == 'Entry':
-            if isinstance(self.txt, str): self.value = StringVar()
-            elif isinstance(self.txt, int): self.value = IntVar()
-            elif isinstance(self.txt, tuple): self.value = StringVar()
-                
-            self.value.set(self.txt)
-            self.entry = Entry(self.parent, bg = kw['bg'], bd = kw['bd'], textvariable = self.value, font = kw['font'])
-            self.entry.place(relx = x, rely = y, anchor = kw['anchor'], relwidth = kw['relwidth'], relheight = kw['relheight'])
-          
-        elif method == 'Check':
-            self.value = BooleanVar()
-            if 'default' in kw: self.value.set(kw['default'])
-            else: self.value.set(False)
-
-            self.Check = ttk.Checkbutton(self.parent, text = self.txt, variable = self.value)
-            self.Check.place(relx = x, rely = y, relwidth = kw['relwidth'], relheight = kw['relheight'])
-        
-        elif method == 'power_box':
-            self.T = Text(self.parent)
-            self.S = Scrollbar(self.parent)
-            self.T.config(yscrollcommand = self.S.set)
-            self.S.config(command = self.T.yview)
-            
-            self.T.insert(END, self.txt)
-
-            self.T.place(relx = x,  rely = y, relwidth = 0.7, relheight = 0.4)
-            self.S.place(relx = x + 0.7,  rely = y, width = 15, relheight = 0.4)
-     
-    def get(self):
-        return self.value.get()
-    
-    def power_get(self):
-        return self.T.get("1.0", "end-1c")
-
 class FELion_widgets(Frame):
     
-    def __init__(self, parent):
+    def __init__(self, parent, *args, **kw):
         Frame.__init__(self, parent)
-        
-        ## Initial parameters:
         self.parent = parent
         self.location = "/"
         self.fname = ""
         self.filelist = []
+
+        if 'cnt' in kw:
+            self.cnt = kw['cnt']
               
     def labels(self, *args, **kw):
-        self.txt = args[0]
+        txt = args[0]
         x, y = args[1], args[2]
         kw = var_check(kw)
         
-        self.label = Label(self.parent, text = self.txt, justify = kw['justify'], font = kw['font'], bg = kw['bg'], bd = kw['bd'], relief = kw['relief'])
+        self.parent.txt = Label(self.parent, text = txt, justify = kw['justify'], font = kw['font'], bg = kw['bg'], bd = kw['bd'], relief = kw['relief'])
+        self.parent.txt.place(relx = x, rely = y, anchor = kw['anchor'], relwidth = kw['relwidth'], relheight = kw['relheight'])
 
-        self.label.place(relx = x, rely = y, anchor = kw['anchor'], relwidth = kw['relwidth'], relheight = kw['relheight'])
+        if 'help' in kw:
+            on_enter = lambda x: self.cnt.statusBar_left.config(text = kw['help'])
+            on_leave = lambda x: self.cnt.statusBar_left.config(text = self.cnt.statusBar_left_text)
+
+            self.parent.txt.bind('<Enter>', on_enter)
+            self.parent.txt.bind('<Leave>', on_leave)
+
+        return self.parent.txt
 
     def buttons(self, *args, **kw):
         btn_txt = args[0]
@@ -224,6 +239,65 @@ class FELion_widgets(Frame):
             self.button = ttk.Button(self.parent, text = btn_txt, command = lambda: func())  
         
         self.button.place(relx = x, rely = y, relwidth = kw['relwidth'], relheight = kw['relheight'])
+
+        if 'help' in kw:
+            on_enter = lambda x: self.cnt.statusBar_left.config(text = kw['help'])
+            on_leave = lambda x: self.cnt.statusBar_left.config(text = self.cnt.statusBar_left_text)
+
+            self.button.bind('<Enter>', on_enter)
+            self.button.bind('<Leave>', on_leave)
+
+    def entries(self, method,  *args, **kw):
+        txt, x, y = args[0], args[1], args[2]
+        kw = var_check(kw)
+        
+        if method == 'Entry':
+            if isinstance(txt, str): self.parent.txt = StringVar()
+            elif isinstance(txt, int): self.parent.txt = DoubleVar()
+                
+            self.parent.txt.set(txt)
+            self.parent.entry = Entry(self.parent, bg = kw['bg'], bd = kw['bd'], textvariable = self.parent.txt, font = kw['font'])
+            self.parent.entry.place(relx = x, rely = y, anchor = kw['anchor'], relwidth = kw['relwidth'], relheight = kw['relheight'])
+            
+            if 'help' in kw:
+                on_enter = lambda x: self.cnt.statusBar_left.config(text = kw['help'])
+                on_leave = lambda x: self.cnt.statusBar_left.config(text = self.cnt.statusBar_left_text)
+
+                self.parent.entry.bind('<Enter>', on_enter)
+                self.parent.entry.bind('<Leave>', on_leave)
+            
+            
+            return self.parent.txt
+
+        elif method == 'Check':
+            self.parent.txt = BooleanVar()
+            if 'default' in kw: self.parent.txt.set(kw['default'])
+            else: self.parent.txt.set(False)
+
+            self.parent.Check = ttk.Checkbutton(self.parent, text = txt, variable = self.parent.txt)
+            self.parent.Check.place(relx = x, rely = y, relwidth = kw['relwidth'], relheight = kw['relheight'])
+
+            if 'help' in kw:
+                on_enter = lambda x: self.cnt.statusBar_left.config(text = kw['help'])
+                on_leave = lambda x: self.cnt.statusBar_left.config(text = self.cnt.statusBar_left_text)
+
+                self.parent.Check.bind('<Enter>', on_enter)
+                self.parent.Check.bind('<Leave>', on_leave)
+
+            return self.parent.txt
+        
+        elif method == 'power_box':
+            self.parent.T = Text(self.parent)
+            self.parent.S = Scrollbar(self.parent)
+            self.parent.T.config(yscrollcommand = self.parent.S.set)
+            self.parent.S.config(command = self.parent.T.yview)
+            
+            self.parent.T.insert(END, txt)
+
+            self.parent.T.place(relx = x,  rely = y, relwidth = 0.7, relheight = 0.4)
+            self.parent.S.place(relx = x + 0.7,  rely = y, width = 15, relheight = 0.4)
+
+            return self.parent.T
 
     def open_dir(self, file_type):
         root = Tk()
@@ -258,13 +332,9 @@ class FELion_widgets(Frame):
         return self.filelist, self.location
 
     def open_full_dir(self):
-
         root = Tk()
         root.withdraw()
-
         root.directory =  askdirectory()
         self.location = root.directory
-
         root.destroy()
-        
-        return self.location
+        return self.location        

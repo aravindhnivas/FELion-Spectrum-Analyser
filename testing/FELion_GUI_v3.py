@@ -1,13 +1,26 @@
 #!/usr/bin/python3
+## Imported Modules Informations
+
+# tkinter modules
 from tkinter import *
 from tkinter import ttk, messagebox, filedialog
+from tkinter.filedialog import askopenfilenames, askopenfilename
+
+# Built-In modules
 import os
+from os.path import join
 import shutil
 import datetime
-import matplotlib.pyplot as plt
 
+# Data analysis and plotting modules
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Custom function modules
 from timescan_plot import timescanplot
 from depletion_plot import depletionPlot
+from just_plot import theory_exp, power_plot, plot, smooth_avg
+from FELion_definitions import *
 
 #FELion modules
 from FELion_massSpec import massSpec
@@ -15,23 +28,18 @@ from FELion_avgSpec import avgSpec_plot
 from FELion_normline import normline_correction, show_baseline
 from FELion_power import FELion_Power
 from FELion_sa import FELion_Sa
-from FELion_definitions import *
 
-from tkinter.filedialog import askopenfilenames, askopenfilename
-from os.path import join
-
-import numpy as np
-from just_plot import theory_exp, power_plot
-
+# Make the window not to change the scale of this tkinter dpi application
+import ctypes
+ctypes.windll.shcore.SetProcessDpiAwareness(0)
 
 class FELion(Tk):
         
         def __init__(self, *args, **kwargs):
-
                 Tk.__init__(self, *args, **kwargs)
 
-                Tk.iconbitmap(self,default='C:/FELion-GUI/software/FELion_Icon.ico')
-                Tk.wm_title(self, "FELion-Spectrum Analyser v3.0")
+                Tk.iconbitmap(self, default='C:/FELion-GUI/software/FELion_Icon.ico')
+                Tk.wm_title(self, "FELion-Spectrum Analyser v.3.0")
                 Tk.wm_geometry(self, "1000x600")
         
                 container = Frame(self)
@@ -39,20 +47,20 @@ class FELion(Tk):
                 container.grid_rowconfigure(0, weight=1)
                 container.grid_columnconfigure(0, weight=1)
 
-                StatusBarFrame = Frame(self)
-                StatusBarFrame.pack(side = "bottom", fill = "both", expand = False)
+                self.StatusBarFrame = Frame(self)
+                self.StatusBarFrame.pack(side = "bottom", fill = "both", expand = False)
 
-                statusBar_left_text = "Version 3.0"
-                statusBar_left = Label(StatusBarFrame)
-                statusBar_left.config(text = statusBar_left_text, \
+                self.statusBar_left_text = "Version 3.0"
+                self.statusBar_left = Label(self.StatusBarFrame)
+                self.statusBar_left.config(text = self.statusBar_left_text, \
                 relief = SUNKEN, bd = 2, font = "Times 10 italic", pady = 5, anchor = "w")
-                statusBar_left.pack(side = "top", fill = "both", expand = True)
+                self.statusBar_left.pack(side = "top", fill = "both", expand = True)
 
-                statusBar_right_text = "Developed at dr. Sandra's Lab FELIX"
-                statusBar_right = Label(StatusBarFrame)
-                statusBar_right.config(text = statusBar_right_text, \
+                self.statusBar_right_text = "Developed at dr. Sandra's Lab FELIX"
+                self.statusBar_right = Label(self.StatusBarFrame)
+                self.statusBar_right.config(text = self.statusBar_right_text, \
                 relief = SUNKEN, bd = 2, font = "Times 10 italic", pady = 5, anchor = "e")
-                statusBar_right.pack(side = "top", fill = "both", expand = True)
+                self.statusBar_right.pack(side = "top", fill = "both", expand = True)
 
                 self.frames = {}
 
@@ -69,57 +77,64 @@ class FELion(Tk):
                 frame = self.frames[cont]
                 frame.tkraise()
 
-        def open_dir(self, cnt, x, y, type_file):
+        def open_dir(self, cnt, type_file):
                 cnt.fname, cnt.location = cnt.widget.open_dir(type_file)
-                cnt.full_name = os.sep.join([cnt.location, cnt.fname])
+                cnt.full_name = join(cnt.location, cnt.fname)
 
-                cnt.widget.labels(
-                        cnt.location, x, y, 
-                        bd = 0,
-                        relwidth = 0.5, relheight = 0.06
-                )
+                if hasattr(cnt, 'location_label'): cnt.location_label.config(text = cnt.location)
+                if hasattr(cnt, 'fname_label'): cnt.fname_label.config(text = cnt.fname)
 
-                cnt.widget.labels(
-                        cnt.fname, x, y+0.1, 
-                        bd = 0,
-                        relwidth = 0.15, relheight = 0.06
-                )
+                if hasattr(cnt, 'bwidth'):
+                        cnt.res, cnt.b0, cnt.trap_ms = var_find(cnt.fname, cnt.location)
+                        cnt.bwidth.set(cnt.b0)
+                        cnt.trap.set(cnt.trap_ms)
 
-        def openfilelist(self, cnt, x1, y1, x2, y2, type_file):
+        def openfilelist(self, cnt, type_file):
                 cnt.filelist, cnt.location = cnt.widget.openfilelist(type_file)
 
-                cnt.widget.labels(
-                        cnt.location, 
-                        x1, y1, 
-                        bd = 0,
-                        relwidth = 0.5, relheight = 0.06
-                )
-                        
-                cnt.widget.labels(
-                        '\n'.join(cnt.filelist), 
-                        x2, y2, 
-                        bd = 0,
-                        relwidth = 0.15, relheight = 0.2
-                )
+                if hasattr(cnt, 'location_label'): cnt.location_label.config(text = cnt.location)
+                if hasattr(cnt, 'flist_label'): cnt.flist_label.config(text = '\n'.join(cnt.filelist))
 
         def init_labels(self, cnt):
-                label1 = ('Molecule', 'TEMP(K)', 'B0 Width(ms)', 'IE(eV)', 'Trap(ms)')
-
+                label1 = ('Molecule', 'TEMP(K)', 'B0 Width(ms)', 'IE(eV)', 'Trap(ms)', 'DPI')
+                label2 = ('Title', 'Size\n(Title,Legend)', 'X-axis\nticks div:', 'Major_TickSz,\nMarkerSz', 'Output', 'X,Y,Wid,Ht', )
                 y_ = 0.34
-                for i in label1:
+                for i, j in zip(label1, label2):
                         cnt.widget.labels(i, 0.1, y_)
+                        cnt.widget.labels(j, 0.4, y_)
                         y_ += 0.1
                 
-                cnt.mname = Entry_widgets(cnt, 'Entry', 'Molecule', 0.25, 0.34, bd = 5)
-                cnt.temp = Entry_widgets(cnt, 'Entry', 0, 0.25, 0.44, bd = 5)
-                cnt.bwidth = Entry_widgets(cnt, 'Entry', 0, 0.25, 0.54, bd = 5)
-                cnt.ie = Entry_widgets(cnt, 'Entry', 0, 0.25, 0.64, bd = 5)
-                cnt.trap = Entry_widgets(cnt, 'Entry', 0, 0.25, 0.74, bd = 5)
+                cnt.mname = cnt.widget.entries('Entry', 'Molecule', 0.25, 0.34, bd = 5)
+                cnt.temp = cnt.widget.entries('Entry', 0, 0.25, 0.44, bd = 5)
+                cnt.bwidth = cnt.widget.entries('Entry', 0, 0.25, 0.54, bd = 5)
+                cnt.ie = cnt.widget.entries('Entry', 0, 0.25, 0.64, bd = 5)
+                cnt.trap = cnt.widget.entries('Entry', 0, 0.25, 0.74, bd = 5)
+                cnt.dpi = cnt.widget.entries('Entry', 100, 0.25, 0.84, bd = 5)
 
+                cnt.avg_title = cnt.widget.entries('Entry',  'Title' , 0.55, 0.34, bd = 2)
+                cnt.avg_ts = cnt.widget.entries('Entry',  15 , 0.55, 0.44, bd = 2, relwidth = 0.05)
+                cnt.avg_lgs = cnt.widget.entries('Entry',  10 , 0.6, 0.44, bd = 2, relwidth = 0.05)
+
+                cnt.avg_minor = cnt.widget.entries('Entry',  20 , 0.55, 0.54, bd = 2, relwidth = 0.05)
+                cnt.avg_major = cnt.widget.entries('Entry',  100 , 0.6, 0.54, bd = 2, relwidth = 0.05)
+
+                cnt.avg_majorTick = cnt.widget.entries('Entry',  15 , 0.55, 0.64, bd = 2, relwidth = 0.05)
+                cnt.avg_markersz = cnt.widget.entries('Entry',  2 , 0.6, 0.64, bd = 2, relwidth = 0.05)
+
+                cnt.output_filename = cnt.widget.entries('Entry',  'Average' , 0.55, 0.74, bd = 2)
+                
+                cnt.avg_xlabelsz = cnt.widget.entries('Entry',  15 , 0.55, 0.84, bd = 2, relwidth = 0.05)
+                cnt.avg_ylabelsz = cnt.widget.entries('Entry',  15 , 0.6, 0.84, bd = 2, relwidth = 0.05)
+                cnt.avg_fwidth = cnt.widget.entries('Entry',  10 , 0.65, 0.84, bd = 2, relwidth = 0.05)
+                cnt.avg_fheight = cnt.widget.entries('Entry',  5 , 0.7, 0.84, bd = 2, relwidth = 0.05)
+
+        def __repr__(self):
+                return 'FELion Tkinter Tk() Class'
+    
 class StartPage(Frame):
 
         def __init__(self, parent, controller):
-                Frame.__init__(self,parent, bg="sea green")
+                Frame.__init__(self, parent, bg="sea green")
 
                 self.widget = FELion_widgets(self)
 
@@ -138,7 +153,16 @@ class StartPage(Frame):
 class Normline(Frame):
 
         def __init__(self, parent, controller):
-                Frame.__init__(self,parent, bg="sea green")
+                Frame.__init__(self, parent, bg="sea green")
+
+                self.parent = parent
+                self.location = "/"
+                self.fname = ""
+                self.filelist = []
+                self.foravgshow = False
+                self.b0, self.trap = None, None
+                self.mname, self.temp, self.bwidth, self.ie = None, None, None, None
+
                 self.widget = FELion_widgets(self)
 
                 self.widget.labels('Normline', 0, 0.05, bg="sea green", font = LARGE_FONT, relwidth = 1, relheight = 0.05)
@@ -151,19 +175,18 @@ class Normline(Frame):
                         self.widget.buttons(name , x, y, controller.show_frame, pages_n)
                         x += 0.15
 
-                self.widget.buttons('Browse' , 0.1, 0.1, controller.open_dir, self, 0.22, 0.14, felix_files_type)
+                self.widget.buttons('Browse' , 0.1, 0.1, controller.open_dir, self, felix_files_type)
                 self.widget.labels('Filename', 0.1, 0.24)
-
-                self.location = "/"
-                self.fname = ""
-                self.filelist = []
-                self.foravgshow = False
-
+                
                 controller.init_labels(self)
 
-                self.normavg_saveCheck_value = Entry_widgets(self, 'Check', 'Save', 0.7, 0.3, default = False)
-                self.normallCheck_value = Entry_widgets(self, 'Check', 'Plot all', 0.7, 0.4, default = False)
-                self.norm_show_value = Entry_widgets(self, 'Check', 'Show', 0.84, 0.3, default = True)
+                self.location_label = self.widget.labels(self.location, 0.22, 0.14, bd = 0, relwidth = 0.7, relheight = 0.06)
+                self.fname_label = self.widget.labels(self.fname, 0.22, 0.24, bd = 0, relwidth = 0.15, relheight = 0.06)
+                self.flist_label = self.widget.labels('Filelists', 0.84, 0.7, bd = 0, relwidth = 0.15, relheight = 0.2)
+
+                self.normavg_saveCheck_value = self.widget.entries('Check', 'Save', 0.7, 0.3, default = False)
+                self.normallCheck_value = self.widget.entries('Check', 'Plot all', 0.7, 0.4, default = False)
+                self.norm_show_value = self.widget.entries('Check', 'Show', 0.84, 0.3, default = True)
 
                 
                 self.widget.buttons('Normline' , 0.7, 0.5, self.Normline_func)
@@ -171,49 +194,21 @@ class Normline(Frame):
                 # avg_labels's label:
                 self.widget.labels('For Average Spectrum', 0.4, 0.24, bd = 2,  relwidth = 0.2)
                 self.widget.labels('DELTA', 0.7, 0.24)
-                self.delta = Entry_widgets(self, 'Entry', 2, 0.84, 0.24, bd = 5)
-
-                # Avg_Spectrum Labels:
-                label2 = ('Title', 'Size\n(Title,Legend)', 'X-axis\nticks div:', 'Major_TickSz,\nMarkerSz', 'Output', 'X,Y,Wid,Ht', )
-
-                y_ = 0.34
-                for i in label2:
-                        self.widget.labels(i, 0.4, y_)
-                        y_ += 0.1
+                self.delta = self.widget.entries('Entry', 2, 0.84, 0.24, bd = 5)
                 
                 #Avg_Spectrum Button
                 self.widget.buttons('Avg_spectrum' , 0.84, 0.5, self.Avg_spectrum_func)
-
-                self.avg_title = Entry_widgets(self, 'Entry',  'Title' , 0.55, 0.34, bd = 2)
-                self.avg_ts = Entry_widgets(self, 'Entry',  15 , 0.55, 0.44, bd = 2, relwidth = 0.05)
-                self.avg_lgs = Entry_widgets(self, 'Entry',  10 , 0.6, 0.44, bd = 2, relwidth = 0.05)
-
-                self.avg_minor = Entry_widgets(self, 'Entry',  20 , 0.55, 0.54, bd = 2, relwidth = 0.05)
-                self.avg_major = Entry_widgets(self, 'Entry',  100 , 0.6, 0.54, bd = 2, relwidth = 0.05)
-
-                self.avg_majorTick = Entry_widgets(self, 'Entry',  15 , 0.55, 0.64, bd = 2, relwidth = 0.05)
-                self.avg_markersz = Entry_widgets(self, 'Entry',  2 , 0.6, 0.64, bd = 2, relwidth = 0.05)
-
-                self.output_filename = Entry_widgets(self, 'Entry',  'Average' , 0.55, 0.74, bd = 2)
-                
-                self.avg_xlabelsz = Entry_widgets(self, 'Entry',  15 , 0.55, 0.84, bd = 2, relwidth = 0.05)
-                self.avg_ylabelsz = Entry_widgets(self, 'Entry',  15 , 0.6, 0.84, bd = 2, relwidth = 0.05)
-                self.avg_fwidth = Entry_widgets(self, 'Entry',  10 , 0.65, 0.84, bd = 2, relwidth = 0.05)
-                self.avg_fheight = Entry_widgets(self, 'Entry',  5 , 0.7, 0.84, bd = 2, relwidth = 0.05)
 
                 # Spectrum Analyzer and power Analyzer Buttons:
                 self.widget.buttons('SA' , 0.7, 0.6, self.SA, relwidth = 0.05)
                 self.widget.buttons('Power' , 0.75, 0.6, self.Power, relwidth = 0.05)
                 self.widget.buttons('Baseline' , 0.7, 0.7, self.showBaseline)
-                self.widget.buttons('Select File(s)' , 0.84, 0.4, controller.openfilelist, self, 0.22, 0.14, 0.84, 0.7, felix_files_type)
+                self.widget.buttons('Select File(s)' , 0.84, 0.4, controller.openfilelist, self, felix_files_type)
 
         def Normline_func(self):
                 
                 normline_correction(
-                        self.fname, self.location,
-                        self.mname.get(), self.temp.get(), self.bwidth.get(), self.ie.get(),
-                        self.normavg_saveCheck_value.get(),
-                        self.foravgshow, self.normallCheck_value.get(), self.filelist, self.norm_show_value.get()
+                        self.fname, self.location, self.mname.get(), self.temp.get(), self.bwidth.get(), self.ie.get(), self.foravgshow, self.dpi.get(), self.parent
                 )
         
         def Avg_spectrum_func(self):
@@ -222,7 +217,7 @@ class Normline(Frame):
                         self.avg_major.get(), self.avg_majorTick.get(), self.avg_markersz.get(),
                         self.avg_xlabelsz.get(), self.avg_ylabelsz.get(), self.avg_fwidth.get(), self.avg_fheight.get(), self.output_filename.get(),
                         self.location, self.mname.get(), self.temp.get(), self.bwidth.get(), self.ie.get(),
-                        self.normavg_saveCheck_value.get(), self.norm_show_value.get(), self.delta.get(), self.filelist
+                        self.normavg_saveCheck_value.get(), self.norm_show_value.get(), self.delta.get(), self.filelist, self.dpi.get(), self.parent
                 )
 
         def SA(self):
@@ -230,12 +225,18 @@ class Normline(Frame):
         def Power(self):
                 FELion_Power(self.fname, self.location)
         def showBaseline(self):
-                show_baseline(self.fname, self.location, self.mname.get())
+                show_baseline(self.fname, self.location, self.mname.get(), self.temp.get(), self.bwidth.get(), self.ie.get(), self.trap.get(), self.dpi.get())
 
 class Mass(Frame):
 
         def __init__(self, parent, controller):
                 Frame.__init__(self,parent, bg="sea green")
+
+                self.location = "/"
+                self.fname = ""
+                self.filelist = []
+                self.mname, self.temp, self.bwidth, self.ie = None, None, None, None
+
                 self.widget = FELion_widgets(self)
 
                 self.widget.labels('Mass Spectrum', 0, 0.05, bg="sea green", font = LARGE_FONT, relwidth = 1, relheight = 0.05)
@@ -248,36 +249,38 @@ class Mass(Frame):
                         self.widget.buttons(name , x, y, controller.show_frame, pages_n)
                         x += 0.15
 
-                self.widget.buttons('Browse' , 0.1, 0.1, controller.open_dir, self, 0.22, 0.14, mass_files_type)
+                self.widget.buttons('Browse' , 0.1, 0.1, controller.open_dir, self, mass_files_type)
                 self.widget.labels('Mass File', 0.1, 0.24)
 
-                self.location = "/"
-                self.fname = ""
-                self.filelist = []
+                self.location_label = self.widget.labels(self.location, 0.22, 0.14, bd = 0, relwidth = 0.7, relheight = 0.06)
+                self.fname_label = self.widget.labels(self.fname, 0.22, 0.24, bd = 0, relwidth = 0.15, relheight = 0.06)
 
                 controller.init_labels(self)
 
-                self.save = Entry_widgets(self, 'Check', 'Save', 0.4, 0.2, default = False)
-                self.combine = Entry_widgets(self, 'Check', 'Combine', 0.6, 0.2, default = False)
+                self.save = self.widget.entries('Check', 'Save', 0.4, 0.2, default = False)
+                self.combine = self.widget.entries('Check', 'Combine', 0.6, 0.2, default = False)
 
-                self.widget.buttons('Select File(s)' , 0.75, 0.2, controller.openfilelist, self, 0.22, 0.14, 0.84, 0.7, mass_files_type)
+                self.widget.buttons('Select File(s)' , 0.75, 0.2, controller.openfilelist, self, mass_files_type)
+                self.flist_label = self.widget.labels('Filelists', 0.84, 0.7, bd = 0, relwidth = 0.15, relheight = 0.2)
 
-                self.widget.labels('Output', 0.6, 0.3)
-                self.output_filename = Entry_widgets(self, 'Entry',  'Average' , 0.75, 0.3, bd = 2)
+                self.avg_minor.set(1)
+                self.avg_major.set(10)
 
-                self.widget.buttons('Mass Spec' , 0.5, 0.5, self.MassSpec_func)
+                self.widget.buttons('Mass Spec' , 0.7, 0.3, self.MassSpec_func)
 
         def MassSpec_func(self):
                 massSpec(
-                        self.fname, self.location,
-                        self.mname.get(), self.temp.get(), self.bwidth.get(), self.ie.get(),
-                        self.filelist, self.output_filename.get(), self.combine.get(), self.save.get()
+                        self.avg_title.get(), self.avg_ts.get(), self.avg_lgs.get(), self.avg_minor.get(), self.avg_major.get(), self.avg_majorTick.get(),
+                        self.avg_xlabelsz.get(), self.avg_ylabelsz.get(), self.avg_fwidth.get(), self.avg_fheight.get(), self.output_filename.get(),
+                        self.location, self.mname.get(), self.temp.get(), self.ie.get(),
+                        self.save.get(), self.combine.get(), self.fname, self.filelist, self.dpi.get()
                 )
-        
+       
 class Powerfile(Frame):
 
         def __init__(self, parent, controller):
                 Frame.__init__(self,parent, bg="sea green")
+                self.location = "/"
 
                 self.widget = FELion_widgets(self)
 
@@ -291,37 +294,38 @@ class Powerfile(Frame):
                         self.widget.buttons(name , x, y, controller.show_frame, pages_n)
                         x += 0.15
 
-                self.location = "/"
                 self.date = datetime.datetime.now().strftime("%d_%m_%y-#")
 
+                self.location_label = self.widget.labels(self.location, 0.22, 0.14, bd = 0, relwidth = 0.7, relheight = 0.06)
+                
                 self.widget.buttons('Select Folder' , 0.1, 0.1, self.open_full_dir, 0.22, 0.14)
                 self.widget.labels('Filename:', 0.1, 0.3)
 
-                self.filename = Entry_widgets(self, 'Entry', self.date, 0.3, 0.3, bd = 5)
+                self.filename = self.widget.entries('Entry', self.date, 0.3, 0.3, bd = 5)
 
                 self.quote = """#POWER file\n# 10 Hz FELIX\n#\n#SHOTS=26\n#INTERP=linear\n#    IN_no_UM (if one deletes the "no" the firs number will be in \mu m\n# wavelength/cm-1      energy/pulse/mJ\n"""
-                self.power = Entry_widgets(self, 'power_box', self.quote, 0.15, 0.4)
+                self.power = self.widget.entries('power_box', self.quote, 0.15, 0.4)
 
                 self.widget.buttons('Save' , 0.5, 0.3, self.power_box)
       
         def open_full_dir(self, x, y):
                 self.location = self.widget.open_full_dir()
-
-                self.widget.labels(
-                        self.location, x, y, 
-                        bd = 0,
-                        relwidth = 0.5, relheight = 0.06
-                )
+                self.location_label.config(text = self.location)
                 
         def power_box(self):
-                outFile(self.filename.get(), self.location, self.power.power_get())
+                outFile(self.filename.get(), self.location, self.power.get("1.0", "end-1c"))
 
 class Plot(Frame):
 
         def __init__(self, parent, controller):
-                Frame.__init__(self,parent, bg="sea green")
+                Frame.__init__(self, parent, bg="sea green")
 
-                self.widget = FELion_widgets(self)
+                self.location = "/"
+                self.fname = ""
+                self.filelist = []
+                self.full_name = ''
+
+                self.widget = FELion_widgets(parent = self, cnt = controller)
 
                 self.widget.labels('Plot', 0, 0.05, bg="sea green", font = LARGE_FONT, relwidth = 1, relheight = 0.05)
 
@@ -333,48 +337,68 @@ class Plot(Frame):
                         self.widget.buttons(name , x, y, controller.show_frame, pages_n)
                         x += 0.15
         
-                self.widget.buttons('Browse' , 0.1, 0.1, controller.open_dir, self, 0.22, 0.14, all_files_type)
+                self.widget.buttons('Browse' , 0.1, 0.1, controller.open_dir, self, all_files_type)
                 self.widget.labels('Filename', 0.1, 0.24)
 
-                self.location = "/"
-                self.fname = ""
-                self.filelist = []
-                self.full_name = ''
+                self.location_label = self.widget.labels(self.location, 0.22, 0.14, bd = 0, relwidth = 0.7, relheight = 0.06)
+                self.fname_label = self.widget.labels(self.fname, 0.22, 0.24, bd = 0, relwidth = 0.15, relheight = 0.06)
 
-                self.widget.buttons('Select File(s)' , 0.1, 0.34, controller.openfilelist, self, 0.22, 0.14, 0.1, 0.55, all_files_type)
-                self.save = Entry_widgets(self, 'Check', 'Save', 0.4, 0.2, default = False)
-                self.show = Entry_widgets(self, 'Check', 'Show', 0.52, 0.2, default = True)
+                self.widget.buttons('Select File(s)' , 0.1, 0.34, controller.openfilelist, self, all_files_type)
+                self.flist_label = self.widget.labels('Filelists', 0.1, 0.55, bd = 0, relwidth = 0.15, relheight = 0.2)
 
-                self.widget.buttons('Timescan' , 0.4, 0.3, self.timescan_func)
-                self.widget.buttons('Depletion' , 0.52, 0.3, self.depletion_func)
-                self.depletion_power = Entry_widgets(self, 'Entry',  'power_on, power_off, n_shots' , 0.52, 0.4, bd = 5, relwidth = 0.25)
+                self.save = self.widget.entries('Check', 'Save', 0.4, 0.2, default = False)
+                self.show = self.widget.entries('Check', 'Show', 0.52, 0.2, default = True)
+                self.plot_vlines = self.widget.entries('Check', 'Vlines', 0.65, 0.4, default = False, help = 'Just-Plot the theory files alone.')
 
-                self.widget.labels('Select Exp. file using Browse and theory file (max 2) from Select file(s)', 0.4, 0.5, bd = 2, relwidth = 0.5)
-                self.widget.buttons('Exp-Theory' , 0.4, 0.55, self.theory_func)
+                self.widget.labels('DPI', 0.65, 0.23)
+                self.dpi = self.widget.entries('Entry', 100, 0.75, 0.23, bd = 5)
+
+                self.widget.buttons('Timescan' , 0.4, 0.3, self.timescan_func,help = 'Plot timescan files')
+                self.widget.buttons('Depletion' , 0.52, 0.3, self.depletion_func, help = 'Select two timescan files to see the depletion; and enter power_on, power_off and n')
+                self.depletion_power = self.widget.entries('Entry',  'power_on, power_off, n_shots' , 0.65, 0.33, bd = 5, relwidth = 0.25, help = 'Enter Power_ON, Power_OFF and N_Shots (comma separated)')
+
+                theory_msg = 'First Select Exp. file using Browse, then theory file using Select file(s)'
+                self.widget.buttons('Exp-Theory' , 0.4, 0.55, self.theory_func, help = theory_msg)
+
+                self.widget.buttons('PowerPlot' , 0.4, 0.4, self.powerplot_func, help = 'For plotting .pow files')
+                self.widget.buttons('JustPlot' , 0.52, 0.4, self.just_plot_func, help = 'Use it to plot any file(s) with two columns')
+                self.widget.buttons('Avg-Theory' , 0.52, 0.55, self.avg_theory_func, help = 'Select exported FELIX files (.dat) and the theory file to plot it together')
+                self.show_original = self.widget.entries('Check', 'Original', 0.52, 0.65, default = False, help = 'Check to plot exported FELIX files (.dat) with smoothened curve of .dat files')
 
 
         def timescan_func(self):
                 timescanplot(
-                        self.fname, self.location, self.save.get(), self.show.get()
+                        self.fname, self.location, self.save.get(), self.show.get(), self.dpi.get()
                 )
         def depletion_func(self):
                 depletionPlot(
-                        self.filelist, self.location, self.save.get(), self.show.get(), self.depletion_power.get()
+                        self.filelist, self.location, self.save.get(), self.show.get(), self.depletion_power.get(), self.dpi.get()
                 )
         def theory_func(self):
                 theory_exp(
-                        self.filelist, self.full_name, self.location, self.save.get(), self.show.get()
+                        self.filelist, self.full_name, self.location, self.save.get(), self.show.get(), self.dpi.get()
                 )
-
+        def powerplot_func(self):
+                power_plot(
+                        self.filelist, self.location, self.save.get(), self.show.get(), self.dpi.get()
+                )
+        def just_plot_func(self):
+                plot(
+                        self.filelist, self.location, self.save.get(), self.show.get(), self.dpi.get(), self.plot_vlines.get()
+                )
+        def avg_theory_func(self):
+                smooth_avg(
+                        self.filelist, self.location, self.save.get(), self.show.get(), self.dpi.get(), self.show_original.get()
+                )
+              
 #Closing Program
 def on_closing():
     if messagebox.askokcancel("Quit", "Do you want to quit?"):
         app.destroy()
 
 ###################################################################################################################################################
-# Main Program
-
 app = FELion()
+app.tk.call('tk', 'scaling', 4.0)
 
 icons_locations = "C:/FELion-GUI/software/"
 app.protocol("WM_DELETE_WINDOW", on_closing)
@@ -382,10 +406,11 @@ app.protocol("WM_DELETE_WINDOW", on_closing)
 shutdown = PhotoImage(file = join(icons_locations, "power.png"))
 restarticon = PhotoImage(file = join(icons_locations, "restart.png"))
 
-power = ttk.Button(app, image=shutdown, text = 'power', command = lambda: app.destroy())
-restart = ttk.Button(app, image=restarticon, text = 'restart', command = lambda: os.execl(sys.executable, sys.executable, *sys.argv))
+power = ttk.Button(app, image = shutdown, text = 'power', command = lambda: app.destroy())
+restart = ttk.Button(app, image = restarticon, text = 'restart', command = lambda: os.execl(sys.executable, sys.executable, *sys.argv))
 
 restart.place(relx = 0.95, rely = 0.05)
 power.place(relx = 0.95, rely = 0.15)
 
 app.mainloop()
+###################################################################################################################################################

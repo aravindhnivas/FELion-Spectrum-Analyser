@@ -1,17 +1,26 @@
 #!/usr/bin/python3
 
+## MODULES
+# Data analysis and visualisation Modules
 import numpy as np
 import matplotlib.pyplot as plt
-import os
-import shutil
-from tkinter import Tk, messagebox
-
-from FELion_definitions import ShowInfo, copy, move, ErrorInfo
-from os.path import join, isdir
 from matplotlib.widgets import Cursor
+from matplotlib.ticker import MultipleLocator
 
-def massSpec(fname, location, mname, temp, bwidth, ie,\
-            filelist, avgname, combine, save_fig):
+# Built-In Modules
+import os
+from os.path import join, isdir, isfile
+import shutil
+
+# FELion Definitions
+from FELion_definitions import ShowInfo, copy, move, ErrorInfo, var_find
+
+def massSpec(*args):
+
+    t, ts, lgs, minor, major, majorTickSize, \
+    xlabelsz, ylabelsz, fwidth, fheight, avgname,\
+    location, mname, temp, ie,\
+    save, combine, fname, filelist, dpi = args
 
     try:
         os.chdir(location)
@@ -19,31 +28,12 @@ def massSpec(fname, location, mname, temp, bwidth, ie,\
 
         if not isdir("MassSpec_DATA"):
             os.mkdir("MassSpec_DATA")
-
-        if fname.find(".mass")>0:
+        if fname.find(".mass")>=0:
             fname = fname.split(".")[0]
 
-        def saveinfo(name):
-            if os.path.isfile(my_path+"/MassSpec_DATA/{}.png".format(name)):
-                ShowInfo("SAVED", "File %s.png saved \nin MassSpec_DATA directory"%name)
-
-        def mass_resolution(filename):
-            with open(filename, 'r') as f:
-                f = f.readlines()
-
-            res_name = f[-14].split('\t\t')[2].split('#')[-1].strip()
-            mass_res = round(float(f[-14].split('\t\t')[3].split('#')[-1].strip()), 2)
-
-            if res_name == 'm03_ao13_reso':
-                print('Mass Resolution: %s'%mass_res)
-                return mass_res
-            else:
-                print('ERROR: parameter found here was %s instead of m03_ao13_reso\nPlease adjust the change in script'%res_name)
-                return
-
         if not combine:
-            
             filename = fname + ".mass"
+            res, b0, trap = var_find(filename, location)
 
             if not os.path.isdir("MassSpec_DATA"):
                 os.mkdir("MassSpec_DATA")
@@ -53,61 +43,70 @@ def massSpec(fname, location, mname, temp, bwidth, ie,\
            
             mass = np.genfromtxt(filename)
             x, y = mass[:,0], mass[:,1]
-            m_res = mass_resolution(filename)
 
-            fig, ax = plt.subplots(1)
+            fig, ax = plt.subplots(figsize = (fwidth, fheight), dpi = dpi)
+    
+            ax.semilogy(x, y, label = f'{fname}: Res: {res}; B0: {b0}ms; Trap: {trap}ms')
+            cursor = Cursor(ax, useblit=True, color='red', linewidth=1)
 
-            plt.grid(True)
-            ax.semilogy(x, y, label = '%s: res: %.1f'%(filename.split('.')[0], m_res))
-            plt.xlabel('Mass [u]')
-            plt.ylabel('Ion counts /{} ms'.format(bwidth))
-            plt.title("Filename: {}, for {}, at temp: {}K, B0: {}ms and IE(eV): {}"\
-                        .format(fname, mname, temp, bwidth, ie))
+            # Configuring plot
+            ax.grid(True)
+            ax.set_xlabel('Mass [u]', fontsize = xlabelsz)
+            ax.set_ylabel(f'Ion counts /{b0} ms', fontsize = ylabelsz)
+            ax.set_title(f'{fname} for {mname} at {temp}K with IE:{ie}eV')
 
-            plt.tight_layout()
-            plt.legend()
-            cursor = Cursor(ax, useblit=True, color='red', linewidth=2)
+            l = ax.legend(title = t, fontsize = lgs)
+            l.get_title().set_fontsize(ts)
+            ax.xaxis.set_minor_locator(MultipleLocator(minor))
+            ax.xaxis.set_major_locator(MultipleLocator(major))
+            ax.tick_params(axis='both', which='major', labelsize=majorTickSize)
 
-            if save_fig:
-                plt.savefig(my_path + "/MassSpec_DATA/{}.png".format(fname))
+
+            if save:
+                ShowInfo("SAVED", f"File {fname}.png saved \nin MassSpec_DATA directory")
+                plt.savefig(join(my_path, 'MassSpec_DATA', f'{fname}.png'))
                 plt.show()
-                saveinfo(fname)
-            else:
-                plt.show()
+
+            else: plt.show()
+            
+            plt.close()
 
         if combine:
             if filelist == []: 
                 return ErrorInfo("Select Files: ", "Click Select File(s)")
 
-            fig1, ax1 = plt.subplots()
+            fig1, ax1 = plt.subplots(figsize = (fwidth, fheight), dpi = dpi)
 
             for file in filelist:
+                res, b0, trap = var_find(file, location)
 
                 mass = np.genfromtxt(file)
                 x, y = mass[:,0], mass[:,1]
 
-                m_res = mass_resolution(file)
-                
-                plt.grid(True)
-                ax1.semilogy(x, y, label = '%s: res: %.1f'%(file.split('.')[0], m_res))
+                ax1.semilogy(x, y, label = f'{file}: Res: {res}; B0: {b0}ms; Trap: {trap}ms')
+
+            cursor = Cursor(ax1, useblit=True, color='red', linewidth=1)
+
+            # Configuring plot
+            ax1.grid(True)
+            ax1.set_xlabel('Mass [u]', fontsize = xlabelsz)
+            ax1.set_ylabel(f'Ion counts', fontsize = ylabelsz)
+            ax1.set_title(f'{avgname}')
+
+            l1 = ax1.legend(title = t, fontsize = lgs)
+            l1.get_title().set_fontsize(ts)
+            ax1.xaxis.set_minor_locator(MultipleLocator(minor))
+            ax1.xaxis.set_major_locator(MultipleLocator(major))
+            ax1.tick_params(axis='both', which='major', labelsize = majorTickSize)
             
-                plt.legend()
-
-            cursor = Cursor(ax1, useblit=True, color='red', linewidth=2)
-
-            plt.xlabel('mass [u]')
-            plt.ylabel('ion counts /{} ms'.format(bwidth))
-            plt.grid(True)
-            plt.title("%s"%avgname)
-            
-            plt.tight_layout()
-
-            if save_fig:
-                plt.savefig(join(my_path,"MassSpec_DATA","%s.png"%avgname))
+            if save:
+                ShowInfo("SAVED", f"File {avgname}.png saved \nin MassSpec_DATA directory")
+                plt.savefig(join(my_path, 'MassSpec_DATA', f'{avgname}.png'))
                 plt.show()
-                saveinfo(avgname)
             else:
                 plt.show()
-                
+
+            plt.close()
+
     except Exception as e:
         ErrorInfo("ERROR", e)
