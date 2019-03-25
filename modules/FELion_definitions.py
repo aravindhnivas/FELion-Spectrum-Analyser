@@ -4,7 +4,7 @@ from tkinter import *
 from tkinter import ttk, messagebox
 from tkinter.filedialog import askopenfilenames, askopenfilename, askdirectory
 import os, shutil, tempfile, git, subprocess, sys
-from os.path import isdir, dirname, join
+from os.path import isdir, dirname, join, isfile
 
 import datetime
 import numpy as np
@@ -27,6 +27,38 @@ def ShowInfo(info, msg):
     root.withdraw()
     messagebox.showinfo(str(info), str(msg))
     root.destroy()
+
+
+# Normline Filecheck method
+
+def filecheck(my_path, basefile, powerfile, fullname):
+    
+    #File check
+    if not isfile(join(my_path, "DATA", fullname)):
+        if isfile(join(my_path, fullname)):
+            move(my_path, fullname)
+        else:
+            return ErrorInfo("ERROR: ", "File %s NOT found"%fullname)
+
+    #Powefile check
+    if not isfile(join(my_path, "DATA", powerfile)):
+        if isfile(join(my_path, 'Pow', powerfile)):
+            shutil.move(join(my_path, "Pow", powerfile), join(my_path,"DATA"))
+
+        elif isfile(join(my_path, powerfile)):
+            move(my_path, powerfile)
+        
+        else:
+            return ErrorInfo("ERROR: ", "Powerfile: %s NOT found"%powerfile)
+
+    #Basefile check
+    if not isfile(join(my_path, "DATA", basefile)):
+        if isfile(join(my_path, basefile)):
+            move(my_path, basefile)
+        else:
+            return ErrorInfo("ERROR: ", "Basefile: %s NOT found"%basefile)
+
+    return True
 
 # Update modules
 
