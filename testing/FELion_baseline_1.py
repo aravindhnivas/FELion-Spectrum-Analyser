@@ -390,7 +390,7 @@ def baseline_correction(fname, location, save):
 
         fig, ax = plt.subplots()
 
-        p = InteractivePoints(fig, ax, xs, ys, data, save, fname)
+        p = InteractivePoints(fig, fig.canvas, ax, xs, ys, data, save, fname)
         ax.plot(data[0], data[1], ls='', marker='o', ms=5, markeredgecolor='r', c='r')
 
         print("\nUSAGE:\nBlue baseline points are dragable...\
