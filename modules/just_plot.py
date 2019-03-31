@@ -122,7 +122,7 @@ def smooth_avg(filelist, location, save, show, dpi, original_show):
                         if original_show: 
                                 ax.plot(x, y, label = f'{i}_Original')
                                 ax.plot(x, y_fit, label = f'{i}_fit')
-                        else: ax.plot(x, y_fit, '--' , alpha = 0.7, label = f'{i}')
+                        else: ax.plot(x, y_fit, 'k' , label = f'{i}')
         
         y_list = np.array(y_list)
 
