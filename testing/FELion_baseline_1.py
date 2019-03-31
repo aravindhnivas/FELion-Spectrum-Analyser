@@ -1,25 +1,36 @@
 #!/usr/bin/python3
-import sys
-import copy
-import matplotlib
-matplotlib.use('TkAgg')
-#from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-import numpy as np
-import pylab as P
-import matplotlib.pyplot as plt
-from matplotlib.lines import Line2D
-from matplotlib.artist import Artist
-from matplotlib.mlab import dist_point_to_segment
 
-from scipy.interpolate import interp1d
-import os
-from os.path import dirname, isdir, isfile, join
+########################## Importing Modules #######################################
 
-import shutil
-from tkinter import Tk, messagebox
-
+# FELion Modules
 from FELion_definitions import move, copy, ErrorInfo, ShowInfo
 
+# matplotlib modules
+import matplotlib
+matplotlib.use('TkAgg')
+import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
+
+# Matplotlib Modules for tkinter backend
+from tkinter import *
+from tkinter import ttk
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
+from matplotlib.backend_bases import key_press_handler
+from matplotlib.figure import Figure
+
+# Data Analysis modules
+import numpy as np
+from scipy.interpolate import interp1d
+
+# Built-In Modules
+import os
+from os.path import dirname, isdir, isfile, join
+import shutil
+
+########################## MODULES IMPORTED #######################################
+###################################################################################
+
+# Constants
 #These 2 values are used when guessing the baseline:
 PPS = 5         #points around the value to average
 NUM_POINTS = 10
@@ -75,9 +86,9 @@ class InteractivePoints(object):
 
     epsilon = 5  # max pixel distance to count as a vertex hit
 
-    def __init__(self, figure, ax, xs, ys, data, save, fname):
+    def __init__(self, canvas, figure, ax, xs, ys, data, save, fname):
         self.ax = ax
-        canvas = figure.canvas
+        self.canvas = canvas
         self.data = data
         self.save = save
         self.fname = fname
@@ -94,12 +105,12 @@ class InteractivePoints(object):
 
         self._ind = None  # the active vert
 
-        canvas.mpl_connect('draw_event', self.draw_callback)
-        canvas.mpl_connect('button_press_event', self.button_press_callback)
-        canvas.mpl_connect('key_press_event', self.key_press_callback)
-        canvas.mpl_connect('button_release_event', self.button_release_callback)
-        canvas.mpl_connect('motion_notify_event', self.motion_notify_callback)
-        self.canvas = canvas
+        self.canvas.mpl_connect('draw_event', self.draw_callback)
+        self.canvas.mpl_connect('button_press_event', self.button_press_callback)
+        self.canvas.mpl_connect('key_press_event', self.key_press_callback)
+        self.canvas.mpl_connect('button_release_event', self.button_release_callback)
+        self.canvas.mpl_connect('motion_notify_event', self.motion_notify_callback)
+        #self.canvas = canvas
 
     def redraw_f_line(self):
         Bx, By = self.line.get_data()
@@ -113,8 +124,6 @@ class InteractivePoints(object):
         self.ax.draw_artist(self.line)
         self.ax.draw_artist(self.funcLine)
         self.canvas.blit(self.ax.bbox)
-        
-        #self.canvas.update()
 
     def get_ind_under_point(self, event):
         'get the index of the vertex under point if within epsilon tolerance'
@@ -381,7 +390,7 @@ def baseline_correction(fname, location, save):
 
         fig, ax = plt.subplots()
 
-        p = InteractivePoints(fig, ax, xs, ys, data, save, fname)
+        p = InteractivePoints(fig, fig.canvas, ax, xs, ys, data, save, fname)
         ax.plot(data[0], data[1], ls='', marker='o', ms=5, markeredgecolor='r', c='r')
 
         print("\nUSAGE:\nBlue baseline points are dragable...\

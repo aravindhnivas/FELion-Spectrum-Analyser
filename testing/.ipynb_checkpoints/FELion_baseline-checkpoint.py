@@ -113,8 +113,6 @@ class InteractivePoints(object):
         self.ax.draw_artist(self.line)
         self.ax.draw_artist(self.funcLine)
         self.canvas.blit(self.ax.bbox)
-        
-        #self.canvas.update()
 
     def get_ind_under_point(self, event):
         'get the index of the vertex under point if within epsilon tolerance'

@@ -134,7 +134,7 @@ class FELion(Tk):
 class StartPage(Frame):
 
         def __init__(self, parent, controller):
-                Frame.__init__(self,parent, bg="sea green")
+                Frame.__init__(self, parent, bg="sea green")
 
                 self.widget = FELion_widgets(self)
 
@@ -153,7 +153,9 @@ class StartPage(Frame):
 class Normline(Frame):
 
         def __init__(self, parent, controller):
-                Frame.__init__(self,parent, bg="sea green")
+                Frame.__init__(self, parent, bg="sea green")
+
+                self.parent = parent
                 self.location = "/"
                 self.fname = ""
                 self.filelist = []
@@ -206,10 +208,7 @@ class Normline(Frame):
         def Normline_func(self):
                 
                 normline_correction(
-                        self.fname, self.location,
-                        self.mname.get(), self.temp.get(), self.bwidth.get(), self.ie.get(),
-                        self.normavg_saveCheck_value.get(),
-                        self.foravgshow, self.normallCheck_value.get(), self.filelist, self.norm_show_value.get(), self.dpi.get()
+                        self.fname, self.location, self.mname.get(), self.temp.get(), self.bwidth.get(), self.ie.get(), self.foravgshow, self.dpi.get(), self.parent
                 )
         
         def Avg_spectrum_func(self):
@@ -218,7 +217,7 @@ class Normline(Frame):
                         self.avg_major.get(), self.avg_majorTick.get(), self.avg_markersz.get(),
                         self.avg_xlabelsz.get(), self.avg_ylabelsz.get(), self.avg_fwidth.get(), self.avg_fheight.get(), self.output_filename.get(),
                         self.location, self.mname.get(), self.temp.get(), self.bwidth.get(), self.ie.get(),
-                        self.normavg_saveCheck_value.get(), self.norm_show_value.get(), self.delta.get(), self.filelist, self.dpi.get()
+                        self.normavg_saveCheck_value.get(), self.norm_show_value.get(), self.delta.get(), self.filelist, self.dpi.get(), self.parent
                 )
 
         def SA(self):
@@ -349,22 +348,22 @@ class Plot(Frame):
 
                 self.save = self.widget.entries('Check', 'Save', 0.4, 0.2, default = False)
                 self.show = self.widget.entries('Check', 'Show', 0.52, 0.2, default = True)
-                self.plot_vlines = self.widget.entries('Check', 'Vlines', 0.65, 0.4, default = False)
+                self.plot_vlines = self.widget.entries('Check', 'Vlines', 0.65, 0.4, default = False, help = 'Just-Plot the theory files alone.')
 
                 self.widget.labels('DPI', 0.65, 0.23)
                 self.dpi = self.widget.entries('Entry', 100, 0.75, 0.23, bd = 5)
 
                 self.widget.buttons('Timescan' , 0.4, 0.3, self.timescan_func,help = 'Plot timescan files')
                 self.widget.buttons('Depletion' , 0.52, 0.3, self.depletion_func, help = 'Select two timescan files to see the depletion; and enter power_on, power_off and n')
-                self.depletion_power = self.widget.entries('Entry',  'power_on, power_off, n_shots' , 0.65, 0.33, bd = 5, relwidth = 0.25)
+                self.depletion_power = self.widget.entries('Entry',  'power_on, power_off, n_shots' , 0.65, 0.33, bd = 5, relwidth = 0.25, help = 'Enter Power_ON, Power_OFF and N_Shots (comma separated)')
 
                 theory_msg = 'First Select Exp. file using Browse, then theory file using Select file(s)'
                 self.widget.buttons('Exp-Theory' , 0.4, 0.55, self.theory_func, help = theory_msg)
 
                 self.widget.buttons('PowerPlot' , 0.4, 0.4, self.powerplot_func, help = 'For plotting .pow files')
                 self.widget.buttons('JustPlot' , 0.52, 0.4, self.just_plot_func, help = 'Use it to plot any file(s) with two columns')
-                self.widget.buttons('Avg-Theory' , 0.52, 0.55, self.avg_theory_func)
-                self.show_original = self.widget.entries('Check', 'Original', 0.52, 0.65, default = False)
+                self.widget.buttons('Avg-Theory' , 0.52, 0.55, self.avg_theory_func, help = 'Select exported FELIX files (.dat) and the theory file to plot it together')
+                self.show_original = self.widget.entries('Check', 'Original', 0.52, 0.65, default = False, help = 'Check to plot exported FELIX files (.dat) with smoothened curve of .dat files')
 
 
         def timescan_func(self):
@@ -391,8 +390,7 @@ class Plot(Frame):
                 smooth_avg(
                         self.filelist, self.location, self.save.get(), self.show.get(), self.dpi.get(), self.show_original.get()
                 )
-
-                
+              
 #Closing Program
 def on_closing():
     if messagebox.askokcancel("Quit", "Do you want to quit?"):

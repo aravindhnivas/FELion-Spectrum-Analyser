@@ -1,17 +1,31 @@
 #!/usr/bin/python3
 
-import numpy as np
+## Importing Modules
+
+# FELion-Modules
 from FELion_baseline import felix_read_file, BaselineCalibrator
 from FELion_power import PowerCalibrator
 from FELion_sa import SpectrumAnalyserCalibrator
-import os
+from FELion_definitions import ShowInfo, ErrorInfo, filecheck, move
 
-# Custom inport:
+# DATA Analysis modules:
 import matplotlib.pyplot as plt
-from tkinter import Tk, messagebox
-from FELion_definitions import *
+import numpy as np
+
+# Embedding Matplotlib in tkinter window
+from tkinter import *
+from tkinter import ttk
+
+# Matplotlib Modules for tkinter
+import matplotlib
+matplotlib.use("TkAgg")
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
+from matplotlib.backend_bases import key_press_handler
+from matplotlib.figure import Figure
+
+# Built-In modules
+import os, shutil
 from os.path import dirname, isdir, isfile, join
-import shutil
 
 ################################################################################
 
@@ -21,34 +35,20 @@ def export_file(fname, wn, inten):
     f.write("#wn (cm-1)       intensity\n")
     for i in range(len(wn)):
         f.write("{:8.3f}\t{:8.2f}\n".format(wn[i], inten[i]))
-    #f.close()
+    f.close()
 
-def norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show, dpi):
-
-    """
-    Reads data from felix meassurement file and 
-    calculates the calibrated wavenumber and calibrated/normalised
-    intensity for every single poitnt
-    1. for this to work, baseline, power and num_shots data has to be present! 
-
-    Input: filename       save = False by default (produce output pdf file)
-    Output: data[0,1]     0 - wavenumber, 1 - intensity
-    """
-
-    if(fname.find('DATA')):
-        fname = fname.split('/')[-1]
-
-    if(fname.find('felix')):
-        fname = fname.split('.')[0]
+def norm_line_felix(fname, mname, temp, bwidth, ie, foravgshow, dpi, parent):
     
     data = felix_read_file(fname)
     PD=True
 
     if not foravgshow:
-        #plt.rcParams['figure.figsize'] = [8,10]
-        #plt.rcParams['figure.dpi'] = 80
-        #plt.rcParams['savefig.dpi'] = 100
-        fig = plt.figure(figsize=(8,10), dpi = dpi)
+        root = Toplevel(master = parent)
+        root.wm_title("Power Calibrated/Normalised Spectrum")
+
+        ################################ PLOTTING DETAILS ########################################
+
+        fig = Figure(figsize=(8, 8), dpi = dpi)
         ax = fig.add_subplot(3,1,1)
         bx = fig.add_subplot(3,1,2)
         cx = fig.add_subplot(3,1,3)
@@ -66,12 +66,10 @@ def norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show, dpi)
         powCal = PowerCalibrator(fname)
         powCal.plot(bx2, ax2)
 
-
         #Get the spectrum analyser
         saCal = SpectrumAnalyserCalibrator(fname)
         saCal.plot(bx)
         bx.set_ylabel("SA")
-        
 
         #Calibrate X for all the data points
         wavelength = saCal.sa_cm(data[0])
@@ -85,17 +83,55 @@ def norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show, dpi)
 
         cx.plot(wavelength, intensity, ls='-', marker='o', ms=2, c='r', markeredgecolor='k', markerfacecolor='k')
         cx.set_xlabel("wn (cm-1)")
+        cx.set_ylabel("PowerCalibrated Intensity")
         
-        #ax.set_title("Filename: {}, for {}, at temp: {}K,\nB0: {}ms and IE(eV): {}".format(fname, mname, temp, bwidth, ie))
         ax.set_title(f'{fname}: {mname} at {temp}K with B0:{round(bwidth)}ms and IE:{ie}eV')
 
-        if save:
-            fname = fname.replace('.','_')
-            plt.savefig('OUT/'+fname+'.pdf')
+        ax.grid(True)
+        bx.grid(True)
+        cx.grid(True)
+
+        ##################################################################################################
+        ##################################################################################################
+
+        # Drawing in the tkinter window
+        canvas = FigureCanvasTkAgg(fig, master = root)
+        canvas.draw()
+        canvas.get_tk_widget().pack(side = TOP, fill = BOTH, expand = 1)
+
+        toolbar = NavigationToolbar2Tk(canvas, root)
+        toolbar.update()
+        canvas.get_tk_widget().pack(side = TOP, fill = BOTH, expand = 1)
+
+        frame = Frame(root, bg = 'light grey')
+        frame.pack(side = 'bottom', fill = 'both', expand = True)
+
+        label = Label(frame, text = 'Save as:')
+        label.pack(side = 'left', padx = 15, ipadx = 10, ipady = 5)
+
+        name = StringVar()
+        filename = Entry(frame, textvariable = name)
+        name.set(fname)
+        filename.pack(side = 'left')
+
+        def save_func():
+            fig.savefig(f'OUT/{name.get()}.pdf')
             export_file(fname, wavelength, intensity)
-        if show:
-            plt.show()
-        plt.close()
+            if isfile(f'OUT/{name.get()}.pdf'): ShowInfo('SAVED', f'File: {name.get()}.pdf saved in OUT/ directory')
+
+        button = ttk.Button(frame, text = 'Save', command = lambda: save_func())
+        button.pack(side = 'left', padx = 15, ipadx = 10, ipady = 5)
+
+        def on_key_press(event): 
+            key_press_handler(event, canvas, toolbar)
+
+            if event.key == 'c':
+                fig.savefig(f'OUT/{name.get()}.pdf')
+                export_file(fname, wavelength, intensity)
+                if isfile(f'OUT/{name.get()}.pdf'): ShowInfo('SAVED', f'File: {name.get()}.pdf saved in OUT/ directory')
+
+        canvas.mpl_connect("key_press_event", on_key_press)
+        root.mainloop()
 
     if foravgshow:
         saCal = SpectrumAnalyserCalibrator(fname)
@@ -167,9 +203,9 @@ def main(s=True, plotShow=False):
     print(a, b)
     print("\nProcess Completed.\n")
 
+
 def normline_correction(*args):
-    fname, location, mname, temp, bwidth, ie, save, foravgshow, normall, fileNameList, show, dpi = args
-    print(f'PlotAll-->{normall}\nShow-->{show}\nSave-->{save}')
+    fname, location, mname, temp, bwidth, ie, foravgshow, dpi, parent = args
 
     try:
         folders = ["DATA", "EXPORT", "OUT"]
@@ -195,63 +231,9 @@ def normline_correction(*args):
             if not isdir(dirs): os.mkdir(dirs)
             if isfile(filenames): move(my_path, filenames)
 
-        def completed(fileNameList):
-            for fname in fileNameList:
-                fname = fname.split(".")[0]
-                if isfile(join(my_path, 'OUT', f'{fname}.pdf')) and save:
-                    ShowInfo("SAVED", "File %s.pdf saved in OUT/ directory"%fname)
-
-        def run(for_normall_saveDialog):
-
-            norm_line_felix(fname, mname, temp, bwidth, ie, save, foravgshow, show, dpi)
-            if not for_normall_saveDialog:
-                if isfile(join(my_path, 'OUT', f'{fname}.pdf')) and save:
-                    ShowInfo("SAVED", "File %s.pdf saved in OUT/ directory"%fname)
-
-        def normrun(basefile, powerfile, fullname, for_normall_saveDialog):
-
-            #File check
-            if not isfile(my_path+"/DATA/"+fullname):
-                if isfile(my_path+"/"+fullname):
-                    move(my_path, fullname)
-                else:
-                    return ErrorInfo("ERROR: ", "File %s NOT found"%fullname)
-
-            #Powefile check
-            if not isfile(my_path+"/DATA/"+powerfile):
-                if isfile(my_path+"/Pow/"+powerfile):
-                    shutil.move(join(my_path, "Pow", powerfile), join(my_path,"DATA"))
-            
-                elif isfile(my_path+"/"+powerfile):
-                    move(my_path, powerfile)
-                
-                else:
-                    return ErrorInfo("ERROR: ", "Powerfile: %s NOT found"%powerfile)
-            
-            #Basefile check
-            if not isfile(my_path+"/DATA/"+basefile):
-                if isfile(my_path+"/"+basefile):
-                    move(my_path, basefile)
-                else:
-                    return ErrorInfo("ERROR: ", "Basefile: %s NOT found"%basefile)
-
-            #Normline run
-            run(for_normall_saveDialog)
-
-        if not normall:
-            for_normall_saveDialog = False
-            normrun(basefile, powerfile, fullname, for_normall_saveDialog)
-
-        if normall:
-            for_normall_saveDialog = True
-
-            for fname in fileNameList:
-                fname = fname.split(".")[0]
-                fullname = fname + ".felix"
-                powerfile = fname + ".pow"
-                basefile = fname + ".base"
-                normrun(basefile, powerfile, fullname, for_normall_saveDialog)
-            completed(fileNameList)
+        if filecheck(my_path, basefile, powerfile, fullname):
+            print(f'\nFilename-->{fullname}\nLocation-->{my_path}')
+            norm_line_felix(fname, mname, temp, bwidth, ie, foravgshow, dpi, parent)
 
         print("DONE")
 
