@@ -101,12 +101,11 @@ def plot(filelist, location, save, show, dpi, vline):
 
         plt.close()
 
-
 def smooth_avg(filelist, location, save, show, dpi, original_show):
         
         os.chdir(location)
         dat = [i for i in filelist if i.find('.dat')>=0]
-        tsv = [i for i in filelist if i.find('.tsv')>=0]
+        tsv = [i for i in filelist if not i.find('.dat')>=0]
 
         fig, ax = plt.subplots(dpi = dpi)
 

@@ -4,8 +4,8 @@ from tkinter import *
 from tkinter import ttk, messagebox
 from tkinter.filedialog import askopenfilenames, askopenfilename, askdirectory
 import os, shutil, tempfile, git, subprocess, sys
-from os.path import isdir, dirname, join
-from tempfile import TemporaryDirectory
+from os.path import isdir, dirname, join, isfile
+
 import datetime
 import numpy as np
 
@@ -27,6 +27,38 @@ def ShowInfo(info, msg):
     root.withdraw()
     messagebox.showinfo(str(info), str(msg))
     root.destroy()
+
+
+# Normline Filecheck method
+
+def filecheck(my_path, basefile, powerfile, fullname):
+    
+    #File check
+    if not isfile(join(my_path, "DATA", fullname)):
+        if isfile(join(my_path, fullname)):
+            move(my_path, fullname)
+        else:
+            return ErrorInfo("ERROR: ", "File %s NOT found"%fullname)
+
+    #Powefile check
+    if not isfile(join(my_path, "DATA", powerfile)):
+        if isfile(join(my_path, 'Pow', powerfile)):
+            shutil.move(join(my_path, "Pow", powerfile), join(my_path,"DATA"))
+
+        elif isfile(join(my_path, powerfile)):
+            move(my_path, powerfile)
+        
+        else:
+            return ErrorInfo("ERROR: ", "Powerfile: %s NOT found"%powerfile)
+
+    #Basefile check
+    if not isfile(join(my_path, "DATA", basefile)):
+        if isfile(join(my_path, basefile)):
+            move(my_path, basefile)
+        else:
+            return ErrorInfo("ERROR: ", "Basefile: %s NOT found"%basefile)
+
+    return True
 
 # Update modules
 
@@ -184,6 +216,13 @@ class FELion_widgets(Frame):
         self.parent.txt = Label(self.parent, text = txt, justify = kw['justify'], font = kw['font'], bg = kw['bg'], bd = kw['bd'], relief = kw['relief'])
         self.parent.txt.place(relx = x, rely = y, anchor = kw['anchor'], relwidth = kw['relwidth'], relheight = kw['relheight'])
 
+        if 'help' in kw:
+            on_enter = lambda x: self.cnt.statusBar_left.config(text = kw['help'])
+            on_leave = lambda x: self.cnt.statusBar_left.config(text = self.cnt.statusBar_left_text)
+
+            self.parent.txt.bind('<Enter>', on_enter)
+            self.parent.txt.bind('<Leave>', on_leave)
+
         return self.parent.txt
 
     def buttons(self, *args, **kw):
@@ -220,6 +259,14 @@ class FELion_widgets(Frame):
             self.parent.entry = Entry(self.parent, bg = kw['bg'], bd = kw['bd'], textvariable = self.parent.txt, font = kw['font'])
             self.parent.entry.place(relx = x, rely = y, anchor = kw['anchor'], relwidth = kw['relwidth'], relheight = kw['relheight'])
             
+            if 'help' in kw:
+                on_enter = lambda x: self.cnt.statusBar_left.config(text = kw['help'])
+                on_leave = lambda x: self.cnt.statusBar_left.config(text = self.cnt.statusBar_left_text)
+
+                self.parent.entry.bind('<Enter>', on_enter)
+                self.parent.entry.bind('<Leave>', on_leave)
+            
+            
             return self.parent.txt
 
         elif method == 'Check':
@@ -229,6 +276,13 @@ class FELion_widgets(Frame):
 
             self.parent.Check = ttk.Checkbutton(self.parent, text = txt, variable = self.parent.txt)
             self.parent.Check.place(relx = x, rely = y, relwidth = kw['relwidth'], relheight = kw['relheight'])
+
+            if 'help' in kw:
+                on_enter = lambda x: self.cnt.statusBar_left.config(text = kw['help'])
+                on_leave = lambda x: self.cnt.statusBar_left.config(text = self.cnt.statusBar_left_text)
+
+                self.parent.Check.bind('<Enter>', on_enter)
+                self.parent.Check.bind('<Leave>', on_leave)
 
             return self.parent.txt
         
@@ -283,6 +337,4 @@ class FELion_widgets(Frame):
         root.directory =  askdirectory()
         self.location = root.directory
         root.destroy()
-        return self.location
-
-        
+        return self.location        
