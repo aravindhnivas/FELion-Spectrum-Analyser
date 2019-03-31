@@ -117,6 +117,9 @@ def smooth_avg(filelist, location, save, show, dpi, original_show):
                         x, y = data[:,0], data[:,1]
                         
                         y_fit = np.array(fit(y, 21, 3))
+                        #y_fit = (y_fit - y_fit.min())/(y_fit.max()-y_fit.min())
+                        y_fit = (y_fit - y_fit.min())
+
                         y_list.append(y_fit.max())
                         if original_show: 
                                 ax.plot(x, y, label = f'{i}_Original')
@@ -129,7 +132,7 @@ def smooth_avg(filelist, location, save, show, dpi, original_show):
         for i in tsv:
                 data = np.genfromtxt(i)
                 x, y = data[:,0], data[:,1]
-                print(f'Y:{y.shape}')
+                #y = (y - y.min())/(y.max()-y.min())
                 y = y/y.max()*y_list.max()
                 ax.vlines(x, ymin = 0, ymax = y, color = colors[n], lw = 2, label = i)
                 n += 1
