@@ -387,7 +387,7 @@ class Plot(Frame):
                 )
         def just_plot_func(self):
                 plot(
-                        self.filelist, self.location, self.save.get(), self.show.get(), self.dpi.get(), self.plot_vlines.get()
+                        self.filelist, self.location, self.save.get(), self.show.get(), self.dpi.get(), self.plot_vlines.get(), self.parent
                 )
         def avg_theory_func(self):
                 smooth_avg(
