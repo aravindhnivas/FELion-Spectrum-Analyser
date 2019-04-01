@@ -28,6 +28,10 @@ from matplotlib.figure import Figure
 from tkinter import *
 from tkinter import ttk
 
+def save_func(name, location, fig):
+            fig.savefig(f'{name}.png')
+            if isfile(f'{name}.png'): ShowInfo('SAVED', f'File: {name}.png saved in \n{location}\n directory')
+
 def theory_exp(filelists, exp, location, save, show, dpi):
 
         os.chdir(location)
@@ -87,11 +91,18 @@ def power_plot(powerfiles, location, save, show, dpi):
         if save: plt.savefig('power_combined.png')
         plt.close()
 
-def plot(filelist, location, save, show, dpi, vline):
+def plot(filelist, location, save, show, dpi, vline, parent):
         
         os.chdir(location)
 
-        fig, ax = plt.subplots(dpi = dpi)
+        root = Toplevel(master = parent)
+        root.wm_title("Plot")
+
+        ################################ PLOTTING DETAILS ########################################
+
+        fig = Figure(figsize=(15, 5), dpi = dpi)
+        ax = fig.add_subplot(111)
+
         n = 0
         for i in filelist:   
                 data = np.genfromtxt(i)
@@ -105,13 +116,30 @@ def plot(filelist, location, save, show, dpi, vline):
         ax.set_xlabel("Wavenumber(cm-1)")
         ax.grid(True)
 
-        if show: plt.show()
-        
-        if save: 
-                plt.savefig('combined.png')
-                ShowInfo("SAVED:", "Filename: combined.png")
+        # Drawing in the tkinter window
+        canvas = FigureCanvasTkAgg(fig, master = root)
+        canvas.draw()
+        canvas.get_tk_widget().pack(side = TOP, fill = BOTH, expand = 1)
 
-        plt.close()
+        toolbar = NavigationToolbar2Tk(canvas, root)
+        toolbar.update()
+        canvas.get_tk_widget().pack(side = TOP, fill = BOTH, expand = 1)
+
+        frame = Frame(root, bg = 'light grey')
+        frame.pack(side = 'bottom', fill = 'both', expand = True)
+
+        label = Label(frame, text = 'Save as:')
+        label.pack(side = 'left', padx = 15, ipadx = 10, ipady = 5)
+
+        name = StringVar()
+        filename = Entry(frame, textvariable = name)
+        name.set('plot')
+        filename.pack(side = 'left')
+
+        button = ttk.Button(frame, text = 'Save', command = lambda: save_func(name.get(), location, fig))
+        button.pack(side = 'left', padx = 15, ipadx = 10, ipady = 5)
+
+        root.mainloop()
 
 def smooth_avg(filelist, location, save, show, dpi, original_show, f, parent):
         
@@ -138,7 +166,7 @@ def smooth_avg(filelist, location, save, show, dpi, original_show, f, parent):
                         y_fit = (y_fit - y_fit.min())
                         y_list.append(y_fit.max())
 
-                        if original_show: 
+                        if original_show:
                                 ax.plot(x, y, label = f'{i}_Original')
                                 ax.plot(x, y_fit, label = f'{i}_fit')
                         else: ax.plot(x, y_fit, 'k')
@@ -186,11 +214,7 @@ def smooth_avg(filelist, location, save, show, dpi, original_show, f, parent):
         name.set('exp_theory')
         filename.pack(side = 'left')
 
-        def save_func():
-            fig.savefig(f'{name.get()}.png')
-            if isfile(f'{name.get()}.png'): ShowInfo('SAVED', f'File: {name.get()}.png saved in \n{location}\n directory')
-
-        button = ttk.Button(frame, text = 'Save', command = lambda: save_func())
+        button = ttk.Button(frame, text = 'Save', command = lambda: save_func(name.get(), location, fig))
         button.pack(side = 'left', padx = 15, ipadx = 10, ipady = 5)
 
         root.mainloop()
