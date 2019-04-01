@@ -4,6 +4,7 @@
 
 # DATA analysis modules
 import matplotlib.pyplot as plt
+from matplotlib.widgets import Slider
 import numpy as np
 from scipy.interpolate import interp1d as interpolate
 from scipy.signal import savgol_filter as fit
@@ -14,7 +15,18 @@ from FELion_definitions import colors, ShowInfo
 
 # Built-In Module
 import os
+from os.path import isfile
 
+# Matplotlib Modules for tkinter
+import matplotlib
+matplotlib.use("TkAgg")
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
+from matplotlib.backend_bases import key_press_handler
+from matplotlib.figure import Figure
+
+# Embedding Matplotlib in tkinter window
+from tkinter import *
+from tkinter import ttk
 
 def theory_exp(filelists, exp, location, save, show, dpi):
 
@@ -101,13 +113,19 @@ def plot(filelist, location, save, show, dpi, vline):
 
         plt.close()
 
-def smooth_avg(filelist, location, save, show, dpi, original_show):
+def smooth_avg(filelist, location, save, show, dpi, original_show, f, parent):
         
         os.chdir(location)
         dat = [i for i in filelist if i.find('.dat')>=0]
         tsv = [i for i in filelist if not i.find('.dat')>=0]
 
-        fig, ax = plt.subplots(dpi = dpi)
+        root = Toplevel(master = parent)
+        root.wm_title("Exp-Theory")
+
+        ################################ PLOTTING DETAILS ########################################
+
+        fig = Figure(figsize=(15, 5), dpi = dpi)
+        ax = fig.add_subplot(111)
 
         y_list = []
         n = 0
@@ -117,14 +135,13 @@ def smooth_avg(filelist, location, save, show, dpi, original_show):
                         x, y = data[:,0], data[:,1]
                         
                         y_fit = np.array(fit(y, 21, 3))
-                        #y_fit = (y_fit - y_fit.min())/(y_fit.max()-y_fit.min())
                         y_fit = (y_fit - y_fit.min())
-
                         y_list.append(y_fit.max())
+
                         if original_show: 
                                 ax.plot(x, y, label = f'{i}_Original')
                                 ax.plot(x, y_fit, label = f'{i}_fit')
-                        else: ax.plot(x, y_fit, 'k' , label = f'{i}')
+                        else: ax.plot(x, y_fit, 'k')
         
         y_list = np.array(y_list)
 
@@ -132,8 +149,9 @@ def smooth_avg(filelist, location, save, show, dpi, original_show):
         for i in tsv:
                 data = np.genfromtxt(i)
                 x, y = data[:,0], data[:,1]
-                #y = (y - y.min())/(y.max()-y.min())
                 y = y/y.max()*y_list.max()
+
+                x = x*f
                 ax.vlines(x, ymin = 0, ymax = y, color = colors[n], lw = 2, label = i)
                 n += 1
 
@@ -142,16 +160,37 @@ def smooth_avg(filelist, location, save, show, dpi, original_show):
         ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
 
         # Put a legend to the right of the current axis
-        ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+        ax.legend(loc='center left', bbox_to_anchor=(1, 0.7))
 
         ax.set_xlabel("Wavenumber(cm-1)")
         ax.set_ylabel("Nomalised")
         ax.grid(True)
 
-        if show: plt.show()
-        
-        if save: 
-                plt.savefig('combined.png')
-                ShowInfo("SAVED:", "Filename: combined.png")
+        # Drawing in the tkinter window
+        canvas = FigureCanvasTkAgg(fig, master = root)
+        canvas.draw()
+        canvas.get_tk_widget().pack(side = TOP, fill = BOTH, expand = 1)
 
-        plt.close()
+        toolbar = NavigationToolbar2Tk(canvas, root)
+        toolbar.update()
+        canvas.get_tk_widget().pack(side = TOP, fill = BOTH, expand = 1)
+
+        frame = Frame(root, bg = 'light grey')
+        frame.pack(side = 'bottom', fill = 'both', expand = True)
+
+        label = Label(frame, text = 'Save as:')
+        label.pack(side = 'left', padx = 15, ipadx = 10, ipady = 5)
+
+        name = StringVar()
+        filename = Entry(frame, textvariable = name)
+        name.set('exp_theory')
+        filename.pack(side = 'left')
+
+        def save_func():
+            fig.savefig(f'{name.get()}.png')
+            if isfile(f'{name.get()}.png'): ShowInfo('SAVED', f'File: {name.get()}.png saved in \n{location}\n directory')
+
+        button = ttk.Button(frame, text = 'Save', command = lambda: save_func())
+        button.pack(side = 'left', padx = 15, ipadx = 10, ipady = 5)
+
+        root.mainloop()

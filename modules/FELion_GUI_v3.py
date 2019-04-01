@@ -320,6 +320,7 @@ class Plot(Frame):
         def __init__(self, parent, controller):
                 Frame.__init__(self, parent, bg="sea green")
 
+                self.parent = parent
                 self.location = "/"
                 self.fname = ""
                 self.filelist = []
@@ -364,7 +365,9 @@ class Plot(Frame):
                 self.widget.buttons('JustPlot' , 0.52, 0.4, self.just_plot_func, help = 'Use it to plot any file(s) with two columns')
                 self.widget.buttons('Avg-Theory' , 0.52, 0.55, self.avg_theory_func, help = 'Select exported FELIX files (.dat) and the theory file to plot it together')
                 self.show_original = self.widget.entries('Check', 'Original', 0.52, 0.65, default = False, help = 'Check to plot exported FELIX files (.dat) with smoothened curve of .dat files')
+                
 
+                self.theory_scaling = self.widget.entries('Entry', 0.97, 0.65, 0.6, bd = 5)
 
         def timescan_func(self):
                 timescanplot(
@@ -388,7 +391,7 @@ class Plot(Frame):
                 )
         def avg_theory_func(self):
                 smooth_avg(
-                        self.filelist, self.location, self.save.get(), self.show.get(), self.dpi.get(), self.show_original.get()
+                        self.filelist, self.location, self.save.get(), self.show.get(), self.dpi.get(), self.show_original.get(), self.theory_scaling.get(), self.parent
                 )
               
 #Closing Program
