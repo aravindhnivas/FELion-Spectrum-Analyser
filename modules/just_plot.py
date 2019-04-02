@@ -27,10 +27,16 @@ from matplotlib.figure import Figure
 # Embedding Matplotlib in tkinter window
 from tkinter import *
 from tkinter import ttk
+from tkinter.messagebox import askokcancel
 
 def save_func(name, location, fig):
-            fig.savefig(f'{name}.png')
-            if isfile(f'{name}.png'): ShowInfo('SAVED', f'File: {name}.png saved in \n{location}\n directory')
+        if isfile(f'{name}.png'): 
+                if askokcancel('Overwrite?', f'File: {name}.png already present. \nDo you want to Overwrite the file?'): 
+                        fig.savefig(f'{name}.png')
+                        ShowInfo('SAVED', f'File: {name}.png saved in \n{location}\n directory')
+        else: 
+                fig.savefig(f'{name}.png')
+                ShowInfo('SAVED', f'File: {name}.png saved in \n{location}\n directory')
 
 def theory_exp(filelists, exp, location, save, show, dpi):
 
@@ -141,11 +147,14 @@ def plot(filelist, location, save, show, dpi, vline, parent):
 
         root.mainloop()
 
-def smooth_avg(filelist, location, save, show, dpi, original_show, f, parent):
+def smooth_avg(filelist, location, save, show, dpi, original_show, scale, smooth, parent):
         
         os.chdir(location)
         dat = [i for i in filelist if i.find('.dat')>=0]
         tsv = [i for i in filelist if not i.find('.dat')>=0]
+
+        window_length, polyorder = np.asarray(smooth.split(','), dtype = np.int)
+        print(f'\nSavitzky-Golay filter for smoothening of data\nWindow Length --> {window_length}\nPolyorder --> {polyorder}\n')
 
         root = Toplevel(master = parent)
         root.wm_title("Exp-Theory")
@@ -157,29 +166,35 @@ def smooth_avg(filelist, location, save, show, dpi, original_show, f, parent):
 
         y_list = []
         n = 0
-        for i in dat:
-                if i.find('.dat')>=0:
-                        data = np.genfromtxt(i)
-                        x, y = data[:,0], data[:,1]
-                        
-                        y_fit = np.array(fit(y, 21, 3))
-                        y_fit = (y_fit - y_fit.min())
-                        y_list.append(y_fit.max())
+        if len(dat)>1:
+                for i in dat:
+                        if i.find('.dat')>=0:
+                                data = np.genfromtxt(i)
+                                x, y = data[:,0], data[:,1]
+                                y = y - y.min()
 
-                        if original_show:
-                                ax.plot(x, y, label = f'{i}_Original')
-                                ax.plot(x, y_fit, label = f'{i}_fit')
-                        else: ax.plot(x, y_fit, 'k')
-        
-        y_list = np.array(y_list)
+                                y1 = y_fit = np.array(fit(y, window_length, polyorder)) # Apply a Savitzky-Golay filter for smoothening of data. "fit(data, window_length, polyorder)"
+                                y_fit = y_fit - y_fit.min()
+
+                                y_list.append(y_fit.max())
+
+                                if original_show:       # To compare the original with the smoothened data
+                                        ax.plot(x, y, label = f'{i}_Original')
+                                        ax.plot(x, y1, label = f'{i}_fit')
+
+                                elif len(tsv)<1 : ax.plot(x, y_fit, label = i)
+                                else:  ax.plot(x, y_fit, 'k')
+                
+                y_list = np.array(y_list)
 
         n = 0
         for i in tsv:
                 data = np.genfromtxt(i)
                 x, y = data[:,0], data[:,1]
-                y = y/y.max()*y_list.max()
 
-                x = x*f
+                x = x * scale
+                if len(dat)>1: y = y/y.max()*y_list.max()
+
                 ax.vlines(x, ymin = 0, ymax = y, color = colors[n], lw = 2, label = i)
                 n += 1
 
@@ -212,9 +227,9 @@ def smooth_avg(filelist, location, save, show, dpi, original_show, f, parent):
         name = StringVar()
         filename = Entry(frame, textvariable = name)
         name.set('exp_theory')
-        filename.pack(side = 'left')
+        filename.pack(side = 'left', padx = 15, ipadx = 10, ipady = 5)
 
         button = ttk.Button(frame, text = 'Save', command = lambda: save_func(name.get(), location, fig))
         button.pack(side = 'left', padx = 15, ipadx = 10, ipady = 5)
 
-        root.mainloop()
+        #root.mainloop()
