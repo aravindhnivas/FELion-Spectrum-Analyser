@@ -87,7 +87,7 @@ def depletionPlot(files, location, power_n, dpi, parent):
     root2 = Toplevel(parent)
     tk_widget2 = FELion_Toplevel(root2, title_name2, location)
 
-    fig2, canvas2 = tk_widget2.figure(70, figsize=(25, 10))
+    fig2, canvas2 = tk_widget2.figure(dpi)
 
     spec = grid(ncols=2, nrows=1, figure=fig2)
 
@@ -243,23 +243,6 @@ def depletionPlot(files, location, power_n, dpi, parent):
         kon_g = fig2.add_axes([l, 0.08, 0.2, 0.015], facecolor=axcolor)
         na_g = fig2.add_axes([l, 0.06, 0.2, 0.015], facecolor=axcolor)
         nn_g = fig2.add_axes([l, 0.04, 0.2, 0.015], facecolor=axcolor)
-        
-        # inc = 0.2
-
-        # b0 = 0.12
-        # b1 = b0 - inc
-        # b2 = b1 - inc
-        # b3 = b2 - inc
-        # b4 = b3 - inc
-
-        # w, h = 0.2, 0.015
-        
-        # koff_g = fig2.add_axes([l, b0, w, h], facecolor=axcolor) #[left, bottom, width, height]
-        # n_g = fig2.add_axes([l, b1, w, h], facecolor=axcolor)
-
-        # kon_g = fig2.add_axes([l, b2, w, h], facecolor=axcolor)
-        # na_g = fig2.add_axes([l, b3, w, h], facecolor=axcolor)
-        # nn_g = fig2.add_axes([l, b4, w, h], facecolor=axcolor)
 
         koff_slider = Slider(koff_g, '$K_{OFF}$', 0, K_OFF[i]+10, valinit = K_OFF[i])
         n_slider = Slider(n_g, 'N', 0, N[i]+(N[i]/2), valinit = N[i])
@@ -310,10 +293,10 @@ def depletionPlot(files, location, power_n, dpi, parent):
             depletion_fitted_new = Depletion(X, A_new1)
             depletion1.set_ydata(depletion_fitted_new)
 
-            # k = i*2
-            # legend.get_texts()[k].set_text('N_OFF: [{:.2f}mJ], K_OFF={:.2fP}/J, N={:.2fP}'.format(power_values[i+1], ukoff, un))
-            # legend.get_texts()[k+1].set_text('N_ON: [{:.2f}mJ], K_ON={:.2fP}/J, N={:.2fP}, Na0={:.2fP}, Nn0={:.2fP}'.format(power_values[i], ukon, una+unn, una, unn))
-            # depletion_legend.get_texts()[i].set_text('A = {:.2fP}, K_ON = {:.2fP}/J'.format(uA_new1, ukon))
+            k = i*2
+            legend.get_texts()[k].set_text('N_OFF: [{:.2f}mJ], K_OFF={:.2fP}/J, N={:.2fP}'.format(power_values[i+1], ukoff, un))
+            legend.get_texts()[k+1].set_text('N_ON: [{:.2f}mJ], K_ON={:.2fP}/J, N={:.2fP}, Na0={:.2fP}, Nn0={:.2fP}'.format(power_values[i], ukon, una+unn, una, unn))
+            depletion_legend.get_texts()[i].set_text('A = {:.2fP}, K_ON = {:.2fP}/J'.format(uA_new1, ukon))
 
             canvas2.draw_idle()
             
@@ -340,21 +323,17 @@ def depletionPlot(files, location, power_n, dpi, parent):
     axs.set_ylabel('Counts', fontsize= lb_size)
 
     axs.grid(True)
-    # box = axs.get_position()
-    # axs.set_position([box.x0, box.y0, box.width*0.6, box.height])
-    # legend = axs.legend(loc='center left', bbox_to_anchor=(1, 0.95), title=files, fontsize=lg_fontsize-2)
-    # legend.get_title().set_fontsize(lg_fontsize)
-    legend = axs.legend(loc = 'upper right')
+    legend = axs.legend(loc = 'upper right', bbox_to_anchor = (2, -0.1))
     
     depletion_plot.grid(True)
     depletion_legend = depletion_plot.legend(loc = 'lower right', fontsize=lg_fontsize)
     depletion_plot.set_xlabel('$n * t * E (Joule)$', fontsize= lb_size)
     depletion_plot.set_ylabel('Relative abundance of active isomer', fontsize= lb_size)
-    # depletion_plot.set_title('$D(ntE) = 1-N_{ON}/N_{OFF}$ fitted with $D(ntE) = A(1-e^{K_{ON}*ntE})$', fontsize = title_fontsize)
+    depletion_plot.set_title('$D(ntE) = 1-N_{ON}/N_{OFF}$ fitted with $D(ntE) = A(1-e^{K_{ON}*ntE})$', fontsize = title_fontsize)
     
     ####################################### END Plotting details #######################################
 
-    canvas2.draw_idle() # drawing in the tkinter canvas: canvas drawing board
+    canvas2.draw() # drawing in the tkinter canvas: canvas drawing board
     
     ####################################### END Tkinter figure 2 #######################################
 
