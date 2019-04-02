@@ -7,10 +7,6 @@ import numpy as np
 from scipy.interpolate import interp1d as interpolate
 from scipy.signal import savgol_filter as fit
 
-# Matplotlib modules
-import matplotlib.pyplot as plt
-from matplotlib.widgets import Slider
-
 # Tkinter Modules
 from tkinter import Toplevel
 
@@ -97,6 +93,7 @@ def plot(filelist, location, dpi, parent):
 
         ax.legend()
         ax.set_xlabel("Wavenumber(cm-1)")
+        ax.set_ylabel("Intensity")
         ax.grid(True)
 
         ####################################### END Plotting details #######################################
@@ -104,7 +101,6 @@ def plot(filelist, location, dpi, parent):
         canvas.draw() # drawing in the tkinter canvas: canvas drawing board
         
         ####################################### END Tkinter figure #######################################
-
 
 def exp_theory(filelist, location, dpi, original_show, scale, smooth, parent):
 
@@ -173,7 +169,7 @@ def exp_theory(filelist, location, dpi, original_show, scale, smooth, parent):
         # Put a legend to the right of the current axis
         ax.legend(loc='center left', bbox_to_anchor=(1, 0.7))
         ax.set_xlabel("Wavenumber(cm-1)")
-        ax.set_ylabel("Nomalised")
+        ax.set_ylabel("Nomalised Intensity")
         ax.grid(True)
 
         ####################################### END Plotting details #######################################

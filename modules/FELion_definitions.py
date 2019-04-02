@@ -407,8 +407,4 @@ class FELion_Toplevel():
         self.toolbar.update()
         
         return self.fig, self.canvas
-
         
-
-
-
