@@ -1,19 +1,39 @@
 #!/usr/bin/python3
 
+# Importing Modules
+
+# Tkinter modules
 from tkinter import *
 from tkinter import ttk, messagebox
 from tkinter.filedialog import askopenfilenames, askopenfilename, askdirectory
+from tkinter.messagebox import askokcancel
+
+# Data Analysis
+import numpy as np
+
+# Built-In Modules
 import os, shutil, tempfile, git, subprocess, sys
 from os.path import isdir, dirname, join, isfile
-
 import datetime
-import numpy as np
+
+# Matplotlib Modules for tkinter
+import matplotlib
+matplotlib.use("TkAgg")
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
+from matplotlib.backend_bases import key_press_handler
+from matplotlib.figure import Figure
+
+################################################# MODULES IMPORTED #################################################
+####################################################################################################################
+
 
 # General functions:
 copy = lambda pathdir, x: (shutil.copyfile(join(pathdir, x), join(pathdir,"DATA" ,x)), print("%s copied to DATA folder" %x))
 move = lambda pathdir, x: (shutil.move(join(pathdir, x), join(pathdir,"DATA" ,x)), print("%s moved to DATA folder"%x))
 
 colors = ['C0', 'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'C9']
+
+####################################################################################################################
 
 # Tkinter messagebox
 def ErrorInfo(error, msg):
@@ -28,9 +48,9 @@ def ShowInfo(info, msg):
     messagebox.showinfo(str(info), str(msg))
     root.destroy()
 
+####################################################################################################################
 
 # Normline Filecheck method
-
 def filecheck(my_path, basefile, powerfile, fullname):
     
     #File check
@@ -60,8 +80,9 @@ def filecheck(my_path, basefile, powerfile, fullname):
 
     return True
 
-# Update modules
+####################################################################################################################
 
+# Update modules
 def recursive_overwrite(src, dest, ignore=None):
     if os.path.isdir(src):
         if not os.path.isdir(dest):
@@ -89,8 +110,10 @@ def update(*args):
     except Exception as e:
         ErrorInfo("ERROR: ", e)
 
-#################################################################################
-############################### Tkinter functions ###############################
+####################################################################################################################
+
+############################################# Tkinter Class #################################################
+####################################################################################################################
 
 #################### constants ###############################
 constants = {
@@ -195,7 +218,9 @@ def var_find(fname, location):
         return res, b0, trap
     else:
         return 0, 0, 0
-##############################################################
+
+############################# FELion Tkinter Class #############################
+
 class FELion_widgets(Frame):
     
     def __init__(self, parent, *args, **kw):
@@ -337,4 +362,53 @@ class FELion_widgets(Frame):
         root.directory =  askdirectory()
         self.location = root.directory
         root.destroy()
-        return self.location        
+        return self.location
+
+
+def save_func(name, location, fig):
+    os.chdir(location)
+    if isfile(f'{name}.png'): 
+            if askokcancel('Overwrite?', f'File: {name}.png already present. \nDo you want to Overwrite the file?'): 
+                    fig.savefig(f'{name}.png')
+                    ShowInfo('SAVED', f'File: {name}.png saved in \n{location}\n directory')
+    else: 
+            fig.savefig(f'{name}.png')
+            ShowInfo('SAVED', f'File: {name}.png saved in \n{location}\n directory')
+
+class FELion_Toplevel():
+
+    def __init__(self, root, name, location):
+        self.location = location
+
+        self.root = root
+        self.root.wm_title(name)
+
+        frame = Frame(self.root, bg = 'light grey')
+        frame.pack(side = 'bottom', fill = 'both', expand = True)
+
+        label = Label(frame, text = 'Save as:')
+        label.pack(side = 'left', padx = 15, ipadx = 10, ipady = 5)
+
+        name = StringVar()
+        filename = Entry(frame, textvariable = name)
+        name.set('powerplot')
+        filename.pack(side = 'left')
+
+        button = ttk.Button(frame, text = 'Save', command = lambda: save_func(name.get(), self.location, self.fig))
+        button.pack(side = 'left', padx = 15, ipadx = 10, ipady = 5)
+
+    def figure(self, figsize, dpi):
+        self.fig = Figure(figsize = figsize, dpi = dpi)
+
+        self.canvas = FigureCanvasTkAgg(self.fig, master = self.root)
+        self.canvas.get_tk_widget().pack(side = 'top', fill = 'both', expand = 1)
+
+        self.toolbar = NavigationToolbar2Tk(self.canvas, self.root)
+        self.toolbar.update()
+        
+        return self.fig, self.canvas
+
+        
+
+
+

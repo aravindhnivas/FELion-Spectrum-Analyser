@@ -19,7 +19,7 @@ import numpy as np
 # Custom function modules
 from timescan_plot import timescanplot
 from depletion_plot import depletionPlot
-from just_plot import theory_exp, power_plot, plot, smooth_avg
+from just_plot import power_plot, plot, smooth_avg
 from FELion_definitions import *
 
 #FELion modules
@@ -349,7 +349,6 @@ class Plot(Frame):
 
                 self.save = self.widget.entries('Check', 'Save', 0.4, 0.2, default = False)
                 self.show = self.widget.entries('Check', 'Show', 0.52, 0.2, default = True)
-                self.plot_vlines = self.widget.entries('Check', 'Vlines', 0.65, 0.4, default = False, help = 'Just-Plot the theory files alone.')
 
                 self.widget.labels('DPI', 0.65, 0.23)
                 self.dpi = self.widget.entries('Entry', 100, 0.75, 0.23, bd = 5)
@@ -357,18 +356,15 @@ class Plot(Frame):
                 self.widget.buttons('Timescan' , 0.4, 0.3, self.timescan_func,help = 'Plot timescan files')
                 self.widget.buttons('Depletion' , 0.52, 0.3, self.depletion_func, help = 'Select two timescan files to see the depletion; and enter power_on, power_off and n')
                 self.depletion_power = self.widget.entries('Entry',  'power_on, power_off, n_shots' , 0.65, 0.33, bd = 5, relwidth = 0.25, help = 'Enter Power_ON, Power_OFF and N_Shots (comma separated)')
-
-                theory_msg = 'First Select Exp. file using Browse, then theory file using Select file(s)'
-                self.widget.buttons('Exp-Theory' , 0.4, 0.55, self.theory_func, help = theory_msg)
-
+                
                 self.widget.buttons('PowerPlot' , 0.4, 0.4, self.powerplot_func, help = 'For plotting .pow files')
                 self.widget.buttons('JustPlot' , 0.52, 0.4, self.just_plot_func, help = 'Use it to plot any data file(s) with two columns')
-                self.widget.buttons('Avg-Theory' , 0.52, 0.55, self.avg_theory_func, help = 'Plot exp and theoreitical data together')
-                self.show_original = self.widget.entries('Check', 'Original', 0.52, 0.65, default = False, help = 'Compare smoothened data with original')
-                
 
-                self.theory_scaling = self.widget.entries('Entry', 0.97, 0.65, 0.58, bd = 5, help = 'Scaling the theoretical values')
-                self.smooth = self.widget.entries('Entry', '21, 6', 0.65, 0.68, bd = 5, help = 'Savitzky–Golay filter for smoothening data: Window_length, polyorder')
+                self.widget.buttons('Exp-Theory' , 0.4, 0.55, self.avg_theory_func, help = 'Plot exp and theoreitical data together')
+                self.theory_scaling = self.widget.entries('Entry', 0.97, 0.52, 0.58, bd = 5, help = 'Scaling the theoretical values')
+                self.smooth = self.widget.entries('Entry', '21, 6', 0.52, 0.68, bd = 5, help = 'Savitzky–Golay filter for smoothening data: Window_length, polyorder')
+
+                self.show_original = self.widget.entries('Check', 'Original', 0.4, 0.65, default = False, help = 'Compare smoothened data with original')
 
         def timescan_func(self):
                 timescanplot(
@@ -378,22 +374,18 @@ class Plot(Frame):
                 depletionPlot(
                         self.filelist, self.location, self.save.get(), self.show.get(), self.depletion_power.get(), self.dpi.get()
                 )
-        def theory_func(self):
-                theory_exp(
-                        self.filelist, self.full_name, self.location, self.save.get(), self.show.get(), self.dpi.get()
-                )
+
         def powerplot_func(self):
                 power_plot(
-                        self.filelist, self.location, self.save.get(), self.show.get(), self.dpi.get()
+                        self.filelist, self.location, self.save.get(), self.show.get(), self.dpi.get(), self.parent
                 )
         def just_plot_func(self):
                 plot(
-                        self.filelist, self.location, self.save.get(), self.show.get(), self.dpi.get(), self.plot_vlines.get(), self.parent
+                        self.filelist, self.location, self.dpi.get(), self.parent
                 )
         def avg_theory_func(self):
                 smooth_avg(
-                        self.filelist, self.location, self.save.get(), self.show.get(), self.dpi.get(), 
-                        self.show_original.get(), self.theory_scaling.get(), self.smooth.get(), self.parent
+                        self.filelist, self.location, self.dpi.get(), self.show_original.get(), self.theory_scaling.get(), self.smooth.get(), self.parent
                 )
               
 #Closing Program

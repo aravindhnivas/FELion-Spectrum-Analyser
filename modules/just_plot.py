@@ -11,7 +11,7 @@ from scipy.signal import savgol_filter as fit
 from glob2 import glob
 
 # FELion Module
-from FELion_definitions import colors, ShowInfo
+from FELion_definitions import colors, ShowInfo, FELion_Toplevel
 
 # Built-In Module
 import os
@@ -38,38 +38,17 @@ def save_func(name, location, fig):
                 fig.savefig(f'{name}.png')
                 ShowInfo('SAVED', f'File: {name}.png saved in \n{location}\n directory')
 
-def theory_exp(filelists, exp, location, save, show, dpi):
+def power_plot(powerfiles, location, save, show, dpi, parent):
 
         os.chdir(location)
-
-        plt.figure(dpi = dpi)
-        e = np.genfromtxt(exp)
-        xe, ye = e[:,0], e[:,1]
-        exp = exp.split('\\')[-1].split('.')[0]
-        plt.plot(xe,ye, 'k', alpha = 0.5, label=f'Exp:{exp}.felix')
-
-        for n ,i in enumerate(filelists):
-                t = np.genfromtxt(i)
-                xt, yt = t[:,0], t[:,1]
-                yt = (yt/yt.max())*ye.max()
-                plt.vlines(xt, ymin=0, ymax=yt, color = colors[n], lw = 5, label = i.split('/')[-1].split('.')[0])
         
-        plt.legend()
-        plt.grid(True)
-        plt.title('Theory vs Experiment')
-        plt.xlabel('Wavenumber $cm^{-1}$')
-        plt.ylabel('Normalised Intensity \n(Theory Inten. is norm. to Exp.)')
-        plt.xlim(xmax = xe.max()+50, xmin = xe.min()-50)
-        plt.ylim(ymin=0)
-        plt.tight_layout()
-        if save: plt.savefig('theory-exp_%s.png'%exp)
-        if show: plt.show()
-        plt.close()
+        root = Toplevel(parent)
+        tk_widget = FELion_Toplevel(root, 'PowerPlot', location)
 
-def power_plot(powerfiles, location, save, show, dpi):
+        fig, canvas = tk_widget.figure((10, 5), dpi)
+        ax = fig.add_subplot(111)
 
-        os.chdir(location)
-        plt.figure(dpi = dpi)
+        ################################ PLOTTING DETAILS ########################################
         for powerfile in powerfiles:
                 with open(powerfile, 'r') as f:
                         for i in f:
@@ -84,70 +63,42 @@ def power_plot(powerfiles, location, save, show, dpi):
                 x = temp[:,0]
 
                 power_extrapolated = power_file_extrapolate(x)
-                plt.plot(power_file[:,0], power_file[:,1], 'ok',ms=7)
-                plt.plot(x, power_extrapolated, '-', label=powerfile+':'+str(shots))
+                ax.plot(power_file[:,0], power_file[:,1], 'ok',ms=7)
+                ax.plot(x, power_extrapolated, '-', label=powerfile+':'+str(shots))
         
-        plt.legend()
-        plt.grid(True)
-        plt.title('Power change during scan')
-        plt.ylabel('Power (mJ)')
-        plt.xlabel('Wavenumber $cm^{-1}$')
+        ax.legend()
+        ax.grid(True)
+        ax.set_title('Power change during scan')
+        ax.set_ylabel('Power (mJ)')
+        ax.set_xlabel('Wavenumber $cm^{-1}$')
 
-        if show: plt.show()
-        if save: plt.savefig('power_combined.png')
-        plt.close()
+        canvas.draw()
 
-def plot(filelist, location, save, show, dpi, vline, parent):
+def plot(filelist, location, dpi, parent):
         
         os.chdir(location)
 
-        root = Toplevel(master = parent)
-        root.wm_title("Plot")
+        root = Toplevel(parent)
+        tk_widget = FELion_Toplevel(root, 'Plot', location)
 
-        ################################ PLOTTING DETAILS ########################################
-
-        fig = Figure(figsize=(15, 5), dpi = dpi)
+        fig, canvas = tk_widget.figure((10, 5), dpi)
         ax = fig.add_subplot(111)
 
+        ################################ PLOTTING DETAILS ########################################
         n = 0
         for i in filelist:   
                 data = np.genfromtxt(i)
                 x, y = data[:,0], data[:,1]
-                if not vline: ax.plot(x, y, label = i)
-                else: ax.vlines(x, ymin=0, ymax=y, color = colors[n], lw = 2, label = i)
-                print(f'Color-->{colors[n]}\n')
-                n += 1
+                
+                ax.plot(x, y, label = i)
 
         ax.legend()
         ax.set_xlabel("Wavenumber(cm-1)")
         ax.grid(True)
 
-        # Drawing in the tkinter window
-        canvas = FigureCanvasTkAgg(fig, master = root)
         canvas.draw()
-        canvas.get_tk_widget().pack(side = TOP, fill = BOTH, expand = 1)
 
-        toolbar = NavigationToolbar2Tk(canvas, root)
-        toolbar.update()
-        canvas.get_tk_widget().pack(side = TOP, fill = BOTH, expand = 1)
-
-        frame = Frame(root, bg = 'light grey')
-        frame.pack(side = 'bottom', fill = 'both', expand = True)
-
-        label = Label(frame, text = 'Save as:')
-        label.pack(side = 'left', padx = 15, ipadx = 10, ipady = 5)
-
-        name = StringVar()
-        filename = Entry(frame, textvariable = name)
-        name.set('plot')
-        filename.pack(side = 'left')
-
-        button = ttk.Button(frame, text = 'Save', command = lambda: save_func(name.get(), location, fig))
-        button.pack(side = 'left', padx = 15, ipadx = 10, ipady = 5)
-
-        root.mainloop()
-
-def smooth_avg(filelist, location, save, show, dpi, original_show, scale, smooth, parent):
+def smooth_avg(filelist, location, dpi, original_show, scale, smooth, parent):
         
         os.chdir(location)
         dat = [i for i in filelist if i.find('.dat')>=0]
@@ -166,7 +117,7 @@ def smooth_avg(filelist, location, save, show, dpi, original_show, scale, smooth
 
         y_list = []
         n = 0
-        if len(dat)>1:
+        if len(dat)>0:
                 for i in dat:
                         if i.find('.dat')>=0:
                                 data = np.genfromtxt(i)
@@ -188,15 +139,16 @@ def smooth_avg(filelist, location, save, show, dpi, original_show, scale, smooth
                 y_list = np.array(y_list)
 
         n = 0
-        for i in tsv:
-                data = np.genfromtxt(i)
-                x, y = data[:,0], data[:,1]
+        if len(tsv)>0:
+                for i in tsv:
+                        data = np.genfromtxt(i)
+                        x, y = data[:,0], data[:,1]
 
-                x = x * scale
-                if len(dat)>1: y = y/y.max()*y_list.max()
+                        x = x * scale
+                        if len(dat)>1: y = y/y.max()*y_list.max()
 
-                ax.vlines(x, ymin = 0, ymax = y, color = colors[n], lw = 2, label = i)
-                n += 1
+                        ax.vlines(x, ymin = 0, ymax = y, color = colors[n], lw = 2, label = i)
+                        n += 1
 
         #ax.legend()
         box = ax.get_position()
@@ -231,5 +183,3 @@ def smooth_avg(filelist, location, save, show, dpi, original_show, scale, smooth
 
         button = ttk.Button(frame, text = 'Save', command = lambda: save_func(name.get(), location, fig))
         button.pack(side = 'left', padx = 15, ipadx = 10, ipady = 5)
-
-        #root.mainloop()
