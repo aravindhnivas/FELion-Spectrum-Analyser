@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-# Impoerting Modules
+# Importing Modules
 
 # DATA analysis modules
 import numpy as np
@@ -17,7 +17,10 @@ from FELion_definitions import colors, FELion_Toplevel
 import os
 from os.path import isfile
 
-def power_plot(powerfiles, location, save, show, dpi, parent):
+####################################### Modules Imported #######################################
+
+
+def power_plot(powerfiles, location, dpi, parent):
 
         ####################################### Initialisation #######################################
         
@@ -32,7 +35,7 @@ def power_plot(powerfiles, location, save, show, dpi, parent):
         root = Toplevel(parent)
         tk_widget = FELion_Toplevel(root, title_name, location)
 
-        fig, canvas = tk_widget.figure((10, 5), dpi)
+        fig, canvas = tk_widget.figure(dpi)
         ax = fig.add_subplot(111)
 
         ################################ PLOTTING DETAILS ########################################
@@ -80,7 +83,7 @@ def plot(filelist, location, dpi, parent):
         root = Toplevel(parent)
         tk_widget = FELion_Toplevel(root, title_name, location)
 
-        fig, canvas = tk_widget.figure((10, 5), dpi)
+        fig, canvas = tk_widget.figure(dpi)
         ax = fig.add_subplot(111)
 
         ####################################### PLOTTING DETAILS #######################################
@@ -92,6 +95,7 @@ def plot(filelist, location, dpi, parent):
                 ax.plot(x, y, label = i)
 
         ax.legend()
+        ax.set_title('Plot')
         ax.set_xlabel("Wavenumber(cm-1)")
         ax.set_ylabel("Intensity")
         ax.grid(True)
@@ -122,7 +126,7 @@ def exp_theory(filelist, location, dpi, original_show, scale, smooth, parent):
         root = Toplevel(parent)
         tk_widget = FELion_Toplevel(root, title_name, location)
 
-        fig, canvas = tk_widget.figure((10, 5), dpi)
+        fig, canvas = tk_widget.figure(dpi)
         ax = fig.add_subplot(111)
         
         ####################################### PLOTTING DETAILS #######################################
@@ -168,6 +172,7 @@ def exp_theory(filelist, location, dpi, original_show, scale, smooth, parent):
 
         # Put a legend to the right of the current axis
         ax.legend(loc='center left', bbox_to_anchor=(1, 0.7))
+        ax.set_title('Experimental vs Theoretical')
         ax.set_xlabel("Wavenumber(cm-1)")
         ax.set_ylabel("Nomalised Intensity")
         ax.grid(True)

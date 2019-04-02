@@ -364,47 +364,57 @@ class FELion_widgets(Frame):
         root.destroy()
         return self.location
 
-
-def save_func(name, location, fig):
-    os.chdir(location)
-    if isfile(f'{name}.png'): 
-            if askokcancel('Overwrite?', f'File: {name}.png already present. \nDo you want to Overwrite the file?'): 
-                    fig.savefig(f'{name}.png')
-                    ShowInfo('SAVED', f'File: {name}.png saved in \n{location}\n directory')
-    else: 
-            fig.savefig(f'{name}.png')
-            ShowInfo('SAVED', f'File: {name}.png saved in \n{location}\n directory')
+############################# FELion Tkinter Toplevel method for matplotlib figure #############################
 
 class FELion_Toplevel():
 
     def __init__(self, root, name, location):
+        os.chdir(location)
         self.location = location
 
         self.root = root
         self.root.wm_title(name)
+        self.root.wm_geometry('1000x600')
 
-        frame = Frame(self.root, bg = 'light grey')
-        frame.pack(side = 'bottom', fill = 'both', expand = True)
+        self.canvas_frame = Frame(self.root, bg = 'white')
+        self.canvas_frame.place(relx = 0, rely = 0, relwidth = 0.8, relheight = 1)
 
-        label = Label(frame, text = 'Save as:')
-        label.pack(side = 'left', padx = 15, ipadx = 10, ipady = 5)
+        self.widget_frame = Frame(self.root, bg = 'light grey')
+        self.widget_frame.place(relx = 0.8, rely = 0, relwidth = 0.2, relheight = 1)
 
-        name = StringVar()
-        filename = Entry(frame, textvariable = name)
-        name.set('plot')
-        filename.pack(side = 'left')
+        self.name = StringVar()
+        self.filename = Entry(self.widget_frame, textvariable = self.name, font = ("Verdana", 10, "italic"), bd = 5)
+        self.name.set('plot')
+        self.filename.place(relx = 0.1, rely = 0.1, relwidth = 0.5, relheight = 0.05)
 
-        button = ttk.Button(frame, text = 'Save', command = lambda: save_func(name.get(), self.location, self.fig))
-        button.pack(side = 'left', padx = 15, ipadx = 10, ipady = 5)
+        self.button = ttk.Button(self.widget_frame, text = 'Save', command = lambda: self.save())
+        self.button.place(relx = 0.1, rely = 0.2, relwidth = 0.5, relheight = 0.05)
 
-    def figure(self, figsize, dpi):
-        self.fig = Figure(figsize = figsize, dpi = dpi)
+    def figure(self, dpi, **kw):
+        if 'figsize' in kw: self.fig = Figure(figsize = kw['figsize'], dpi = dpi)
+        else: self.fig = Figure(dpi = dpi)
 
-        self.canvas = FigureCanvasTkAgg(self.fig, master = self.root)
-        self.canvas.get_tk_widget().pack(side = 'top', fill = 'both', expand = 1)
+        self.fig.subplots_adjust(top = 0.95, bottom = 0.2, left = 0.1, right = 0.9)
+
+        self.canvas = FigureCanvasTkAgg(self.fig, master = self.canvas_frame)
+        self.canvas.get_tk_widget().place(relx = 0, rely = 0, relwidth = 1, relheight = 1)
 
         self.toolbar = NavigationToolbar2Tk(self.canvas, self.root)
         self.toolbar.update()
+
+        self.canvas.mpl_connect("key_press_event", self.on_key_press)
         
         return self.fig, self.canvas
+    
+    def on_key_press(self, event):
+            key_press_handler(event, self.canvas, self.toolbar)
+
+    def save(self):
         
+        if isfile(f'{self.name.get()}.png'): 
+                if askokcancel('Overwrite?', f'File: {self.name.get()}.png already present. \nDo you want to Overwrite the file?'): 
+                        self.fig.savefig(f'{self.name.get()}.png')
+                        ShowInfo('SAVED', f'File: {self.name.get()}.png saved in \n{self.location}\n directory')
+        else: 
+                self.fig.savefig(f'{self.name.get()}.png')
+                ShowInfo('SAVED', f'File: {self.name.get()}.png saved in \n{self.location}\n directory')

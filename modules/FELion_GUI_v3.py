@@ -368,16 +368,16 @@ class Plot(Frame):
 
         def timescan_func(self):
                 timescanplot(
-                        self.fname, self.location, self.save.get(), self.show.get(), self.dpi.get()
+                        self.fname, self.location, self.dpi.get(), self.parent
                 )
         def depletion_func(self):
                 depletionPlot(
-                        self.filelist, self.location, self.save.get(), self.show.get(), self.depletion_power.get(), self.dpi.get()
+                        self.filelist, self.location, self.depletion_power.get(), self.dpi.get(), self.parent
                 )
 
         def powerplot_func(self):
                 power_plot(
-                        self.filelist, self.location, self.save.get(), self.show.get(), self.dpi.get(), self.parent
+                        self.filelist, self.location, self.dpi.get(), self.parent
                 )
         def just_plot_func(self):
                 plot(
