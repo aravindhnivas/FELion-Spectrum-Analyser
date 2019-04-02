@@ -362,12 +362,13 @@ class Plot(Frame):
                 self.widget.buttons('Exp-Theory' , 0.4, 0.55, self.theory_func, help = theory_msg)
 
                 self.widget.buttons('PowerPlot' , 0.4, 0.4, self.powerplot_func, help = 'For plotting .pow files')
-                self.widget.buttons('JustPlot' , 0.52, 0.4, self.just_plot_func, help = 'Use it to plot any file(s) with two columns')
-                self.widget.buttons('Avg-Theory' , 0.52, 0.55, self.avg_theory_func, help = 'Select exported FELIX files (.dat) and the theory file to plot it together')
-                self.show_original = self.widget.entries('Check', 'Original', 0.52, 0.65, default = False, help = 'Check to plot exported FELIX files (.dat) with smoothened curve of .dat files')
+                self.widget.buttons('JustPlot' , 0.52, 0.4, self.just_plot_func, help = 'Use it to plot any data file(s) with two columns')
+                self.widget.buttons('Avg-Theory' , 0.52, 0.55, self.avg_theory_func, help = 'Plot exp and theoreitical data together')
+                self.show_original = self.widget.entries('Check', 'Original', 0.52, 0.65, default = False, help = 'Compare smoothened data with original')
                 
 
-                self.theory_scaling = self.widget.entries('Entry', 0.97, 0.65, 0.6, bd = 5)
+                self.theory_scaling = self.widget.entries('Entry', 0.97, 0.65, 0.58, bd = 5, help = 'Scaling the theoretical values')
+                self.smooth = self.widget.entries('Entry', '21, 6', 0.65, 0.68, bd = 5, help = 'Savitzky–Golay filter for smoothening data: Window_length, polyorder')
 
         def timescan_func(self):
                 timescanplot(
@@ -391,7 +392,8 @@ class Plot(Frame):
                 )
         def avg_theory_func(self):
                 smooth_avg(
-                        self.filelist, self.location, self.save.get(), self.show.get(), self.dpi.get(), self.show_original.get(), self.theory_scaling.get(), self.parent
+                        self.filelist, self.location, self.save.get(), self.show.get(), self.dpi.get(), 
+                        self.show_original.get(), self.theory_scaling.get(), self.smooth.get(), self.parent
                 )
               
 #Closing Program
