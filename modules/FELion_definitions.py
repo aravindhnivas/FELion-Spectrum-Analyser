@@ -391,7 +391,7 @@ class FELion_Toplevel():
 
         name = StringVar()
         filename = Entry(frame, textvariable = name)
-        name.set('powerplot')
+        name.set('plot')
         filename.pack(side = 'left')
 
         button = ttk.Button(frame, text = 'Save', command = lambda: save_func(name.get(), self.location, self.fig))

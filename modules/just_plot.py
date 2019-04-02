@@ -3,47 +3,38 @@
 # Impoerting Modules
 
 # DATA analysis modules
-import matplotlib.pyplot as plt
-from matplotlib.widgets import Slider
 import numpy as np
 from scipy.interpolate import interp1d as interpolate
 from scipy.signal import savgol_filter as fit
-from glob2 import glob
+
+# Matplotlib modules
+import matplotlib.pyplot as plt
+from matplotlib.widgets import Slider
+
+# Tkinter Modules
+from tkinter import Toplevel
 
 # FELion Module
-from FELion_definitions import colors, ShowInfo, FELion_Toplevel
+from FELion_definitions import colors, FELion_Toplevel
 
 # Built-In Module
 import os
 from os.path import isfile
 
-# Matplotlib Modules for tkinter
-import matplotlib
-matplotlib.use("TkAgg")
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
-from matplotlib.backend_bases import key_press_handler
-from matplotlib.figure import Figure
-
-# Embedding Matplotlib in tkinter window
-from tkinter import *
-from tkinter import ttk
-from tkinter.messagebox import askokcancel
-
-def save_func(name, location, fig):
-        if isfile(f'{name}.png'): 
-                if askokcancel('Overwrite?', f'File: {name}.png already present. \nDo you want to Overwrite the file?'): 
-                        fig.savefig(f'{name}.png')
-                        ShowInfo('SAVED', f'File: {name}.png saved in \n{location}\n directory')
-        else: 
-                fig.savefig(f'{name}.png')
-                ShowInfo('SAVED', f'File: {name}.png saved in \n{location}\n directory')
-
 def power_plot(powerfiles, location, save, show, dpi, parent):
 
-        os.chdir(location)
+        ####################################### Initialisation #######################################
         
+        os.chdir(location)
+
+        ####################################### END Initialisation ###################################
+        
+        ####################################### Tkinter figure #######################################
+
+        ## Embedding figure to tkinter Toplevel
+        title_name = 'Plot'
         root = Toplevel(parent)
-        tk_widget = FELion_Toplevel(root, 'PowerPlot', location)
+        tk_widget = FELion_Toplevel(root, title_name, location)
 
         fig, canvas = tk_widget.figure((10, 5), dpi)
         ax = fig.add_subplot(111)
@@ -72,19 +63,31 @@ def power_plot(powerfiles, location, save, show, dpi, parent):
         ax.set_ylabel('Power (mJ)')
         ax.set_xlabel('Wavenumber $cm^{-1}$')
 
-        canvas.draw()
+        ####################################### END Plotting details #######################################
+
+        canvas.draw() # drawing in the tkinter canvas: canvas drawing board
+        
+        ####################################### END Tkinter figure #######################################
 
 def plot(filelist, location, dpi, parent):
+
+        ####################################### Initialisation #######################################
         
         os.chdir(location)
 
+        ####################################### END Initialisation #######################################
+
+        ####################################### Tkinter figure #######################################
+
+        ## Embedding figure to tkinter Toplevel
+        title_name = 'Plot'
         root = Toplevel(parent)
-        tk_widget = FELion_Toplevel(root, 'Plot', location)
+        tk_widget = FELion_Toplevel(root, title_name, location)
 
         fig, canvas = tk_widget.figure((10, 5), dpi)
         ax = fig.add_subplot(111)
 
-        ################################ PLOTTING DETAILS ########################################
+        ####################################### PLOTTING DETAILS #######################################
         n = 0
         for i in filelist:   
                 data = np.genfromtxt(i)
@@ -96,10 +99,17 @@ def plot(filelist, location, dpi, parent):
         ax.set_xlabel("Wavenumber(cm-1)")
         ax.grid(True)
 
-        canvas.draw()
+        ####################################### END Plotting details #######################################
 
-def smooth_avg(filelist, location, dpi, original_show, scale, smooth, parent):
+        canvas.draw() # drawing in the tkinter canvas: canvas drawing board
         
+        ####################################### END Tkinter figure #######################################
+
+
+def exp_theory(filelist, location, dpi, original_show, scale, smooth, parent):
+
+        ####################################### Initialisation #######################################
+
         os.chdir(location)
         dat = [i for i in filelist if i.find('.dat')>=0]
         tsv = [i for i in filelist if not i.find('.dat')>=0]
@@ -107,13 +117,19 @@ def smooth_avg(filelist, location, dpi, original_show, scale, smooth, parent):
         window_length, polyorder = np.asarray(smooth.split(','), dtype = np.int)
         print(f'\nSavitzky-Golay filter for smoothening of data\nWindow Length --> {window_length}\nPolyorder --> {polyorder}\n')
 
-        root = Toplevel(master = parent)
-        root.wm_title("Exp-Theory")
+        ####################################### END Initialisation #######################################
 
-        ################################ PLOTTING DETAILS ########################################
+        ####################################### Tkinter figure #######################################
 
-        fig = Figure(figsize=(15, 5), dpi = dpi)
+        ## Embedding figure to tkinter Toplevel
+        title_name = 'Exp-Theory'
+        root = Toplevel(parent)
+        tk_widget = FELion_Toplevel(root, title_name, location)
+
+        fig, canvas = tk_widget.figure((10, 5), dpi)
         ax = fig.add_subplot(111)
+        
+        ####################################### PLOTTING DETAILS #######################################
 
         y_list = []
         n = 0
@@ -156,30 +172,12 @@ def smooth_avg(filelist, location, dpi, original_show, scale, smooth, parent):
 
         # Put a legend to the right of the current axis
         ax.legend(loc='center left', bbox_to_anchor=(1, 0.7))
-
         ax.set_xlabel("Wavenumber(cm-1)")
         ax.set_ylabel("Nomalised")
         ax.grid(True)
 
-        # Drawing in the tkinter window
-        canvas = FigureCanvasTkAgg(fig, master = root)
-        canvas.draw()
-        canvas.get_tk_widget().pack(side = TOP, fill = BOTH, expand = 1)
+        ####################################### END Plotting details #######################################
 
-        toolbar = NavigationToolbar2Tk(canvas, root)
-        toolbar.update()
-        canvas.get_tk_widget().pack(side = TOP, fill = BOTH, expand = 1)
-
-        frame = Frame(root, bg = 'light grey')
-        frame.pack(side = 'bottom', fill = 'both', expand = True)
-
-        label = Label(frame, text = 'Save as:')
-        label.pack(side = 'left', padx = 15, ipadx = 10, ipady = 5)
-
-        name = StringVar()
-        filename = Entry(frame, textvariable = name)
-        name.set('exp_theory')
-        filename.pack(side = 'left', padx = 15, ipadx = 10, ipady = 5)
-
-        button = ttk.Button(frame, text = 'Save', command = lambda: save_func(name.get(), location, fig))
-        button.pack(side = 'left', padx = 15, ipadx = 10, ipady = 5)
+        canvas.draw() # drawing in the tkinter canvas: canvas drawing board
+        
+        ####################################### END Tkinter figure #######################################

@@ -19,7 +19,7 @@ import numpy as np
 # Custom function modules
 from timescan_plot import timescanplot
 from depletion_plot import depletionPlot
-from just_plot import power_plot, plot, smooth_avg
+from just_plot import power_plot, plot, exp_theory
 from FELion_definitions import *
 
 #FELion modules
@@ -384,7 +384,7 @@ class Plot(Frame):
                         self.filelist, self.location, self.dpi.get(), self.parent
                 )
         def avg_theory_func(self):
-                smooth_avg(
+                exp_theory(
                         self.filelist, self.location, self.dpi.get(), self.show_original.get(), self.theory_scaling.get(), self.smooth.get(), self.parent
                 )
               
