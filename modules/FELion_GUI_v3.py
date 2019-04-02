@@ -347,9 +347,6 @@ class Plot(Frame):
                 self.widget.buttons('Select File(s)' , 0.1, 0.34, controller.openfilelist, self, all_files_type)
                 self.flist_label = self.widget.labels('Filelists', 0.1, 0.55, bd = 0, relwidth = 0.15, relheight = 0.2)
 
-                self.save = self.widget.entries('Check', 'Save', 0.4, 0.2, default = False)
-                self.show = self.widget.entries('Check', 'Show', 0.52, 0.2, default = True)
-
                 self.widget.labels('DPI', 0.65, 0.23)
                 self.dpi = self.widget.entries('Entry', 100, 0.75, 0.23, bd = 5)
 
@@ -365,6 +362,11 @@ class Plot(Frame):
                 self.smooth = self.widget.entries('Entry', '21, 6', 0.52, 0.68, bd = 5, help = 'Savitzky–Golay filter for smoothening data: Window_length, polyorder')
 
                 self.show_original = self.widget.entries('Check', 'Original', 0.4, 0.65, default = False, help = 'Compare smoothened data with original')
+
+                # for child in self.children.values():
+                #         i = str(child)
+                #         if i.find('entry')>=0:
+                #                 print(f'\n{child.get()}\nType-->{type(child)}\n')
 
         def timescan_func(self):
                 timescanplot(
