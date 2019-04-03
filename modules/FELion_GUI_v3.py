@@ -255,7 +255,7 @@ class Mass(Frame):
 
                 controller.init_labels(self)
 
-                self.save = self.widget.entries('Check', 'Save', 0.4, 0.2, default = False)
+                # self.save = self.widget.entries('Check', 'Save', 0.4, 0.2, default = False)
                 self.combine = self.widget.entries('Check', 'Combine', 0.6, 0.2, default = False)
 
                 self.widget.buttons('Select File(s)' , 0.75, 0.2, controller.openfilelist, self, mass_files_type)
@@ -271,7 +271,7 @@ class Mass(Frame):
                         self.avg_title.get(), self.avg_ts.get(), self.avg_lgs.get(), self.avg_minor.get(), self.avg_major.get(), self.avg_majorTick.get(),
                         self.avg_xlabelsz.get(), self.avg_ylabelsz.get(), self.avg_fwidth.get(), self.avg_fheight.get(), self.output_filename.get(),
                         self.location, self.mname.get(), self.temp.get(), self.ie.get(),
-                        self.save.get(), self.combine.get(), self.fname, self.filelist, self.dpi.get(), self.parent
+                        self.combine.get(), self.fname, self.filelist, self.dpi.get(), self.parent
                 )
        
 class Powerfile(Frame):

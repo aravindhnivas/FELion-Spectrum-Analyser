@@ -25,7 +25,7 @@ def massSpec(*args):
     t, ts, lgs, minor, major, majorTickSize, \
     xlabelsz, ylabelsz, fwidth, fheight, avgname,\
     location, mname, temp, ie,\
-    save, combine, fname, filelist, dpi, parent = args
+    combine, fname, filelist, dpi, parent = args
 
     try:
         ####################################### Initialisation #######################################
