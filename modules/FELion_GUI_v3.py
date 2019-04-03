@@ -8,12 +8,7 @@ from tkinter import Frame, Label, SUNKEN, PhotoImage, ttk, messagebox
 # Built-In modules
 import os
 from os.path import join
-import shutil
 import datetime
-
-# Data analysis and plotting modules
-import matplotlib.pyplot as plt
-import numpy as np
 
 # Custom function modules
 from timescan_plot import timescanplot
