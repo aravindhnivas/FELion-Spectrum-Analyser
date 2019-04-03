@@ -151,11 +151,9 @@ class Baseline(Frame):
         #fname, location = open_dir(self)
         #Baseline
         baseline_button = ttk.Button(self, text="Baseline")
-        baseline_button.config(command = lambda: baseline_correction(self.fname, self.location, save_check.get(), 100, parent))
+        # baseline_button.config(command = lambda: baseline_correction(self.fname, self.location, save_check.get(), 100, parent))
+        baseline_button.config(command = lambda: baseline_correction(self.fname, self.location, save_check.get()))
 
-        #Save progm button
-        #saveButton = ttk.Button(self, text = "click to save")
-        #saveButton.config(command = lambda: save_on())
 
         #SaveAs progm button
         save_check = BooleanVar()
