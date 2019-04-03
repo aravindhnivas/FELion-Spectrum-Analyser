@@ -1,10 +1,9 @@
 #!/usr/bin/python3
+
 ## Imported Modules Informations
 
 # tkinter modules
-from tkinter import *
-from tkinter import ttk, messagebox, filedialog
-from tkinter.filedialog import askopenfilenames, askopenfilename
+from tkinter import Frame, Label, SUNKEN, PhotoImage, ttk, messagebox
 
 # Built-In modules
 import os
@@ -32,6 +31,9 @@ from FELion_sa import FELion_Sa
 # Make the window not to change the scale of this tkinter dpi application
 import ctypes
 ctypes.windll.shcore.SetProcessDpiAwareness(0)
+
+################################################# MODULES IMPORTED #################################################
+####################################################################################################################
 
 class FELion(Tk):
         
@@ -362,11 +364,6 @@ class Plot(Frame):
                 self.smooth = self.widget.entries('Entry', '21, 6', 0.52, 0.68, bd = 5, help = 'Savitzky–Golay filter for smoothening data: Window_length, polyorder')
 
                 self.show_original = self.widget.entries('Check', 'Original', 0.4, 0.65, default = False, help = 'Compare smoothened data with original')
-
-                # for child in self.children.values():
-                #         i = str(child)
-                #         if i.find('entry')>=0:
-                #                 print(f'\n{child.get()}\nType-->{type(child)}\n')
 
         def timescan_func(self):
                 timescanplot(
