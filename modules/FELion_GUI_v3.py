@@ -218,17 +218,18 @@ class Normline(Frame):
                 )
 
         def SA(self):
-                FELion_Sa(self.fname, self.location)
+                FELion_Sa(self.fname, self.location, self.dpi.get(), self.parent)
         def Power(self):
-                FELion_Power(self.fname, self.location)
+                FELion_Power(self.fname, self.location, self.dpi.get(), self.parent)
         def showBaseline(self):
-                show_baseline(self.fname, self.location, self.mname.get(), self.temp.get(), self.bwidth.get(), self.ie.get(), self.trap.get(), self.dpi.get())
+                show_baseline(self.fname, self.location, self.mname.get(), self.temp.get(), self.bwidth.get(), self.ie.get(), self.trap.get(), self.dpi.get(), self.parent)
 
 class Mass(Frame):
 
         def __init__(self, parent, controller):
                 Frame.__init__(self,parent, bg="sea green")
-
+                
+                self.parent = parent
                 self.location = "/"
                 self.fname = ""
                 self.filelist = []
@@ -270,7 +271,7 @@ class Mass(Frame):
                         self.avg_title.get(), self.avg_ts.get(), self.avg_lgs.get(), self.avg_minor.get(), self.avg_major.get(), self.avg_majorTick.get(),
                         self.avg_xlabelsz.get(), self.avg_ylabelsz.get(), self.avg_fwidth.get(), self.avg_fheight.get(), self.output_filename.get(),
                         self.location, self.mname.get(), self.temp.get(), self.ie.get(),
-                        self.save.get(), self.combine.get(), self.fname, self.filelist, self.dpi.get()
+                        self.save.get(), self.combine.get(), self.fname, self.filelist, self.dpi.get(), self.parent
                 )
        
 class Powerfile(Frame):

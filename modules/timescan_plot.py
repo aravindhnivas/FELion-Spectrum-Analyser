@@ -6,11 +6,10 @@
 import os
 
 # DATA analysis modules
-import numpy as np
-from scipy.optimize import curve_fit
+from numpy import array, genfromtxt
 
 # FELion Modules
-from FELion_definitions import ShowInfo, ErrorInfo, FELion_Toplevel
+from FELion_definitions import ErrorInfo, FELion_Toplevel
 
 # Tkinter modules
 from tkinter import Toplevel
@@ -27,7 +26,7 @@ def timescanplot(fname, location, dpi, parent, depletion = False):
         print(var)
 
         with open(fname, 'r') as f:
-            f = np.array(f.readlines())
+            f = array(f.readlines())
         for i in f:
             if not len(i.strip())==0 and i.split()[0]=='#':
                 for j in var:
@@ -40,10 +39,10 @@ def timescanplot(fname, location, dpi, parent, depletion = False):
         with open(fname, 'r') as f: file = f.readlines()
         
         skip = [num for num, line in enumerate(file) if 'ALL:' in line.split()]
-        iterations = np.array([int(i.split()[-1]) for i in file if not len(i.strip())==0 and i.split()[0].startswith('#mass')])
+        iterations = array([int(i.split()[-1]) for i in file if not len(i.strip())==0 and i.split()[0].startswith('#mass')])
         length = len(iterations)
 
-        data = np.genfromtxt(fname, skip_header = skip[0]+1)
+        data = genfromtxt(fname, skip_header = skip[0]+1)
 
         cycle = int(len(data)/iterations.sum())
         time = data[:,1][:cycle]
@@ -64,9 +63,9 @@ def timescanplot(fname, location, dpi, parent, depletion = False):
             temp2.append(temp1)
             temp1 = []
             
-        mean = [[np.array(temp2[i][j]).mean() for j in range(cycle)]for i in range(length)]
-        error = [[(np.array(temp2[i][j]).std()) for j in range(cycle)]for i in range(length)]
-        mass, mean, error = np.array(mass), np.array(mean), np.array(error)
+        mean = [[array(temp2[i][j]).mean() for j in range(cycle)]for i in range(length)]
+        error = [[(array(temp2[i][j]).std()) for j in range(cycle)]for i in range(length)]
+        mass, mean, error = array(mass), array(mean), array(error)
 
         if depletion: 
             return mass, iterations, t_res, t_b0,  mean, error, time

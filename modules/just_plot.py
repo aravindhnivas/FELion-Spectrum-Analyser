@@ -3,7 +3,7 @@
 # Importing Modules
 
 # DATA analysis modules
-import numpy as np
+from numpy import array, genfromtxt, asarray
 from scipy.interpolate import interp1d as interpolate
 from scipy.signal import savgol_filter as fit
 
@@ -46,10 +46,10 @@ def power_plot(powerfiles, location, dpi, parent):
                                         shots = int(i.strip().split('=')[-1])
                                         break
 
-                power_file = np.genfromtxt(powerfile)
+                power_file = genfromtxt(powerfile)
                 power_file_extrapolate = interpolate(power_file[:,0], power_file[:,1], kind = 'linear', fill_value = 'extrapolate')
 
-                temp = np.genfromtxt(powerfile.split('.')[0]+'.felix')
+                temp = genfromtxt(powerfile.split('.')[0]+'.felix')
                 x = temp[:,0]
 
                 power_extrapolated = power_file_extrapolate(x)
@@ -89,7 +89,7 @@ def plot(filelist, location, dpi, parent):
         ####################################### PLOTTING DETAILS #######################################
         n = 0
         for i in filelist:   
-                data = np.genfromtxt(i)
+                data = genfromtxt(i)
                 x, y = data[:,0], data[:,1]
                 
                 ax.plot(x, y, label = i)
@@ -114,7 +114,7 @@ def exp_theory(filelist, location, dpi, original_show, scale, smooth, parent):
         dat = [i for i in filelist if i.find('.dat')>=0]
         tsv = [i for i in filelist if not i.find('.dat')>=0]
 
-        window_length, polyorder = np.asarray(smooth.split(','), dtype = np.int)
+        window_length, polyorder = asarray(smooth.split(','), dtype = int)
         print(f'\nSavitzky-Golay filter for smoothening of data\nWindow Length --> {window_length}\nPolyorder --> {polyorder}\n')
 
         ####################################### END Initialisation #######################################
@@ -136,11 +136,11 @@ def exp_theory(filelist, location, dpi, original_show, scale, smooth, parent):
         if len(dat)>0:
                 for i in dat:
                         if i.find('.dat')>=0:
-                                data = np.genfromtxt(i)
+                                data = genfromtxt(i)
                                 x, y = data[:,0], data[:,1]
                                 y = y - y.min()
 
-                                y1 = y_fit = np.array(fit(y, window_length, polyorder)) # Apply a Savitzky-Golay filter for smoothening of data. "fit(data, window_length, polyorder)"
+                                y1 = y_fit = array(fit(y, window_length, polyorder)) # Apply a Savitzky-Golay filter for smoothening of data. "fit(data, window_length, polyorder)"
                                 y_fit = y_fit - y_fit.min()
 
                                 y_list.append(y_fit.max())
@@ -152,12 +152,12 @@ def exp_theory(filelist, location, dpi, original_show, scale, smooth, parent):
                                 elif len(tsv)<1 : ax.plot(x, y_fit, label = i)
                                 else:  ax.plot(x, y_fit, 'k')
                 
-                y_list = np.array(y_list)
+                y_list = array(y_list)
 
         n = 0
         if len(tsv)>0:
                 for i in tsv:
-                        data = np.genfromtxt(i)
+                        data = genfromtxt(i)
                         x, y = data[:,0], data[:,1]
 
                         x = x * scale

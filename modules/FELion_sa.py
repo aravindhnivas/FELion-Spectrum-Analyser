@@ -1,21 +1,25 @@
 #!/usr/bin/python3
+
+# Importing Modules
+
+# DATA analysis modules
 import numpy as np
-import pylab as P
-import sys
-import copy 
-import os
-from os import path
-import matplotlib.pyplot as plt
 from scipy.optimize import leastsq
-from scipy.interpolate import interp1d
+
+# Tkinter Modules
+from tkinter import Toplevel
+
+# FELion Module
+from FELion_definitions import ErrorInfo
+from FELion_definitions import FELion_Toplevel
 from FELion_baseline import felix_read_file
 
-
-from tkinter import Tk, messagebox
+# Built-In Module
+import copy 
+import os
 from os.path import dirname
-from FELion_definitions import ErrorInfo
+####################################### Modules Imported #######################################
 
-################################################################################
 
 class SpectrumAnalyserCalibrator(object):
     def __init__(self, fname, fit='linear'):
@@ -84,68 +88,49 @@ class SpectrumAnalyserCalibrator(object):
         ax.plot(wn, sa, ls='', marker='s', ms=3, markeredgecolor='r', c='r')
         ax.plot(X, self.sa_cm(X), ls='-', marker='', c='g')
 
-def main():
-    import argparse
-    parser = argparse.ArgumentParser()
-    parser.add_argument("fname", help="Filename to process")
-    args = parser.parse_args()
+def FELion_Sa(fname, location, dpi, parent):
 
-    #a,b = line_felix(args.fname)
- 
+    ####################################### Initialisation #######################################
 
-    if(args.fname.find('DATA')>=0):
-        fname = args.fname.split('/')[-1]
-    else:
-        fname = args.fname
-
-    if(fname.find('felix')>=0):
-        fname = fname.split('.')[0]
-        
-    saCalibrator = SpectrumAnalyserCalibrator(fname, fit='cubic')
-    
-    fig, ax = plt.subplots()
-    #plot the spectrum analyser calibration
-    saCalibrator.plot(ax)
-
-    ax.set_title('Spectrum analyser calibration from .felix file')
-    #ax.set_xlim((wn.min()-70, wn.max()+70))
-    #ax.set_ylim((0, 30))
-    ax.set_xlabel("wn set (cm-1)")
-    ax.set_ylabel("wn SA (cm-1)")
-    plt.show()
-
-def FELion_Sa(fname, location):
-    
     folders = ["DATA", "EXPORT", "OUT"]
     back_dir = dirname(location)
     
     if set(folders).issubset(os.listdir(back_dir)): 
         os.chdir(back_dir)
+        location = back_dir
     
     else: 
         os.chdir(location)
 
-    try:
-        if(fname.find('felix')>=0):
-            fname = fname.split('.')[0]
-            
-        saCalibrator = SpectrumAnalyserCalibrator(fname, fit='cubic')
+    ####################################### END Initialisation #######################################
+
+    # try:
+    if(fname.find('felix')>=0):
+        fname = fname.split('.')[0]
         
-        fig, ax = plt.subplots()
-        saCalibrator.plot(ax)
+    saCalibrator = SpectrumAnalyserCalibrator(fname, fit='cubic')
+    
+    ####################################### Tkinter figure #######################################
 
-        ax.set_title('Spectrum analyser calibration from {}.felix file'.format(fname))
-        ax.set_xlabel("wn set (cm-1)")
-        ax.set_ylabel("wn SA (cm-1)")
-        plt.show()
+    ## Embedding figure to tkinter Toplevel
+    title_name = 'SA'
+    root = Toplevel(parent)
+    tk_widget = FELion_Toplevel(root, title_name, location)
 
-        plt.tight_layout()
-        plt.close()
+    fig, canvas = tk_widget.figure(dpi)
+    ax = fig.add_subplot(111)
 
-    except Exception as e:
-        ErrorInfo("ERROR", e)
+    ####################################### PLOTTING DETAILS #######################################
+    saCalibrator.plot(ax)
 
-#----------------------------------------
-#ENTRY POINT:
-if __name__ == "__main__":
-    main()
+    ax.set_title(f'Spectrum analyser calibration from {fname}.felix file')
+    ax.set_xlabel("wn set (cm-1)")
+    ax.set_ylabel("wn SA (cm-1)")
+
+    ####################################### END Plotting details #######################################
+
+    canvas.draw() # drawing in the tkinter canvas: canvas drawing board
+    
+    ####################################### END Tkinter figure #######################################        
+    # except Exception as e:
+    #     ErrorInfo("ERROR", e)

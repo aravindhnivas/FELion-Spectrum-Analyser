@@ -2,30 +2,23 @@
 
 ## Importing Modules
 
+# DATA Analysis modules:
+import numpy as np
+
+# Built-In modules
+import os
+from os.path import dirname, isdir, isfile
+
 # FELion-Modules
 from FELion_baseline import felix_read_file, BaselineCalibrator
 from FELion_power import PowerCalibrator
 from FELion_sa import SpectrumAnalyserCalibrator
-from FELion_definitions import ShowInfo, ErrorInfo, filecheck, move
+from FELion_definitions import ShowInfo, ErrorInfo, filecheck, move, FELion_Toplevel
 
-# DATA Analysis modules:
+# Tkinter Modules
+from tkinter import Toplevel
+
 import matplotlib.pyplot as plt
-import numpy as np
-
-# Embedding Matplotlib in tkinter window
-from tkinter import *
-from tkinter import ttk
-
-# Matplotlib Modules for tkinter
-import matplotlib
-matplotlib.use("TkAgg")
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
-from matplotlib.backend_bases import key_press_handler
-from matplotlib.figure import Figure
-
-# Built-In modules
-import os, shutil
-from os.path import dirname, isdir, isfile, join
 
 ################################################################################
 
@@ -37,21 +30,28 @@ def export_file(fname, wn, inten):
         f.write("{:8.3f}\t{:8.2f}\n".format(wn[i], inten[i]))
     f.close()
 
-def norm_line_felix(fname, mname, temp, bwidth, ie, foravgshow, dpi, parent):
+def norm_line_felix(fname, mname, temp, bwidth, ie, foravgshow, location, dpi, parent):
+
+    ####################################### Initialisation #######################################
     
     data = felix_read_file(fname)
     PD=True
 
     if not foravgshow:
-        root = Toplevel(master = parent)
-        root.wm_title("Power Calibrated/Normalised Spectrum")
+        ####################################### END Initialisation #######################################
 
-        ################################ PLOTTING DETAILS ########################################
+        ####################################### Tkinter figure #######################################
 
-        fig = Figure(figsize=(8, 8), dpi = dpi)
+        ## Embedding figure to tkinter Toplevel
+        title_name = 'Normline Spectrum'
+        root = Toplevel(parent)
+        tk_widget = FELion_Toplevel(root, title_name, location)
+
+        fig, canvas = tk_widget.figure(dpi)
         ax = fig.add_subplot(3,1,1)
         bx = fig.add_subplot(3,1,2)
         cx = fig.add_subplot(3,1,3)
+        
         ax2 = ax.twinx()
         bx2 = bx.twinx()
 
@@ -91,47 +91,13 @@ def norm_line_felix(fname, mname, temp, bwidth, ie, foravgshow, dpi, parent):
         bx.grid(True)
         cx.grid(True)
 
-        ##################################################################################################
-        ##################################################################################################
+        export_file(fname, wavelength, intensity)
 
-        # Drawing in the tkinter window
-        canvas = FigureCanvasTkAgg(fig, master = root)
-        canvas.draw()
-        canvas.get_tk_widget().pack(side = TOP, fill = BOTH, expand = 1)
+        ####################################### END Plotting details #######################################
 
-        toolbar = NavigationToolbar2Tk(canvas, root)
-        toolbar.update()
-        canvas.get_tk_widget().pack(side = TOP, fill = BOTH, expand = 1)
-
-        frame = Frame(root, bg = 'light grey')
-        frame.pack(side = 'bottom', fill = 'both', expand = True)
-
-        label = Label(frame, text = 'Save as:')
-        label.pack(side = 'left', padx = 15, ipadx = 10, ipady = 5)
-
-        name = StringVar()
-        filename = Entry(frame, textvariable = name)
-        name.set(fname)
-        filename.pack(side = 'left')
-
-        def save_func():
-            fig.savefig(f'OUT/{name.get()}.pdf')
-            export_file(fname, wavelength, intensity)
-            if isfile(f'OUT/{name.get()}.pdf'): ShowInfo('SAVED', f'File: {name.get()}.pdf saved in OUT/ directory')
-
-        button = ttk.Button(frame, text = 'Save', command = lambda: save_func())
-        button.pack(side = 'left', padx = 15, ipadx = 10, ipady = 5)
-
-        def on_key_press(event): 
-            key_press_handler(event, canvas, toolbar)
-
-            if event.key == 'c':
-                fig.savefig(f'OUT/{name.get()}.pdf')
-                export_file(fname, wavelength, intensity)
-                if isfile(f'OUT/{name.get()}.pdf'): ShowInfo('SAVED', f'File: {name.get()}.pdf saved in OUT/ directory')
-
-        canvas.mpl_connect("key_press_event", on_key_press)
-        root.mainloop()
+        canvas.draw() # drawing in the tkinter canvas: canvas drawing board
+        
+        ####################################### END Tkinter figure #######################################
 
     if foravgshow:
         saCal = SpectrumAnalyserCalibrator(fname)
@@ -186,32 +152,18 @@ def felix_binning(xs, ys, delta=1):
 
     return binsx, data_binned 
 
-def main(s=True, plotShow=False):
-    my_path = os.getcwd()
-    raw_filename = str(input("Enter the file name (without .felix): "))
-    filename = raw_filename + ".felix"
-    powerfile = raw_filename + ".pow"
-    fname = filename
-
-    if isfile(powerfile):
-        shutil.copyfile(my_path + "/{}".format(powerfile), my_path + "/DATA/{}".format(powerfile))
-        print("Powerfile copied to the DATA folder.")
-    else:
-        print("\nCAUTION:You don't have the powerfile(.pow)\n")
-
-    a,b = norm_line_felix(fname)
-    print(a, b)
-    print("\nProcess Completed.\n")
-
 def normline_correction(*args):
+
     fname, location, mname, temp, bwidth, ie, foravgshow, dpi, parent = args
 
     try:
+
         folders = ["DATA", "EXPORT", "OUT"]
         back_dir = dirname(location)
         
         if set(folders).issubset(os.listdir(back_dir)): 
             os.chdir(back_dir)
+            location = back_dir
             my_path = os.getcwd()
         
         else: 
@@ -232,16 +184,19 @@ def normline_correction(*args):
 
         if filecheck(my_path, basefile, powerfile, fullname):
             print(f'\nFilename-->{fullname}\nLocation-->{my_path}')
-            norm_line_felix(fname, mname, temp, bwidth, ie, foravgshow, dpi, parent)
+            norm_line_felix(fname, mname, temp, bwidth, ie, foravgshow, location, dpi, parent)
 
         print("DONE")
 
     except Exception as e:
         ErrorInfo("ERROR:", e)
 
-def show_baseline(fname, location, mname, temp, bwidth, ie, trap, dpi):
+def show_baseline(fname, location, mname, temp, bwidth, ie, trap, dpi, parent):
 
     try:
+
+        ####################################### Initialisation #######################################
+
         folders = ["DATA", "EXPORT", "OUT"]
         back_dir = dirname(location)
         
@@ -257,18 +212,33 @@ def show_baseline(fname, location, mname, temp, bwidth, ie, trap, dpi):
         data = felix_read_file(fname)
         baseCal = BaselineCalibrator(fname)
 
-        base1 = plt.figure(dpi = dpi)
-        base = base1.add_subplot(1,1,1)
-        baseCal.plot(base)
-        base.plot(data[0], data[1], ls='', marker='o', ms=3, markeredgecolor='r', c='r')
-        base.set_xlabel("Wavenumber (cm-1)")
-        base.set_ylabel("Counts")
-        base.set_title(f'{fname}: {mname} at {temp}K and IE:{ie}eV')
-        base.grid(True)
-        base.legend(title = f'Trap:{trap}ms; B0:{round(bwidth)}ms')
-        plt.savefig('OUT/'+fname+'_baseline.png')
-        plt.show()
-        plt.close()
+        ####################################### END Initialisation #######################################
+
+        ####################################### Tkinter figure #######################################
+
+        ## Embedding figure to tkinter Toplevel
+        title_name = 'Baseline'
+        root = Toplevel(parent)
+        tk_widget = FELion_Toplevel(root, title_name, location)
+
+        fig, canvas = tk_widget.figure(dpi)
+        ax = fig.add_subplot(111)
+
+        ####################################### PLOTTING DETAILS #######################################
+
+        baseCal.plot(ax)
+        ax.plot(data[0], data[1], ls='', marker='o', ms=3, markeredgecolor='r', c='r')
+        ax.set_xlabel("Wavenumber (cm-1)")
+        ax.set_ylabel("Counts")
+        ax.set_title(f'{fname}: {mname} at {temp}K and IE:{ie}eV')
+        ax.grid(True)
+        ax.legend(title = f'Trap:{trap}ms; B0:{round(bwidth)}ms')
+        
+        ####################################### END Plotting details #######################################
+
+        canvas.draw() # drawing in the tkinter canvas: canvas drawing board
+        
+        ####################################### END Tkinter figure #######################################
 
     except Exception as e:
         ErrorInfo("Error: ", e)
