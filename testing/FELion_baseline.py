@@ -73,45 +73,52 @@ class InteractivePoints(object):
     """
     epsilon = 5  # max pixel distance to count as a vertex hit
 
-    def __init__(self, figure, ax, xs, ys, data, save, fname):
+    def __init__(self, canvas, ax, xs, ys, data, save, fname):
+
+        self.canvas = canvas
         self.ax = ax
-        canvas = figure.canvas
         self.data = data
         self.save = save
         self.fname = fname
         
-
         self.line = Line2D(xs, ys, marker='s', ls='', ms=6, c='b', markeredgecolor='b', animated=True)
-        self.ax.add_line(self.line)
-        
+        self.ax.add_line(self.line)        
         #Interpolated Line:
         self.inter_xs = np.arange(xs[0], xs[-1])
         self.funcLine = Line2D([], [], marker='', ls='-', c='b', animated=True)
         self.ax.add_line(self.funcLine)
+
+        self.canvas.draw()
+
         self.redraw_f_line()
         self._ind = None  # the active vertex
 
-        canvas.mpl_connect('draw_event', self.draw_callback)
-        canvas.mpl_connect('button_press_event', self.button_press_callback)
-        canvas.mpl_connect('key_press_event', self.key_press_callback)
-        canvas.mpl_connect('button_release_event', self.button_release_callback)
-        canvas.mpl_connect('motion_notify_event', self.motion_notify_callback)
-        self.canvas = canvas
+        # self.canvas.mpl_connect('draw_event', self.draw_callback)
+        self.canvas.mpl_connect('button_press_event', self.button_press_callback)
+        self.canvas.mpl_connect('key_press_event', self.key_press_callback)
+        self.canvas.mpl_connect('button_release_event', self.button_release_callback)
+        self.canvas.mpl_connect('motion_notify_event', self.motion_notify_callback)
+        
 
     def redraw_f_line(self):
+        self.background = self.canvas.copy_from_bbox(self.ax.bbox)
+
         Bx, By = self.line.get_data()
         self.inter_xs = np.arange(Bx.min(), Bx.max())
 
         f = interp1d(Bx, By, kind='cubic')
         self.funcLine.set_data((self.inter_xs, f(self.inter_xs))) 
 
-    def draw_callback(self, event):
-        self.background = self.canvas.copy_from_bbox(self.ax.bbox)
         self.ax.draw_artist(self.line)
         self.ax.draw_artist(self.funcLine)
         self.canvas.blit(self.ax.bbox)
-        
 
+    '''def draw_callback(self, event):
+        self.background = self.canvas.copy_from_bbox(self.ax.bbox)
+        self.ax.draw_artist(self.line)
+        self.ax.draw_artist(self.funcLine)
+        self.canvas.blit(self.ax.bbox)'''
+        
     def get_ind_under_point(self, event):
         'get the index of the vertex under point if within epsilon tolerance'
 
@@ -157,9 +164,7 @@ class InteractivePoints(object):
 
     def key_press_callback(self, event):
         'whenever a key is pressed'
-        #global data, baseline
-        if not event.inaxes:
-            return
+        if not event.inaxes: return
         elif event.key == 'w':
             ind = self.get_ind_under_point(event)
             if ind is not None:
@@ -214,6 +219,7 @@ class InteractivePoints(object):
         self.ax.draw_artist(self.line)
         self.ax.draw_artist(self.funcLine)
         self.canvas.blit(self.ax.bbox)
+
 ################################################################################
 def felix_read_file(fname):
     """
@@ -348,7 +354,7 @@ def main(fname=""):
         SaveBase(fname, baseline)
     return
 
-def baseline_correction(fname, location, save):
+def baseline_correction(fname, location, save, dpi, parent):
 
     try:
 
@@ -359,6 +365,7 @@ def baseline_correction(fname, location, save):
         
         if set(folders).issubset(os.listdir(back_dir)): 
             os.chdir(back_dir)
+            location = back_dir
             my_path = os.getcwd()
         
         else: 
@@ -392,7 +399,7 @@ def baseline_correction(fname, location, save):
         ####################################### Tkinter figure #######################################
 
         ## Embedding figure to tkinter Toplevel
-        title_name = 'Plot'
+        title_name = 'Baseline Correction'
         root = Toplevel(parent)
         tk_widget = FELion_Toplevel(root, title_name, location)
 
@@ -402,9 +409,7 @@ def baseline_correction(fname, location, save):
         ################################ PLOTTING DETAILS ########################################
 
         ax.plot(data[0], data[1], ls='', marker='o', ms=5, markeredgecolor='r', c='r')
-        canvas.draw()   # drawing in the tkinter canvas: canvas drawing board
-
-        p = InteractivePoints(fig, ax, xs, ys, data, save, fname)
+        p = InteractivePoints(canvas, ax, xs, ys, data, save, fname)
 
         print("\nUSAGE:\nBlue baseline points are dragable...\
             \nKeys:\n\
@@ -419,7 +424,7 @@ def baseline_correction(fname, location, save):
         ax.set_ylabel("Counts")
 
         ####################################### END Plotting details #######################################
-
+        # canvas.draw()   # drawing in the tkinter canvas: canvas drawing board
         ####################################### END Tkinter figure #######################################
         
     except Exception as e:

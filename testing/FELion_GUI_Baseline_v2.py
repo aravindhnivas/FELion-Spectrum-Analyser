@@ -4,10 +4,12 @@ from tkinter import *
 from tkinter import ttk, messagebox, filedialog
 import os
 import shutil
-from FELion_baseline import baseline_correction
+#from FELion_baseline import baseline_correction
 
 from FELion_definitions import update
 from os.path import join
+
+from FELion_baseline_modified import baseline_correction
 
 def on_closing():
     if messagebox.askokcancel("Quit", "Do you want to quit?"):
@@ -148,11 +150,10 @@ class Baseline(Frame):
         #Label for Entry Box;
         user_input_label = Label(self, text = " Filename:", font=("Times", 10, "bold"))
 
-        #fname, location = open_dir(self)
-        #Baseline
         baseline_button = ttk.Button(self, text="Baseline")
-        # baseline_button.config(command = lambda: baseline_correction(self.fname, self.location, save_check.get(), 100, parent))
-        baseline_button.config(command = lambda: baseline_correction(self.fname, self.location, save_check.get()))
+        # baseline_func = Create_Baseline(self.fname, self.location, 100, parent)
+        baseline_button.config(command = lambda: baseline_correction(self.fname, self.location, 100, parent))
+        # baseline_button.config(command = lambda: baseline_func.plot())
 
 
         #SaveAs progm button
