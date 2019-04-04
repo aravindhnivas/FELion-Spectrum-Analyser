@@ -1,112 +1,128 @@
 #!/usr/bin/python3
-import sys
-import copy
-import matplotlib
-matplotlib.use('TkAgg')
-#from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-import numpy as np
-import pylab as P
-import matplotlib.pyplot as plt
-from matplotlib.lines import Line2D
-from matplotlib.artist import Artist
-from matplotlib.mlab import dist_point_to_segment
 
+# DATA analysis modules
 from scipy.interpolate import interp1d
+import numpy as np
+
+# Tkinter Modules
+from tkinter import Toplevel, ttk, Frame, Entry, StringVar
+from tkinter.messagebox import askokcancel
+# FELion Module
+from FELion_definitions import move, FELion_Toplevel, ShowInfo
+
+# Built-In Module
 import os
 from os.path import dirname, isdir, isfile, join
 
-import shutil
-from tkinter import Tk, messagebox
+# Matplotlib modules
+from matplotlib.lines import Line2D
 
-from FELion_definitions import move, copy, ErrorInfo, ShowInfo
+# Matplotlib Modules for tkinter
+import matplotlib
+matplotlib.use("TkAgg")
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
+from matplotlib.backend_bases import key_press_handler
+from matplotlib.figure import Figure
 
-#These 2 values are used when guessing the baseline:
-PPS = 5         #points around the value to average
-NUM_POINTS = 10
-baseline = None
+###################################################################################################
 
-########################################################################################
+class Create_Baseline():
 
-def ReadBase(fname):
-    #open file and skip sharps
-    interpol='cubic'
-    wl, cnt = [],[]
-    f = open('DATA/' + fname + '.base')
-    for line in f:
-        if line[0] == '#':
-            if line.find('INTERP')==1:
-                interpol = line.split('=')[-1].strip('\n')
-            continue
-        else:
-            x, y, = line.split()
-            wl.append(float(x))
-            cnt.append(float(y))
-    
-    f.close()
-    return np.array(wl), np.array(cnt), interpol
+    epsilon = 5
 
-# Class for Baseline Calibration
-class BaselineCalibrator(object):
-    """
-    Defines a baseline and is used to interpolate baseline for 
-    any given wavenumber
-    """
-    def __init__(self, fname):
+    def __init__(self, felixfile, location, dpi, parent):
+
+        self.parent = parent
+        self.dpi = dpi
+
+        self.felixfile = felixfile
+        self.fname = felixfile.split('.')[0]
+        self.basefile = f'{self.fname}.base'
+
+        self.baseline = None
+        self.data = None
         
-        self.Bx, self.By, self.interpol = ReadBase(fname)
-        self.f = interp1d(self.Bx, self.By, kind=self.interpol)
+        back_dir = dirname(location)
+        folders = ["DATA", "EXPORT", "OUT"]
+        if set(folders).issubset(os.listdir(back_dir)): 
+            self.location = back_dir
+        else: 
+            self.location = location
+   
+        os.chdir(self.location)
+        for dirs in folders: 
+            if not isdir(dirs): os.mkdir(dirs)
+            if isfile(self.felixfile): move(self.location, self.felixfile)
+            if isfile(self.basefile): move(self.location, self.basefile)
 
-    def val(self, x):
-        return self.f(x)
+    def felix_read_file(self):
 
-    def plot(self, ax):
-        x = np.arange(self.Bx.min(), self.Bx.max(), 0.5)
-        ax.plot(x, self.val(x), marker='', ls='-', c='b')
-        ax.plot(self.Bx, self.By, marker='s', ls='', ms=5, c='b', markeredgecolor='b', animated=True)
-########################################################################################
-# Interactive LINE plotter
-class InteractivePoints(object):
-    """
-    Line editor
-    Keys:
-      'd' delete the vertex under point
-      'a' insert a vertex at point
-    """
-
-    epsilon = 5  # max pixel distance to count as a vertex hit
-
-    def __init__(self, figure, ax, xs, ys, data, save, fname):
-        self.ax = ax
-        canvas = figure.canvas
+        file = np.genfromtxt(f'DATA/{self.felixfile}')
+        wn, count, sa = file[:,0], file[:,2], file[:,3]
+        data = wn, count, sa
+        data = np.take(data, data[0].argsort(), 1)
         self.data = data
-        self.save = save
-        self.fname = fname
-        self.figure = figure
+    
+    def ReadBase(self):
 
-        self.line = Line2D(xs, ys, marker='s', ls='', ms=6, c='b', markeredgecolor='b', animated=True)
-        self.ax.add_line(self.line)
+        file = np.genfromtxt(f'DATA/{self.basefile}')
+        self.xs, self.ys = file[:,0], file[:,1]
+        with open(f'DATA/{self.basefile}', 'r') as f:
+            self.interpol = f.readlines()[1].strip().split('=')[-1]
+    
+    def SaveBase(self):
+        self.baseline = self.line.get_data()
+        b = np.asarray(self.baseline)
+        with open(f'DATA/{self.basefile}', 'w') as f:
+            f.write(f'#Baseline generated for {self.fname}.felix data file!\n')
+            f.write("#BTYPE=cubic\n")
+            for i in range(len(b[0])):
+                f.write("{:8.3f}\t{:8.2f}\n".format(b[0][i], b[1][i]))
         
-        #Interpolated Line:
-        self.inter_xs = np.arange(xs[0], xs[-1])
+        if isfile(f'DATA/{self.basefile}'):
+            print(f'{self.basefile} is SAVED')
+            ShowInfo('SAVED', f'{self.basefile} file is saved in /DATA directory')
+    
+    def GuessBaseLine(self, PPS, NUM_POINTS):
+        max_n = len(self.data[0]) - PPS
+        Bx, By = [self.data[0][0]-0.1], [self.data[1][0]]
+
+        for i in range(0, max_n, int(max_n/NUM_POINTS)):
+            x = self.data[0][i:i+PPS].mean()
+            y = self.data[1][i:i+PPS].mean()
+            Bx.append(x)
+            By.append(y)
+        Bx.append(self.data[0][-1]+0.1)
+        By.append(self.data[1][-1])
+
+        self.xs, self.ys = Bx, By
+        self.PPS = PPS
+
+    def InteractivePlots(self):
+        self.tkbase()
+
+        self.line = Line2D(self.xs, self.ys, marker='s', ls='', ms=6, c='b', markeredgecolor='b', animated=True)
+        self.ax.add_line(self.line)        
+        
+        self.inter_xs = np.arange(self.xs[0], self.xs[-1])
         self.funcLine = Line2D([], [], marker='', ls='-', c='b', animated=True)
         self.ax.add_line(self.funcLine)
+
         self.redraw_f_line()
+        self._ind = None
 
-        self._ind = None  # the active vert
-
-        canvas.mpl_connect('draw_event', self.draw_callback)
-        canvas.mpl_connect('button_press_event', self.button_press_callback)
-        canvas.mpl_connect('key_press_event', self.key_press_callback)
-        canvas.mpl_connect('button_release_event', self.button_release_callback)
-        canvas.mpl_connect('motion_notify_event', self.motion_notify_callback)
-        self.canvas = canvas
-
+        self.canvas.mpl_connect('draw_event', self.draw_callback)
+        self.canvas.mpl_connect('button_press_event', self.button_press_callback)
+        self.canvas.mpl_connect('key_press_event', self.key_press_callback)
+        self.canvas.mpl_connect('button_release_event', self.button_release_callback)
+        self.canvas.mpl_connect('motion_notify_event', self.motion_notify_callback)
+    
     def redraw_f_line(self):
-        Bx, By = self.line.get_data()
+        Bx, By = np.array(self.line.get_data())
         self.inter_xs = np.arange(Bx.min(), Bx.max())
 
         f = interp1d(Bx, By, kind='cubic')
-        self.funcLine.set_data((self.inter_xs, f(self.inter_xs))) 
+        self.funcLine.set_data((self.inter_xs, f(self.inter_xs)))
 
     def draw_callback(self, event):
         self.background = self.canvas.copy_from_bbox(self.ax.bbox)
@@ -142,48 +158,7 @@ class InteractivePoints(object):
         if event.button != 1:
             return
         self._ind = None
-
-    def key_press_callback(self, event):
-        'whenever a key is pressed'
-        #global data, baseline
-        if not event.inaxes:
-            return
-        elif event.key == 'w':
-            ind = self.get_ind_under_point(event)
-            if ind is not None:
-                xy = np.asarray(self.line.get_data())
-                #makes average of few points around the cursor
-                i = self.data[0].searchsorted(event.xdata)
-                if i + PPS > self.data[0].size:
-                    i = self.data[0].size - PPS
-                xy[1][ind] = self.data[1][i:i+PPS].mean()
-                self.line.set_data((xy[0], xy[1]))
-        elif event.key == 'd':
-            ind = self.get_ind_under_point(event)
-            if ind is not None:
-                xy = np.asarray(self.line.get_data()).T
-                xy = np.array([tup for i, tup in enumerate(xy) if i != ind])
-                self.line.set_data((xy[:,0], xy[:,1]))
-        elif event.key == 'a':
-            xy = np.asarray(self.line.get_data())
-            xy = np.append(xy,[[event.xdata], [event.ydata]], axis=1)
-            self.line.set_data((xy[0], xy[1]))
-
-        elif event.key == 'x':
-            baseline = self.line.get_data()
-
-            print(f'New Baseline: {baseline}')
-            if self.save:
-                SaveBase(self.fname, baseline)
-                if isfile(join(os.getcwd(), 'DATA', f'{self.fname}.base')):
-                    print(f'{self.fname}.base is SAVED')
-                    ShowInfo('SAVED', f'{self.fname}.base file is saved in /DATA directory')
-                    #plt.close(self.figure)
-            #plt.close('all')
-        
-        self.redraw_f_line()
-        self.canvas.draw()
-
+    
     def motion_notify_callback(self, event):
         'on mouse movement'
         if self._ind is None:
@@ -204,200 +179,100 @@ class InteractivePoints(object):
         self.ax.draw_artist(self.line)
         self.ax.draw_artist(self.funcLine)
         self.canvas.blit(self.ax.bbox)
-################################################################################
-def felix_read_file(fname):
-    """
-    Reads data from felix meassurement file
-    Input: filename
-    Output: data[0,1]   0 - wavenumber, 1 - intensity
-    """
-    
-    sa_factor = 1.0
-    #open file and skip sharps
-    wl, cnt, sa = [],[],[]
-    f = open('DATA/' + fname + '.felix')
-    for line in f:
-        if line[0] == '#':
-            if line.find("3HARM")==1:
-                sa_factor=2.0
-            continue
-        else:
-            if len(line.split()) < 4: continue;
-            x, y, z, q, *rest = line.split()
-            wl.append(float(x))
-            cnt.append(float(z))
-            sa.append(float(q)*sa_factor)
-    
-    f.close()
-    data = np.array([wl, cnt, sa])
 
-    indices = data[0].argsort()
-    wl_min_f = data[0][indices[0]]
-    wl_max_f = data[0][indices[-1]]
-    print("--------------------------------------------------------------------------------")
-    print('FILE: ', fname, '\tWavelength in file:' , wl_min_f, '-', wl_max_f, 'PONTS: ', len(data[0][:]))
-    
-    res = np.take(data, indices, 1)
-    return res
+    def key_press_callback(self, event):
+        'whenever a key is pressed'
+        key_press_handler(event, self.canvas, self.toolbar)
+        if not event.inaxes:
+            return
+        elif event.key == 'w':
+            ind = self.get_ind_under_point(event)
+            if ind is not None:
+                xy = np.asarray(self.line.get_data())
+                #makes average of few points around the cursor
+                i = self.data[0].searchsorted(event.xdata)
+                if i + self.PPS > self.data[0].size:
+                    i = self.data[0].size - self.PPS
+                xy[1][ind] = self.data[1][i:i+self.PPS].mean()
+                self.line.set_data((xy[0], xy[1]))
+        elif event.key == 'd':
+            ind = self.get_ind_under_point(event)
+            if ind is not None:
+                xy = np.asarray(self.line.get_data()).T
+                xy = np.array([tup for i, tup in enumerate(xy) if i != ind])
+                self.line.set_data((xy[:,0], xy[:,1]))
+        elif event.key == 'a':
+            xy = np.asarray(self.line.get_data())
+            xy = np.append(xy,[[event.xdata], [event.ydata]], axis=1)
+            self.line.set_data((xy[0], xy[1]))
 
-def GuessBaseLine(data):
-    """
-    Guesses the baseline according to real points in the datafile.
-    makes NUM_POINTS baseline defining points 
-    """
-    max_n = len(data[0]) - PPS
-    Bx, By = [data[0][0]-0.1], [data[1][0]]             #NOTE teh 0.1 is here to be 
-    #sure all the frequencies are in baseline calib. range
-    for i in range(0, max_n, int(max_n/NUM_POINTS)):
-        x = data[0][i:i+PPS].mean()
-        y = data[1][i:i+PPS].mean()
-        Bx.append(x)
-        By.append(y)
-    Bx.append(data[0][-1]+0.1)
-    By.append(data[1][-1])
+        self.redraw_f_line()
+        self.canvas.draw()
 
-    return np.array(Bx), np.array(By)
+    def tkbase(self):
 
-def SaveBase(fname, baseline):
-    b = np.asarray(baseline)
-    f = open('DATA/' + fname + '.base','w')
-    f.write("#Baseline generated for " + fname + ".felix data file!\n")
-    f.write("#BTYPE=cubic\n")
-    for i in range(len(b[0])):
-        f.write("{:8.3f}\t{:8.2f}\n".format(b[0][i], b[1][i]))
+        self.root = Toplevel(master = self.parent)
+        self.root.wm_title('Baseline Correction')
+        self.root.wm_geometry('1000x600')
 
-def main(fname=""):
-    if fname == "":
-        fname = input("Please enter the file name (without .felix): ")
-    if(fname.find('felix')):
-        fname = fname.split('.')[0]
-    
-    my_path = os.getcwd()
+        self.canvas_frame = Frame(self.root, bg = 'white')
+        self.canvas_frame.place(relx = 0, rely = 0, relwidth = 0.8, relheight = 1)
 
-    if os.path.isdir('EXPORT'):
-        print("EXPORT folder exist")
-    else:
-        os.mkdir('EXPORT')
-        print("EXPORT folder created.")
+        self.widget_frame = Frame(self.root, bg = 'light grey')
+        self.widget_frame.place(relx = 0.8, rely = 0, relwidth = 0.2, relheight = 1)
+
+        self.name = StringVar()
+        self.filename = Entry(self.widget_frame, textvariable = self.name, font = ("Verdana", 10, "italic"), bd = 5)
+        self.name.set('plot')
+        self.filename.place(relx = 0.1, rely = 0.1, relwidth = 0.5, relheight = 0.05)
+
+        self.button = ttk.Button(self.widget_frame, text = 'Save', command = lambda: self.save_tkbase())
+        self.button.place(relx = 0.1, rely = 0.2, relwidth = 0.5, relheight = 0.05)
+
+        self.figure_tkbase()
+
+    def figure_tkbase(self):
         
-    if os.path.isdir('OUT'):
-        print("OUT folder exist")
-    else:
-        os.mkdir('OUT')
-        print("OUT folder created.")
+        self.fig = Figure(dpi = self.dpi)
+        self.ax = self.fig.add_subplot(111)
 
-    if os.path.isdir('DATA'):
-        print("DATA folder exist")
-    else:
-        os.mkdir('DATA')
-        print("DATA folder created.")
+        self.fig.subplots_adjust(top = 0.95, bottom = 0.2, left = 0.1, right = 0.9)
 
-    filename = fname + ".felix"
+        self.canvas = FigureCanvasTkAgg(self.fig, master = self.canvas_frame)
+        self.canvas.get_tk_widget().place(relx = 0, rely = 0, relwidth = 1, relheight = 1)
 
-    if os.path.isfile(filename):
-        print("File exist, Copying to the DATA folder to process.")
-        shutil.copyfile(my_path + "/{}".format(filename), my_path + "/DATA/{}".format(filename))
+        self.toolbar = NavigationToolbar2Tk(self.canvas, self.root)
+        self.toolbar.update()
 
-    data = felix_read_file(fname)
+        self.ax.plot(self.data[0], self.data[1], ls='', marker='o', ms=5, markeredgecolor='r', c='r')
 
-    #Check wether the baslien file exists
-    if not os.path.isfile('DATA/'+fname+'.base'):
-        print("Guessing baseline from .felix file!")
-        xs, ys = GuessBaseLine(data)
-    else:
-        print("Reading baseline from .base file!")
-        xs, ys, *rest = ReadBase(fname)
+        self.ax.set_title('BASELINE points are drag-able!')
+        self.ax.set_xlim((self.data[0][0]-70, self.data[0][-1]+70))
+        self.ax.set_xlabel("wavenumber (cm-1)")
+        self.ax.set_ylabel("Counts")
 
-    fig, ax = plt.subplots()
+        self.canvas.draw()
 
-    p = InteractivePoints(fig, ax, xs, ys)
-    ax.plot(data[0], data[1], ls='', marker='o', ms=5, markeredgecolor='r', c='r')
+    def save_tkbase(self):
 
-    print("\nUSAGE:\nBlue baseline points are dragable...\
-           \nKeys:\n\
-    'a' - adds a point at current cursor position\n\
-    'd' - delets a point at current cursor position\n\
-    'w' - moves the point to the 'average' value at given x position\n\
-    'q' - stores baseline in .base file and quits!\n")
-
-    ax.set_title('BASELINE points are drag-able!')
-    ax.set_xlim((data[0][0]-70, data[0][-1]+70))
-    ax.set_xlabel("wavenumber (cm-1)")
-    ax.set_ylabel("Counts")
-    plt.show()
-    
-    #Powerfile check
-    powerfile = fname + ".pow"
-    if not os.path.isfile(powerfile):
-        print("NOTE: You don't have .pow file so you can't plot the data yet but you can make the baseline.")
-    elif os.path.isfile(powerfile):
-        shutil.copyfile(my_path + "/{}".format(powerfile), my_path + "/DATA/{}".format(powerfile))
-        print("Powerfile is copied to the DATA folder")
-
-    if baseline != None:
-        SaveBase(fname, baseline)
-    return
-
-def baseline_correction(fname, location, save):
-
-    try:
+        self.SaveBase()
         
-        folders = ["DATA", "EXPORT", "OUT"]
-        back_dir = dirname(location)
-        
-        if set(folders).issubset(os.listdir(back_dir)): 
-            os.chdir(back_dir)
-            my_path = os.getcwd()
-        
+        if isfile(f'{self.name.get()}.png'): 
+                if askokcancel('Overwrite?', f'File: {self.name.get()}.png already present. \nDo you want to Overwrite the file?'): 
+                        self.fig.savefig(f'OUT/{self.name.get()}.png')
+                        ShowInfo('SAVED', f'File: {self.name.get()}.png saved in \n{self.location}/OUT directory')
         else: 
-            os.chdir(location)
-            my_path = os.getcwd()
-            
-        if(fname.find('felix')>=0):
-            fname = fname.split('.')[0]
+                self.fig.savefig(f'OUT/{self.name.get()}.png')
+                ShowInfo('SAVED', f'File: {self.name.get()}.png saved in \n{self.location}/OUT\n directory')
 
-        filename = fname + ".felix"
-        basefile = fname + ".base"
-        powerfile = fname + ".pow"
-        files = [filename, powerfile, basefile]
+def baseline_correction(felixfile, location, dpi, parent):
+    
+    base = Create_Baseline(felixfile, location, dpi, parent)
 
-        for dirs, filenames in zip(folders, files):
-            if not isdir(dirs): os.mkdir(dirs)
-            if isfile(filenames): move(my_path, filenames)
+    print(f'\nLocation: {base.location}\nFilename: {base.felixfile}')
 
-        data = felix_read_file(fname)
+    base.felix_read_file() # read felix file
+    if isfile(f'DATA/{base.basefile}'): base.ReadBase() # Read baseline file if exist else guess it
+    else: base.GuessBaseLine(PPS = 5, NUM_POINTS = 10)
 
-        #Check wether the baslien file exists
-        if not os.path.isfile('DATA/'+fname+'.base'):
-            print("Guessing baseline from .felix file!")
-            xs, ys = GuessBaseLine(data)
-        else:
-            print("Reading baseline from .base file!")
-            xs, ys, *rest = ReadBase(fname)
-        
-        #ShowInfo('Info', "NOTE: Press 'X' to save the baseline\nThen Close the plot Manually")
-
-        fig, ax = plt.subplots()
-
-        p = InteractivePoints(fig, ax, xs, ys, data, save, fname)
-        ax.plot(data[0], data[1], ls='', marker='o', ms=5, markeredgecolor='r', c='r')
-
-        print("\nUSAGE:\nBlue baseline points are dragable...\
-            \nKeys:\n\
-        'a' - adds a point at current cursor position\n\
-        'd' - delets a point at current cursor position\n\
-        'w' - moves the point to the 'average' value at given x position\n\
-        'x' - stores baseline in .base file and quits!\n")
-
-        ax.set_title('BASELINE points are drag-able!')
-        ax.set_xlim((data[0][0]-70, data[0][-1]+70))
-        ax.set_xlabel("wavenumber (cm-1)")
-        ax.set_ylabel("Counts")
-        plt.show()
-        #plt.close('all')
-        
-    except Exception as e:
-        ErrorInfo("ERROR: ", e)
-
-if __name__ == "__main__":
-    main()
+    base.InteractivePlots() # Plot

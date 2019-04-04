@@ -22,6 +22,7 @@ from FELion_avgSpec import avgSpec_plot
 from FELion_normline import normline_correction, show_baseline
 from FELion_power import FELion_Power
 from FELion_sa import FELion_Sa
+from FELion_baseline import baseline_correction
 
 # Make the window not to change the scale of this tkinter dpi application
 import ctypes
@@ -199,7 +200,7 @@ class Normline(Frame):
                 # Spectrum Analyzer and power Analyzer Buttons:
                 self.widget.buttons('SA' , 0.7, 0.6, self.SA, relwidth = 0.05)
                 self.widget.buttons('Power' , 0.75, 0.6, self.Power, relwidth = 0.05)
-                self.widget.buttons('Baseline' , 0.7, 0.7, self.showBaseline)
+                self.widget.buttons('Baseline' , 0.7, 0.7, self.Baseline)
                 self.widget.buttons('Select File(s)' , 0.84, 0.4, controller.openfilelist, self, felix_files_type)
 
         def Normline_func(self):
@@ -221,8 +222,8 @@ class Normline(Frame):
                 FELion_Sa(self.fname, self.location, self.dpi.get(), self.parent)
         def Power(self):
                 FELion_Power(self.fname, self.location, self.dpi.get(), self.parent)
-        def showBaseline(self):
-                show_baseline(self.fname, self.location, self.mname.get(), self.temp.get(), self.bwidth.get(), self.ie.get(), self.trap.get(), self.dpi.get(), self.parent)
+        def Baseline(self):
+                baseline_correction(self.fname, self.location, self.dpi.get(), self.parent)
 
 class Mass(Frame):
 

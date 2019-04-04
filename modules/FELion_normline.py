@@ -10,7 +10,7 @@ import os
 from os.path import dirname, isdir, isfile
 
 # FELion-Modules
-from FELion_baseline import felix_read_file, BaselineCalibrator
+from FELion_baseline_old import felix_read_file, BaselineCalibrator
 from FELion_power import PowerCalibrator
 from FELion_sa import SpectrumAnalyserCalibrator
 from FELion_definitions import ShowInfo, ErrorInfo, filecheck, move, FELion_Toplevel
