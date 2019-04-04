@@ -25,15 +25,17 @@ class DraggableRectangle:
         
         # Clicking outside the plot region just return
         if event.inaxes is None: return
-        
-        print(f'Lock: {DraggableRectangle.lock}\n')
+
         if DraggableRectangle.lock is not None: return
 
         contains, attrd = self.rect.contains(event)
+
         if not contains: return
-        print('event contains', self.rect.xy)
+        else: print('event contains', self.rect.xy)
+        
         x0, y0 = self.rect.xy
         self.press = x0, y0, event.xdata, event.ydata
+        print(self.press)
         DraggableRectangle.lock = self
 
         # draw everything but the selected rectangle and store the pixel buffer
@@ -50,16 +52,16 @@ class DraggableRectangle:
 
     def on_motion(self, event):
         'on motion we will move the rect if the mouse is over us'
-        if DraggableRectangle.lock is not self:
-            return
-        if event.inaxes != self.rect.axes: return
+        if DraggableRectangle.lock is not self: return
+        if event.inaxes is None: return
+        
         x0, y0, xpress, ypress = self.press
         dx = event.xdata - xpress
         dy = event.ydata - ypress
+        print(f'\ndx: {dx}\ndy: {dy}\n')
         self.rect.set_x(x0+dx)
         self.rect.set_y(y0+dy)
 
-        self.canvas = self.canvas
         axes = self.rect.axes
         
         # restore the background region
