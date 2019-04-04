@@ -1,25 +1,19 @@
 #!/usr/bin/python3
+
 ## Imported Modules Informations
 
 # tkinter modules
-from tkinter import *
-from tkinter import ttk, messagebox, filedialog
-from tkinter.filedialog import askopenfilenames, askopenfilename
+from tkinter import Frame, Label, SUNKEN, PhotoImage, ttk, messagebox
 
 # Built-In modules
 import os
 from os.path import join
-import shutil
 import datetime
-
-# Data analysis and plotting modules
-import matplotlib.pyplot as plt
-import numpy as np
 
 # Custom function modules
 from timescan_plot import timescanplot
 from depletion_plot import depletionPlot
-from just_plot import theory_exp, power_plot, plot, smooth_avg
+from just_plot import power_plot, plot, exp_theory
 from FELion_definitions import *
 
 #FELion modules
@@ -32,6 +26,9 @@ from FELion_sa import FELion_Sa
 # Make the window not to change the scale of this tkinter dpi application
 import ctypes
 ctypes.windll.shcore.SetProcessDpiAwareness(0)
+
+################################################# MODULES IMPORTED #################################################
+####################################################################################################################
 
 class FELion(Tk):
         
@@ -221,17 +218,18 @@ class Normline(Frame):
                 )
 
         def SA(self):
-                FELion_Sa(self.fname, self.location)
+                FELion_Sa(self.fname, self.location, self.dpi.get(), self.parent)
         def Power(self):
-                FELion_Power(self.fname, self.location)
+                FELion_Power(self.fname, self.location, self.dpi.get(), self.parent)
         def showBaseline(self):
-                show_baseline(self.fname, self.location, self.mname.get(), self.temp.get(), self.bwidth.get(), self.ie.get(), self.trap.get(), self.dpi.get())
+                show_baseline(self.fname, self.location, self.mname.get(), self.temp.get(), self.bwidth.get(), self.ie.get(), self.trap.get(), self.dpi.get(), self.parent)
 
 class Mass(Frame):
 
         def __init__(self, parent, controller):
                 Frame.__init__(self,parent, bg="sea green")
-
+                
+                self.parent = parent
                 self.location = "/"
                 self.fname = ""
                 self.filelist = []
@@ -257,7 +255,7 @@ class Mass(Frame):
 
                 controller.init_labels(self)
 
-                self.save = self.widget.entries('Check', 'Save', 0.4, 0.2, default = False)
+                # self.save = self.widget.entries('Check', 'Save', 0.4, 0.2, default = False)
                 self.combine = self.widget.entries('Check', 'Combine', 0.6, 0.2, default = False)
 
                 self.widget.buttons('Select File(s)' , 0.75, 0.2, controller.openfilelist, self, mass_files_type)
@@ -273,7 +271,7 @@ class Mass(Frame):
                         self.avg_title.get(), self.avg_ts.get(), self.avg_lgs.get(), self.avg_minor.get(), self.avg_major.get(), self.avg_majorTick.get(),
                         self.avg_xlabelsz.get(), self.avg_ylabelsz.get(), self.avg_fwidth.get(), self.avg_fheight.get(), self.output_filename.get(),
                         self.location, self.mname.get(), self.temp.get(), self.ie.get(),
-                        self.save.get(), self.combine.get(), self.fname, self.filelist, self.dpi.get()
+                        self.combine.get(), self.fname, self.filelist, self.dpi.get(), self.parent
                 )
        
 class Powerfile(Frame):
@@ -320,6 +318,7 @@ class Plot(Frame):
         def __init__(self, parent, controller):
                 Frame.__init__(self, parent, bg="sea green")
 
+                self.parent = parent
                 self.location = "/"
                 self.fname = ""
                 self.filelist = []
@@ -346,49 +345,42 @@ class Plot(Frame):
                 self.widget.buttons('Select File(s)' , 0.1, 0.34, controller.openfilelist, self, all_files_type)
                 self.flist_label = self.widget.labels('Filelists', 0.1, 0.55, bd = 0, relwidth = 0.15, relheight = 0.2)
 
-                self.save = self.widget.entries('Check', 'Save', 0.4, 0.2, default = False)
-                self.show = self.widget.entries('Check', 'Show', 0.52, 0.2, default = True)
-                self.plot_vlines = self.widget.entries('Check', 'Vlines', 0.65, 0.4, default = False, help = 'Just-Plot the theory files alone.')
-
                 self.widget.labels('DPI', 0.65, 0.23)
                 self.dpi = self.widget.entries('Entry', 100, 0.75, 0.23, bd = 5)
 
                 self.widget.buttons('Timescan' , 0.4, 0.3, self.timescan_func,help = 'Plot timescan files')
                 self.widget.buttons('Depletion' , 0.52, 0.3, self.depletion_func, help = 'Select two timescan files to see the depletion; and enter power_on, power_off and n')
                 self.depletion_power = self.widget.entries('Entry',  'power_on, power_off, n_shots' , 0.65, 0.33, bd = 5, relwidth = 0.25, help = 'Enter Power_ON, Power_OFF and N_Shots (comma separated)')
-
-                theory_msg = 'First Select Exp. file using Browse, then theory file using Select file(s)'
-                self.widget.buttons('Exp-Theory' , 0.4, 0.55, self.theory_func, help = theory_msg)
-
+                
                 self.widget.buttons('PowerPlot' , 0.4, 0.4, self.powerplot_func, help = 'For plotting .pow files')
-                self.widget.buttons('JustPlot' , 0.52, 0.4, self.just_plot_func, help = 'Use it to plot any file(s) with two columns')
-                self.widget.buttons('Avg-Theory' , 0.52, 0.55, self.avg_theory_func, help = 'Select exported FELIX files (.dat) and the theory file to plot it together')
-                self.show_original = self.widget.entries('Check', 'Original', 0.52, 0.65, default = False, help = 'Check to plot exported FELIX files (.dat) with smoothened curve of .dat files')
+                self.widget.buttons('JustPlot' , 0.52, 0.4, self.just_plot_func, help = 'Use it to plot any data file(s) with two columns')
 
+                self.widget.buttons('Exp-Theory' , 0.4, 0.55, self.avg_theory_func, help = 'Plot exp and theoreitical data together')
+                self.theory_scaling = self.widget.entries('Entry', 0.97, 0.52, 0.58, bd = 5, help = 'Scaling the theoretical values')
+                self.smooth = self.widget.entries('Entry', '21, 6', 0.52, 0.68, bd = 5, help = 'Savitzky–Golay filter for smoothening data: Window_length, polyorder')
+
+                self.show_original = self.widget.entries('Check', 'Original', 0.4, 0.65, default = False, help = 'Compare smoothened data with original')
 
         def timescan_func(self):
                 timescanplot(
-                        self.fname, self.location, self.save.get(), self.show.get(), self.dpi.get()
+                        self.fname, self.location, self.dpi.get(), self.parent
                 )
         def depletion_func(self):
                 depletionPlot(
-                        self.filelist, self.location, self.save.get(), self.show.get(), self.depletion_power.get(), self.dpi.get()
+                        self.filelist, self.location, self.depletion_power.get(), self.dpi.get(), self.parent
                 )
-        def theory_func(self):
-                theory_exp(
-                        self.filelist, self.full_name, self.location, self.save.get(), self.show.get(), self.dpi.get()
-                )
+
         def powerplot_func(self):
                 power_plot(
-                        self.filelist, self.location, self.save.get(), self.show.get(), self.dpi.get()
+                        self.filelist, self.location, self.dpi.get(), self.parent
                 )
         def just_plot_func(self):
                 plot(
-                        self.filelist, self.location, self.save.get(), self.show.get(), self.dpi.get(), self.plot_vlines.get()
+                        self.filelist, self.location, self.dpi.get(), self.parent
                 )
         def avg_theory_func(self):
-                smooth_avg(
-                        self.filelist, self.location, self.save.get(), self.show.get(), self.dpi.get(), self.show_original.get()
+                exp_theory(
+                        self.filelist, self.location, self.dpi.get(), self.show_original.get(), self.theory_scaling.get(), self.smooth.get(), self.parent
                 )
               
 #Closing Program

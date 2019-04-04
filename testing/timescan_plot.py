@@ -1,15 +1,24 @@
 #!/usr/bin/python3
 
-import matplotlib.pyplot as plt
+# Importing Modules
+
+# Built-In modules
 import os
-import numpy as np
-from scipy.optimize import curve_fit
-from FELion_definitions import ShowInfo, ErrorInfo
 
+# DATA analysis modules
+from numpy import array, genfromtxt
 
-def timescanplot(fname, location, save, show, dpi, depletion = False):
+# FELion Modules
+from FELion_definitions import ErrorInfo, FELion_Toplevel
 
+# Tkinter modules
+from tkinter import Toplevel
+
+####################################### Modules Imported #######################################
+
+def timescanplot(fname, location, dpi, parent, depletion = False):
     try:
+        ####################################### Initialisation #######################################
 
         os.chdir(location)
 
@@ -17,7 +26,7 @@ def timescanplot(fname, location, save, show, dpi, depletion = False):
         print(var)
 
         with open(fname, 'r') as f:
-            f = np.array(f.readlines())
+            f = array(f.readlines())
         for i in f:
             if not len(i.strip())==0 and i.split()[0]=='#':
                 for j in var:
@@ -30,10 +39,10 @@ def timescanplot(fname, location, save, show, dpi, depletion = False):
         with open(fname, 'r') as f: file = f.readlines()
         
         skip = [num for num, line in enumerate(file) if 'ALL:' in line.split()]
-        iterations = np.array([int(i.split()[-1]) for i in file if not len(i.strip())==0 and i.split()[0].startswith('#mass')])
+        iterations = array([int(i.split()[-1]) for i in file if not len(i.strip())==0 and i.split()[0].startswith('#mass')])
         length = len(iterations)
 
-        data = np.genfromtxt(fname, skip_header = skip[0]+1)
+        data = genfromtxt(fname, skip_header = skip[0]+1)
 
         cycle = int(len(data)/iterations.sum())
         time = data[:,1][:cycle]
@@ -54,31 +63,43 @@ def timescanplot(fname, location, save, show, dpi, depletion = False):
             temp2.append(temp1)
             temp1 = []
             
-        mean = [[np.array(temp2[i][j]).mean() for j in range(cycle)]for i in range(length)]
-        error = [[(np.array(temp2[i][j]).std()) for j in range(cycle)]for i in range(length)]
-        mass, mean, error = np.array(mass), np.array(mean), np.array(error)
+        mean = [[array(temp2[i][j]).mean() for j in range(cycle)]for i in range(length)]
+        error = [[(array(temp2[i][j]).std()) for j in range(cycle)]for i in range(length)]
+        mass, mean, error = array(mass), array(mean), array(error)
 
-        if depletion: return mass, iterations, t_res, t_b0,  mean, error, time
+        if depletion: 
+            return mass, iterations, t_res, t_b0,  mean, error, time
+            print('\nReturning from Timescan function\n')
+        
+        ####################################### END Initialisation #######################################
 
-        plt.figure(figsize=(15,5), dpi = dpi)
+        ####################################### Tkinter figure #######################################
+
+        ## Embedding figure to tkinter Toplevel
+        title_name = 'Timescan'
+        root = Toplevel(parent)
+        tk_widget = FELion_Toplevel(root, title_name, location)
+
+        fig, canvas = tk_widget.figure(dpi, figsize=(15,5))
+        ax = fig.add_subplot(111)
+
+        ####################################### PLOTTING DETAILS #######################################
 
         for i in range(length):
             lg = "%.2f:[%i]; B0: %i ms, Res: %i"%(mass[i], iterations[i], t_b0, t_res)
-            plt.errorbar(time, mean[i],error[i],fmt='.-', label = lg)
+            ax.errorbar(time, mean[i],error[i],fmt='.-', label = lg)
             
-        plt.title('Time Scan plot for %s'%fname)
-        plt.xlabel('Time (ms)')
-        plt.ylabel('Counts')
-        plt.legend()
-        plt.tight_layout()
+        ax.set_title('Time Scan plot for %s'%fname)
+        ax.set_xlabel('Time (ms)')
+        ax.set_ylabel('Counts')
+        ax.legend()
+        ax.grid(True)
 
-        if save:
-            file = fname.split('.')[0]
-            plt.savefig(file+'.png')
-            ShowInfo('Saved', 'File Saved as %s.png'%file)
-        if show: plt.show()
+        ####################################### END Plotting details #######################################
+
+        canvas.draw() # drawing in the tkinter canvas: canvas drawing board
         
-        plt.close()
-
+        ####################################### END Tkinter figure #######################################
+   
     except Exception as e:
         ErrorInfo("ERROR", e)

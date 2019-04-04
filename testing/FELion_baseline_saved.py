@@ -1,22 +1,28 @@
 #!/usr/bin/python3
 
-# DATA analysis modules
-from scipy.interpolate import interp1d
+## MODULES ##
+
+## Data analysis and plotting packages
 import numpy as np
+from scipy.interpolate import interp1d
+
+# Matplotlib Modules
+from matplotlib.lines import Line2D
+from matplotlib.artist import Artist
+from matplotlib.mlab import dist_point_to_segment
 
 # Tkinter Modules
 from tkinter import Toplevel
 
-# FELion Module
+## FELion modules
 from FELion_definitions import move, ErrorInfo, ShowInfo, FELion_Toplevel
 
-# Built-In Module
+## Built-in Modules
 import os
 from os.path import dirname, isdir, isfile, join
-import shutil
 
-# Matplotlib modules
-from matplotlib.lines import Line2D
+import matplotlib.pyplot as plt
+
 
 
 #These 2 values are used when guessing the baseline:
@@ -62,24 +68,21 @@ class BaselineCalibrator(object):
         x = np.arange(self.Bx.min(), self.Bx.max(), 0.5)
         ax.plot(x, self.val(x), marker='', ls='-', c='b')
         ax.plot(self.Bx, self.By, marker='s', ls='', ms=5, c='b', markeredgecolor='b', animated=True)
+
+
 ########################################################################################
 # Interactive LINE plotter
 class InteractivePoints(object):
-    """
-    Line editor
-    Keys:
-      'd' delete the vertex under point
-      'a' insert a vertex at point
-    """
+
     epsilon = 5  # max pixel distance to count as a vertex hit
 
-    def __init__(self, figure, ax, xs, ys, data, save, fname):
+    def __init__(self, canvas, ax, xs, ys, data, save, fname):
+        
+        self.canvas = canvas
         self.ax = ax
-        canvas = figure.canvas
         self.data = data
         self.save = save
         self.fname = fname
-        
 
         self.line = Line2D(xs, ys, marker='s', ls='', ms=6, c='b', markeredgecolor='b', animated=True)
         self.ax.add_line(self.line)
@@ -88,53 +91,40 @@ class InteractivePoints(object):
         self.inter_xs = np.arange(xs[0], xs[-1])
         self.funcLine = Line2D([], [], marker='', ls='-', c='b', animated=True)
         self.ax.add_line(self.funcLine)
+
         self.redraw_f_line()
-        self._ind = None  # the active vertex
 
-        canvas.mpl_connect('draw_event', self.draw_callback)
-        canvas.mpl_connect('button_press_event', self.button_press_callback)
-        canvas.mpl_connect('key_press_event', self.key_press_callback)
-        canvas.mpl_connect('button_release_event', self.button_release_callback)
-        canvas.mpl_connect('motion_notify_event', self.motion_notify_callback)
-        self.canvas = canvas
+        self._ind = None  # the active vert
 
+        self.canvas.mpl_connect('draw_event', self.draw_callback)
+        self.canvas.mpl_connect('button_press_event', self.button_press_callback)
+        self.canvas.mpl_connect('key_press_event', self.key_press_callback)
+        self.canvas.mpl_connect('button_release_event', self.button_release_callback)
+        self.canvas.mpl_connect('motion_notify_event', self.motion_notify_callback)
+        
     def redraw_f_line(self):
         Bx, By = self.line.get_data()
         self.inter_xs = np.arange(Bx.min(), Bx.max())
 
         f = interp1d(Bx, By, kind='cubic')
-        self.funcLine.set_data((self.inter_xs, f(self.inter_xs))) 
+        self.funcLine.set_data((self.inter_xs, f(self.inter_xs)))
+        
 
     def draw_callback(self, event):
         self.background = self.canvas.copy_from_bbox(self.ax.bbox)
         self.ax.draw_artist(self.line)
         self.ax.draw_artist(self.funcLine)
         self.canvas.blit(self.ax.bbox)
-        
 
     def get_ind_under_point(self, event):
         'get the index of the vertex under point if within epsilon tolerance'
 
-        # Format: (array([xdatas]), array([ydatas])) --> array([[x0, y0], [x1, y1], ....])
-        # for all the baseline points xs nad ys
-        xy = np.asarray(self.line.get_data()).T 
-
-        # Transforming co-ordinates to display co-ordinate system
-        xyt = self.line.get_transform().transform(xy) 
-        xt, yt = xyt[:, 0], xyt[:, 1]  # X and Y co-ordinates of display co-ordinate system
-
-        # Find the change happens while moving baseline point
-        # event.x and event.y will give you display co-ordinates of xdata and ydata
-        # When you click a point then xt-event.x  = 0, because both are at same position hence we will minimize the whole 
-        # data to find which points we are modifying
-        d = np.sqrt((xt - event.x)**2 + (yt - event.y)**2) 
-        indseq = np.nonzero(np.equal(d, np.amin(d)))[0] # Return the indices of the elements that are non-zero/True(1)
-        ind = indseq[0] # index of one of the baseline points
-
-        print(f'Event x: {event.x}\nEvent Y: {event.y}')
-        print(
-            f'\n####################\nLine_data[x][y]: {self.line.get_data()}\nLineData(x, y): {xy}\nTransformed: {xyt}\nxt, yt: {xt}, {yt}\nd: {d}\nindseq: {indseq}\nInd: {ind}\n##########\n'
-        )
+        xy = np.asarray(self.line.get_data()).T
+        xyt = self.line.get_transform().transform(xy)
+        xt, yt = xyt[:, 0], xyt[:, 1]
+        d = np.sqrt((xt - event.x)**2 + (yt - event.y)**2)
+        indseq = np.nonzero(np.equal(d, np.amin(d)))[0]
+        ind = indseq[0]
 
         if d[ind] >= self.epsilon:
             ind = None
@@ -180,7 +170,6 @@ class InteractivePoints(object):
             xy = np.asarray(self.line.get_data())
             xy = np.append(xy,[[event.xdata], [event.ydata]], axis=1)
             self.line.set_data((xy[0], xy[1]))
-
         elif event.key == 'x':
             baseline = self.line.get_data()
 
@@ -190,7 +179,7 @@ class InteractivePoints(object):
                 if isfile(join(os.getcwd(), 'DATA', f'{self.fname}.base')):
                     print(f'{self.fname}.base is SAVED')
                     ShowInfo('SAVED', f'{self.fname}.base file is saved in /DATA directory')
-                    
+        
         self.redraw_f_line()
         self.canvas.draw()
 
@@ -214,6 +203,8 @@ class InteractivePoints(object):
         self.ax.draw_artist(self.line)
         self.ax.draw_artist(self.funcLine)
         self.canvas.blit(self.ax.bbox)
+
+
 ################################################################################
 def felix_read_file(fname):
     """
@@ -276,89 +267,17 @@ def SaveBase(fname, baseline):
     for i in range(len(b[0])):
         f.write("{:8.3f}\t{:8.2f}\n".format(b[0][i], b[1][i]))
 
-def main(fname=""):
-    if fname == "":
-        fname = input("Please enter the file name (without .felix): ")
-    if(fname.find('felix')):
-        fname = fname.split('.')[0]
-    
-    my_path = os.getcwd()
-
-    if os.path.isdir('EXPORT'):
-        print("EXPORT folder exist")
-    else:
-        os.mkdir('EXPORT')
-        print("EXPORT folder created.")
-        
-    if os.path.isdir('OUT'):
-        print("OUT folder exist")
-    else:
-        os.mkdir('OUT')
-        print("OUT folder created.")
-
-    if os.path.isdir('DATA'):
-        print("DATA folder exist")
-    else:
-        os.mkdir('DATA')
-        print("DATA folder created.")
-
-    filename = fname + ".felix"
-
-    if os.path.isfile(filename):
-        print("File exist, Copying to the DATA folder to process.")
-        shutil.copyfile(my_path + "/{}".format(filename), my_path + "/DATA/{}".format(filename))
-
-    data = felix_read_file(fname)
-
-    #Check wether the baslien file exists
-    if not os.path.isfile('DATA/'+fname+'.base'):
-        print("Guessing baseline from .felix file!")
-        xs, ys = GuessBaseLine(data)
-    else:
-        print("Reading baseline from .base file!")
-        xs, ys, *rest = ReadBase(fname)
-
-    fig, ax = plt.subplots()
-
-    p = InteractivePoints(fig, ax, xs, ys)
-    ax.plot(data[0], data[1], ls='', marker='o', ms=5, markeredgecolor='r', c='r')
-
-    print("\nUSAGE:\nBlue baseline points are dragable...\
-           \nKeys:\n\
-    'a' - adds a point at current cursor position\n\
-    'd' - delets a point at current cursor position\n\
-    'w' - moves the point to the 'average' value at given x position\n\
-    'q' - stores baseline in .base file and quits!\n")
-
-    ax.set_title('BASELINE points are drag-able!')
-    ax.set_xlim((data[0][0]-70, data[0][-1]+70))
-    ax.set_xlabel("wavenumber (cm-1)")
-    ax.set_ylabel("Counts")
-    plt.show()
-    
-    #Powerfile check
-    powerfile = fname + ".pow"
-    if not os.path.isfile(powerfile):
-        print("NOTE: You don't have .pow file so you can't plot the data yet but you can make the baseline.")
-    elif os.path.isfile(powerfile):
-        shutil.copyfile(my_path + "/{}".format(powerfile), my_path + "/DATA/{}".format(powerfile))
-        print("Powerfile is copied to the DATA folder")
-
-    if baseline != None:
-        SaveBase(fname, baseline)
-    return
-
-def baseline_correction(fname, location, save):
+def baseline_correction(fname, location, save, dpi, parent):
 
     try:
-
         ####################################### Initialisation #######################################
-        
+
         folders = ["DATA", "EXPORT", "OUT"]
         back_dir = dirname(location)
         
         if set(folders).issubset(os.listdir(back_dir)): 
             os.chdir(back_dir)
+            location = back_dir
             my_path = os.getcwd()
         
         else: 
@@ -386,32 +305,22 @@ def baseline_correction(fname, location, save):
         else:
             print("Reading baseline from .base file!")
             xs, ys, *rest = ReadBase(fname)
-        
-        ####################################### END Initialisation ###################################
+
+        ####################################### END Initialisation #######################################
 
         ####################################### Tkinter figure #######################################
 
         ## Embedding figure to tkinter Toplevel
-        title_name = 'Plot'
+        title_name = 'Baseline correction'
         root = Toplevel(parent)
         tk_widget = FELion_Toplevel(root, title_name, location)
 
         fig, canvas = tk_widget.figure(dpi)
         ax = fig.add_subplot(111)
 
-        ################################ PLOTTING DETAILS ########################################
-
+        ####################################### PLOTTING DETAILS #######################################
+        p = InteractivePoints(canvas, ax, xs, ys, data, save, fname)
         ax.plot(data[0], data[1], ls='', marker='o', ms=5, markeredgecolor='r', c='r')
-        canvas.draw()   # drawing in the tkinter canvas: canvas drawing board
-
-        p = InteractivePoints(fig, ax, xs, ys, data, save, fname)
-
-        print("\nUSAGE:\nBlue baseline points are dragable...\
-            \nKeys:\n\
-        'a' - adds a point at current cursor position\n\
-        'd' - delets a point at current cursor position\n\
-        'w' - moves the point to the 'average' value at given x position\n\
-        'x' - stores baseline in .base file and quits!\n")
 
         ax.set_title('BASELINE points are drag-able!')
         ax.set_xlim((data[0][0]-70, data[0][-1]+70))
@@ -420,10 +329,9 @@ def baseline_correction(fname, location, save):
 
         ####################################### END Plotting details #######################################
 
+        # canvas.draw() # drawing in the tkinter canvas: canvas drawing board
+        
         ####################################### END Tkinter figure #######################################
         
     except Exception as e:
         ErrorInfo("ERROR: ", e)
-
-if __name__ == "__main__":
-    main()

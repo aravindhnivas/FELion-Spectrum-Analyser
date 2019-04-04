@@ -1,28 +1,34 @@
 #!/usr/bin/python3
 
 ## MODULES
+
 # Data analysis and visualisation Modules
 import numpy as np
-import matplotlib.pyplot as plt
+
+# matplotlib modules
 from matplotlib.widgets import Cursor
 from matplotlib.ticker import MultipleLocator
 
+# Tkinter Modules
+from tkinter import Toplevel
+
 # Built-In Modules
 import os
-from os.path import join, isdir, isfile
+from os.path import join, isdir
 import shutil
 
 # FELion Definitions
-from FELion_definitions import ShowInfo, copy, move, ErrorInfo, var_find
+from FELion_definitions import ShowInfo, ErrorInfo, var_find, FELion_Toplevel
 
 def massSpec(*args):
 
     t, ts, lgs, minor, major, majorTickSize, \
     xlabelsz, ylabelsz, fwidth, fheight, avgname,\
     location, mname, temp, ie,\
-    save, combine, fname, filelist, dpi = args
+    combine, fname, filelist, dpi, parent = args
 
     try:
+        ####################################### Initialisation #######################################
         os.chdir(location)
         my_path = os.getcwd()
 
@@ -43,8 +49,20 @@ def massSpec(*args):
            
             mass = np.genfromtxt(filename)
             x, y = mass[:,0], mass[:,1]
+            
+            ####################################### END Initialisation #######################################
 
-            fig, ax = plt.subplots(figsize = (fwidth, fheight), dpi = dpi)
+            ####################################### Tkinter figure #######################################
+
+            ## Embedding figure to tkinter Toplevel
+            title_name = 'Mass Spec Single'
+            root = Toplevel(parent)
+            tk_widget = FELion_Toplevel(root, title_name, location)
+
+            fig, canvas = tk_widget.figure(dpi, figsize = (fwidth, fheight))
+            ax = fig.add_subplot(111)
+
+            ####################################### PLOTTING DETAILS #######################################
     
             ax.semilogy(x, y, label = f'{fname}: Res: {res}; B0: {b0}ms; Trap: {trap}ms')
             cursor = Cursor(ax, useblit=True, color='red', linewidth=1)
@@ -61,21 +79,27 @@ def massSpec(*args):
             ax.xaxis.set_major_locator(MultipleLocator(major))
             ax.tick_params(axis='both', which='major', labelsize=majorTickSize)
 
+            ####################################### END Plotting details #######################################
 
-            if save:
-                ShowInfo("SAVED", f"File {fname}.png saved \nin MassSpec_DATA directory")
-                plt.savefig(join(my_path, 'MassSpec_DATA', f'{fname}.png'))
-                plt.show()
-
-            else: plt.show()
+            canvas.draw() # drawing in the tkinter canvas: canvas drawing board
             
-            plt.close()
+            ####################################### END Tkinter figure #######################################
 
         if combine:
             if filelist == []: 
                 return ErrorInfo("Select Files: ", "Click Select File(s)")
 
-            fig1, ax1 = plt.subplots(figsize = (fwidth, fheight), dpi = dpi)
+            ####################################### Tkinter figure #######################################
+
+            ## Embedding figure to tkinter Toplevel
+            title_name1 = 'Mass Spec Combined'
+            root1 = Toplevel(parent)
+            tk_widget1 = FELion_Toplevel(root1, title_name1, location)
+
+            fig1, canvas1 = tk_widget1.figure(dpi, figsize = (fwidth, fheight))
+            ax1 = fig1.add_subplot(111)
+
+            ####################################### PLOTTING DETAILS #######################################
 
             for file in filelist:
                 res, b0, trap = var_find(file, location)
@@ -98,15 +122,12 @@ def massSpec(*args):
             ax1.xaxis.set_minor_locator(MultipleLocator(minor))
             ax1.xaxis.set_major_locator(MultipleLocator(major))
             ax1.tick_params(axis='both', which='major', labelsize = majorTickSize)
-            
-            if save:
-                ShowInfo("SAVED", f"File {avgname}.png saved \nin MassSpec_DATA directory")
-                plt.savefig(join(my_path, 'MassSpec_DATA', f'{avgname}.png'))
-                plt.show()
-            else:
-                plt.show()
 
-            plt.close()
+            ####################################### END Plotting details #######################################
+
+            canvas1.draw() # drawing in the tkinter canvas: canvas drawing board
+            
+            ####################################### END Tkinter figure #######################################
 
     except Exception as e:
         ErrorInfo("ERROR", e)

@@ -1,33 +1,56 @@
 #!/usr/bin/python3
 
-import os
-import matplotlib.pyplot as plt
-from matplotlib.widgets import Slider
+# Importing Modules
+
+# DATA analysis modules
 import numpy as np
 from scipy.optimize import curve_fit
-
 from uncertainties import ufloat as uf
 from uncertainties import unumpy as unp
-from timescan_plot import timescanplot
-from FELion_definitions import ShowInfo, ErrorInfo
 
-def depletionPlot(files, location, save, show, power_n, dpi):
+# Custom functions
+from timescan_plot import timescanplot
+
+# Felion Modules
+from FELion_definitions import ShowInfo, ErrorInfo, FELion_Toplevel
+
+# Tkinter modules
+from tkinter import Toplevel
+
+# Matplotlib Modules
+from matplotlib.widgets import Slider
+from matplotlib.gridspec import GridSpec as grid
+
+# Built-In modules
+import os
+
+def depletionPlot(files, location, power_n, dpi, parent):
 
     try:
+        ####################################### Initialisation #######################################
 
-        #if len(files)>2: return ShowInfo('Info', 'Please select only 2-files')
-
-        print('#######################')
         try:
             power_n = np.asarray(power_n.split(','), dtype = np.float)
             power_values, n = power_n[:-1], power_n[-1]
-        except Exception as e:
-            ErrorInfo('Error', e)
+        except Exception:
             return ErrorInfo("Error", 'Please enter the Power_on, power_off and n_shots value.')
 
         np.seterr(all='ignore')
         os.chdir(location)
-        fig0, axs0 = plt.subplots(dpi = dpi)
+
+        ####################################### END Initialisation #######################################
+
+        ####################################### Tkinter figure 1 #######################################
+
+        ## Embedding figure to tkinter Toplevel
+        title_name1 = 'Timescan'
+        root1 = Toplevel(parent)
+        tk_widget1 = FELion_Toplevel(root1, title_name1, location)
+
+        fig1, canvas1 = tk_widget1.figure(dpi, figsize=(15,5))
+        axs0 = fig1.add_subplot(111)
+
+        ####################################### PLOTTING DETAILS Timescan #######################################
 
         lg_fontsize = 15
         title_fontsize = 15
@@ -35,7 +58,8 @@ def depletionPlot(files, location, save, show, power_n, dpi):
         
         counts, stde = [], []
         for f in files:        
-            mass, iterations, t_res, t_b0, mean, error, time = timescanplot(f, location, save, show, dpi, depletion=True)
+            mass, iterations, t_res, t_b0, mean, error, time = timescanplot(f, location, dpi, parent, depletion = True)
+            print('\nReturned.\n')
             axs0.errorbar(time, mean[0], yerr = error[0], label = '{}; {}:[{}], B0:{}ms, Res:{}'.format(f, mass[0], iterations[0], t_b0, t_res))
             
             time = time[1:]/1000
@@ -48,8 +72,30 @@ def depletionPlot(files, location, save, show, power_n, dpi):
         axs0.set_title('Timescan', fontsize=title_fontsize)
         axs0.set_xlabel('time (s)', fontsize= lb_size)
         axs0.set_ylabel('Counts', fontsize= lb_size)
-        axs0.grid()
+        axs0.grid(True)
         axs0.legend()
+
+        ####################################### END Plotting details #######################################
+
+        canvas1.draw() # drawing in the tkinter canvas: canvas drawing board
+        
+        ####################################### END Tkinter figure 1 #######################################
+
+        ####################################### Tkinter figure 2 #######################################
+
+        ## Embedding figure to tkinter Toplevel
+        title_name2 = 'Depletion Scan'
+        root2 = Toplevel(parent)
+        tk_widget2 = FELion_Toplevel(root2, title_name2, location)
+
+        fig2, canvas2 = tk_widget2.figure(dpi)
+
+        spec = grid(ncols=2, nrows=1, figure=fig2)
+
+        axs = fig2.add_subplot(spec[0, 0])
+        depletion_plot = fig2.add_subplot(spec[0, 1])
+
+        ####################################### PLOTTING DETAILS Depletion Scan #######################################
 
         on_off = []
         for i in counts:
@@ -61,14 +107,6 @@ def depletionPlot(files, location, save, show, power_n, dpi):
         
         K_ON, Na0, Nn0 = [], [], []
         K_ON_err, Na0_err, Nn0_err = [], [], []
-
-        fig, axs = plt.subplots(figsize=(25, 10), dpi = 70)
-
-        plt.subplots_adjust(
-            top = 0.95,
-            bottom = 0.2,
-            left = 0.05,
-        )
         
         for i in range(0, len(counts), 2):
             
@@ -149,10 +187,6 @@ def depletionPlot(files, location, save, show, power_n, dpi):
         uK_OFF, uN = unp.uarray(K_OFF, K_OFF_err), unp.uarray(N, N_err)
         uK_ON, uNa0, uNn0 = unp.uarray(K_ON, K_ON_err), unp.uarray(Na0, Na0_err) , unp.uarray(Nn0, Nn0_err)
         
-        ## depletion plot
-        box0 = axs.get_position() ##[left, bottom, width, height]
-        depletion_plot_position = [box0.x0+0.55, box0.y0-0.1, box0.width*0.45, box0.height*0.9]
-        depletion_plot = plt.axes(depletion_plot_position)
         
         def Depletion(X, A):
             x, K_ON = X
@@ -205,12 +239,11 @@ def depletionPlot(files, location, save, show, power_n, dpi):
             # controlling fitting parameters
             axcolor = 'lightgoldenrodyellow'
             
-            koff_g = plt.axes([l, 0.12, 0.2, 0.015], facecolor=axcolor) #[left, bottom, width, height]
-            n_g = plt.axes([l, 0.10, 0.2, 0.015], facecolor=axcolor)
-
-            kon_g = plt.axes([l, 0.08, 0.2, 0.015], facecolor=axcolor)
-            na_g = plt.axes([l, 0.06, 0.2, 0.015], facecolor=axcolor)
-            nn_g = plt.axes([l, 0.04, 0.2, 0.015], facecolor=axcolor)
+            koff_g = fig2.add_axes([l, 0.12, 0.2, 0.015], facecolor=axcolor) #[left, bottom, width, height]
+            n_g = fig2.add_axes([l, 0.10, 0.2, 0.015], facecolor=axcolor)
+            kon_g = fig2.add_axes([l, 0.08, 0.2, 0.015], facecolor=axcolor)
+            na_g = fig2.add_axes([l, 0.06, 0.2, 0.015], facecolor=axcolor)
+            nn_g = fig2.add_axes([l, 0.04, 0.2, 0.015], facecolor=axcolor)
 
             koff_slider = Slider(koff_g, '$K_{OFF}$', 0, K_OFF[i]+10, valinit = K_OFF[i])
             n_slider = Slider(n_g, 'N', 0, N[i]+(N[i]/2), valinit = N[i])
@@ -266,9 +299,9 @@ def depletionPlot(files, location, save, show, power_n, dpi):
                 legend.get_texts()[k+1].set_text('N_ON: [{:.2f}mJ], K_ON={:.2fP}/J, N={:.2fP}, Na0={:.2fP}, Nn0={:.2fP}'.format(power_values[i], ukon, una+unn, una, unn))
                 depletion_legend.get_texts()[i].set_text('A = {:.2fP}, K_ON = {:.2fP}/J'.format(uA_new1, ukon))
 
-                fig.canvas.draw_idle()
+                canvas2.draw_idle()
                 
-                return fig
+                return fig2
 
             koff_slider.on_changed(update)
             n_slider.on_changed(update)
@@ -277,24 +310,21 @@ def depletionPlot(files, location, save, show, power_n, dpi):
             na_slider.on_changed(update)
             nn_slider.on_changed(update)
         
-            return koff_slider, n_slider, kon_slider, na_slider, nn_slider, koff_g, n_g, kon_g, na_g, nn_g, fig
+            return koff_slider, n_slider, kon_slider, na_slider, nn_slider, koff_g, n_g, kon_g, na_g, nn_g, fig2
 
         widget_position = l = 0.05
         for i in range(len(N)):
-            koff_slider, n_slider, kon_slider, na_slider, nn_slider, koff_g, n_g, kon_g, na_g, nn_g, fig = plot(i, l)
+            koff_slider, n_slider, kon_slider, na_slider, nn_slider, koff_g, n_g, kon_g, na_g, nn_g, fig2 = plot(i, l)
             l += 0.25
 
         ### setting labels
-        title_depletion1 = '$N_{ON}(ntE)=N_{a0}e^{-k_{on}ntE}e^{-k_{off}ntE} + N_{n0}e^{-k_{off}ntE}$ ;\t$N_{OFF}(ntE)=(N)e^{-k_{off}ntE}$ ; $N = N_{a0}+ N_{n0}$'
-        axs.set_title(title_depletion1, fontsize=title_fontsize)
+        # title_depletion1 = '$N_{ON}(ntE)=N_{a0}e^{-k_{on}ntE}e^{-k_{off}ntE} + N_{n0}e^{-k_{off}ntE}$ ;\t$N_{OFF}(ntE)=(N)e^{-k_{off}ntE}$ ; $N = N_{a0}+ N_{n0}$'
+        # axs.set_title(title_depletion1, fontsize=title_fontsize)
         axs.set_xlabel('$n * t * E (Joule)$', fontsize= lb_size)
         axs.set_ylabel('Counts', fontsize= lb_size)
 
         axs.grid(True)
-        box = axs.get_position()
-        axs.set_position([box.x0, box.y0, box.width*0.6, box.height])
-        legend = axs.legend(loc='center left', bbox_to_anchor=(1, 0.95), title=files, fontsize=lg_fontsize-2)
-        legend.get_title().set_fontsize(lg_fontsize)
+        legend = axs.legend(loc = 'upper right', bbox_to_anchor = (2, -0.1))
         
         depletion_plot.grid(True)
         depletion_legend = depletion_plot.legend(loc = 'lower right', fontsize=lg_fontsize)
@@ -302,12 +332,11 @@ def depletionPlot(files, location, save, show, power_n, dpi):
         depletion_plot.set_ylabel('Relative abundance of active isomer', fontsize= lb_size)
         depletion_plot.set_title('$D(ntE) = 1-N_{ON}/N_{OFF}$ fitted with $D(ntE) = A(1-e^{K_{ON}*ntE})$', fontsize = title_fontsize)
         
-        if save: 
-            plt.savefig("Depletion.pdf", bbox_inches='tight')
-            ShowInfo("SAVED", 'File Saved as Depletion.pdf')
-            
-        if show: plt.show()
-        plt.close('all')
+        ####################################### END Plotting details #######################################
+
+        canvas2.draw() # drawing in the tkinter canvas: canvas drawing board
+        
+        ####################################### END Tkinter figure 2 #######################################
 
     except Exception as e:
         ErrorInfo("ERROR", e)

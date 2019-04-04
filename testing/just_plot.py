@@ -1,53 +1,44 @@
 #!/usr/bin/python3
 
-# Impoerting Modules
+# Importing Modules
 
 # DATA analysis modules
-import matplotlib.pyplot as plt
-import numpy as np
+from numpy import array, genfromtxt, asarray
 from scipy.interpolate import interp1d as interpolate
 from scipy.signal import savgol_filter as fit
-from glob2 import glob
+
+# Tkinter Modules
+from tkinter import Toplevel
 
 # FELion Module
-from FELion_definitions import colors, ShowInfo
+from FELion_definitions import colors, FELion_Toplevel
 
 # Built-In Module
 import os
+from os.path import isfile
+
+####################################### Modules Imported #######################################
 
 
-def theory_exp(filelists, exp, location, save, show, dpi):
+def power_plot(powerfiles, location, dpi, parent):
 
-        os.chdir(location)
-
-        plt.figure(dpi = dpi)
-        e = np.genfromtxt(exp)
-        xe, ye = e[:,0], e[:,1]
-        exp = exp.split('\\')[-1].split('.')[0]
-        plt.plot(xe,ye, 'k', alpha = 0.5, label=f'Exp:{exp}.felix')
-
-        for n ,i in enumerate(filelists):
-                t = np.genfromtxt(i)
-                xt, yt = t[:,0], t[:,1]
-                yt = (yt/yt.max())*ye.max()
-                plt.vlines(xt, ymin=0, ymax=yt, color = colors[n], lw = 5, label = i.split('/')[-1].split('.')[0])
+        ####################################### Initialisation #######################################
         
-        plt.legend()
-        plt.grid(True)
-        plt.title('Theory vs Experiment')
-        plt.xlabel('Wavenumber $cm^{-1}$')
-        plt.ylabel('Normalised Intensity \n(Theory Inten. is norm. to Exp.)')
-        plt.xlim(xmax = xe.max()+50, xmin = xe.min()-50)
-        plt.ylim(ymin=0)
-        plt.tight_layout()
-        if save: plt.savefig('theory-exp_%s.png'%exp)
-        if show: plt.show()
-        plt.close()
-
-def power_plot(powerfiles, location, save, show, dpi):
-
         os.chdir(location)
-        plt.figure(dpi = dpi)
+
+        ####################################### END Initialisation ###################################
+        
+        ####################################### Tkinter figure #######################################
+
+        ## Embedding figure to tkinter Toplevel
+        title_name = 'Plot'
+        root = Toplevel(parent)
+        tk_widget = FELion_Toplevel(root, title_name, location)
+
+        fig, canvas = tk_widget.figure(dpi)
+        ax = fig.add_subplot(111)
+
+        ################################ PLOTTING DETAILS ########################################
         for powerfile in powerfiles:
                 with open(powerfile, 'r') as f:
                         for i in f:
@@ -55,100 +46,139 @@ def power_plot(powerfiles, location, save, show, dpi):
                                         shots = int(i.strip().split('=')[-1])
                                         break
 
-                power_file = np.genfromtxt(powerfile)
+                power_file = genfromtxt(powerfile)
                 power_file_extrapolate = interpolate(power_file[:,0], power_file[:,1], kind = 'linear', fill_value = 'extrapolate')
 
-                temp = np.genfromtxt(powerfile.split('.')[0]+'.felix')
+                temp = genfromtxt(powerfile.split('.')[0]+'.felix')
                 x = temp[:,0]
 
                 power_extrapolated = power_file_extrapolate(x)
-                plt.plot(power_file[:,0], power_file[:,1], 'ok',ms=7)
-                plt.plot(x, power_extrapolated, '-', label=powerfile+':'+str(shots))
+                ax.plot(power_file[:,0], power_file[:,1], 'ok',ms=7)
+                ax.plot(x, power_extrapolated, '-', label=powerfile+':'+str(shots))
         
-        plt.legend()
-        plt.grid(True)
-        plt.title('Power change during scan')
-        plt.ylabel('Power (mJ)')
-        plt.xlabel('Wavenumber $cm^{-1}$')
+        ax.legend()
+        ax.grid(True)
+        ax.set_title('Power change during scan')
+        ax.set_ylabel('Power (mJ)')
+        ax.set_xlabel('Wavenumber $cm^{-1}$')
 
-        if show: plt.show()
-        if save: plt.savefig('power_combined.png')
-        plt.close()
+        ####################################### END Plotting details #######################################
 
-def plot(filelist, location, save, show, dpi, vline):
+        canvas.draw() # drawing in the tkinter canvas: canvas drawing board
+        
+        ####################################### END Tkinter figure #######################################
+
+def plot(filelist, location, dpi, parent):
+
+        ####################################### Initialisation #######################################
         
         os.chdir(location)
 
-        fig, ax = plt.subplots(dpi = dpi)
+        ####################################### END Initialisation #######################################
+
+        ####################################### Tkinter figure #######################################
+
+        ## Embedding figure to tkinter Toplevel
+        title_name = 'Plot'
+        root = Toplevel(parent)
+        tk_widget = FELion_Toplevel(root, title_name, location)
+
+        fig, canvas = tk_widget.figure(dpi)
+        ax = fig.add_subplot(111)
+
+        ####################################### PLOTTING DETAILS #######################################
         n = 0
         for i in filelist:   
-                data = np.genfromtxt(i)
+                data = genfromtxt(i)
                 x, y = data[:,0], data[:,1]
-                if not vline: ax.plot(x, y, label = i)
-                else: ax.vlines(x, ymin=0, ymax=y, color = colors[n], lw = 2, label = i)
-                print(f'Color-->{colors[n]}\n')
-                n += 1
+                
+                ax.plot(x, y, label = i)
 
         ax.legend()
+        ax.set_title('Plot')
         ax.set_xlabel("Wavenumber(cm-1)")
+        ax.set_ylabel("Intensity")
         ax.grid(True)
 
-        if show: plt.show()
-        
-        if save: 
-                plt.savefig('combined.png')
-                ShowInfo("SAVED:", "Filename: combined.png")
+        ####################################### END Plotting details #######################################
 
-        plt.close()
-
-def smooth_avg(filelist, location, save, show, dpi, original_show):
+        canvas.draw() # drawing in the tkinter canvas: canvas drawing board
         
+        ####################################### END Tkinter figure #######################################
+
+def exp_theory(filelist, location, dpi, original_show, scale, smooth, parent):
+
+        ####################################### Initialisation #######################################
+
         os.chdir(location)
         dat = [i for i in filelist if i.find('.dat')>=0]
         tsv = [i for i in filelist if not i.find('.dat')>=0]
 
-        fig, ax = plt.subplots(dpi = dpi)
+        window_length, polyorder = asarray(smooth.split(','), dtype = int)
+        print(f'\nSavitzky-Golay filter for smoothening of data\nWindow Length --> {window_length}\nPolyorder --> {polyorder}\n')
+
+        ####################################### END Initialisation #######################################
+
+        ####################################### Tkinter figure #######################################
+
+        ## Embedding figure to tkinter Toplevel
+        title_name = 'Exp-Theory'
+        root = Toplevel(parent)
+        tk_widget = FELion_Toplevel(root, title_name, location)
+
+        fig, canvas = tk_widget.figure(dpi)
+        ax = fig.add_subplot(111)
+        
+        ####################################### PLOTTING DETAILS #######################################
 
         y_list = []
         n = 0
-        for i in dat:
-                if i.find('.dat')>=0:
-                        data = np.genfromtxt(i)
-                        x, y = data[:,0], data[:,1]
-                        
-                        y_fit = np.array(fit(y, 21, 3))
-                        y_list.append(y_fit.max())
-                        if original_show: 
-                                ax.plot(x, y, label = f'{i}_Original')
-                                ax.plot(x, y_fit, label = f'{i}_fit')
-                        else: ax.plot(x, y_fit, '--' , alpha = 0.7, label = f'{i}')
-        
-        y_list = np.array(y_list)
+        if len(dat)>0:
+                for i in dat:
+                        if i.find('.dat')>=0:
+                                data = genfromtxt(i)
+                                x, y = data[:,0], data[:,1]
+                                y = y - y.min()
+
+                                y1 = y_fit = array(fit(y, window_length, polyorder)) # Apply a Savitzky-Golay filter for smoothening of data. "fit(data, window_length, polyorder)"
+                                y_fit = y_fit - y_fit.min()
+
+                                y_list.append(y_fit.max())
+
+                                if original_show:       # To compare the original with the smoothened data
+                                        ax.plot(x, y, label = f'{i}_Original')
+                                        ax.plot(x, y1, label = f'{i}_fit')
+
+                                elif len(tsv)<1 : ax.plot(x, y_fit, label = i)
+                                else:  ax.plot(x, y_fit, 'k')
+                
+                y_list = array(y_list)
 
         n = 0
-        for i in tsv:
-                data = np.genfromtxt(i)
-                x, y = data[:,0], data[:,1]
-                print(f'Y:{y.shape}')
-                y = y/y.max()*y_list.max()
-                ax.vlines(x, ymin = 0, ymax = y, color = colors[n], lw = 2, label = i)
-                n += 1
+        if len(tsv)>0:
+                for i in tsv:
+                        data = genfromtxt(i)
+                        x, y = data[:,0], data[:,1]
+
+                        x = x * scale
+                        if len(dat)>1: y = y/y.max()*y_list.max()
+
+                        ax.vlines(x, ymin = 0, ymax = y, color = colors[n], lw = 2, label = i)
+                        n += 1
 
         #ax.legend()
         box = ax.get_position()
         ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
 
         # Put a legend to the right of the current axis
-        ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
-
+        ax.legend(loc='center left', bbox_to_anchor=(1, 0.7))
+        ax.set_title('Experimental vs Theoretical')
         ax.set_xlabel("Wavenumber(cm-1)")
-        ax.set_ylabel("Nomalised")
+        ax.set_ylabel("Nomalised Intensity")
         ax.grid(True)
 
-        if show: plt.show()
-        
-        if save: 
-                plt.savefig('combined.png')
-                ShowInfo("SAVED:", "Filename: combined.png")
+        ####################################### END Plotting details #######################################
 
-        plt.close()
+        canvas.draw() # drawing in the tkinter canvas: canvas drawing board
+        
+        ####################################### END Tkinter figure #######################################

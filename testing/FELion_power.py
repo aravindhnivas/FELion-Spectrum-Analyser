@@ -1,17 +1,22 @@
 #!/usr/bin/python3
+
+# Importing Modules
+
+# DATA analysis modules
 import numpy as np
-import pylab as P
-import sys
-import os
-from os import path
-import matplotlib.pyplot as plt
 from scipy.interpolate import interp1d
 
-from tkinter import Tk, messagebox
-from os.path import dirname
-from FELion_definitions import ErrorInfo
+# Tkinter Modules
+from tkinter import Toplevel
 
-################################################################################
+# FELion Module
+from FELion_definitions import ErrorInfo, FELion_Toplevel
+
+# Built-In Module
+import os
+from os.path import dirname
+
+####################################### Modules Imported #######################################
 
 class PowerCalibrator(object):
     """
@@ -72,51 +77,20 @@ class PowerCalibrator(object):
         bx.plot(self.xw, self.shots(self.xw), ls='-', marker='o', ms=3, markeredgecolor='y', c='y')
         bx.set_ylabel("shots")
 
-def main():
-    import argparse
-    parser = argparse.ArgumentParser()
-    parser.add_argument("fname", help="Filename to process")
-    args = parser.parse_args()
+def FELion_Power(fname, location, dpi, parent):
 
-    if(args.fname.find('DATA')>=0):
-        fname = args.fname.split('/')[-1]
-    else:
-        fname = args.fname
-        
-    if(fname.find('felix')>=0):
-        fname = fname.split('.')[0]
-        
-    #x, y, n_shots = ReadPower(fname)
-    powerWN = PowerCalibrator(fname)
-    xc, yc, n_shots = powerWN.GetCalibData()
-    X = np.arange(xc.min(),xc.max(), 1)
-
-    fig, ax = plt.subplots()
-    bx = ax.twinx()
-    ax.plot(xc, yc, ls='', marker='o', ms=5, markeredgecolor='r', c='r')
-    bx.plot(xc, powerWN.shots(xc), ls='-', marker='o', ms=3, markeredgecolor='b', c='b')
-
-    #plot the power calibration line:
-    ax.plot(X, powerWN.power(X), ls='-', c='m')
-
-    ax.set_title('Power and Number of shots in the .pow file')
-    ax.set_xlim((xc.min()-70, xc.max()+70))
-    ax.set_ylim((0, yc.max()*1.1))
-    ax.set_xlabel("wn (cm-1)")
-    ax.set_ylabel("power (mJ)")
-    bx.set_ylabel("n shots")
-    plt.show()
-
-def FELion_Power(fname, location):
+    ####################################### Initialisation #######################################
 
     folders = ["DATA", "EXPORT", "OUT"]
     back_dir = dirname(location)
     
     if set(folders).issubset(os.listdir(back_dir)): 
         os.chdir(back_dir)
+        location = back_dir
     
     else: 
         os.chdir(location)
+    ####################################### END Initialisation #######################################
 
     try:
 
@@ -128,7 +102,17 @@ def FELion_Power(fname, location):
         xc, yc, n_shots = powerWN.GetCalibData()
         X = np.arange(xc.min(),xc.max(), 1)
 
-        fig, ax = plt.subplots()
+        ####################################### Tkinter figure #######################################
+
+        ## Embedding figure to tkinter Toplevel
+        title_name = 'Power'
+        root = Toplevel(parent)
+        tk_widget = FELion_Toplevel(root, title_name, location)
+
+        fig, canvas = tk_widget.figure(dpi)
+        ax = fig.add_subplot(111)
+
+        ####################################### PLOTTING DETAILS #######################################
         bx = ax.twinx()
         ax.plot(xc, yc, ls='', marker='o', ms=5, markeredgecolor='r', c='r')
         bx.plot(xc, powerWN.shots(xc), ls='-', marker='o', ms=3, markeredgecolor='b', c='b')
@@ -142,13 +126,11 @@ def FELion_Power(fname, location):
         ax.set_xlabel("wn (cm-1)")
         ax.set_ylabel("power (mJ)")
         bx.set_ylabel("n shots")
-        plt.show() 
-        plt.tight_layout()
-        plt.close()
-    
+
+        ####################################### END Plotting details #######################################
+
+        canvas.draw() # drawing in the tkinter canvas: canvas drawing board
+        
+        ####################################### END Tkinter figure #######################################
     except Exception as e:
         ErrorInfo("ERROR", e)
-#----------------------------------------
-#ENTRY POINT:
-if __name__ == "__main__":
-    main()

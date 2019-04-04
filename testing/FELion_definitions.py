@@ -1,19 +1,41 @@
 #!/usr/bin/python3
 
+# Importing Modules
+
+# Tkinter modules
 from tkinter import *
 from tkinter import ttk, messagebox
 from tkinter.filedialog import askopenfilenames, askopenfilename, askdirectory
+from tkinter.messagebox import askokcancel
+
+# Data Analysis
+import numpy as np
+
+# Built-In Modules
 import os, shutil, tempfile, git, subprocess, sys
 from os.path import isdir, dirname, join, isfile
-
 import datetime
-import numpy as np
+
+# Matplotlib Modules for tkinter
+import matplotlib
+matplotlib.use("TkAgg")
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
+from matplotlib.backend_bases import key_press_handler
+from matplotlib.figure import Figure
+# from matplotlib import style
+# style.use('ggplot')
+
+################################################# MODULES IMPORTED #################################################
+####################################################################################################################
+
 
 # General functions:
 copy = lambda pathdir, x: (shutil.copyfile(join(pathdir, x), join(pathdir,"DATA" ,x)), print("%s copied to DATA folder" %x))
 move = lambda pathdir, x: (shutil.move(join(pathdir, x), join(pathdir,"DATA" ,x)), print("%s moved to DATA folder"%x))
 
 colors = ['C0', 'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'C9']
+
+####################################################################################################################
 
 # Tkinter messagebox
 def ErrorInfo(error, msg):
@@ -28,9 +50,9 @@ def ShowInfo(info, msg):
     messagebox.showinfo(str(info), str(msg))
     root.destroy()
 
+####################################################################################################################
 
 # Normline Filecheck method
-
 def filecheck(my_path, basefile, powerfile, fullname):
     
     #File check
@@ -60,8 +82,9 @@ def filecheck(my_path, basefile, powerfile, fullname):
 
     return True
 
-# Update modules
+####################################################################################################################
 
+# Update modules
 def recursive_overwrite(src, dest, ignore=None):
     if os.path.isdir(src):
         if not os.path.isdir(dest):
@@ -89,8 +112,10 @@ def update(*args):
     except Exception as e:
         ErrorInfo("ERROR: ", e)
 
-#################################################################################
-############################### Tkinter functions ###############################
+####################################################################################################################
+
+############################################# Tkinter Class #################################################
+####################################################################################################################
 
 #################### constants ###############################
 constants = {
@@ -195,7 +220,9 @@ def var_find(fname, location):
         return res, b0, trap
     else:
         return 0, 0, 0
-##############################################################
+
+############################# FELion Tkinter Class #############################
+
 class FELion_widgets(Frame):
     
     def __init__(self, parent, *args, **kw):
@@ -253,7 +280,7 @@ class FELion_widgets(Frame):
         
         if method == 'Entry':
             if isinstance(txt, str): self.parent.txt = StringVar()
-            elif isinstance(txt, int): self.parent.txt = DoubleVar()
+            elif isinstance(txt, int) or isinstance(txt, float): self.parent.txt = DoubleVar()
                 
             self.parent.txt.set(txt)
             self.parent.entry = Entry(self.parent, bg = kw['bg'], bd = kw['bd'], textvariable = self.parent.txt, font = kw['font'])
@@ -337,4 +364,59 @@ class FELion_widgets(Frame):
         root.directory =  askdirectory()
         self.location = root.directory
         root.destroy()
-        return self.location        
+        return self.location
+
+############################# FELion Tkinter Toplevel method for matplotlib figure #############################
+
+class FELion_Toplevel():
+
+    def __init__(self, root, name, location):
+        os.chdir(location)
+        self.location = location
+
+        self.root = root
+        self.root.wm_title(name)
+        self.root.wm_geometry('1000x600')
+
+        self.canvas_frame = Frame(self.root, bg = 'white')
+        self.canvas_frame.place(relx = 0, rely = 0, relwidth = 0.8, relheight = 1)
+
+        self.widget_frame = Frame(self.root, bg = 'light grey')
+        self.widget_frame.place(relx = 0.8, rely = 0, relwidth = 0.2, relheight = 1)
+
+        self.name = StringVar()
+        self.filename = Entry(self.widget_frame, textvariable = self.name, font = ("Verdana", 10, "italic"), bd = 5)
+        self.name.set('plot')
+        self.filename.place(relx = 0.1, rely = 0.1, relwidth = 0.5, relheight = 0.05)
+
+        self.button = ttk.Button(self.widget_frame, text = 'Save', command = lambda: self.save())
+        self.button.place(relx = 0.1, rely = 0.2, relwidth = 0.5, relheight = 0.05)
+
+    def figure(self, dpi, **kw):
+        if 'figsize' in kw: self.fig = Figure(figsize = kw['figsize'], dpi = dpi)
+        else: self.fig = Figure(dpi = dpi)
+
+        self.fig.subplots_adjust(top = 0.95, bottom = 0.2, left = 0.1, right = 0.9)
+
+        self.canvas = FigureCanvasTkAgg(self.fig, master = self.canvas_frame)
+        self.canvas.get_tk_widget().place(relx = 0, rely = 0, relwidth = 1, relheight = 1)
+
+        self.toolbar = NavigationToolbar2Tk(self.canvas, self.root)
+        self.toolbar.update()
+
+        self.canvas.mpl_connect("key_press_event", self.on_key_press)
+        
+        return self.fig, self.canvas
+    
+    def on_key_press(self, event):
+            key_press_handler(event, self.canvas, self.toolbar)
+
+    def save(self):
+        
+        if isfile(f'{self.name.get()}.png'): 
+                if askokcancel('Overwrite?', f'File: {self.name.get()}.png already present. \nDo you want to Overwrite the file?'): 
+                        self.fig.savefig(f'{self.name.get()}.png')
+                        ShowInfo('SAVED', f'File: {self.name.get()}.png saved in \n{self.location}\n directory')
+        else: 
+                self.fig.savefig(f'{self.name.get()}.png')
+                ShowInfo('SAVED', f'File: {self.name.get()}.png saved in \n{self.location}\n directory')

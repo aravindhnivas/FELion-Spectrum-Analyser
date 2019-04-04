@@ -4,12 +4,16 @@
 
 ## Data analysis and plotting packages
 import numpy as np
+
+# Matplotlib Modules
 from matplotlib.ticker import MultipleLocator
-import matplotlib.pyplot as plt
+
+# Tkinter Modules
+from tkinter import Toplevel
 
 ## FELion modules
 from FELion_normline import norm_line_felix, felix_binning
-from FELion_definitions import ShowInfo, ErrorInfo, move
+from FELion_definitions import ShowInfo, ErrorInfo, move, FELion_Toplevel
 
 ## Built-in Modules
 import os
@@ -24,16 +28,15 @@ def export_file(fname, wn, inten):
     f.close()
 
 def avgSpec_plot(*args):
+
     t, ts, lgs, minor, major, majorTickSize, markersz,\
     xlabelsz, ylabelsz, fwidth, fheight, outFilename,\
     location, mname, temp, bwidth, ie,\
     save, show, DELTA, fileNameList, dpi, parent = args
 
-    def filesaved():
-        if os.path.isfile(my_path+"/OUT/{}.pdf".format(outFilename)) and save:
-            ShowInfo("SAVED", "File %s.pdf saved"%outFilename)
-
     try:
+
+        ####################################### Initialisation #######################################
 
         if fileNameList == []:
             return ShowInfo("Information", "Click Select File(s)")
@@ -43,6 +46,7 @@ def avgSpec_plot(*args):
         
         if set(folders).issubset(os.listdir(back_dir)): 
             os.chdir(back_dir)
+            location = back_dir
             my_path = os.getcwd()
         
         else: 
@@ -52,11 +56,19 @@ def avgSpec_plot(*args):
         for dirs in folders:
             if not isdir(dirs): os.mkdir(dirs)
 
-        figure = plt.figure(figsize=(fwidth, fheight), dpi = dpi)
-        fig = figure.add_subplot(1,1,1)
-        plt.rcParams['font.size'] = ts
-        plt.rcParams['legend.fontsize'] = lgs
+        ####################################### END Initialisation #######################################
 
+        ####################################### Tkinter figure #######################################
+
+        ## Embedding figure to tkinter Toplevel
+        title_name = 'Average Spectrum'
+        root = Toplevel(parent)
+        tk_widget = FELion_Toplevel(root, title_name, location)
+
+        fig, canvas = tk_widget.figure(dpi, figsize = (fwidth, fheight))
+        ax = fig.add_subplot(111)
+
+        ####################################### PLOTTING DETAILS #######################################
         xs = np.array([], dtype='double')
         ys = np.array([], dtype='double')
 
@@ -71,39 +83,34 @@ def avgSpec_plot(*args):
             for filenames in files:
                 if isfile(filenames): move(my_path, filenames)
 
-            a,b = norm_line_felix(fname, mname, temp, bwidth, ie, foravgshow, dpi, parent)
-            fig.plot(a, b, ls='', marker='o', ms=markersz, label=fname)
+            a,b = norm_line_felix(fname, mname, temp, bwidth, ie, foravgshow, location, dpi, parent)
+            ax.plot(a, b, ls='', marker='o', ms=markersz, label=fname)
             xs = np.append(xs,a)
             ys = np.append(ys,b)
 
-        fig.legend(title=t) #Set the fontsize for each label
-
         #Binning
         binns, inten = felix_binning(xs, ys, delta=DELTA)
-        fig.plot(binns, inten, ls='-', marker='', c='k')
+        ax.plot(binns, inten, ls='-', marker='', c='k')
 
-        fig.set_xlabel(r"Calibrated lambda (cm-1)", fontsize=xlabelsz)
-        fig.set_ylabel(r"Normalized Intensity", fontsize=ylabelsz)
-        fig.tick_params(axis='both', which='major', labelsize=majorTickSize)
+        ax.set_xlabel(r"Calibrated lambda (cm-1)", fontsize=xlabelsz)
+        ax.set_ylabel(r"Normalized Intensity", fontsize=ylabelsz)
+        ax.tick_params(axis='both', which='major', labelsize=majorTickSize)
 
-        fig.grid(True)
-        fig.xaxis.set_minor_locator(MultipleLocator(minor))
-        fig.xaxis.set_major_locator(MultipleLocator(major))
+        ax.grid(True)
+        ax.xaxis.set_minor_locator(MultipleLocator(minor))
+        ax.xaxis.set_major_locator(MultipleLocator(major))
 
-        if save:
-            F = 'OUT/%s.pdf'%(outFilename)
-            export_file(F, binns, inten)
-            plt.savefig(F)
+        l = ax.legend(title = t, fontsize = lgs)
+        l.get_title().set_fontsize(ts)
 
-            j ='OUT/%s.png'%(outFilename)
-            export_file(F, binns, inten)
-            plt.savefig(j)
+        F = f'OUT/{outFilename}.pdf'
+        export_file(F, binns, inten)
+        fig.savefig(F)
+        ####################################### END Plotting details #######################################
+
+        canvas.draw() # drawing in the tkinter canvas: canvas drawing board
         
-        if show:
-            plt.show()
-        
-        filesaved()
-        plt.close()
+        ####################################### END Tkinter figure #######################################
 
     except Exception as e:
         ErrorInfo("ERROR", e)
