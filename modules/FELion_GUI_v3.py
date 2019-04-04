@@ -161,7 +161,7 @@ class Normline(Frame):
                 for attr, values in normline_attributes.items():
                         setattr(self, attr, values)
 
-                self.widget = FELion_widgets(self)
+                self.widget = FELion_widgets(self, cnt = controller)
 
                 self.widget.labels('Normline', 0, 0.05, bg="sea green", font = LARGE_FONT, relwidth = 1, relheight = 0.05)
 
@@ -181,12 +181,12 @@ class Normline(Frame):
                 ## BUTTONS
 
                 # Function buttons
-                self.widget.buttons('Baseline' , 0.7, 0.3, self.Baseline)                
-                self.widget.buttons('Normline' , 0.7, 0.5, self.Normline_func)
-                self.widget.buttons('Avg_spectrum' , 0.84, 0.3, self.Avg_spectrum_func)
+                self.widget.buttons('Baseline' , 0.7, 0.3, self.Baseline)            
+                self.widget.buttons('Normline' , 0.7, 0.5, self.Normline_func, help = 'To look at the Complete Normalised Spectrum')
+                self.widget.buttons('Avg_spectrum' , 0.84, 0.3, self.Avg_spectrum_func, help = 'Select multiple files using Slect File(s)')
                 self.widget.buttons('SA' , 0.7, 0.4, self.SA, relwidth = 0.05)
                 self.widget.buttons('Power' , 0.75, 0.4, self.Power, relwidth = 0.05)
-                self.widget.buttons('LivePlot' , 0.7, 0.6, self.LivePlot)
+                self.widget.buttons('LivePlot' , 0.7, 0.6, self.LivePlot, help = 'Interactive Plot: Baseline Correction --> Normalised Spectrum')
 
                 # Other buttons
                 self.widget.buttons('Select File(s)' , 0.84, 0.4, controller.openfilelist, self, felix_files_type)
@@ -227,6 +227,7 @@ class Normline(Frame):
 
         def LivePlot(self):
                 livePlot(self.fname, self.location, self.dpi.get(), self.parent)
+                
 class Mass(Frame):
 
         def __init__(self, parent, controller):
@@ -238,7 +239,7 @@ class Mass(Frame):
                 self.filelist = []
                 self.mname, self.temp, self.bwidth, self.ie = None, None, None, None
 
-                self.widget = FELion_widgets(self)
+                self.widget = FELion_widgets(self, cnt = controller)
 
                 self.widget.labels('Mass Spectrum', 0, 0.05, bg="sea green", font = LARGE_FONT, relwidth = 1, relheight = 0.05)
 

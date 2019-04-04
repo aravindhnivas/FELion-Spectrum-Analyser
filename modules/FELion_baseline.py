@@ -42,6 +42,7 @@ class Create_Baseline():
         self.felixfile = felixfile
         self.fname = felixfile.split('.')[0]
         self.basefile = f'{self.fname}.base'
+        self.powerfile = f'{self.fname}.pow'
 
         self.baseline = None
         self.data = None
@@ -58,6 +59,7 @@ class Create_Baseline():
             if not isdir(dirs): os.mkdir(dirs)
             if isfile(self.felixfile): move(self.location, self.felixfile)
             if isfile(self.basefile): move(self.location, self.basefile)
+            if isfile(self.powerfile): move(self.location, self.powerfile)
 
     def felix_read_file(self):
 
@@ -173,10 +175,14 @@ class Create_Baseline():
         self._ind = None
 
         if self.normline_data_set:
-            new_f = interp1d(*self.line.get_data(), kind = 'cubic')
-            new_intensity = -np.log(self.data[1]/new_f(self.data[0])) / self.powCal.power(self.data[0]) / self.powCal.shots(self.data[0]) *1000
-            self.normline_data.set_ydata(new_intensity)
-            self.canvas.draw()
+            self.redraw_normline()
+
+    def redraw_normline(self):
+        new_f = interp1d(*self.line.get_data(), kind = 'cubic')
+        new_intensity = -np.log(self.data[1]/new_f(self.data[0])) / self.powCal.power(self.data[0]) / self.powCal.shots(self.data[0]) *1000
+        self.normline_data.set_ydata(new_intensity)
+        self.ax1.set_ylim(ymax = new_intensity.max()+1)
+        self.canvas.draw()
     
     def motion_notify_callback(self, event):
         'on mouse movement'
@@ -224,6 +230,17 @@ class Create_Baseline():
             xy = np.asarray(self.line.get_data())
             xy = np.append(xy,[[event.xdata], [event.ydata]], axis=1)
             self.line.set_data((xy[0], xy[1]))
+        
+        elif event.key == 'x':
+            ind = self.get_ind_under_point(event)
+            print(f'Datas: {event.xdata}, {event.ydata}')
+            new_data = self.data[1]
+            print(new_data, self.data[1])
+            print(np.argwhere((new_data >= event.ydata - 10) & (new_data <= event.ydata + 10)))
+            
+        
+        if self.normline_data_set:
+            self.redraw_normline()
 
         self.redraw_f_line()
         self.canvas.draw()
@@ -323,9 +340,6 @@ class Create_Baseline():
         self.ax0 = self.fig.add_subplot(spec[0, 0])
         self.ax1 = self.fig.add_subplot(spec[0, 1])
 
-        self.felix_read_file()
-        if isfile(f'DATA/{self.basefile}'): self.ReadBase()
-        else: self.GuessBaseLine(PPS = 5, NUM_POINTS = 10)
         self.InteractivePlots(start = False)
 
         self.powCal = PowerCalibrator(self.fname)
@@ -352,13 +366,14 @@ class Create_Baseline():
         self.ax0.grid(True)
 
     def export_file(self):
+        self.SaveBase()
         with open(f'EXPORT/{self.fname}.dat', 'w') as f:
             f.write("#DATA points as shown in lower figure of: " + self.fname + ".pdf file!\n")
             f.write("#wn (cm-1)       intensity\n")
             for i in range(len(self.wavelength)):
                 f.write("{:8.3f}\t{:8.2f}\n".format(self.wavelength[i], self.intensity[i]))
 
-        print(f'File {self.fname}.dat saved in EXPORT Directory')
+        print(f'File {self.fname}.dat saved in EXPORT/ Directory')
 
 def baseline_correction(felixfile, location, dpi, parent):
     
@@ -377,5 +392,8 @@ def livePlot(felixfile, location, dpi, parent):
     live = Create_Baseline(felixfile, location, dpi, parent)
 
     print(f'\nLocation: {live.location}\nFilename: {live.felixfile}')
+    live.felix_read_file() # read felix file
+    if isfile(f'DATA/{live.basefile}'): live.ReadBase() # Read baseline file if exist else guess it
+    else: live.GuessBaseLine(PPS = 5, NUM_POINTS = 10)
     
     live.livePlot()
