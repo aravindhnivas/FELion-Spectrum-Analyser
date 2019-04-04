@@ -113,18 +113,21 @@ class InteractivePoints(object):
         self.ax.draw_artist(self.line)
         self.ax.draw_artist(self.funcLine)
         self.canvas.blit(self.ax.bbox)
-        
-        #self.canvas.update()
 
     def get_ind_under_point(self, event):
         'get the index of the vertex under point if within epsilon tolerance'
 
-        xy = np.asarray(self.line.get_data()).T
-        xyt = self.line.get_transform().transform(xy)
+        xy = np.asarray(self.line.get_data()).T # Format: (array([xdatas]), array([ydatas])) --> array([[x0, y0], [x1, y1], ....])
+        xyt = self.line.get_transform().transform(xy) # Transforming co-ordinates to display co-ordinate system
         xt, yt = xyt[:, 0], xyt[:, 1]
-        d = np.sqrt((xt - event.x)**2 + (yt - event.y)**2)
-        indseq = np.nonzero(np.equal(d, np.amin(d)))[0]
-        ind = indseq[0]
+        d = np.sqrt((xt - event.x)**2 + (yt - event.y)**2) # event.x and event.y will give you display co-ordinates of xdata and ydata
+        indseq = np.nonzero(np.equal(d, np.amin(d)))[0] # Return the indices of the elements that are non-zero.
+        ind = indseq[0] # index of one of the baseline points
+
+        print(f'Event x: {event.x}\nEvent Y: {event.y}')
+        print(
+            f'\n####################\nLine_data[x][y]: {self.line.get_data()}\nLineData(x, y): {xy}\nTransformed: {xyt}\nxt, yt: {xt}, {yt}\nd: {d}\nindseq: {indseq}\nInd: {ind}\n##########\n'
+        )
 
         if d[ind] >= self.epsilon:
             ind = None
