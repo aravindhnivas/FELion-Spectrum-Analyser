@@ -4,3 +4,4 @@
 *.png
 modules\build
 modules\dist
+*.dat

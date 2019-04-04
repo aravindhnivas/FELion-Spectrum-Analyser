@@ -309,7 +309,7 @@ class Create_Baseline():
             self.export_file()
             if isfile(f'EXPORT/{self.fname}.dat'): ShowInfo('SAVED', f'File: {self.fname}.dat saved in /EXPORT directory')
             self.fig.savefig(f'OUT/{self.name.get()}.png')
-            if isfile(f'OUT/{self.name.get()}.png'): ShowInfo('SAVED', f'File: {self.name.get()}.png saved in /EXPORT directory')
+            if isfile(f'OUT/{self.name.get()}.png'): ShowInfo('SAVED', f'File: {self.name.get()}.png saved in /OUT directory')
 
     def plot(self):
         print(f'\nLocation: {self.location}\nFilename: {self.felixfile}')
