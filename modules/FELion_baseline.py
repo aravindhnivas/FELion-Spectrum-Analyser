@@ -1,5 +1,14 @@
 #!/usr/bin/python3
 
+# FELion Module
+from FELion_definitions import move, FELion_Toplevel, ShowInfo
+from FELion_power import PowerCalibrator
+from FELion_sa import SpectrumAnalyserCalibrator
+
+# Built-In Module
+import os
+from os.path import dirname, isdir, isfile, join
+
 # DATA analysis modules
 from scipy.interpolate import interp1d
 import numpy as np
@@ -7,15 +16,10 @@ import numpy as np
 # Tkinter Modules
 from tkinter import Toplevel, ttk, Frame, Entry, StringVar
 from tkinter.messagebox import askokcancel
-# FELion Module
-from FELion_definitions import move, FELion_Toplevel, ShowInfo
-
-# Built-In Module
-import os
-from os.path import dirname, isdir, isfile, join
 
 # Matplotlib modules
 from matplotlib.lines import Line2D
+from matplotlib.gridspec import GridSpec as grid
 
 # Matplotlib Modules for tkinter
 import matplotlib
@@ -98,9 +102,18 @@ class Create_Baseline():
         self.xs, self.ys = Bx, By
         self.PPS = PPS
 
-    def InteractivePlots(self):
-        self.tkbase()
+    def InteractivePlots(self, start = True):
+        if start: 
+            self.tkbase()
+            self.startplot(self.ax, start)
+        
+        else:
+            self.startplot(self.ax0, start)
 
+    def startplot(self, ax, start = True):
+        self.normline_data_set = not start
+        self.ax = ax
+        
         self.line = Line2D(self.xs, self.ys, marker='s', ls='', ms=6, c='b', markeredgecolor='b', animated=True)
         self.ax.add_line(self.line)        
         
@@ -158,6 +171,12 @@ class Create_Baseline():
         if event.button != 1:
             return
         self._ind = None
+
+        if self.normline_data_set:
+            new_f = interp1d(*self.line.get_data(), kind = 'cubic')
+            new_intensity = -np.log(self.data[1]/new_f(self.data[0])) / self.powCal.power(self.data[0]) / self.powCal.shots(self.data[0]) *1000
+            self.normline_data.set_ydata(new_intensity)
+            self.canvas.draw()
     
     def motion_notify_callback(self, event):
         'on mouse movement'
@@ -209,7 +228,7 @@ class Create_Baseline():
         self.redraw_f_line()
         self.canvas.draw()
 
-    def tkbase(self):
+    def tkbase(self, get = False, start = True):
 
         self.root = Toplevel(master = self.parent)
         self.root.wm_title('Baseline Correction')
@@ -226,17 +245,16 @@ class Create_Baseline():
         self.name.set('plot')
         self.filename.place(relx = 0.1, rely = 0.1, relwidth = 0.5, relheight = 0.05)
 
-        self.button = ttk.Button(self.widget_frame, text = 'Save', command = lambda: self.save_tkbase())
+        self.button = ttk.Button(self.widget_frame, text = 'Save', command = lambda: self.save_tkbase(start))
         self.button.place(relx = 0.1, rely = 0.2, relwidth = 0.5, relheight = 0.05)
+
+        if get: return self.root, self.canvas_frame, self.widget_frame
 
         self.figure_tkbase()
 
-    def figure_tkbase(self):
+    def figure_tkbase(self, get = False, get_figure = False):
         
         self.fig = Figure(dpi = self.dpi)
-        self.ax = self.fig.add_subplot(111)
-
-        self.fig.subplots_adjust(top = 0.95, bottom = 0.2, left = 0.1, right = 0.9)
 
         self.canvas = FigureCanvasTkAgg(self.fig, master = self.canvas_frame)
         self.canvas.get_tk_widget().place(relx = 0, rely = 0, relwidth = 1, relheight = 1)
@@ -244,6 +262,10 @@ class Create_Baseline():
         self.toolbar = NavigationToolbar2Tk(self.canvas, self.root)
         self.toolbar.update()
 
+        if get_figure: return self.fig, self.canvas
+
+        self.ax = self.fig.add_subplot(111)
+        self.fig.subplots_adjust(top = 0.95, bottom = 0.2, left = 0.1, right = 0.9)
         self.ax.plot(self.data[0], self.data[1], ls='', marker='o', ms=5, markeredgecolor='r', c='r')
 
         self.ax.set_title('BASELINE points are drag-able!')
@@ -251,19 +273,92 @@ class Create_Baseline():
         self.ax.set_xlabel("wavenumber (cm-1)")
         self.ax.set_ylabel("Counts")
 
+        if get: return self.fig, self.ax, self.canvas
+        
         self.canvas.draw()
 
-    def save_tkbase(self):
+    def save_tkbase(self, start):
+        if start:
+            self.SaveBase()
+            
+            if isfile(f'{self.name.get()}.png'): 
+                    if askokcancel('Overwrite?', f'File: {self.name.get()}.png already present. \nDo you want to Overwrite the file?'): 
+                            self.fig.savefig(f'OUT/{self.name.get()}.png')
+                            ShowInfo('SAVED', f'File: {self.name.get()}.png saved in \n{self.location}/OUT directory')
+            else: 
+                    self.fig.savefig(f'OUT/{self.name.get()}.png')
+                    ShowInfo('SAVED', f'File: {self.name.get()}.png saved in \n{self.location}/OUT\n directory')
+        else:
+            self.export_file()
+            if isfile(f'EXPORT/{self.fname}.dat'): ShowInfo('SAVED', f'File: {self.fname}.dat saved in /EXPORT directory')
+            self.fig.savefig(f'OUT/{self.name.get()}.png')
+            if isfile(f'OUT/{self.name.get()}.png'): ShowInfo('SAVED', f'File: {self.name.get()}.png saved in /EXPORT directory')
 
-        self.SaveBase()
+    def plot(self):
+        print(f'\nLocation: {self.location}\nFilename: {self.felixfile}')
         
-        if isfile(f'{self.name.get()}.png'): 
-                if askokcancel('Overwrite?', f'File: {self.name.get()}.png already present. \nDo you want to Overwrite the file?'): 
-                        self.fig.savefig(f'OUT/{self.name.get()}.png')
-                        ShowInfo('SAVED', f'File: {self.name.get()}.png saved in \n{self.location}/OUT directory')
-        else: 
-                self.fig.savefig(f'OUT/{self.name.get()}.png')
-                ShowInfo('SAVED', f'File: {self.name.get()}.png saved in \n{self.location}/OUT\n directory')
+        self.felix_read_file()
+
+        if isfile(f'DATA/{self.basefile}'): self.ReadBase() # Read baseline file if exist else guess it
+        else: self.GuessBaseLine(PPS = 5, NUM_POINTS = 10)
+
+        self.InteractivePlots()
+    
+    def get_plot_details(self):
+        return self.figure_tkbase(get = True)
+    
+    def get_figure_details(self):
+        return self.figure_tkbase(get_figure = True)
+    
+    def get_tkinter_details(self):
+        return self.tkbase(get=True)
+
+    def livePlot(self):
+
+        self.root, self.canvas_frame, self.widget_frame = self.tkbase(get = True, start = False)
+        self.fig, self.canvas = self.figure_tkbase(get_figure = True)
+
+        spec = grid(ncols=2, nrows=1, figure=self.fig)
+
+        self.ax0 = self.fig.add_subplot(spec[0, 0])
+        self.ax1 = self.fig.add_subplot(spec[0, 1])
+
+        self.felix_read_file()
+        if isfile(f'DATA/{self.basefile}'): self.ReadBase()
+        else: self.GuessBaseLine(PPS = 5, NUM_POINTS = 10)
+        self.InteractivePlots(start = False)
+
+        self.powCal = PowerCalibrator(self.fname)
+        self.saCal = SpectrumAnalyserCalibrator(self.fname)
+        self.wavelength = self.saCal.sa_cm(self.data[0])
+        self.f = interp1d(*self.line.get_data(), kind = 'cubic')
+        self.intensity = -np.log(self.data[1]/self.f(self.data[0])) / self.powCal.power(self.data[0]) / self.powCal.shots(self.data[0]) *1000 
+
+        self.normline_data, = self.ax1.plot(self.wavelength, self.intensity, ls='-', marker='o', ms=2, c='r', markeredgecolor='k', markerfacecolor='k')
+
+        self.ax0.plot(self.data[0], self.data[1], ls='', marker='o', ms=5, markeredgecolor='r', c='r')
+
+        self.fig.suptitle('Interactive Plot')
+        self.ax0.set_title('Baseline Correction')
+        self.ax0.set_xlim((self.data[0][0]-70, self.data[0][-1]+70))
+        self.ax0.set_xlabel("Wavenumber (cm-1)")
+        self.ax0.set_ylabel("Counts")
+        self.canvas.draw()
+        
+        self.ax1.set_title('Normalised Intensity')
+        self.ax1.set_xlabel('Wavenumber (Calibrated)')
+        self.ax1.set_ylabel('Intensity (Normalised)')
+        self.ax1.grid(True)
+        self.ax0.grid(True)
+
+    def export_file(self):
+        with open(f'EXPORT/{self.fname}.dat', 'w') as f:
+            f.write("#DATA points as shown in lower figure of: " + self.fname + ".pdf file!\n")
+            f.write("#wn (cm-1)       intensity\n")
+            for i in range(len(self.wavelength)):
+                f.write("{:8.3f}\t{:8.2f}\n".format(self.wavelength[i], self.intensity[i]))
+
+        print(f'File {self.fname}.dat saved in EXPORT Directory')
 
 def baseline_correction(felixfile, location, dpi, parent):
     
@@ -276,3 +371,11 @@ def baseline_correction(felixfile, location, dpi, parent):
     else: base.GuessBaseLine(PPS = 5, NUM_POINTS = 10)
 
     base.InteractivePlots() # Plot
+
+def livePlot(felixfile, location, dpi, parent):
+
+    live = Create_Baseline(felixfile, location, dpi, parent)
+
+    print(f'\nLocation: {live.location}\nFilename: {live.felixfile}')
+    
+    live.livePlot()

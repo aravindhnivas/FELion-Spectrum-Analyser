@@ -19,10 +19,10 @@ from FELion_definitions import *
 #FELion modules
 from FELion_massSpec import massSpec
 from FELion_avgSpec import avgSpec_plot
-from FELion_normline import normline_correction, show_baseline
+from FELion_normline import normline_correction
 from FELion_power import FELion_Power
 from FELion_sa import FELion_Sa
-from FELion_baseline import baseline_correction
+from FELion_baseline import baseline_correction, livePlot
 
 # Make the window not to change the scale of this tkinter dpi application
 import ctypes
@@ -153,13 +153,13 @@ class Normline(Frame):
         def __init__(self, parent, controller):
                 Frame.__init__(self, parent, bg="sea green")
 
-                self.parent = parent
-                self.location = "/"
-                self.fname = ""
-                self.filelist = []
-                self.foravgshow = False
-                self.b0, self.trap = None, None
-                self.mname, self.temp, self.bwidth, self.ie = None, None, None, None
+                normline_attributes = {
+                        'parent': parent, 'location': '/', 'fname': '', 'filelist': [], 'foravgshow': False, 
+                        'b0': None, 'trap': None, 'mname': None, 'temp': None, 'bwidth': None, 'ie': None, 'dpi': None
+                }
+
+                for attr, values in normline_attributes.items():
+                        setattr(self, attr, values)
 
                 self.widget = FELion_widgets(self)
 
@@ -173,35 +173,35 @@ class Normline(Frame):
                         self.widget.buttons(name , x, y, controller.show_frame, pages_n)
                         x += 0.15
 
-                self.widget.buttons('Browse' , 0.1, 0.1, controller.open_dir, self, felix_files_type)
+                
                 self.widget.labels('Filename', 0.1, 0.24)
                 
                 controller.init_labels(self)
 
+                ## BUTTONS
+
+                # Function buttons
+                self.widget.buttons('Baseline' , 0.7, 0.3, self.Baseline)                
+                self.widget.buttons('Normline' , 0.7, 0.5, self.Normline_func)
+                self.widget.buttons('Avg_spectrum' , 0.84, 0.3, self.Avg_spectrum_func)
+                self.widget.buttons('SA' , 0.7, 0.4, self.SA, relwidth = 0.05)
+                self.widget.buttons('Power' , 0.75, 0.4, self.Power, relwidth = 0.05)
+                self.widget.buttons('LivePlot' , 0.7, 0.6, self.LivePlot)
+
+                # Other buttons
+                self.widget.buttons('Select File(s)' , 0.84, 0.4, controller.openfilelist, self, felix_files_type)
+                self.widget.buttons('Browse' , 0.1, 0.1, controller.open_dir, self, felix_files_type)
+
+                ## LABELS
+                self.widget.labels('For Average Spectrum', 0.4, 0.24, bd = 2,  relwidth = 0.2)
+                self.widget.labels('DELTA', 0.7, 0.24)
                 self.location_label = self.widget.labels(self.location, 0.22, 0.14, bd = 0, relwidth = 0.7, relheight = 0.06)
                 self.fname_label = self.widget.labels(self.fname, 0.22, 0.24, bd = 0, relwidth = 0.15, relheight = 0.06)
                 self.flist_label = self.widget.labels('Filelists', 0.84, 0.7, bd = 0, relwidth = 0.15, relheight = 0.2)
 
-                self.normavg_saveCheck_value = self.widget.entries('Check', 'Save', 0.7, 0.3, default = False)
-                self.normallCheck_value = self.widget.entries('Check', 'Plot all', 0.7, 0.4, default = False)
-                self.norm_show_value = self.widget.entries('Check', 'Show', 0.84, 0.3, default = True)
-
-                
-                self.widget.buttons('Normline' , 0.7, 0.5, self.Normline_func)
    
-                # avg_labels's label:
-                self.widget.labels('For Average Spectrum', 0.4, 0.24, bd = 2,  relwidth = 0.2)
-                self.widget.labels('DELTA', 0.7, 0.24)
+                # Entries
                 self.delta = self.widget.entries('Entry', 2, 0.84, 0.24, bd = 5)
-                
-                #Avg_Spectrum Button
-                self.widget.buttons('Avg_spectrum' , 0.84, 0.5, self.Avg_spectrum_func)
-
-                # Spectrum Analyzer and power Analyzer Buttons:
-                self.widget.buttons('SA' , 0.7, 0.6, self.SA, relwidth = 0.05)
-                self.widget.buttons('Power' , 0.75, 0.6, self.Power, relwidth = 0.05)
-                self.widget.buttons('Baseline' , 0.7, 0.7, self.Baseline)
-                self.widget.buttons('Select File(s)' , 0.84, 0.4, controller.openfilelist, self, felix_files_type)
 
         def Normline_func(self):
                 
@@ -225,6 +225,8 @@ class Normline(Frame):
         def Baseline(self):
                 baseline_correction(self.fname, self.location, self.dpi.get(), self.parent)
 
+        def LivePlot(self):
+                livePlot(self.fname, self.location, self.dpi.get(), self.parent)
 class Mass(Frame):
 
         def __init__(self, parent, controller):
