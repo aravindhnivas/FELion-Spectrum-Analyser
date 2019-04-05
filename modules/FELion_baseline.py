@@ -233,12 +233,13 @@ class Create_Baseline():
         
         elif event.key == 'x':
             ind = self.get_ind_under_point(event)
-            print(f'Datas: {event.xdata}, {event.ydata}')
-            new_data = self.data[1]
-            print(new_data, self.data[1])
-            print(np.argwhere((new_data >= event.ydata - 10) & (new_data <= event.ydata + 10)))
-            
-        
+
+            new_data = self.data[:-1]
+            new_data = np.array(new_data)
+            point = np.argwhere((new_data >= event.ydata - 10) & (new_data <= event.ydata + 10))
+            print(new_data[0][point], print(new_data[0][point+1]))
+            np.delete(new_data, point)            
+            print(new_data[0][point])
         if self.normline_data_set:
             self.redraw_normline()
 
