@@ -185,6 +185,10 @@ class Create_Baseline():
         self.baseline_data.set_data(self.data)
         self.normline_data.set_data(self.wavelength(), self.intensity())
         self.canvas.draw()
+
+    def redraw_baseline(self):
+        self.baseline_data.set_data(self.data)
+        self.canvas.draw()
     
     def motion_notify_callback(self, event):
         'on mouse movement'
@@ -247,9 +251,11 @@ class Create_Baseline():
                 self.data = np.array([tup for i, tup in enumerate(xy) if i != index]).T
                 self.undo_counter += 1
 
-                self.redraw_baseline_normline()
-
+                
                 self.removed_index = np.append(self.removed_index, index).astype(np.int64)
+
+                if self.normline_data_set: self.redraw_baseline_normline()
+                else: self.redraw_baseline()
 
         elif event.key == 'z':
             'To UNDO the deleted point'
@@ -272,9 +278,12 @@ class Create_Baseline():
                 print(f'After UNDO:\n Removed Index: {self.removed_index}\nRedo_index: {self.redo_index}\n')
                 print(f'Current:\nRemoved Datas: {self.removed_datas}, shape: {self.removed_datas.shape}\nRedo_datas: {self.redo_datas}, shape: {self.redo_datas.shape}\n')
                 print(f'data shape: {self.data.shape}')
-                self.redraw_baseline_normline()
+                
                 self.undo_counter -= 1
                 self.redo_counter += 1
+
+                if self.normline_data_set: self.redraw_baseline_normline()
+                else: self.redraw_baseline()
 
                 print('\n########## END UNDO ##########\n')
         
@@ -299,9 +308,11 @@ class Create_Baseline():
                 print(f'Current:\nRemoved Datas: {self.removed_datas}, shape: {self.removed_datas.shape}\nRedo_datas: {self.redo_datas}, shape: {self.redo_datas.shape}\n')
                 print(f'data shape: {self.data.shape}')
 
-                self.redraw_baseline_normline()
                 self.undo_counter += 1
                 self.redo_counter -= 1
+
+                if self.normline_data_set: self.redraw_baseline_normline()
+                else: self.redraw_baseline()
 
                 print('\n########## END REDO ##########\n')
 
@@ -364,7 +375,7 @@ class Create_Baseline():
 
         self.ax = self.fig.add_subplot(111)
         self.fig.subplots_adjust(top = 0.95, bottom = 0.2, left = 0.1, right = 0.9)
-        self.ax.plot(self.data[0], self.data[1], ls='', marker='o', ms=5, markeredgecolor='r', c='r')
+        self.baseline_data, = self.ax.plot(self.data[0], self.data[1], ls='', marker='o', ms=5, markeredgecolor='r', c='r')
 
         self.ax.set_title('BASELINE points are drag-able!')
         self.ax.set_xlim((self.data[0][0]-70, self.data[0][-1]+70))
