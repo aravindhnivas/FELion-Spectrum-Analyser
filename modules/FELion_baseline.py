@@ -20,6 +20,7 @@ from tkinter.messagebox import askokcancel
 # Matplotlib modules
 from matplotlib.lines import Line2D
 from matplotlib.gridspec import GridSpec as grid
+from matplotlib.patches import Circle
 
 # Matplotlib Modules for tkinter
 import matplotlib
@@ -64,11 +65,9 @@ class Create_Baseline():
     def felix_read_file(self):
 
         file = np.genfromtxt(f'DATA/{self.felixfile}')
-        wn, count, sa = file[:,0], file[:,2], file[:,3]
-        data = wn, count, sa
-        data = np.take(data, data[0].argsort(), 1)
-        self.data = data
-    
+        data = file[:,0], file[:,2] # wn, count
+        self.data = np.take(data, data[0].argsort(), 1)
+            
     def ReadBase(self):
 
         file = np.genfromtxt(f'DATA/{self.basefile}')
@@ -178,10 +177,13 @@ class Create_Baseline():
             self.redraw_normline()
 
     def redraw_normline(self):
-        new_f = interp1d(*self.line.get_data(), kind = 'cubic')
-        new_intensity = -np.log(self.data[1]/new_f(self.data[0])) / self.powCal.power(self.data[0]) / self.powCal.shots(self.data[0]) *1000
-        self.normline_data.set_ydata(new_intensity)
-        self.ax1.set_ylim(ymax = new_intensity.max()+1)
+        self.normline_data.set_ydata(self.intensity())
+        self.ax1.set_ylim(ymin =self.intensity().min()-0.5, ymax = self.intensity().max()+1)
+        self.canvas.draw()
+    
+    def redraw_baseline_normline(self):
+        self.baseline_data.set_data(self.data)
+        self.normline_data.set_data(self.wavelength(), self.intensity())
         self.canvas.draw()
     
     def motion_notify_callback(self, event):
@@ -210,6 +212,7 @@ class Create_Baseline():
         key_press_handler(event, self.canvas, self.toolbar)
         if not event.inaxes:
             return
+
         elif event.key == 'w':
             ind = self.get_ind_under_point(event)
             if ind is not None:
@@ -230,21 +233,35 @@ class Create_Baseline():
             xy = np.asarray(self.line.get_data())
             xy = np.append(xy,[[event.xdata], [event.ydata]], axis=1)
             self.line.set_data((xy[0], xy[1]))
-        
         elif event.key == 'x':
-            ind = self.get_ind_under_point(event)
+            'To delete the unncessary points'
 
-            new_data = self.data[:-1]
-            new_data = np.array(new_data)
-            point = np.argwhere((new_data >= event.ydata - 10) & (new_data <= event.ydata + 10))
-            print(new_data[0][point], print(new_data[0][point+1]))
-            np.delete(new_data, point)            
-            print(new_data[0][point])
+            index = self.get_index_under_basepoint(event.x, event.y)
+            if index is not None:
+                xy = np.asarray(self.data).T
+                xy = np.array([tup for i, tup in enumerate(xy) if i != index])
+                self.data = xy[:,0], xy[:,1]
+                self.redraw_baseline_normline()
+
         if self.normline_data_set:
             self.redraw_normline()
 
         self.redraw_f_line()
         self.canvas.draw()
+
+    def get_index_under_basepoint(self, x, y):
+
+        xy = np.asarray(self.data).T
+        xyt = self.line.get_transform().transform(xy)
+        xt, yt = xyt[:, 0], xyt[:, 1]
+        d = np.sqrt((xt - x)**2 + (yt - y)**2)
+        indseq = np.nonzero(np.equal(d, np.amin(d)))[0]
+        index = indseq[0]
+
+        if d[index] >= self.epsilon:
+            index = None
+        
+        return index
 
     def tkbase(self, get = False, start = True):
 
@@ -308,10 +325,10 @@ class Create_Baseline():
                     ShowInfo('SAVED', f'File: {self.name.get()}.png saved in \n{self.location}/OUT\n directory')
         else:
             self.export_file()
-            if isfile(f'EXPORT/{self.fname}.dat'): ShowInfo('SAVED', f'File: {self.fname}.dat saved in /EXPORT directory')
             self.fig.savefig(f'OUT/{self.name.get()}.png')
-            if isfile(f'OUT/{self.name.get()}.png'): ShowInfo('SAVED', f'File: {self.name.get()}.png saved in /OUT directory')
-
+            if isfile(f'EXPORT/{self.fname}.dat') and isfile(f'OUT/{self.name.get()}.png'): 
+                ShowInfo('SAVED', f'File: {self.fname}.dat saved in /EXPORT directory\nFile: {self.name.get()}.png saved in /OUT directory')
+          
     def plot(self):
         print(f'\nLocation: {self.location}\nFilename: {self.felixfile}')
         
@@ -345,13 +362,10 @@ class Create_Baseline():
 
         self.powCal = PowerCalibrator(self.fname)
         self.saCal = SpectrumAnalyserCalibrator(self.fname)
-        self.wavelength = self.saCal.sa_cm(self.data[0])
-        self.f = interp1d(*self.line.get_data(), kind = 'cubic')
-        self.intensity = -np.log(self.data[1]/self.f(self.data[0])) / self.powCal.power(self.data[0]) / self.powCal.shots(self.data[0]) *1000 
-
-        self.normline_data, = self.ax1.plot(self.wavelength, self.intensity, ls='-', marker='o', ms=2, c='r', markeredgecolor='k', markerfacecolor='k')
-
-        self.ax0.plot(self.data[0], self.data[1], ls='', marker='o', ms=5, markeredgecolor='r', c='r')
+        self.wavelength = lambda : self.saCal.sa_cm(self.data[0])
+                
+        self.normline_data, = self.ax1.plot(self.wavelength(), self.intensity(), ls='-', marker='o', ms=2, c='r', markeredgecolor='k', markerfacecolor='k')
+        self.baseline_data, = self.ax0.plot(self.data, ls='', marker='o', ms=5, markeredgecolor='r', c='r')
 
         self.fig.suptitle('Interactive Plot')
         self.ax0.set_title('Baseline Correction')
@@ -366,13 +380,19 @@ class Create_Baseline():
         self.ax1.grid(True)
         self.ax0.grid(True)
 
+    def intensity(self):
+        f = interp1d(*self.line.get_data(), kind = 'cubic')
+        temp = -np.log(self.data[1]/f(self.data[0])) / self.powCal.power(self.data[0]) / self.powCal.shots(self.data[0]) *1000
+        temp = temp - temp.min()
+        return temp
+
     def export_file(self):
         self.SaveBase()
         with open(f'EXPORT/{self.fname}.dat', 'w') as f:
             f.write("#DATA points as shown in lower figure of: " + self.fname + ".pdf file!\n")
             f.write("#wn (cm-1)       intensity\n")
-            for i in range(len(self.wavelength)):
-                f.write("{:8.3f}\t{:8.2f}\n".format(self.wavelength[i], self.intensity[i]))
+            for i in range(len(self.wavelength())):
+                f.write("{:8.3f}\t{:8.2f}\n".format(self.wavelength()[i], self.intensity()[i]))
 
         print(f'File {self.fname}.dat saved in EXPORT/ Directory')
 
