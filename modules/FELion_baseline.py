@@ -36,18 +36,17 @@ class Create_Baseline():
 
     def __init__(self, felixfile, location, dpi, parent):
 
-        self.parent = parent
-        self.dpi = dpi
+        attributes = {
+            'parent': parent, 'dpi': dpi, 'felixfile': felixfile, 'fname': felixfile.split('.')[0],
+            'baseline': None, 'data': None, 'undo_counter': 0, 'redo_counter': 0, 
+            'removed_datas': np.array([[], []]), 'redo_datas': np.array([[], []]), 'removed_index': [], 'redo_index': []
+        }
 
-        self.felixfile = felixfile
-        self.fname = felixfile.split('.')[0]
+        for keys, values in attributes.items():
+            setattr(self, keys, values)
+
         self.basefile = f'{self.fname}.base'
         self.powerfile = f'{self.fname}.pow'
-
-        self.baseline = None
-        self.data = None
-        self.undo_counter = 0
-        self.removed_datas = np.array([[], []]) # to store removed datas from felix signal correction
         
         back_dir = dirname(location)
         folders = ["DATA", "EXPORT", "OUT"]
@@ -250,17 +249,62 @@ class Create_Baseline():
 
                 self.redraw_baseline_normline()
 
+                self.removed_index = np.append(self.removed_index, index).astype(np.int64)
+
         elif event.key == 'z':
             'To UNDO the deleted point'
             print(f'data dim: {self.data.ndim}\t shape: {self.data.shape}\nundo dim: {self.removed_datas.ndim}\tshape: {self.removed_datas.shape}')
             
             if self.undo_counter == 0: return ShowInfo('NOTE', 'You have reached the end of UNDO')
             else:
-                data = np.append(self.data, self.removed_datas[:, -1].reshape(2, 1), axis = 1)
-                self.data = np.take(data, data[0].argsort(), axis = 1)
+                print('\n########## UNDO ##########\n')
+                print(f'UNDO Index list: {self.removed_index}\nDeleting Index: {self.removed_index[-1]}\n')
+                print(f'data shape: {self.data.shape}')
+
+                self.data = np.insert(self.data, self.removed_index[-1], self.removed_datas[:, -1], axis = 1)
+
+                self.redo_datas = np.append(self.redo_datas, self.removed_datas[:, -1].reshape(2, 1), axis = 1)
                 self.removed_datas = np.delete(self.removed_datas, -1, axis = 1)
+
+                self.redo_index = np.append(self.redo_index, self.removed_index[-1]).astype(np.int64)
+                self.removed_index = np.delete(self.removed_index, -1)
+
+                print(f'After UNDO:\n Removed Index: {self.removed_index}\nRedo_index: {self.redo_index}\n')
+                print(f'Current:\nRemoved Datas: {self.removed_datas}, shape: {self.removed_datas.shape}\nRedo_datas: {self.redo_datas}, shape: {self.redo_datas.shape}\n')
+                print(f'data shape: {self.data.shape}')
                 self.redraw_baseline_normline()
                 self.undo_counter -= 1
+                self.redo_counter += 1
+
+                print('\n########## END UNDO ##########\n')
+        
+        elif event.key == 'r':
+            'To REDO'
+
+            if self.redo_counter == 0: return ShowInfo('NOTE', 'You have reached the end of REDO')
+            else:
+                print('\n########## REDO ##########\n')
+                print(f'REDO Index list: {self.redo_index}\nDeleting Index: {self.redo_index[-1]}\n')
+                print(f'data shape: {self.data.shape}')
+
+                self.data = np.delete(self.data, self.redo_index[-1], axis = 1)
+
+                self.removed_datas = np.append(self.removed_datas, self.redo_datas[:, -1].reshape(2, 1), axis = 1)
+                self.redo_datas = np.delete(self.redo_datas, -1, axis = 1)
+                
+                self.removed_index = np.append(self.removed_index, self.redo_index[-1]).astype(np.int64)
+                self.redo_index = np.delete(self.redo_index, -1)
+                
+                print(f'After deleting:\n Removed Index: {self.removed_index}\nRedo_index: {self.redo_index}\n')
+                print(f'Current:\nRemoved Datas: {self.removed_datas}, shape: {self.removed_datas.shape}\nRedo_datas: {self.redo_datas}, shape: {self.redo_datas.shape}\n')
+                print(f'data shape: {self.data.shape}')
+
+                self.redraw_baseline_normline()
+                self.undo_counter += 1
+                self.redo_counter -= 1
+
+                print('\n########## END REDO ##########\n')
+
 
         if self.normline_data_set:
             self.redraw_normline()
