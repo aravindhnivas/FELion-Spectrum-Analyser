@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 # FELion Module
-from FELion_definitions import move, FELion_Toplevel, ShowInfo
+from FELion_definitions import move, FELion_Toplevel, ShowInfo, ErrorInfo
 from FELion_power import PowerCalibrator
 from FELion_sa import SpectrumAnalyserCalibrator
 
@@ -14,7 +14,7 @@ from scipy.interpolate import interp1d
 import numpy as np
 
 # Tkinter Modules
-from tkinter import Toplevel, ttk, Frame, Entry, StringVar
+from tkinter import Toplevel, ttk, Frame, Entry, StringVar, messagebox
 from tkinter.messagebox import askokcancel
 
 # Matplotlib modules
@@ -39,7 +39,8 @@ class Create_Baseline():
         attributes = {
             'parent': parent, 'dpi': dpi, 'felixfile': felixfile, 'fname': felixfile.split('.')[0],
             'baseline': None, 'data': None, 'undo_counter': 0, 'redo_counter': 0, 
-            'removed_datas': np.array([[], []]), 'redo_datas': np.array([[], []]), 'removed_index': [], 'redo_index': []
+            'removed_datas': np.array([[], []]), 'redo_datas': np.array([[], []]), 'removed_index': [], 'redo_index': [],
+            'felix_corrected': False
         }
 
         for keys, values in attributes.items():
@@ -47,6 +48,7 @@ class Create_Baseline():
 
         self.basefile = f'{self.fname}.base'
         self.powerfile = f'{self.fname}.pow'
+        self.cfelix = f'{self.fname}.cfelix'
         
         back_dir = dirname(location)
         folders = ["DATA", "EXPORT", "OUT"]
@@ -62,10 +64,32 @@ class Create_Baseline():
             if isfile(self.basefile): move(self.location, self.basefile)
             if isfile(self.powerfile): move(self.location, self.powerfile)
 
+    def on_closing(self):
+
+        if self.felix_corrected:
+
+            if messagebox.askokcancel("SAVE?", "Do you want to save the corrected felix file?"):
+
+                with open(f'DATA/{self.cfelix}', 'w') as f:
+
+                    f.write(f'#Noise/Signal corrected for {self.fname}.felix data file!\n')
+                    f.write(f'#Wavelength(cm-1)\t#Counts\n')
+
+                    for i in range(len(self.data[0])): f.write(f'{self.data[0][i]}\t{self.data[1][i]}\n')
+                    for i in range(len(self.info)): f.write(self.info[i])
+
+                if isfile(f'DATA/{self.cfelix}'): ShowInfo('SAVED', f'Corrected felix file: {self.cfelix}')
+
+                self.root.destroy()
+        else: self.root.destroy()
+
     def felix_read_file(self):
 
         file = np.genfromtxt(f'DATA/{self.felixfile}')
-        data = file[:,0], file[:,2] # wn, count
+        if self.felixfile.endswith('.felix'): data = file[:,0], file[:,2]
+        elif self.felixfile.endswith('.cfelix'): data = file[:,0], file[:,1]
+        else: return ErrorInfo('FELIX FILE', 'Please select a .felix or .cfelix file')
+        with open(f'DATA/{self.felixfile}') as f: self.info = f.readlines()[len(data[0])+3:]
         self.data = np.take(data, data[0].argsort(), 1)
             
     def ReadBase(self):
@@ -227,16 +251,19 @@ class Create_Baseline():
                     i = self.data[0].size - self.PPS
                 xy[1][ind] = self.data[1][i:i+self.PPS].mean()
                 self.line.set_data((xy[0], xy[1]))
+        
         elif event.key == 'd':
             ind = self.get_ind_under_point(event)
             if ind is not None:
                 xy = np.asarray(self.line.get_data()).T
                 xy = np.array([tup for i, tup in enumerate(xy) if i != ind])
                 self.line.set_data((xy[:,0], xy[:,1]))
+        
         elif event.key == 'a':
             xy = np.asarray(self.line.get_data())
             xy = np.append(xy,[[event.xdata], [event.ydata]], axis=1)
             self.line.set_data((xy[0], xy[1]))
+        
         elif event.key == 'x':
             'To delete the unncessary points'
 
@@ -251,11 +278,12 @@ class Create_Baseline():
                 self.data = np.array([tup for i, tup in enumerate(xy) if i != index]).T
                 self.undo_counter += 1
 
-                
                 self.removed_index = np.append(self.removed_index, index).astype(np.int64)
 
                 if self.normline_data_set: self.redraw_baseline_normline()
                 else: self.redraw_baseline()
+
+                self.felix_corrected = True
 
         elif event.key == 'z':
             'To UNDO the deleted point'
@@ -316,7 +344,6 @@ class Create_Baseline():
 
                 print('\n########## END REDO ##########\n')
 
-
         if self.normline_data_set:
             self.redraw_normline()
 
@@ -357,6 +384,8 @@ class Create_Baseline():
         self.button = ttk.Button(self.widget_frame, text = 'Save', command = lambda: self.save_tkbase(start))
         self.button.place(relx = 0.1, rely = 0.2, relwidth = 0.5, relheight = 0.05)
 
+        self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
+
         if get: return self.root, self.canvas_frame, self.widget_frame
 
         self.figure_tkbase()
@@ -381,6 +410,7 @@ class Create_Baseline():
         self.ax.set_xlim((self.data[0][0]-70, self.data[0][-1]+70))
         self.ax.set_xlabel("wavenumber (cm-1)")
         self.ax.set_ylabel("Counts")
+        self.ax.grid(True)
 
         if get: return self.fig, self.ax, self.canvas
         
