@@ -76,11 +76,13 @@ class Create_Baseline():
                     f.write(f'#Wavelength(cm-1)\t#Counts\n')
 
                     for i in range(len(self.data[0])): f.write(f'{self.data[0][i]}\t{self.data[1][i]}\n')
+                    f.write('\n')
                     for i in range(len(self.info)): f.write(self.info[i])
 
                 if isfile(f'DATA/{self.cfelix}'): ShowInfo('SAVED', f'Corrected felix file: {self.cfelix}')
 
                 self.root.destroy()
+            else: self.root.destroy()
         else: self.root.destroy()
 
     def felix_read_file(self):
@@ -89,7 +91,7 @@ class Create_Baseline():
         if self.felixfile.endswith('.felix'): data = file[:,0], file[:,2]
         elif self.felixfile.endswith('.cfelix'): data = file[:,0], file[:,1]
         else: return ErrorInfo('FELIX FILE', 'Please select a .felix or .cfelix file')
-        with open(f'DATA/{self.felixfile}') as f: self.info = f.readlines()[len(data[0])+3:]
+        with open(f'DATA/{self.felixfile}') as f: self.info = f.readlines()[len(data[0])+2:]
         self.data = np.take(data, data[0].argsort(), 1)
             
     def ReadBase(self):
