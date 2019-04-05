@@ -20,7 +20,6 @@ from tkinter.messagebox import askokcancel
 # Matplotlib modules
 from matplotlib.lines import Line2D
 from matplotlib.gridspec import GridSpec as grid
-from matplotlib.patches import Circle
 
 # Matplotlib Modules for tkinter
 import matplotlib
@@ -47,6 +46,8 @@ class Create_Baseline():
 
         self.baseline = None
         self.data = None
+        self.undo_counter = 0
+        self.removed_datas = np.array([[], []]) # to store removed datas from felix signal correction
         
         back_dir = dirname(location)
         folders = ["DATA", "EXPORT", "OUT"]
@@ -178,7 +179,7 @@ class Create_Baseline():
 
     def redraw_normline(self):
         self.normline_data.set_ydata(self.intensity())
-        self.ax1.set_ylim(ymin =self.intensity().min()-0.5, ymax = self.intensity().max()+1)
+        self.ax1.set_ylim(ymin = -0.5, ymax = self.intensity().max()+1)
         self.canvas.draw()
     
     def redraw_baseline_normline(self):
@@ -239,9 +240,27 @@ class Create_Baseline():
             index = self.get_index_under_basepoint(event.x, event.y)
             if index is not None:
                 xy = np.asarray(self.data).T
-                xy = np.array([tup for i, tup in enumerate(xy) if i != index])
-                self.data = xy[:,0], xy[:,1]
+                removed_datas = np.array([tup for i, tup in enumerate(xy) if i == index]).T
+                print(f'removed data shape: {removed_datas}\t{removed_datas.shape}')
+                self.removed_datas = np.append(self.removed_datas, removed_datas, axis = 1)
+                print(f'Self removed data shape: {self.removed_datas}\t{self.removed_datas.shape}')
+
+                self.data = np.array([tup for i, tup in enumerate(xy) if i != index]).T
+                self.undo_counter += 1
+
                 self.redraw_baseline_normline()
+
+        elif event.key == 'z':
+            'To UNDO the deleted point'
+            print(f'data dim: {self.data.ndim}\t shape: {self.data.shape}\nundo dim: {self.removed_datas.ndim}\tshape: {self.removed_datas.shape}')
+            
+            if self.undo_counter == 0: return ShowInfo('NOTE', 'You have reached the end of UNDO')
+            else:
+                data = np.append(self.data, self.removed_datas[:, -1].reshape(2, 1), axis = 1)
+                self.data = np.take(data, data[0].argsort(), axis = 1)
+                self.removed_datas = np.delete(self.removed_datas, -1, axis = 1)
+                self.redraw_baseline_normline()
+                self.undo_counter -= 1
 
         if self.normline_data_set:
             self.redraw_normline()
@@ -339,15 +358,6 @@ class Create_Baseline():
 
         self.InteractivePlots()
     
-    def get_plot_details(self):
-        return self.figure_tkbase(get = True)
-    
-    def get_figure_details(self):
-        return self.figure_tkbase(get_figure = True)
-    
-    def get_tkinter_details(self):
-        return self.tkbase(get=True)
-
     def livePlot(self):
 
         self.root, self.canvas_frame, self.widget_frame = self.tkbase(get = True, start = False)
@@ -365,7 +375,7 @@ class Create_Baseline():
         self.wavelength = lambda : self.saCal.sa_cm(self.data[0])
                 
         self.normline_data, = self.ax1.plot(self.wavelength(), self.intensity(), ls='-', marker='o', ms=2, c='r', markeredgecolor='k', markerfacecolor='k')
-        self.baseline_data, = self.ax0.plot(self.data, ls='', marker='o', ms=5, markeredgecolor='r', c='r')
+        self.baseline_data, = self.ax0.plot(self.data[0], self.data[1], ls='', marker='o', ms=5, markeredgecolor='r', c='r')
 
         self.fig.suptitle('Interactive Plot')
         self.ax0.set_title('Baseline Correction')
