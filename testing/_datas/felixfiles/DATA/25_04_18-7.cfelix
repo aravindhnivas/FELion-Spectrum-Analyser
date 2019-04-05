@@ -1,0 +1,102 @@
+#Noise/Signal corrected for 25_04_18-7.felix data file!
+#Wavelength(cm-1)	#Counts
+579.926483	1404.0
+581.96852	1390.0
+583.99859	1380.75
+585.993456	1404.75
+587.99273	1326.5
+589.933296	1380.75
+591.949534	1325.5
+593.987045	1181.75
+596.001509	1392.0
+598.003398	1400.5
+599.958555	1240.5
+601.960308	1242.25
+604.002495	1289.0
+605.901603	1210.75
+607.952185	1291.75
+609.916982	1351.0
+611.945969	1351.75
+613.929508	1366.5
+615.934332	1356.0
+617.936751	1441.75
+619.912763	1453.25
+621.95135	1371.0
+623.937435	1318.0
+625.953484	1005.75
+627.940804	431.75
+629.929751	121.25
+631.968559	141.5
+633.919083	464.25
+635.978863	806.75
+637.994146	1175.75
+639.993365	1395.5
+641.989696	1333.75
+644.014073	1313.0
+645.993413	1161.0
+648.005239	1038.5
+650.009649	631.0
+652.006517	441.0
+654.006967	403.25
+655.993048	515.5
+658.01634	676.25
+659.989291	812.0
+662.006187	1264.0
+663.992812	1287.25
+668.007982	1212.25
+670.004899	1340.75
+672.018804	1333.0
+674.018001	1370.0
+676.013683	1372.75
+678.019516	1071.75
+679.976111	1249.5
+# Sect01 Ion Source 		# s01_ion_source 		# m03_ao09_bl0 		# 10.000000 		# None 	
+# Sect01 Ion Source 		# s01_ion_source 		# m03_ao09_bl0 		# 20000 		# None 	
+# Sect01 Ion Source 		# s01_ion_source 		# m03_ao09_high 		# -10.000000 		# None 	
+# Sect01 Ion Source 		# s01_ion_source 		# m03_ao09_nc 		# 0 		# None 	
+# Sect01 Ion Source 		# s01_ion_source 		# m03_ao09_width 		# 1000 		# None 	
+# Sect01 Ion Source 		# s01_ion_source 		# m03_ao10_end 		# 0.000000 		# None 	
+# Sect01 Ion Source 		# s01_ion_source 		# m03_ao11_bl1 		# 0.000000 		# None 	
+# Sect01 Ion Source 		# s01_ion_source 		# m03_ao14_src_float 		# 0.499908 		# None 	
+# Sect01 Ion Source 		# s01_ion_source 		# m03_ao00_nc 		# -6.000000 		# None 	
+# Sect01 Ion Source 		# s01_ion_source 		# m03_ao01_bq0 		# -9.999939 		# None 	
+# Sect01 Ion Source 		# s01_ion_source 		# m03_ao02_nc 		# 0.000000 		# None 	
+# Sect01 Ion Source 		# s01_ion_source 		# m03_ao03_bq5 		# -8.000061 		# None 	
+# Sect01 Ion Source 		# s01_ion_source 		# m03_ao04_nc 		# 0.000000 		# None 	
+# Sect01 Ion Source 		# s01_ion_source 		# m03_ao05_bq4 		# 1.000061 		# None 	
+# Sect01 Ion Source 		# s01_ion_source 		# m03_ao06_bq3 		# 0.900055 		# None 	
+# Sect01 Ion Source 		# s01_ion_source 		# m03_ao07_bq2 		# 0.109924 		# None 	
+# Sect01 Ion Source 		# s01_ion_source 		# m03_ao08_bq1 		# 0.200012 		# None 	
+# Sect01 Ion Source 		# s01_ion_source 		# m03_ao15_qd1_float 		# -2.000000 		# None 	
+# Sect01 Ion Source 		# s01_ion_source 		# m03_a_nc 		# 0.000000 		# None 	
+# Sect01 Ion Source 		# s01_ion_source 		# m03_b_nc 		# 0.000000 		# None 	
+# Sect01 Ion Source 		# s01_ion_source 		# m03_c_nc 		# 0.000000 		# None 	
+# Sect01 Ion Source 		# s01_ion_source 		# m04_ao00_b_outer 		# -7.799835 		# None 	
+# Sect01 Ion Source 		# s01_ion_source 		# m04_ao01_b_in 		# -0.200012 		# None 	
+# Sect01 Ion Source 		# s01_ion_source 		# m04_ao02_b_inner 		# 0.000000 		# None 	
+# Sect01 Ion Source 		# s01_ion_source 		# m04_ao06_b_out 		# 0.000000 		# None 	
+# Sect01 Ion Source 		# s01_ion_source 		# m04_ao03_se_delay 		# 10000 		# None 	
+# Sect01 Ion Source 		# s01_ion_source 		# m04_ao03_se_high 		# 1.399994 		# None 	
+# Sect01 Ion Source 		# s01_ion_source 		# m04_ao03_se_trap_in 		# 1.399994 		# None 	
+# Sect01 Ion Source 		# s01_ion_source 		# m04_ao03_se_width 		# 0 		# None 	
+# Sect01 Ion Source 		# s01_ion_source 		# m04_ao04_sa_delay 		# 2600000 		# None 	
+# Sect01 Ion Source 		# s01_ion_source 		# m04_ao04_sa_high 		# -0.999969 		# None 	
+# Sect01 Ion Source 		# s01_ion_source 		# m04_ao04_sa_trap_out 		# 1.899994 		# None 	
+# Sect01 Ion Source 		# s01_ion_source 		# m04_ao04_sa_width 		# 1000 		# None 	
+# Sect01 Ion Source 		# s01_ion_source 		# m04_ao05_trap_float 		# 1.100372 		# None 	
+# Sect01 Ion Source 		# s01_ion_source 		# m04_ao07_bl4 		# 0.200012 		# None 	
+# Sect01 Ion Source 		# s01_ion_source 		# m04_ao08_bl5 		# 0.800049 		# None 	
+# Sect01 Ion Source 		# s01_ion_source 		# m03_ao13_reso 		# 1.000000 		# None 	
+# Sect01 Ion Source 		# s01_ion_source 		# m04_ao09_qd2_float 		# -2.000000 		# None 	
+# Sect01 Ion Source 		# s01_ion_source 		# m03_ao02_nc1 		# 0.000000 		# None 	
+# Sect01 Ion Source 		# s01_ion_source 		# m03_ao02_nc2 		# 0 		# None 	
+# Sect01 Ion Source 		# s01_ion_source 		# m03_ao02_nc3 		# 0.000000 		# None 	
+# Sect01 Ion Source 		# s01_ion_source 		# m03_ao02_nc4 		# 0 		# None 	
+# Sect01 Ion Source 		# s01_ion_source 		# m03_ao04_nc1 		# 0.000000 		# None 	
+# Sect01 Ion Source 		# s01_ion_source 		# m03_ao04_nc2 		# 0 		# None 	
+# Sect01 Ion Source 		# s01_ion_source 		# m03_ao04_nc3 		# 0.000610 		# None 	
+# Sect01 Ion Source 		# s01_ion_source 		# m03_ao04_nc4 		# 0 		# None 	
+# Ortec 996 Gate 		# test_ao00 		# m03_ao00_nc1 		# 0.000000 		# None 	
+# Ortec 996 Gate 		# test_ao00 		# m03_ao00_nc2 		# 0 		# None 	
+# Ortec 996 Gate 		# test_ao00 		# m03_ao00_nc3 		# 0.000610 		# None 	
+# Ortec 996 Gate 		# test_ao00 		# m03_ao00_nc4 		# 0 		# None 	
