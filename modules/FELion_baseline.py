@@ -100,7 +100,7 @@ class Create_Baseline():
         Inf = False
         with open(f'./DATA/{self.felixfile}', 'r') as f:
             info = f.readlines()
-
+        info = np.array(info)
         for i, j in enumerate(info):
             if j.startswith('Inf'):
                 info[i] = f'# {info[i]}'
