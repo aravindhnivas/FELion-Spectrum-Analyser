@@ -63,6 +63,7 @@ class Create_Baseline():
             if isfile(self.felixfile): move(self.location, self.felixfile)
             if isfile(self.basefile): move(self.location, self.basefile)
             if isfile(self.powerfile): move(self.location, self.powerfile)
+            if isfile(f'./POW/{self.powerfile}'): move(self.location, self.powerfile)
 
     def on_closing(self):
 
@@ -70,7 +71,7 @@ class Create_Baseline():
 
             if messagebox.askokcancel("SAVE?", "Do you want to save the corrected felix file?"):
 
-                with open(f'DATA/{self.cfelix}', 'w') as f:
+                with open(f'./DATA/{self.cfelix}', 'w') as f:
 
                     f.write(f'#Noise/Signal corrected for {self.fname}.felix data file!\n')
                     f.write(f'#Wavelength(cm-1)\t#Counts\n')
@@ -79,7 +80,7 @@ class Create_Baseline():
                     f.write('\n')
                     for i in range(len(self.info)): f.write(self.info[i])
 
-                if isfile(f'DATA/{self.cfelix}'): ShowInfo('SAVED', f'Corrected felix file: {self.cfelix}')
+                if isfile(f'./DATA/{self.cfelix}'): ShowInfo('SAVED', f'Corrected felix file: {self.cfelix}')
 
                 self.root.destroy()
             else: self.root.destroy()
@@ -88,11 +89,11 @@ class Create_Baseline():
     def felix_read_file(self):
 
         self.checkInf()
-        file = np.genfromtxt(f'DATA/{self.felixfile}')
+        file = np.genfromtxt(f'./DATA/{self.felixfile}')
         if self.felixfile.endswith('.felix'): data = file[:,0], file[:,2]
         elif self.felixfile.endswith('.cfelix'): data = file[:,0], file[:,1]
         else: return ErrorInfo('FELIX FILE', 'Please select a .felix or .cfelix file')
-        with open(f'DATA/{self.felixfile}') as f: self.info = f.readlines()[len(data[0])+2:]
+        with open(f'./DATA/{self.felixfile}') as f: self.info = f.readlines()[len(data[0])+2:]
         self.data = np.take(data, data[0].argsort(), 1)
 
     def checkInf(self):
@@ -111,21 +112,21 @@ class Create_Baseline():
             
     def ReadBase(self):
 
-        file = np.genfromtxt(f'DATA/{self.basefile}')
+        file = np.genfromtxt(f'./DATA/{self.basefile}')
         self.xs, self.ys = file[:,0], file[:,1]
-        with open(f'DATA/{self.basefile}', 'r') as f:
+        with open(f'./DATA/{self.basefile}', 'r') as f:
             self.interpol = f.readlines()[1].strip().split('=')[-1]
     
     def SaveBase(self):
         self.baseline = self.line.get_data()
         b = np.asarray(self.baseline)
-        with open(f'DATA/{self.basefile}', 'w') as f:
+        with open(f'./DATA/{self.basefile}', 'w') as f:
             f.write(f'#Baseline generated for {self.fname}.felix data file!\n')
             f.write("#BTYPE=cubic\n")
             for i in range(len(b[0])):
                 f.write("{:8.3f}\t{:8.2f}\n".format(b[0][i], b[1][i]))
         
-        if isfile(f'DATA/{self.basefile}'):
+        if isfile(f'./DATA/{self.basefile}'):
             print(f'{self.basefile} is SAVED')
             ShowInfo('SAVED', f'{self.basefile} file is saved in /DATA directory')
     
@@ -439,15 +440,15 @@ class Create_Baseline():
             
             if isfile(f'{self.name.get()}.png'): 
                     if askokcancel('Overwrite?', f'File: {self.name.get()}.png already present. \nDo you want to Overwrite the file?'): 
-                            self.fig.savefig(f'OUT/{self.name.get()}.png')
+                            self.fig.savefig(f'./OUT/{self.name.get()}.png')
                             ShowInfo('SAVED', f'File: {self.name.get()}.png saved in \n{self.location}/OUT directory')
             else: 
-                    self.fig.savefig(f'OUT/{self.name.get()}.png')
+                    self.fig.savefig(f'./OUT/{self.name.get()}.png')
                     ShowInfo('SAVED', f'File: {self.name.get()}.png saved in \n{self.location}/OUT\n directory')
         else:
             self.export_file()
-            self.fig.savefig(f'OUT/{self.name.get()}.png')
-            if isfile(f'EXPORT/{self.fname}.dat') and isfile(f'OUT/{self.name.get()}.png'): 
+            self.fig.savefig(f'./OUT/{self.name.get()}.png')
+            if isfile(f'EXPORT/{self.fname}.dat') and isfile(f'./OUT/{self.name.get()}.png'): 
                 ShowInfo('SAVED', f'File: {self.fname}.dat saved in /EXPORT directory\nFile: {self.name.get()}.png saved in /OUT directory')
           
     def plot(self):
@@ -455,7 +456,7 @@ class Create_Baseline():
         
         self.felix_read_file()
 
-        if isfile(f'DATA/{self.basefile}'): self.ReadBase() # Read baseline file if exist else guess it
+        if isfile(f'./DATA/{self.basefile}'): self.ReadBase() # Read baseline file if exist else guess it
         else: self.GuessBaseLine(PPS = 5, NUM_POINTS = 10)
 
         self.InteractivePlots()
@@ -515,7 +516,7 @@ def baseline_correction(felixfile, location, dpi, parent):
     print(f'\nLocation: {base.location}\nFilename: {base.felixfile}')
 
     base.felix_read_file() # read felix file
-    if isfile(f'DATA/{base.basefile}'): base.ReadBase() # Read baseline file if exist else guess it
+    if isfile(f'./DATA/{base.basefile}'): base.ReadBase() # Read baseline file if exist else guess it
     else: base.GuessBaseLine(PPS = 5, NUM_POINTS = 10)
 
     base.InteractivePlots() # Plot
@@ -526,7 +527,7 @@ def livePlot(felixfile, location, dpi, parent):
 
     print(f'\nLocation: {live.location}\nFilename: {live.felixfile}')
     live.felix_read_file() # read felix file
-    if isfile(f'DATA/{live.basefile}'): live.ReadBase() # Read baseline file if exist else guess it
+    if isfile(f'./DATA/{live.basefile}'): live.ReadBase() # Read baseline file if exist else guess it
     else: live.GuessBaseLine(PPS = 5, NUM_POINTS = 10)
     
     live.livePlot()
