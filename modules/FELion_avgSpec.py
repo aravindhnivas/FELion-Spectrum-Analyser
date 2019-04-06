@@ -32,7 +32,7 @@ def avgSpec_plot(*args):
     t, ts, lgs, minor, major, majorTickSize, markersz,\
     xlabelsz, ylabelsz, fwidth, fheight, outFilename,\
     location, mname, temp, bwidth, ie,\
-    save, show, DELTA, fileNameList, dpi, parent = args
+    DELTA, fileNameList, dpi, parent = args
 
     try:
 

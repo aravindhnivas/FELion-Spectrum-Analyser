@@ -215,7 +215,7 @@ class Normline(Frame):
                         self.avg_major.get(), self.avg_majorTick.get(), self.avg_markersz.get(),
                         self.avg_xlabelsz.get(), self.avg_ylabelsz.get(), self.avg_fwidth.get(), self.avg_fheight.get(), self.output_filename.get(),
                         self.location, self.mname.get(), self.temp.get(), self.bwidth.get(), self.ie.get(),
-                        self.normavg_saveCheck_value.get(), self.norm_show_value.get(), self.delta.get(), self.filelist, self.dpi.get(), self.parent
+                        self.delta.get(), self.filelist, self.dpi.get(), self.parent
                 )
 
         def SA(self):
