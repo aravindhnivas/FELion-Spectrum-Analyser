@@ -98,7 +98,7 @@ class Create_Baseline():
 
     def checkInf(self):
         Inf = False
-        with open(self.felixfile, 'r') as f:
+        with open(f'./DATA/{self.felixfile}', 'r') as f:
             info = f.readlines()
 
         for i, j in enumerate(info):
