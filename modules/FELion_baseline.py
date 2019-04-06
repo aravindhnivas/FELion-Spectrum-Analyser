@@ -87,12 +87,27 @@ class Create_Baseline():
 
     def felix_read_file(self):
 
+        self.checkInf()
         file = np.genfromtxt(f'DATA/{self.felixfile}')
         if self.felixfile.endswith('.felix'): data = file[:,0], file[:,2]
         elif self.felixfile.endswith('.cfelix'): data = file[:,0], file[:,1]
         else: return ErrorInfo('FELIX FILE', 'Please select a .felix or .cfelix file')
         with open(f'DATA/{self.felixfile}') as f: self.info = f.readlines()[len(data[0])+2:]
         self.data = np.take(data, data[0].argsort(), 1)
+
+    def checkInf(self):
+        Inf = False
+        with open(self.felixfile, 'r') as f:
+            info = f.readlines()
+
+        for i, j in enumerate(info):
+            if j.startswith('Inf'):
+                info[i] = f'# {info[i]}'
+                Inf = True
+        
+        if Inf:
+            with open(self.felixfile, 'w') as f:
+                for i in range(len(info)): f.write(info[i])
             
     def ReadBase(self):
 
