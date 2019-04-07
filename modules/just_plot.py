@@ -23,8 +23,13 @@ from os.path import isfile
 def power_plot(powerfiles, location, dpi, parent):
 
         ####################################### Initialisation #######################################
-        
-        os.chdir(location)
+        back_dir = dirname(location)
+        folders = ["DATA", "EXPORT", "OUT"]
+        if set(folders).issubset(os.listdir(back_dir)): 
+            os.chdir(back_dir)
+            location = back_dir
+        else: 
+            os.chdir(location)
 
         ####################################### END Initialisation ###################################
         

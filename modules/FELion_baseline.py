@@ -537,7 +537,8 @@ def baseline_correction(felixfile, location, dpi, parent):
     print(f'\nLocation: {base.location}\nFilename: {base.felixfile}')
 
     base.felix_read_file() # read felix file
-    PPS = 5, NUM_POINTS = 10
+    PPS = 5
+    NUM_POINTS = 10
     if isfile(f'./DATA/{base.basefile}'): base.ReadBase() # Read baseline file if exist else guess it
     else: base.GuessBaseLine(PPS, NUM_POINTS)
     base.PPS = PPS
