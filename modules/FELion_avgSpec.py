@@ -82,7 +82,8 @@ def avgSpec_plot(*args):
 
             for filenames in files:
                 if isfile(filenames): move(my_path, filenames)
-
+            
+            print(f'\nFilename: {felixfile}\n')
             a,b = norm_line_felix(felixfile, mname, temp, bwidth, ie, foravgshow, location, dpi, parent)
             ax.plot(a, b, ls='', marker='o', ms=markersz, label=fname)
             xs = np.append(xs,a)
