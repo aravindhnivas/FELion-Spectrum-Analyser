@@ -98,7 +98,7 @@ class Create_Baseline():
         self.data = np.take(data, data[0].argsort(), 1)
 
     def checkInf(self):
-        
+
         Inf = False
         with open(f'./DATA/{self.felixfile}', 'r') as f:
             info = f.readlines()
@@ -452,7 +452,7 @@ class Create_Baseline():
         else:
             self.export_file()
             self.fig.savefig(f'./OUT/{self.name.get()}.png')
-            if isfile(f'EXPORT/{self.fname}.dat') and isfile(f'./OUT/{self.name.get()}.png'): 
+            if isfile(f'./EXPORT/{self.fname}.dat') and isfile(f'./OUT/{self.name.get()}.png'): 
                 ShowInfo('SAVED', f'File: {self.fname}.dat saved in /EXPORT directory\nFile: {self.name.get()}.png saved in /OUT directory')
           
     def plot(self):
@@ -509,7 +509,7 @@ class Create_Baseline():
 
     def export_file(self):
         self.SaveBase()
-        with open(f'EXPORT/{self.fname}.dat', 'w') as f:
+        with open(f'./EXPORT/{self.fname}.dat', 'w') as f:
             f.write("#DATA points as shown in lower figure of: " + self.fname + ".pdf file!\n")
             f.write("#wn (cm-1)       intensity\n")
             for i in range(len(self.wavelength())):
