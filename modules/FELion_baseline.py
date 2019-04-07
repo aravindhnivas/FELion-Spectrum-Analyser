@@ -89,8 +89,7 @@ class Create_Baseline():
         else: self.root.destroy()
 
     def felix_read_file(self):
-
-        
+  
         file = np.genfromtxt(f'./DATA/{self.felixfile}')
         if self.felixfile.endswith('.felix'): data = file[:,0], file[:,2]
         elif self.felixfile.endswith('.cfelix'): data = file[:,0], file[:,1]
@@ -99,6 +98,7 @@ class Create_Baseline():
         self.data = np.take(data, data[0].argsort(), 1)
 
     def checkInf(self):
+        
         Inf = False
         with open(f'./DATA/{self.felixfile}', 'r') as f:
             info = f.readlines()
