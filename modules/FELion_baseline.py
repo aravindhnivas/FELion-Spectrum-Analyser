@@ -153,7 +153,6 @@ class Create_Baseline():
         By.append(self.data[1][-1])
 
         self.xs, self.ys = Bx, By
-        self.PPS = PPS
 
     def InteractivePlots(self, start = True):
         if start: 
@@ -477,10 +476,11 @@ class Create_Baseline():
 
         self.InteractivePlots()
     
-    def livePlot(self):
+    def livePlot(self, PPS = 5, NUM_POINTS = 10):
 
         self.root, self.canvas_frame, self.widget_frame = self.tkbase(get = True, start = False)
         self.fig, self.canvas = self.figure_tkbase(get_figure = True)
+        self.PPS = PPS
 
         spec = grid(ncols=2, nrows=1, figure=self.fig)
 
@@ -489,7 +489,7 @@ class Create_Baseline():
 
         self.felix_read_file()
         if isfile(f'./DATA/{self.basefile}'): self.ReadBase()
-        else: self.GuessBaseLine(PPS = 5, NUM_POINTS = 10)
+        else: self.GuessBaseLine(PPS, NUM_POINTS)
 
         self.InteractivePlots(start = False)
 
@@ -537,8 +537,10 @@ def baseline_correction(felixfile, location, dpi, parent):
     print(f'\nLocation: {base.location}\nFilename: {base.felixfile}')
 
     base.felix_read_file() # read felix file
+    PPS = 5, NUM_POINTS = 10
     if isfile(f'./DATA/{base.basefile}'): base.ReadBase() # Read baseline file if exist else guess it
-    else: base.GuessBaseLine(PPS = 5, NUM_POINTS = 10)
+    else: base.GuessBaseLine(PPS, NUM_POINTS)
+    base.PPS = PPS
 
     base.InteractivePlots() # Plot
 
@@ -548,4 +550,4 @@ def livePlot(felixfile, location, dpi, parent):
 
     live = Create_Baseline(felixfile, location, dpi, parent)
     print(f'\nLocation: {live.location}\nFilename: {live.felixfile}')
-    live.livePlot()
+    live.livePlot(PPS = 5, NUM_POINTS = 10)
