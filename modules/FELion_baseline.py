@@ -14,7 +14,7 @@ from scipy.interpolate import interp1d
 import numpy as np
 
 # Tkinter Modules
-from tkinter import Toplevel, ttk, Frame, Entry, StringVar, messagebox
+from tkinter import Toplevel, ttk, Frame, StringVar, Entry
 from tkinter.messagebox import askokcancel
 
 # Matplotlib modules
@@ -71,7 +71,7 @@ class Create_Baseline():
 
         if self.felix_corrected:
 
-            if messagebox.askokcancel("SAVE?", "Do you want to save the corrected felix file?"):
+            if askokcancel("SAVE?", "Do you want to save the corrected felix file?"):
 
                 with open(f'./DATA/{self.cfelix}', 'w') as f:
 
@@ -405,6 +405,8 @@ class Create_Baseline():
 
         self.button = ttk.Button(self.widget_frame, text = 'Save', command = lambda: self.save_tkbase(start))
         self.button.place(relx = 0.1, rely = 0.2, relwidth = 0.5, relheight = 0.05)
+
+        self.label_title = ttk.Entry()
 
         self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
 
