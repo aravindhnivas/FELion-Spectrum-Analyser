@@ -531,6 +531,7 @@ class Create_Baseline():
 
 def baseline_correction(felixfile, location, dpi, parent):
     
+    if felixfile is '': return ErrorInfo('No File', 'Please select a .felix or .cfelix file')
     base = Create_Baseline(felixfile, location, dpi, parent)
 
     print(f'\nLocation: {base.location}\nFilename: {base.felixfile}')
@@ -542,6 +543,8 @@ def baseline_correction(felixfile, location, dpi, parent):
     base.InteractivePlots() # Plot
 
 def livePlot(felixfile, location, dpi, parent):
+
+    if felixfile is '': return ErrorInfo('No File', 'Please select a .felix or .cfelix file')
 
     live = Create_Baseline(felixfile, location, dpi, parent)
     print(f'\nLocation: {live.location}\nFilename: {live.felixfile}')
