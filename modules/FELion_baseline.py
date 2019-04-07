@@ -64,6 +64,8 @@ class Create_Baseline():
             if isfile(self.basefile): move(self.location, self.basefile)
             if isfile(self.powerfile): move(self.location, self.powerfile)
             if isfile(f'./POW/{self.powerfile}'): move(self.location, self.powerfile)
+        
+        self.checkInf()
 
     def on_closing(self):
 
@@ -88,7 +90,7 @@ class Create_Baseline():
 
     def felix_read_file(self):
 
-        self.checkInf()
+        
         file = np.genfromtxt(f'./DATA/{self.felixfile}')
         if self.felixfile.endswith('.felix'): data = file[:,0], file[:,2]
         elif self.felixfile.endswith('.cfelix'): data = file[:,0], file[:,1]
@@ -100,7 +102,7 @@ class Create_Baseline():
         Inf = False
         with open(f'./DATA/{self.felixfile}', 'r') as f:
             info = f.readlines()
-            
+
         info = np.array(info)
 
         for i, j in enumerate(info):
@@ -109,7 +111,7 @@ class Create_Baseline():
                 Inf = True
         
         if Inf:
-            with open(self.felixfile, 'w') as f:
+            with open(f'./DATA/{self.felixfile}', 'w') as f:
                 for i in range(len(info)): f.write(info[i])
             
     def ReadBase(self):
@@ -473,6 +475,10 @@ class Create_Baseline():
         self.ax0 = self.fig.add_subplot(spec[0, 0])
         self.ax1 = self.fig.add_subplot(spec[0, 1])
 
+        self.felix_read_file()
+        if isfile(f'./DATA/{self.basefile}'): self.ReadBase()
+        else: self.GuessBaseLine(PPS = 5, NUM_POINTS = 10)
+
         self.InteractivePlots(start = False)
 
         self.powCal = PowerCalibrator(self.fname)
@@ -526,10 +532,5 @@ def baseline_correction(felixfile, location, dpi, parent):
 def livePlot(felixfile, location, dpi, parent):
 
     live = Create_Baseline(felixfile, location, dpi, parent)
-
     print(f'\nLocation: {live.location}\nFilename: {live.felixfile}')
-    live.felix_read_file() # read felix file
-    if isfile(f'./DATA/{live.basefile}'): live.ReadBase() # Read baseline file if exist else guess it
-    else: live.GuessBaseLine(PPS = 5, NUM_POINTS = 10)
-    
     live.livePlot()
