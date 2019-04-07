@@ -406,7 +406,8 @@ class Create_Baseline():
         self.button = ttk.Button(self.widget_frame, text = 'Save', command = lambda: self.save_tkbase(start))
         self.button.place(relx = 0.1, rely = 0.2, relwidth = 0.5, relheight = 0.05)
 
-        self.label_title = ttk.Entry()
+        self.label1 = ttk.Label(self.widget_frame, text = 'Baseline Correction\n\nBaseline(Blue):\na: add\nd: del\nw: average\n\nFElix(Red):\nx: del point\nz: undo\nr: redo', font = ("Verdana", 10, "italic"))
+        self.label1.place(relx = 0.1, rely = 0.3, relwidth = 0.7, relheight = 0.4)
 
         self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
 
