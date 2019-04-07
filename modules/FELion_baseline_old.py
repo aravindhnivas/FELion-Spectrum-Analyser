@@ -27,22 +27,21 @@ baseline = None
 
 ########################################################################################
 
-def ReadBase(fname):
+def ReadBase(basefile):
     #open file and skip sharps
     interpol='cubic'
     wl, cnt = [],[]
-    f = open('DATA/' + fname + '.base')
-    for line in f:
-        if line[0] == '#':
-            if line.find('INTERP')==1:
-                interpol = line.split('=')[-1].strip('\n')
-            continue
-        else:
-            x, y, = line.split()
-            wl.append(float(x))
-            cnt.append(float(y))
+    with open(f'./DATA/{basefile}') as f:
+        for line in f:
+            if line[0] == '#':
+                if line.find('INTERP')==1:
+                    interpol = line.split('=')[-1].strip('\n')
+                continue
+            else:
+                x, y, = line.split()
+                wl.append(float(x))
+                cnt.append(float(y))
     
-    f.close()
     return np.array(wl), np.array(cnt), interpol
 
 # Class for Baseline Calibration
@@ -51,9 +50,9 @@ class BaselineCalibrator(object):
     Defines a baseline and is used to interpolate baseline for 
     any given wavenumber
     """
-    def __init__(self, fname):
+    def __init__(self, basefile):
         
-        self.Bx, self.By, self.interpol = ReadBase(fname)
+        self.Bx, self.By, self.interpol = ReadBase(basefile)
         self.f = interp1d(self.Bx, self.By, kind=self.interpol)
 
     def val(self, x):
@@ -64,7 +63,8 @@ class BaselineCalibrator(object):
         ax.plot(x, self.val(x), marker='', ls='-', c='b')
         ax.plot(self.Bx, self.By, marker='s', ls='', ms=5, c='b', markeredgecolor='b', animated=True)
 ########################################################################################
-# Interactive LINE plotter
+
+
 class InteractivePoints(object):
     """
     Line editor
@@ -205,6 +205,7 @@ class InteractivePoints(object):
         self.ax.draw_artist(self.funcLine)
         self.canvas.blit(self.ax.bbox)
 ################################################################################
+'''
 def felix_read_file(fname):
     """
     Reads data from felix meassurement file
@@ -238,7 +239,15 @@ def felix_read_file(fname):
     print('FILE: ', fname, '\tWavelength in file:' , wl_min_f, '-', wl_max_f, 'PONTS: ', len(data[0][:]))
     
     res = np.take(data, indices, 1)
-    return res
+    return res'''
+
+def felix_read_file(felixfile):
+
+    file = np.genfromtxt(f'./DATA/{felixfile}')
+    if felixfile.endswith('.felix'): data = file[:,0], file[:,2], file[:, 3]
+    elif felixfile.endswith('.cfelix'): data = file[:,0], file[:,1], file[:, 2]
+    else: return ErrorInfo('FELIX FILE', 'Please select a .felix or .cfelix file')
+    return np.take(data, data[0].argsort(), 1)
 
 def GuessBaseLine(data):
     """

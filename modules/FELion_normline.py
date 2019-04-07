@@ -30,11 +30,16 @@ def export_file(fname, wn, inten):
         f.write("{:8.3f}\t{:8.2f}\n".format(wn[i], inten[i]))
     f.close()
 
-def norm_line_felix(fname, mname, temp, bwidth, ie, foravgshow, location, dpi, parent):
+def norm_line_felix(felixfile, mname, temp, bwidth, ie, foravgshow, location, dpi, parent):
 
     ####################################### Initialisation #######################################
-    
-    data = felix_read_file(fname)
+
+    data = felix_read_file(felixfile)
+
+    fname = felixfile.split('.')[0]
+    basefile = f'{fname}.base'
+    powerfile = f'{fname}.pow'
+
     PD=True
 
     if not foravgshow:
@@ -56,18 +61,18 @@ def norm_line_felix(fname, mname, temp, bwidth, ie, foravgshow, location, dpi, p
         bx2 = bx.twinx()
 
         #Get the baseline
-        baseCal = BaselineCalibrator(fname)
+        baseCal = BaselineCalibrator(basefile)
         baseCal.plot(ax)
         ax.plot(data[0], data[1], ls='', marker='o', ms=3, markeredgecolor='r', c='r')
         ax.set_ylabel("cnts")
         ax.set_xlim([data[0].min()*0.95, data[0].max()*1.05])
 
         #Get the power and number of shots
-        powCal = PowerCalibrator(fname)
+        powCal = PowerCalibrator(powerfile)
         powCal.plot(bx2, ax2)
 
         #Get the spectrum analyser
-        saCal = SpectrumAnalyserCalibrator(fname)
+        saCal = SpectrumAnalyserCalibrator(felixfile)
         saCal.plot(bx)
         bx.set_ylabel("SA")
 
@@ -100,10 +105,10 @@ def norm_line_felix(fname, mname, temp, bwidth, ie, foravgshow, location, dpi, p
         ####################################### END Tkinter figure #######################################
 
     if foravgshow:
-        saCal = SpectrumAnalyserCalibrator(fname)
+        saCal = SpectrumAnalyserCalibrator(felixfile)
         wavelength = saCal.sa_cm(data[0])
-        baseCal = BaselineCalibrator(fname)
-        powCal = PowerCalibrator(fname)
+        baseCal = BaselineCalibrator(basefile)
+        powCal = PowerCalibrator(powerfile)
 
         if(PD):
             intensity = -np.log(data[1]/baseCal.val(data[0])) / powCal.power(data[0]) / powCal.shots(data[0]) *1000 

@@ -73,17 +73,17 @@ def avgSpec_plot(*args):
         ys = np.array([], dtype='double')
 
         foravgshow = True
-        for fname in fileNameList:
-            fname = fname.split(".")[0]
-            fullname = fname + ".felix"
+        for f in fileNameList:
+            felixfile = f
+            fname = f.split(".")[0]
             basefile = fname + ".base"
             powerfile = fname + ".pow"
-            files = [fullname, powerfile, basefile]
+            files = [felixfile, powerfile, basefile]
 
             for filenames in files:
                 if isfile(filenames): move(my_path, filenames)
 
-            a,b = norm_line_felix(fname, mname, temp, bwidth, ie, foravgshow, location, dpi, parent)
+            a,b = norm_line_felix(felixfile, mname, temp, bwidth, ie, foravgshow, location, dpi, parent)
             ax.plot(a, b, ls='', marker='o', ms=markersz, label=fname)
             xs = np.append(xs,a)
             ys = np.append(ys,b)

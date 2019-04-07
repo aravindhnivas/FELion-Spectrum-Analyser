@@ -23,7 +23,7 @@ class PowerCalibrator(object):
     Reads the power file and provides the power and n_shot
     for any given wavenumber
     """
-    def __init__(self, fname):
+    def __init__(self, powerfile):
         """
         interpolation can be either 'cubic' or 'linear'
         """
@@ -31,30 +31,30 @@ class PowerCalibrator(object):
         self.interpol = 'linear'
         in_um = False
         xw, yw = [],[]
-        f = open('DATA/' + fname + '.pow')
-        for line in f:
-            if line[0] == '#':
-                if line.find('SHOTS')==1:
-                    self.n_shots = float(line.split('=')[-1])
-                if line.find('IN_UM')==1:
-                    in_um = True
-                if line.find('INTERP')==1:
-                    self.interpol = line.split('=')[-1].strip('\n')
-                continue
+        with open(f'./DATA/{powerfile}') as f:
+            for line in f:
+                if line[0] == '#':
+                    if line.find('SHOTS')==1:
+                        self.n_shots = float(line.split('=')[-1])
+                    if line.find('IN_UM')==1:
+                        in_um = True
+                    if line.find('INTERP')==1:
+                        self.interpol = line.split('=')[-1].strip('\n')
+                    continue
+                else:
+                    if not line == "\n":
+                        x, y, = line.split()
+                        xw.append(float(x))
+                        yw.append(float(y))
+        
+            if in_um:
+                self.xw = 10000/np.array(xw)
             else:
-                if not line == "\n":
-                    x, y, = line.split()
-                    xw.append(float(x))
-                    yw.append(float(y))
-    
-        if in_um:
-            self.xw = 10000/np.array(xw)
-        else:
-            self.xw = np.array(xw)
+                self.xw = np.array(xw)
 
-        self.yw = np.array(yw)
-        f.close()
-        self.f = interp1d(self.xw, self.yw, kind=self.interpol,fill_value='extrapolate')
+            self.yw = np.array(yw)
+        
+        self.f = interp1d(self.xw, self.yw, kind=self.interpol, fill_value='extrapolate')
 
     def power(self, x):
         return self.f(x) 
@@ -77,7 +77,7 @@ class PowerCalibrator(object):
         bx.plot(self.xw, self.shots(self.xw), ls='-', marker='o', ms=3, markeredgecolor='y', c='y')
         bx.set_ylabel("shots")
 
-def FELion_Power(fname, location, dpi, parent):
+def FELion_Power(powerfile, location, dpi, parent):
 
     ####################################### Initialisation #######################################
 
@@ -93,12 +93,7 @@ def FELion_Power(fname, location, dpi, parent):
     ####################################### END Initialisation #######################################
 
     try:
-
-        if(fname.find('felix')>=0):
-            fname = fname.split('.')[0]
-            
-        #x, y, n_shots = ReadPower(fname)
-        powerWN = PowerCalibrator(fname)
+        powerWN = PowerCalibrator(powerfile)
         xc, yc, n_shots = powerWN.GetCalibData()
         X = np.arange(xc.min(),xc.max(), 1)
 
@@ -120,7 +115,7 @@ def FELion_Power(fname, location, dpi, parent):
         #plot the power calibration line:
         ax.plot(X, powerWN.power(X), ls='-', c='m')
 
-        ax.set_title('Power and Number of shots in the {}.pow file'.format(fname))
+        ax.set_title(f'Power and Number of shots in the {powerfile}.pow file')
         ax.set_xlim((xc.min()-70, xc.max()+70))
         ax.set_ylim((0, yc.max()*1.1))
         ax.set_xlabel("wn (cm-1)")

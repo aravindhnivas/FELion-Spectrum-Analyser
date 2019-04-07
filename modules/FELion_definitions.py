@@ -416,7 +416,7 @@ class FELion_Toplevel():
         if isfile(f'{self.name.get()}.png'): 
                 if askokcancel('Overwrite?', f'File: {self.name.get()}.png already present. \nDo you want to Overwrite the file?'): 
                         self.fig.savefig(f'./OUT/{self.name.get()}.png')
-                        ShowInfo('SAVED', f'File: {self.name.get()}.png saved in \n{self.location}\n directory')
+                        ShowInfo('SAVED', f'File: {self.name.get()}.png saved')
         else: 
                 self.fig.savefig(f'./OUT/{self.name.get()}.png')
-                ShowInfo('SAVED', f'File: {self.name.get()}.png saved in \n{self.location}\n directory')
+                ShowInfo('SAVED', f'File: {self.name.get()}.png saved')

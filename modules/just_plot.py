@@ -15,7 +15,7 @@ from FELion_definitions import colors, FELion_Toplevel
 
 # Built-In Module
 import os
-from os.path import isfile
+from os.path import isfile, dirname
 
 ####################################### Modules Imported #######################################
 
@@ -45,21 +45,22 @@ def power_plot(powerfiles, location, dpi, parent):
 
         ################################ PLOTTING DETAILS ########################################
         for powerfile in powerfiles:
-                with open(powerfile, 'r') as f:
+                with open(f'./DATA/{powerfile}', 'r') as f:
                         for i in f:
                                 if i.find('#SHOTS')>=0:
                                         shots = int(i.strip().split('=')[-1])
                                         break
 
-                power_file = genfromtxt(powerfile)
+                power_file = genfromtxt(f'./DATA/{powerfile}')
                 power_file_extrapolate = interpolate(power_file[:,0], power_file[:,1], kind = 'linear', fill_value = 'extrapolate')
-
-                temp = genfromtxt(powerfile.split('.')[0]+'.felix')
+                
+                felixfile = powerfile.split('.')[0]+'.felix'
+                temp = genfromtxt(f'./DATA/{felixfile}')
                 x = temp[:,0]
 
                 power_extrapolated = power_file_extrapolate(x)
-                ax.plot(power_file[:,0], power_file[:,1], 'ok',ms=7)
-                ax.plot(x, power_extrapolated, '-', label=powerfile+':'+str(shots))
+                ax.plot(power_file[:,0], power_file[:,1], '.k')
+                ax.plot(x, power_extrapolated, '-', label = f'{powerfile} : {shots}')
         
         ax.legend()
         ax.grid(True)

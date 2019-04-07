@@ -22,12 +22,12 @@ from os.path import dirname
 
 
 class SpectrumAnalyserCalibrator(object):
-    def __init__(self, fname, fit='linear'):
+    def __init__(self, felixfile, fit='linear'):
         """
         Spectrum analyser calibration initialisation
         fit can be either linear, or cubic
         """
-        data = felix_read_file(fname)
+        data = felix_read_file(felixfile)
     
         #Spectrum analyser calibration
         #Added 6.10.16:
@@ -88,7 +88,7 @@ class SpectrumAnalyserCalibrator(object):
         ax.plot(wn, sa, ls='', marker='s', ms=3, markeredgecolor='r', c='r')
         ax.plot(X, self.sa_cm(X), ls='-', marker='', c='g')
 
-def FELion_Sa(fname, location, dpi, parent):
+def FELion_Sa(felixfile, location, dpi, parent):
 
     ####################################### Initialisation #######################################
 
@@ -103,12 +103,8 @@ def FELion_Sa(fname, location, dpi, parent):
         os.chdir(location)
 
     ####################################### END Initialisation #######################################
-
-    # try:
-    if(fname.find('felix')>=0):
-        fname = fname.split('.')[0]
         
-    saCalibrator = SpectrumAnalyserCalibrator(fname, fit='cubic')
+    saCalibrator = SpectrumAnalyserCalibrator(felixfile, fit='cubic')
     
     ####################################### Tkinter figure #######################################
 
@@ -123,7 +119,7 @@ def FELion_Sa(fname, location, dpi, parent):
     ####################################### PLOTTING DETAILS #######################################
     saCalibrator.plot(ax)
 
-    ax.set_title(f'Spectrum analyser calibration from {fname}.felix file')
+    ax.set_title(f'Spectrum analyser calibration from {felixfile} file')
     ax.set_xlabel("wn set (cm-1)")
     ax.set_ylabel("wn SA (cm-1)")
 
