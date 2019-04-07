@@ -67,22 +67,28 @@ class Create_Baseline():
         
         self.checkInf()
 
+    def save_cfelix(self):
+
+        with open(f'./DATA/{self.cfelix}', 'w') as f:
+            f.write(f'#Noise/Signal corrected for {self.fname}.felix data file!\n')
+            f.write(f'#Wavelength(cm-1)\t#Counts\n')
+
+            for i in range(len(self.data[0])): f.write(f'{self.data[0][i]}\t{self.data[1][i]}\n')
+            f.write('\n')
+            for i in range(len(self.info)): f.write(self.info[i])
+
+        if isfile(f'./DATA/{self.cfelix}'): ShowInfo('SAVED', f'Corrected felix file: {self.cfelix}')
+        self.felix_corrected = False
+
     def on_closing(self):
 
         if self.felix_corrected:
 
             if askokcancel("SAVE?", "Do you want to save the corrected felix file?"):
-
-                with open(f'./DATA/{self.cfelix}', 'w') as f:
-
-                    f.write(f'#Noise/Signal corrected for {self.fname}.felix data file!\n')
-                    f.write(f'#Wavelength(cm-1)\t#Counts\n')
-
-                    for i in range(len(self.data[0])): f.write(f'{self.data[0][i]}\t{self.data[1][i]}\n')
-                    f.write('\n')
-                    for i in range(len(self.info)): f.write(self.info[i])
-
-                if isfile(f'./DATA/{self.cfelix}'): ShowInfo('SAVED', f'Corrected felix file: {self.cfelix}')
+                if not isfile(f'./DATA/{self.cfelix}'): self.save_cfelix()
+                else: 
+                    if askokcancel('Overwrite?', f'Already {self.cfelix} exist.\nDo you want to overwrite this?'):
+                        self.save_cfelix()
 
                 self.root.destroy()
             else: self.root.destroy()
@@ -389,7 +395,7 @@ class Create_Baseline():
     def tkbase(self, get = False, start = True):
 
         self.root = Toplevel(master = self.parent)
-        self.root.wm_title('Baseline Correction')
+        self.root.wm_title(f'Baseline Correction: {self.felixfile}')
         self.root.wm_geometry('1000x600')
 
         self.canvas_frame = Frame(self.root, bg = 'white')
@@ -400,14 +406,17 @@ class Create_Baseline():
 
         self.name = StringVar()
         self.filename = Entry(self.widget_frame, textvariable = self.name, font = ("Verdana", 10, "italic"), bd = 5)
-        self.name.set('plot')
+        self.name.set(f'{self.fname}')
         self.filename.place(relx = 0.1, rely = 0.1, relwidth = 0.5, relheight = 0.05)
 
         self.button = ttk.Button(self.widget_frame, text = 'Save', command = lambda: self.save_tkbase(start))
         self.button.place(relx = 0.1, rely = 0.2, relwidth = 0.5, relheight = 0.05)
 
+        self.cfelix_save_btn = ttk.Button(self.widget_frame, text = 'Save .cfelix', command = lambda: self.save_cfelix())
+        self.cfelix_save_btn.place(relx = 0.1, rely = 0.3, relwidth = 0.5, relheight = 0.05)
+
         self.label1 = ttk.Label(self.widget_frame, text = 'Baseline Correction\n\nBaseline(Blue):\na: add\nd: delete\nw: average\n\nFElix(Red):\nx: delete\nz: undo\nr: redo', font = ("Verdana", 10, "italic"))
-        self.label1.place(relx = 0.1, rely = 0.3, relwidth = 0.7, relheight = 0.4)
+        self.label1.place(relx = 0.1, rely = 0.4, relwidth = 0.7, relheight = 0.4)
 
         self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
 
