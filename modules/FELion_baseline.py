@@ -515,6 +515,8 @@ class Create_Baseline():
         self.normline_data, = self.ax1.plot(self.wavelength(), self.intensity(), ls='-', marker='o', ms=2, c='r', markeredgecolor='k', markerfacecolor='k')
         self.baseline_data, = self.ax0.plot(self.data[0], self.data[1], ls='', marker='o', ms=5, markeredgecolor='r', c='r')
 
+        self.ax1.set_ylim(ymin = -0.5, ymax = self.intensity().max()+1)
+
         self.fig.suptitle('Interactive Plot')
         self.ax0.set_title('Baseline Correction')
         self.ax0.set_xlim((self.data[0][0]-70, self.data[0][-1]+70))
