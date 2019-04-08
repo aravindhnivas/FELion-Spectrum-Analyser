@@ -90,6 +90,7 @@ def FELion_Power(powerfile, location, dpi, parent):
     
     else: 
         os.chdir(location)
+    powerfile = powerfile.split('.')[0] + '.pow'
     ####################################### END Initialisation #######################################
 
     try:
