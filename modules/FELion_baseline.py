@@ -400,16 +400,22 @@ class Create_Baseline():
         self.root.wm_title(f'Baseline Correction: {self.felixfile}')
         self.root.wm_geometry('1000x600')
 
+        # Frames
+
         self.canvas_frame = Frame(self.root, bg = 'white')
         self.canvas_frame.place(relx = 0, rely = 0, relwidth = 0.8, relheight = 1)
 
         self.widget_frame = Frame(self.root, bg = 'light grey')
         self.widget_frame.place(relx = 0.8, rely = 0, relwidth = 0.2, relheight = 1)
 
+        # Entry
+
         self.name = StringVar()
         self.filename = Entry(self.widget_frame, textvariable = self.name, font = ("Verdana", 10, "italic"), bd = 5)
         self.name.set(f'{self.fname}')
         self.filename.place(relx = 0.1, rely = 0.1, relwidth = 0.5, relheight = 0.05)
+
+        # Buttons
 
         self.button = ttk.Button(self.widget_frame, text = 'Save', command = lambda: self.save_tkbase(start))
         self.button.place(relx = 0.1, rely = 0.2, relwidth = 0.5, relheight = 0.05)
@@ -417,11 +423,17 @@ class Create_Baseline():
         self.cfelix_save_btn = ttk.Button(self.widget_frame, text = 'Save .cfelix', command = lambda: self.save_cfelix())
         self.cfelix_save_btn.place(relx = 0.1, rely = 0.3, relwidth = 0.5, relheight = 0.05)
 
+        # Labels
+
         self.label1 = ttk.Label(self.widget_frame, text = 'Baseline Correction\n\nBaseline(Blue):\na: add\nd: delete\nw: average\n\nFElix(Red):\nx: delete\nz: undo\nr: redo', font = ("Verdana", 10, "italic"))
         self.label1.place(relx = 0.1, rely = 0.4, relwidth = 0.7, relheight = 0.4)
 
-        self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
+        # Set focus
+        self.filename.bind('<1>', lambda event: self.filename.focus_set())
+        self.widget_frame.bind('<1>', lambda event: self.widget_frame.focus_set())
 
+        self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
+        
         if get: return self.root, self.canvas_frame, self.widget_frame
 
         self.figure_tkbase()
