@@ -328,7 +328,7 @@ class Create_Baseline():
 
                 self.data = np.insert(self.data, self.removed_index[-1], self.removed_datas[:, -1], axis = 1)
 
-                self.redo_datas = np.append(self.redo_datas, self.removed_datas[:, -1].reshape(2, 1), axis = 1)
+                self.redo_datas = np.append(self.redo_datas, self.removed_datas[:, -1].reshape(3, 1), axis = 1)
                 self.removed_datas = np.delete(self.removed_datas, -1, axis = 1)
 
                 self.redo_index = np.append(self.redo_index, self.removed_index[-1]).astype(np.int64)
@@ -357,7 +357,7 @@ class Create_Baseline():
 
                 self.data = np.delete(self.data, self.redo_index[-1], axis = 1)
 
-                self.removed_datas = np.append(self.removed_datas, self.redo_datas[:, -1].reshape(2, 1), axis = 1)
+                self.removed_datas = np.append(self.removed_datas, self.redo_datas[:, -1].reshape(3, 1), axis = 1)
                 self.redo_datas = np.delete(self.redo_datas, -1, axis = 1)
                 
                 self.removed_index = np.append(self.removed_index, self.redo_index[-1]).astype(np.int64)
@@ -400,16 +400,22 @@ class Create_Baseline():
         self.root.wm_title(f'Baseline Correction: {self.felixfile}')
         self.root.wm_geometry('1000x600')
 
+        # Frames
+
         self.canvas_frame = Frame(self.root, bg = 'white')
         self.canvas_frame.place(relx = 0, rely = 0, relwidth = 0.8, relheight = 1)
 
         self.widget_frame = Frame(self.root, bg = 'light grey')
         self.widget_frame.place(relx = 0.8, rely = 0, relwidth = 0.2, relheight = 1)
 
+        # Entry
+
         self.name = StringVar()
         self.filename = Entry(self.widget_frame, textvariable = self.name, font = ("Verdana", 10, "italic"), bd = 5)
         self.name.set(f'{self.fname}')
         self.filename.place(relx = 0.1, rely = 0.1, relwidth = 0.5, relheight = 0.05)
+
+        # Buttons
 
         self.button = ttk.Button(self.widget_frame, text = 'Save', command = lambda: self.save_tkbase(start))
         self.button.place(relx = 0.1, rely = 0.2, relwidth = 0.5, relheight = 0.05)
@@ -417,11 +423,17 @@ class Create_Baseline():
         self.cfelix_save_btn = ttk.Button(self.widget_frame, text = 'Save .cfelix', command = lambda: self.save_cfelix())
         self.cfelix_save_btn.place(relx = 0.1, rely = 0.3, relwidth = 0.5, relheight = 0.05)
 
+        # Labels
+
         self.label1 = ttk.Label(self.widget_frame, text = 'Baseline Correction\n\nBaseline(Blue):\na: add\nd: delete\nw: average\n\nFElix(Red):\nx: delete\nz: undo\nr: redo', font = ("Verdana", 10, "italic"))
         self.label1.place(relx = 0.1, rely = 0.4, relwidth = 0.7, relheight = 0.4)
 
-        self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
+        # Set focus
+        self.filename.bind('<1>', lambda event: self.filename.focus_set())
+        self.widget_frame.bind('<1>', lambda event: self.widget_frame.focus_set())
 
+        self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
+        
         if get: return self.root, self.canvas_frame, self.widget_frame
 
         self.figure_tkbase()
@@ -502,6 +514,8 @@ class Create_Baseline():
                 
         self.normline_data, = self.ax1.plot(self.wavelength(), self.intensity(), ls='-', marker='o', ms=2, c='r', markeredgecolor='k', markerfacecolor='k')
         self.baseline_data, = self.ax0.plot(self.data[0], self.data[1], ls='', marker='o', ms=5, markeredgecolor='r', c='r')
+
+        self.ax1.set_ylim(ymin = -0.5, ymax = self.intensity().max()+1)
 
         self.fig.suptitle('Interactive Plot')
         self.ax0.set_title('Baseline Correction')
