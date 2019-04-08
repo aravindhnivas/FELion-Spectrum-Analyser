@@ -328,7 +328,7 @@ class Create_Baseline():
 
                 self.data = np.insert(self.data, self.removed_index[-1], self.removed_datas[:, -1], axis = 1)
 
-                self.redo_datas = np.append(self.redo_datas, self.removed_datas[:, -1].reshape(2, 1), axis = 1)
+                self.redo_datas = np.append(self.redo_datas, self.removed_datas[:, -1].reshape(3, 1), axis = 1)
                 self.removed_datas = np.delete(self.removed_datas, -1, axis = 1)
 
                 self.redo_index = np.append(self.redo_index, self.removed_index[-1]).astype(np.int64)
@@ -357,7 +357,7 @@ class Create_Baseline():
 
                 self.data = np.delete(self.data, self.redo_index[-1], axis = 1)
 
-                self.removed_datas = np.append(self.removed_datas, self.redo_datas[:, -1].reshape(2, 1), axis = 1)
+                self.removed_datas = np.append(self.removed_datas, self.redo_datas[:, -1].reshape(3, 1), axis = 1)
                 self.redo_datas = np.delete(self.redo_datas, -1, axis = 1)
                 
                 self.removed_index = np.append(self.removed_index, self.redo_index[-1]).astype(np.int64)
