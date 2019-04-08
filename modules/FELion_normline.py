@@ -189,7 +189,7 @@ def normline_correction(*args):
 
         if filecheck(my_path, basefile, powerfile, fullname):
             print(f'\nFilename-->{fullname}\nLocation-->{my_path}')
-            norm_line_felix(fname, mname, temp, bwidth, ie, foravgshow, location, dpi, parent)
+            norm_line_felix(fullname, mname, temp, bwidth, ie, foravgshow, location, dpi, parent)
 
         print("DONE")
 
