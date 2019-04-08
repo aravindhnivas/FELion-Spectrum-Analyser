@@ -23,12 +23,10 @@ class PowerCalibrator(object):
     Reads the power file and provides the power and n_shot
     for any given wavenumber
     """
-
     def __init__(self, powerfile):
         """
         interpolation can be either 'cubic' or 'linear'
         """
-        print(f'\nPower Calibrating for file: {powerfile}\n')
         self.n_shots = 1
         self.interpol = 'linear'
         in_um = False
@@ -92,8 +90,6 @@ def FELion_Power(powerfile, location, dpi, parent):
     
     else: 
         os.chdir(location)
-    
-    powerfile = powerfile.split('.')[0]+'.pow'
     ####################################### END Initialisation #######################################
 
     try:
