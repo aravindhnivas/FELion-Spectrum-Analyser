@@ -27,6 +27,7 @@ class SpectrumAnalyserCalibrator(object):
         Spectrum analyser calibration initialisation
         fit can be either linear, or cubic
         """
+        print(f'\nSA Calibrating for file: {felixfile}\n')
         data = felix_read_file(felixfile)
     
         #Spectrum analyser calibration
