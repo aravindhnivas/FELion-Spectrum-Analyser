@@ -6,7 +6,7 @@
 import os
 
 # DATA analysis modules
-from numpy import array, genfromtxt
+from numpy import array, genfromtxt, append
 
 # FELion Modules
 from FELion_definitions import ErrorInfo, FELion_Toplevel
@@ -67,6 +67,25 @@ def timescanplot(fname, location, dpi, parent, depletion = False):
         error = [[(array(temp2[i][j]).std()) for j in range(cycle)]for i in range(length)]
         mass, mean, error = array(mass), array(mean), array(error)
 
+        # Including Sum
+
+        data1 = []
+        with open(fname, 'r') as f:
+            start = False
+            for line in f:
+                if len(line)>1:
+                    line1 = line.split()[0]
+                    if line1 == '#Time':
+                        start = True
+                    if start:
+                        line2 = line.strip()
+                        if line2 == 'ALL:':
+                            break
+                        data1 = append(data1, line)
+        
+        data1 = genfromtxt(data1)
+        sum_data = data1[:, -1]
+
         if depletion: 
             return mass, iterations, t_res, t_b0,  mean, error, time
             print('\nReturning from Timescan function\n')
@@ -85,6 +104,7 @@ def timescanplot(fname, location, dpi, parent, depletion = False):
 
         ####################################### PLOTTING DETAILS #######################################
 
+        ax.plot(time, sum_data, label = f'SUM TOTAL')
         for i in range(length):
             lg = "%.2f:[%i]; B0: %i ms, Res: %i"%(mass[i], iterations[i], t_b0, t_res)
             ax.errorbar(time, mean[i],error[i],fmt='.-', label = lg)
