@@ -20,6 +20,8 @@ import shutil
 # FELion Definitions
 from FELion_definitions import ShowInfo, ErrorInfo, var_find, FELion_Toplevel
 
+# Custom modules
+
 def massSpec(*args):
 
     t, ts, lgs, minor, major, majorTickSize, \
@@ -63,7 +65,8 @@ def massSpec(*args):
             ax = fig.add_subplot(111)
 
             ####################################### PLOTTING DETAILS #######################################
-    
+            tk_widget.add_log_btn(ax)
+
             ax.semilogy(x, y, label = f'{fname}: Res: {res}; B0: {b0}ms; Trap: {trap}ms')
             cursor = Cursor(ax, useblit=True, color='red', linewidth=1)
 
@@ -78,6 +81,8 @@ def massSpec(*args):
             ax.xaxis.set_minor_locator(MultipleLocator(minor))
             ax.xaxis.set_major_locator(MultipleLocator(major))
             ax.tick_params(axis='both', which='major', labelsize=majorTickSize)
+
+            
 
             ####################################### END Plotting details #######################################
 
@@ -100,7 +105,8 @@ def massSpec(*args):
             ax1 = fig1.add_subplot(111)
 
             ####################################### PLOTTING DETAILS #######################################
-
+            
+            tk_widget1.add_log_btn(ax1)
             for file in filelist:
                 res, b0, trap = var_find(file, location)
 
