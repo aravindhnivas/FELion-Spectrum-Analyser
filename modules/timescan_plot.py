@@ -6,120 +6,109 @@
 import os
 
 # DATA analysis modules
-from numpy import array, genfromtxt, append
+import numpy as np
+from uncertainties import unumpy as unp
 
 # FELion Modules
-from FELion_definitions import ErrorInfo, FELion_Toplevel
+from FELion_definitions import ErrorInfo, FELion_Toplevel, get_iterations, get_skip_line, var_find
 
 # Tkinter modules
 from tkinter import Toplevel
 
 ####################################### Modules Imported #######################################
 
-def timescanplot(fname, location, dpi, parent, depletion = False):
-    try:
-        ####################################### Initialisation #######################################
+def timescanplot(scanfile, location, dpi, parent, depletion = False):
 
-        os.chdir(location)
+    ####################################### Initialisation #######################################
+    os.chdir(location)
 
-        var = {'res':'m03_ao13_reso', 'b0':'m03_ao09_width'}
-        print(var)
+    # Getting skip_line to reach the data points
+    # Getting iterations of each mass timescan
+    skip = get_skip_line(scanfile, location)
+    iterations = get_iterations(scanfile, location)
 
-        with open(fname, 'r') as f:
-            f = array(f.readlines())
-        for i in f:
-            if not len(i.strip())==0 and i.split()[0]=='#':
-                for j in var:
-                    if var[j] in i.split():
-                        var[j] = float(i.split()[-3])
+    # opening File
+    data = np.genfromtxt(scanfile, skip_header = skip)
+    print(f'File shape: {data.shape}\n')
 
-        t_res, t_b0 = round(var['res']), int(var['b0']/1000)
-        print(var)
+    # Calculating the time step cycle and total no of masses (run)
+    cycle = int(len(data)/iterations.sum())
+    run = len(iterations)
 
-        with open(fname, 'r') as f: file = f.readlines()
+    # Time
+    time = data[:, 1][: cycle]
+    print(f'Time: {time}\t{time.shape}\n')
+
+    # Calculating mean and std_devs
+    j = 0
+    mean, error = [], []
+    mass = []
+    for num, iteration in enumerate(iterations):
         
-        skip = [num for num, line in enumerate(file) if 'ALL:' in line.split()]
-        iterations = array([int(i.split()[-1]) for i in file if not len(i.strip())==0 and i.split()[0].startswith('#mass')])
-        length = len(iterations)
-
-        data = genfromtxt(fname, skip_header = skip[0]+1)
-
-        cycle = int(len(data)/iterations.sum())
-        time = data[:,1][:cycle]
-
-        temp, temp1, temp2, mass, counts = [], [], [], [], []
-        k = 0
-        for i in range(len(iterations)):
-            j = iterations[i]*cycle
-            mass.append(data[:,0][k])
-            counts.append(data[:,2][k:k+j])
-            k += j
-            
-            for c in range(cycle):
-                for l in range(iterations[i]):
-                    temp.append(counts[i][(l*cycle)+c])
-                temp1.append(temp)
-                temp = []
-            temp2.append(temp1)
-            temp1 = []
-            
-        mean = [[array(temp2[i][j]).mean() for j in range(cycle)]for i in range(length)]
-        error = [[(array(temp2[i][j]).std()) for j in range(cycle)]for i in range(length)]
-        mass, mean, error = array(mass), array(mean), array(error)
-
-        # Including Sum
-
-        data1 = []
-        with open(fname, 'r') as f:
-            start = False
-            for line in f:
-                if len(line)>1:
-                    line1 = line.split()[0]
-                    if line1 == '#Time':
-                        start = True
-                    if start:
-                        line2 = line.strip()
-                        if line2 == 'ALL:':
-                            break
-                        data1 = append(data1, line)
+        k = iteration*cycle
         
-        data1 = genfromtxt(data1)
-        sum_data = data1[:, -1]
-
-        if depletion: 
-            return mass, iterations, t_res, t_b0,  mean, error, time
-            print('\nReturning from Timescan function\n')
+        print(f'### START {num} ###\n')
+        print(f'Before: data[:, 2][{j}:{k+j}]\n')
         
-        ####################################### END Initialisation #######################################
-
-        ####################################### Tkinter figure #######################################
-
-        ## Embedding figure to tkinter Toplevel
-        title_name = 'Timescan'
-        root = Toplevel(parent)
-        tk_widget = FELion_Toplevel(root, title_name, location)
-
-        fig, canvas = tk_widget.figure(dpi, figsize=(15,5))
-        ax = fig.add_subplot(111)
-
-        ####################################### PLOTTING DETAILS #######################################
-
-        ax.plot(time, sum_data, label = f'SUM TOTAL')
-        for i in range(length):
-            lg = "%.2f:[%i]; B0: %i ms, Res: %i"%(mass[i], iterations[i], t_b0, t_res)
-            ax.errorbar(time, mean[i],error[i],fmt='.-', label = lg)
-            
-        ax.set_title('Time Scan plot for %s'%fname)
-        ax.set_xlabel('Time (ms)')
-        ax.set_ylabel('Counts')
-        ax.legend()
-        ax.grid(True)
-
-        ####################################### END Plotting details #######################################
-
-        canvas.draw() # drawing in the tkinter canvas: canvas drawing board
+        mass_value = data[:, 0][j: k+j][0]
+        mass_sort = data[:, 2][j:k+j].reshape(iteration, cycle).mean(axis = 0)
+        error_sort = data[:, 2][j:k+j].reshape(iteration, cycle).std(axis = 0)
         
-        ####################################### END Tkinter figure #######################################
-   
-    except Exception as e:
-        ErrorInfo("ERROR", e)
+        mass = np.append(mass, mass_value)
+        mean = np.append(mean, mass_sort)
+        error = np.append(error, error_sort)
+        
+        j = k + j
+        
+        print(f'After: j: {j}\n')
+        print(f'Mass {num}: {mass_sort}\t{mass_sort.shape}\n')
+        print(f'Error {num}: {error_sort}\t{error_sort.shape}\n')
+        print(f'Before\nMean: {mean.shape}\t Error: {error.shape}\n')
+        print(f'Total Mass: {mass}\n')
+        print(f'### END {num} ###\n\n')
+
+    mean = mean.reshape(run, cycle)
+    error = error.reshape(run, cycle)
+
+    print(f'After\nMean: {mean.shape}\t Error: {error.shape}\n')
+
+    # calculating the SUM
+    mean_with_error = unp.uarray(mean, error)
+    sum_mean_with_error = mean_with_error.sum(axis = 0)
+    print(f'Mean with error: {mean_with_error.shape}\nSum with error: {sum_mean_with_error.shape}')
+    
+    # Getting B0 width and Mass resolution from Timescan file
+    t_res, t_b0 = var_find(scanfile, location, time = True)
+
+    if depletion: 
+        print('\nReturning from Timescan function\n')
+        return mass, iterations, t_res, t_b0,  mean, error, time
+
+    ####################################### END Initialisation #######################################
+
+    ####################################### Tkinter figure #######################################
+
+    ## Embedding figure to tkinter Toplevel
+    title_name = 'Timescan'
+    root = Toplevel(parent)
+    tk_widget = FELion_Toplevel(root, title_name, location)
+
+    fig, canvas = tk_widget.figure(dpi, figsize=(15,5))
+    ax = fig.add_subplot(111)
+
+    ####################################### PLOTTING DETAILS #######################################
+
+    ax.errorbar(time, unp.nominal_values(sum_mean_with_error), unp.std_devs(sum_mean_with_error), fmt = '--', label = f'SUM TOTAL')
+    for i in range(run):
+        lg = "%.2f:[%i]; B0: %i ms, Res: %i"%(mass[i], iterations[i], t_b0, t_res)
+        ax.errorbar(time, mean[i], error[i], fmt='.-', label = lg)
+        
+    ax.set_title('Time Scan plot for %s'%scanfile)
+    ax.set_xlabel('Time (ms)')
+    ax.set_ylabel('Counts')
+    ax.legend()
+    ax.grid(True)
+
+    ####################################### END Plotting details #######################################
+    canvas.draw() # drawing in the tkinter canvas: canvas drawing board
+    ####################################### END Tkinter figure #######################################
