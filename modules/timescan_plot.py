@@ -46,9 +46,9 @@ def timescanplot(scanfile, location, dpi, parent, depletion = False):
         k = iteration*cycle
         
         print(f'### START {num} ###\n')
-        print(f'Before: data[:, 2][{j}:{k+j}]\n')
+        print(f'DATA collecting: data[:, 2][{j}:{k+j}]\n')
         
-        mass_value = data[:, 0][j: k+j][0]
+        mass_value = data[:, 0][j:k+j][0]
         mass_sort = data[:, 2][j:k+j].reshape(iteration, cycle).mean(axis = 0)
         error_sort = data[:, 2][j:k+j].reshape(iteration, cycle).std(axis = 0)
         
@@ -58,11 +58,10 @@ def timescanplot(scanfile, location, dpi, parent, depletion = False):
         
         j = k + j
         
-        print(f'After: j: {j}\n')
-        print(f'Mass {num}: {mass_sort}\t{mass_sort.shape}\n')
-        print(f'Error {num}: {error_sort}\t{error_sort.shape}\n')
+        print(f'Mass {num} is {mass_value} with counts: {mass_sort}\t{mass_sort.shape}\n')
+        print(f'Error {num} for {mass_value}: {error_sort}\t{error_sort.shape}\n')
         print(f'Before\nMean: {mean.shape}\t Error: {error.shape}\n')
-        print(f'Total Mass: {mass}\n')
+        print(f'Total Mass collected: {mass}\n')
         print(f'### END {num} ###\n\n')
 
     mean = mean.reshape(run, cycle)
