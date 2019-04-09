@@ -96,7 +96,7 @@ def timescanplot(scanfile, location, dpi, parent, depletion = False):
 
     ####################################### PLOTTING DETAILS #######################################
 
-    ax.errorbar(time, unp.nominal_values(sum_mean_with_error), unp.std_devs(sum_mean_with_error), fmt = '--', label = f'SUM TOTAL')
+    ax.errorbar(time, unp.nominal_values(sum_mean_with_error), unp.std_devs(sum_mean_with_error), fmt = '--', label = f'SUM TOTAL', color = 'k')
     for i in range(run):
         lg = "%.2f:[%i]; B0: %i ms, Res: %i"%(mass[i], iterations[i], t_b0, t_res)
         ax.errorbar(time, mean[i], error[i], fmt='.-', label = lg)
