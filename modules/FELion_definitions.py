@@ -451,3 +451,6 @@ class FELion_Toplevel():
         else: 
                 self.fig.savefig(f'./OUT/{self.name.get()}.png')
                 ShowInfo('SAVED', f'File: {self.name.get()}.png saved')
+
+    def get_widget_frame(self):
+        return self.widget_frame
