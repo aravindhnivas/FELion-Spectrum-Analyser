@@ -22,8 +22,9 @@ matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from matplotlib.backend_bases import key_press_handler
 from matplotlib.figure import Figure
-# from matplotlib import style
-# style.use('ggplot')
+
+# Built-In Modules
+from time import time as check_time
 
 ################################################# MODULES IMPORTED #################################################
 ####################################################################################################################
@@ -423,7 +424,7 @@ class FELion_Toplevel():
         self.button = ttk.Button(self.widget_frame, text = 'Save', command = lambda: self.save())
         self.button.place(relx = 0.1, rely = 0.2, relwidth = 0.5, relheight = 0.05)
 
-    def figure(self, dpi, **kw):
+    def figure(self, dpi, connect = True, **kw):
         if 'figsize' in kw: self.fig = Figure(figsize = kw['figsize'], dpi = dpi)
         else: self.fig = Figure(dpi = dpi)
 
@@ -435,7 +436,7 @@ class FELion_Toplevel():
         self.toolbar = NavigationToolbar2Tk(self.canvas, self.root)
         self.toolbar.update()
 
-        self.canvas.mpl_connect("key_press_event", self.on_key_press)
+        if connect: self.canvas.mpl_connect("key_press_event", self.on_key_press)
         
         return self.fig, self.canvas
     
@@ -454,3 +455,29 @@ class FELion_Toplevel():
 
     def get_widget_frame(self):
         return self.widget_frame
+    
+    def add_log_btn(self, ax):
+
+        self.log = BooleanVar()
+        log_btn = ttk.Checkbutton(self.widget_frame, text = 'Log', variable = self.log)
+        log_btn.place(relx = 0.1, rely =  0.3, relwidth = 0.5, relheight = 0.05)
+        self.log.set(False)
+
+        update_btn = ttk.Button(self.widget_frame, text = 'Update Plot', command = lambda: self.log_redraw(ax))
+        update_btn.place(relx = 0.1, rely =  0.4, relwidth = 0.5, relheight = 0.05)
+
+    def log_redraw(self, ax):
+
+        t0 = check_time()
+
+        if self.log.get(): 
+            ax.set_yscale('log')
+        else: 
+            ax.set_yscale('linear')
+            ax.ticklabel_format(style='sci', axis='y', scilimits = (0, 0))
+             
+        self.canvas.draw()
+
+        t1 = check_time()
+        time_log = (t1-t0)*100
+        print(f'Redrawn in {time_log:.2f} ms\n')
