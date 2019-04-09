@@ -2,6 +2,7 @@
 
 # Built-In modules
 import os
+from time import time as check_time
 
 # DATA analysis modules
 import numpy as np
@@ -11,12 +12,13 @@ from uncertainties import unumpy as unp
 from FELion_definitions import ErrorInfo, FELion_Toplevel, get_iterations, get_skip_line, var_find
 
 # Tkinter modules
-from tkinter import Toplevel
+from tkinter import Toplevel, ttk, BooleanVar
 
 ####################################### Modules Imported #######################################
 
 def timescanplot(scanfile, location, dpi, parent, depletion = False):
 
+    t0 = check_time()
     ####################################### Initialisation #######################################
     os.chdir(location)
 
@@ -88,10 +90,14 @@ def timescanplot(scanfile, location, dpi, parent, depletion = False):
     ## Embedding figure to tkinter Toplevel
     title_name = f'Timescan: {scanfile}'
     root = Toplevel(parent)
+
     tk_widget = FELion_Toplevel(root, title_name, location)
 
     fig, canvas = tk_widget.figure(dpi, figsize=(15,5))
     ax = fig.add_subplot(111)
+
+    # getting the widget frame from tk_widget class to add custom buttons
+    frame = tk_widget.get_widget_frame()
 
     ####################################### PLOTTING DETAILS #######################################
 
@@ -99,13 +105,40 @@ def timescanplot(scanfile, location, dpi, parent, depletion = False):
     for i in range(run):
         lg = f'{mass[i]}[{iterations[i]}]; B0: {t_b0}ms; Res: {t_res}'
         ax.errorbar(time, mean[i], error[i], fmt='.-', label = lg)
-        
+
+    # figure details      
     ax.set_title('Time Scan plot for %s'%scanfile)
     ax.set_xlabel('Time (ms)')
     ax.set_ylabel('Counts')
     ax.legend()
     ax.grid(True)
 
+    # Adding buttons to the plot
+    log = BooleanVar()
+    log_btn = ttk.Checkbutton(frame, text = 'Log', variable = log)
+    log_btn.place(relx = 0.1, rely =  0.3, relwidth = 0.5, relheight = 0.05)
+    log.set(False)
+
+    update_btn = ttk.Button(frame, text = 'Update Plot', command = lambda: redraw(canvas, ax, yscale = log.get()))
+    update_btn.place(relx = 0.1, rely =  0.4, relwidth = 0.5, relheight = 0.05)
+
     ####################################### END Plotting details #######################################
     canvas.draw() # drawing in the tkinter canvas: canvas drawing board
     ####################################### END Tkinter figure #######################################
+    t1 = check_time()
+
+    time_log = (t1-t0)*100
+    print(f'Timescan plot completed in {time_log:.2f} ms\n')
+
+def redraw(canvas, ax, **kw):
+
+    t0 = check_time()
+    if 'yscale' in kw:
+        log = kw['yscale']
+        if log: ax.set_yscale('log')
+        else: ax.set_yscale('linear')
+
+    canvas.draw()
+    t1 = check_time()
+    time_log = (t1-t0)*100
+    print(f'Redrawn in {time_log:.2f} ms\n')
