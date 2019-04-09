@@ -95,10 +95,6 @@ def timescanplot(scanfile, location, dpi, parent, depletion = False):
 
     fig, canvas = tk_widget.figure(dpi, figsize=(15,5))
     ax = fig.add_subplot(111)
-
-    # getting the widget frame from tk_widget class to add custom buttons
-    frame = tk_widget.get_widget_frame()
-
     ####################################### PLOTTING DETAILS #######################################
 
     ax.errorbar(time, unp.nominal_values(sum_mean_with_error), unp.std_devs(sum_mean_with_error), fmt = '--', label = f'SUM TOTAL', color = 'k')
@@ -112,15 +108,8 @@ def timescanplot(scanfile, location, dpi, parent, depletion = False):
     ax.set_ylabel('Counts')
     ax.legend()
     ax.grid(True)
-
-    # Adding buttons to the plot
-    log = BooleanVar()
-    log_btn = ttk.Checkbutton(frame, text = 'Log', variable = log)
-    log_btn.place(relx = 0.1, rely =  0.3, relwidth = 0.5, relheight = 0.05)
-    log.set(False)
-
-    update_btn = ttk.Button(frame, text = 'Update Plot', command = lambda: redraw(canvas, ax, yscale = log.get()))
-    update_btn.place(relx = 0.1, rely =  0.4, relwidth = 0.5, relheight = 0.05)
+    
+    tk_widget.add_log_btn(ax)
 
     ####################################### END Plotting details #######################################
     canvas.draw() # drawing in the tkinter canvas: canvas drawing board
@@ -129,16 +118,3 @@ def timescanplot(scanfile, location, dpi, parent, depletion = False):
 
     time_log = (t1-t0)*100
     print(f'Timescan plot completed in {time_log:.2f} ms\n')
-
-def redraw(canvas, ax, **kw):
-
-    t0 = check_time()
-    if 'yscale' in kw:
-        log = kw['yscale']
-        if log: ax.set_yscale('log')
-        else: ax.set_yscale('linear')
-
-    canvas.draw()
-    t1 = check_time()
-    time_log = (t1-t0)*100
-    print(f'Redrawn in {time_log:.2f} ms\n')
