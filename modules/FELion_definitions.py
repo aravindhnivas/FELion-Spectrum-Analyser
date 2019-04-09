@@ -198,12 +198,14 @@ def outFile(fname, location, file):
     except Exception as e:
             ErrorInfo("ERROR", e)
 
-def var_find(fname, location):
+def var_find(fname, location, time = False):
     print(f'###############\nFile: {fname}\nLocation: {location}\n###############')
 
     if not fname is '':
         os.chdir(location)
-        var = {'res':'m03_ao13_reso', 'b0':'m03_ao09_width', 'trap': 'm04_ao04_sa_delay'}
+        if not time: var = {'res':'m03_ao13_reso', 'b0':'m03_ao09_width', 'trap': 'm04_ao04_sa_delay'}
+        else: var = {'res':'m03_ao13_reso', 'b0':'m03_ao09_width'}
+
         print(var)
 
         with open(fname, 'r') as f:
@@ -214,12 +216,41 @@ def var_find(fname, location):
                     if var[j] in i.split():
                         var[j] = float(i.split()[-3])
 
-        res, b0, trap = round(var['res'], 1), int(var['b0']/1000), int(var['trap']/1000)
+        if not time: res, b0, trap = round(var['res'], 1), int(var['b0']/1000), int(var['trap']/1000)
+        else: res, b0 = round(var['res'], 1), int(var['b0']/1000)
         print(var)
+
+        if time: return res, b0
 
         return res, b0, trap
     else:
+        if time: return 0, 0
         return 0, 0, 0
+
+# Timescan plot
+def get_skip_line(scanfile, location):
+    os.chdir(location)
+    with open(scanfile, 'r') as f:
+        skip = 0
+        for line in f:
+            if len(line)>1:
+                line = line.strip()
+                if line == 'ALL:':
+                    print(f'\n{line} found at line no. {skip+1}\n')
+                    return skip + 1
+            skip += 1
+    return f'ALL: is not found in the file'
+
+def get_iterations(scanfile, location):
+    os.chdir(location)
+    iterations = np.array([])
+    with open(scanfile, 'r') as f:
+        for line in f:
+            if line.startswith('#mass'):
+                print(line)
+                iterations = np.append(iterations, line.split(':')[-1]).astype(np.int64)
+            else: continue
+    return iterations
 
 ############################# FELion Tkinter Class #############################
 
