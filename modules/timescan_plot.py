@@ -1,7 +1,5 @@
 #!/usr/bin/python3
 
-# Importing Modules
-
 # Built-In modules
 import os
 
