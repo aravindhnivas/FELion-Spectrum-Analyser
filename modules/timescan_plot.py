@@ -86,7 +86,7 @@ def timescanplot(scanfile, location, dpi, parent, depletion = False):
     ####################################### Tkinter figure #######################################
 
     ## Embedding figure to tkinter Toplevel
-    title_name = f'Timescan" {scanfile}'
+    title_name = f'Timescan: {scanfile}'
     root = Toplevel(parent)
     tk_widget = FELion_Toplevel(root, title_name, location)
 
