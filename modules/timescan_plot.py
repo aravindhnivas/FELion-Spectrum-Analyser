@@ -86,7 +86,7 @@ def timescanplot(scanfile, location, dpi, parent, depletion = False):
     ####################################### Tkinter figure #######################################
 
     ## Embedding figure to tkinter Toplevel
-    title_name = 'Timescan'
+    title_name = f'Timescan" {scanfile}'
     root = Toplevel(parent)
     tk_widget = FELion_Toplevel(root, title_name, location)
 
@@ -97,7 +97,7 @@ def timescanplot(scanfile, location, dpi, parent, depletion = False):
 
     ax.errorbar(time, unp.nominal_values(sum_mean_with_error), unp.std_devs(sum_mean_with_error), fmt = '--', label = f'SUM TOTAL', color = 'k')
     for i in range(run):
-        lg = "%.2f:[%i]; B0: %i ms, Res: %i"%(mass[i], iterations[i], t_b0, t_res)
+        lg = f'{mass[i]}[{iterations[i]}]; B0: {t_b0}ms; Res: {t_res}'
         ax.errorbar(time, mean[i], error[i], fmt='.-', label = lg)
         
     ax.set_title('Time Scan plot for %s'%scanfile)
