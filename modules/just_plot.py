@@ -72,11 +72,14 @@ def power_plot(powerfile, powerfiles, combine, location, dpi, parent):
 
         if combine:
                 if powerfiles == []: 
-                        return ErrorInfo('No File', 'Please Select some powerfiles to plot')
+                        return ErrorInfo('Combine Mode active', 'Please Select some powerfiles to plot')
                 for file in powerfiles:
                         powerplot(file)
                         
-        else: powerplot(powerfile)
+        else: 
+                if powerfile == '': 
+                        return ErrorInfo('No File', 'Please Select a powerfile to plot')
+                powerplot(powerfile)
         
         ####################################### END Plotting details #######################################
 
