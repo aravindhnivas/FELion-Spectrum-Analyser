@@ -11,7 +11,7 @@ from scipy.signal import savgol_filter as fit
 from tkinter import Toplevel
 
 # FELion Module
-from FELion_definitions import colors, FELion_Toplevel
+from FELion_definitions import colors, FELion_Toplevel, ErrorInfo
 
 # Built-In Module
 import os
@@ -20,7 +20,7 @@ from os.path import isfile, dirname
 ####################################### Modules Imported #######################################
 
 
-def power_plot(powerfiles, location, dpi, parent):
+def power_plot(powerfile, powerfiles, combine, location, dpi, parent):
 
         ####################################### Initialisation #######################################
         back_dir = dirname(location)
@@ -36,7 +36,7 @@ def power_plot(powerfiles, location, dpi, parent):
         ####################################### Tkinter figure #######################################
 
         ## Embedding figure to tkinter Toplevel
-        title_name = 'Plot'
+        title_name = 'PowerPlot'
         root = Toplevel(parent)
         tk_widget = FELion_Toplevel(root, title_name, location)
 
@@ -44,7 +44,8 @@ def power_plot(powerfiles, location, dpi, parent):
         ax = fig.add_subplot(111)
 
         ################################ PLOTTING DETAILS ########################################
-        for powerfile in powerfiles:
+
+        def powerplot(powerfile):
                 with open(f'./DATA/{powerfile}', 'r') as f:
                         for i in f:
                                 if i.find('#SHOTS')>=0:
@@ -59,22 +60,31 @@ def power_plot(powerfiles, location, dpi, parent):
                 x = temp[:,0]
 
                 power_extrapolated = power_file_extrapolate(x)
+
                 ax.plot(power_file[:,0], power_file[:,1], '.k')
                 ax.plot(x, power_extrapolated, '-', label = f'{powerfile} : {shots}')
-        
-        ax.legend()
-        ax.grid(True)
-        ax.set_title('Power change during scan')
-        ax.set_ylabel('Power (mJ)')
-        ax.set_xlabel('Wavenumber $cm^{-1}$')
 
+                ax.legend()
+                ax.grid(True)
+                ax.set_title('Power change during scan')
+                ax.set_ylabel('Power (mJ)')
+                ax.set_xlabel('Wavenumber $cm^{-1}$')
+
+        if combine:
+                if powerfiles == []: 
+                        return ErrorInfo('No File', 'Please Select some powerfiles to plot')
+                for file in powerfiles:
+                        powerplot(file)
+                        
+        else: powerplot(powerfile)
+        
         ####################################### END Plotting details #######################################
 
         canvas.draw() # drawing in the tkinter canvas: canvas drawing board
         
         ####################################### END Tkinter figure #######################################
 
-def plot(filelist, location, dpi, parent):
+def plot(filename, filelist, combine, location, dpi, parent):
 
         ####################################### Initialisation #######################################
         
@@ -93,17 +103,20 @@ def plot(filelist, location, dpi, parent):
         ax = fig.add_subplot(111)
 
         ####################################### PLOTTING DETAILS #######################################
-        n = 0
-        for i in filelist:   
-                data = genfromtxt(i)
+        if combine:
+                for i in filelist:   
+                        data = genfromtxt(i)
+                        x, y = data[:,0], data[:,1]
+                        ax.plot(x, y, label = i)
+        else:
+                data = genfromtxt(filename)
                 x, y = data[:,0], data[:,1]
-                
-                ax.plot(x, y, label = i)
+                ax.plot(x, y, label = filename)
 
         ax.legend()
-        ax.set_title('Plot')
-        ax.set_xlabel("Wavenumber(cm-1)")
-        ax.set_ylabel("Intensity")
+        ax.set_title('Plot XY')
+        ax.set_xlabel("X-Axis")
+        ax.set_ylabel("Y-Axis")
         ax.grid(True)
 
         ####################################### END Plotting details #######################################
