@@ -73,6 +73,8 @@ class FELion(Tk):
         def show_frame(self, cont):
 
                 frame = self.frames[cont]
+
+                print(f'cont: {cont!r}\n')
                 frame.tkraise()
 
         def open_dir(self, cnt, type_file):
