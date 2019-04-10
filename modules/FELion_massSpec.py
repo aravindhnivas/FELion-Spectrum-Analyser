@@ -82,8 +82,6 @@ def massSpec(*args):
             ax.xaxis.set_major_locator(MultipleLocator(major))
             ax.tick_params(axis='both', which='major', labelsize=majorTickSize)
 
-            
-
             ####################################### END Plotting details #######################################
 
             canvas.draw() # drawing in the tkinter canvas: canvas drawing board

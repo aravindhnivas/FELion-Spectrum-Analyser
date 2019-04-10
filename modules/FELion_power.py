@@ -116,7 +116,7 @@ def FELion_Power(powerfile, location, dpi, parent):
         #plot the power calibration line:
         ax.plot(X, powerWN.power(X), ls='-', c='m')
 
-        ax.set_title(f'Power and Number of shots in the {powerfile}.pow file')
+        ax.set_title(f'Power and Number of shots in the {powerfile} file')
         ax.set_xlim((xc.min()-70, xc.max()+70))
         ax.set_ylim((0, yc.max()*1.1))
         ax.set_xlabel("wn (cm-1)")
