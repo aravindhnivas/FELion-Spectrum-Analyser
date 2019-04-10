@@ -25,6 +25,7 @@ from matplotlib.figure import Figure
 
 # Built-In Modules
 from time import time as check_time
+import itertools as it
 
 ################################################# MODULES IMPORTED #################################################
 ####################################################################################################################
@@ -462,11 +463,32 @@ class FELion_Toplevel():
         log_btn.place(relx = 0.1, rely =  0.3, relwidth = 0.5, relheight = 0.05)
         self.log.set(False)
 
-        update_btn = ttk.Button(self.widget_frame, text = 'Update Plot', command = lambda: self.log_redraw(ax))
+        update_btn = ttk.Button(self.widget_frame, text = 'Update Plot', command = lambda: self.update(ax))
         update_btn.place(relx = 0.1, rely =  0.4, relwidth = 0.5, relheight = 0.05)
 
-    def log_redraw(self, ax):
+    def check_button_maker(self, text):
+        
+        self.check_dict = {}
+        position_change = it.cycle([True, True, False])
+        y = 0.4
+        x = 0.1
+        for i in text:
+            self.check_dict[f'{i}_value'] = BooleanVar()
+            self.check_dict[i] = ttk.Checkbutton(self.widget_frame, text = i, variable = self.check_dict[f'{i}_value'])
+            self.check_dict[i].place(relx = x, rely = y, relwidth = 0.25, relheight = 0.05)
+            self.check_dict[f'{i}_value'].set(True)
+            
+            if next(position_change): 
+                x += 0.25
+            else: 
+                x = 0.1 
+                y += 0.05
+        
+    def get_check_values(self):
+        return self.check_dict
 
+    def update(self, ax, plot = False):
+        
         t0 = check_time()
 
         if self.log.get(): 
@@ -474,7 +496,7 @@ class FELion_Toplevel():
         else: 
             ax.set_yscale('linear')
             ax.ticklabel_format(style='sci', axis='y', scilimits = (0, 0))
-             
+            
         self.canvas.draw()
 
         t1 = check_time()

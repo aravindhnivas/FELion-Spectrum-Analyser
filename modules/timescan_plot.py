@@ -43,6 +43,7 @@ def timescanplot(scanfile, location, dpi, parent, depletion = False):
     j = 0
     mean, error = [], []
     mass = []
+    data_dict = {}
     for num, iteration in enumerate(iterations):
         
         k = iteration*cycle
@@ -57,6 +58,10 @@ def timescanplot(scanfile, location, dpi, parent, depletion = False):
         mass = np.append(mass, mass_value)
         mean = np.append(mean, mass_sort)
         error = np.append(error, error_sort)
+
+        # Saving it in dictionary
+        data_dict[f'{mass_value}'] = mass_sort
+        data_dict[f'{mass_value}_error'] = error_sort
         
         j = k + j
         
@@ -95,21 +100,67 @@ def timescanplot(scanfile, location, dpi, parent, depletion = False):
 
     fig, canvas = tk_widget.figure(dpi, figsize=(15,5))
     ax = fig.add_subplot(111)
+    
+    frame = tk_widget.get_widget_frame()
+
+    log = BooleanVar()
+    log_btn = ttk.Checkbutton(frame, text = 'Log', variable = log)
+    log_btn.place(relx = 0.1, rely =  0.3, relwidth = 0.5, relheight = 0.05)
+    log.set(False)
+
     ####################################### PLOTTING DETAILS #######################################
 
-    ax.errorbar(time, unp.nominal_values(sum_mean_with_error), unp.std_devs(sum_mean_with_error), fmt = '--', label = f'SUM TOTAL', color = 'k')
-    for i in range(run):
-        lg = f'{mass[i]}[{iterations[i]}]; B0: {t_b0}ms; Res: {t_res}'
-        ax.errorbar(time, mean[i], error[i], fmt='.-', label = lg)
+    check_text = mass.astype(str)
+    tk_widget.check_button_maker(check_text)
 
+    ax.errorbar(time, unp.nominal_values(sum_mean_with_error), unp.std_devs(sum_mean_with_error), fmt = '--', label = f'SUM TOTAL', color = 'k')
+    
+    axes = {}
+    for n, i in enumerate(check_text):
+        lg = f'{mass[n]}[{iterations[n]}]; B0: {t_b0}ms; Res: {t_res}'
+        axes[i] = ax.errorbar(time, mean[n], error[n], fmt='.-', label = lg)
+    
     # figure details      
     ax.set_title('Time Scan plot for %s'%scanfile)
     ax.set_xlabel('Time (ms)')
     ax.set_ylabel('Counts')
     ax.legend()
     ax.grid(True)
+
+    def update():
+        t0 = check_time()
+
+        ax.clear()
+        ax.errorbar(time, unp.nominal_values(sum_mean_with_error), unp.std_devs(sum_mean_with_error), fmt = '--', label = f'SUM TOTAL', color = 'k')
+        check_dict = tk_widget.get_check_values()
+        for n, i in enumerate(check_text):
+            if check_dict[f'{i}_value'].get():
+                lg = f'{mass[n]}[{iterations[n]}]; B0: {t_b0}ms; Res: {t_res}'
+                ax.errorbar(time, mean[n], error[n], fmt='.-', label = lg)
+        
+        ax.set_title('Time Scan plot for %s'%scanfile)
+        ax.set_xlabel('Time (ms)')
+        ax.set_ylabel('Counts')
+        ax.legend()
+        ax.grid(True)
+
+        t0 = check_time()
+
+        if log.get(): 
+            ax.set_yscale('log')
+        else: 
+            ax.set_yscale('linear')
+            ax.ticklabel_format(style='sci', axis='y', scilimits = (0, 0))
+
+        canvas.draw()
+
+        t1 = check_time()
+
+        print(f'Redrawn in {(t1-t0)*100:.2f} ms')
+
+    update_btn = ttk.Button(frame, text = 'Update Plot', command = lambda: update())
+    update_btn.place(relx = 0.2, rely =  0.6, relwidth = 0.5, relheight = 0.05)
     
-    tk_widget.add_log_btn(ax)
 
     ####################################### END Plotting details #######################################
     canvas.draw() # drawing in the tkinter canvas: canvas drawing board
@@ -118,3 +169,6 @@ def timescanplot(scanfile, location, dpi, parent, depletion = False):
 
     time_log = (t1-t0)*100
     print(f'Timescan plot completed in {time_log:.2f} ms\n')
+
+
+
