@@ -341,13 +341,14 @@ class Plot(Frame):
                 for name, pages_n in zip(pages, pages_name):
                         self.widget.buttons(name , x, y, controller.show_frame, pages_n)
                         x += 0.15
-        
+
                 self.widget.buttons('Browse' , 0.1, 0.1, controller.open_dir, self, all_files_type)
                 self.widget.labels('Filename', 0.1, 0.24)
 
                 self.location_label = self.widget.labels(self.location, 0.22, 0.14, bd = 0, relwidth = 0.7, relheight = 0.06)
                 self.fname_label = self.widget.labels(self.fname, 0.22, 0.24, bd = 0, relwidth = 0.15, relheight = 0.06)
-
+                
+                self.combine = self.widget.entries('Check', 'Combine', 0.22, 0.34, default = False)
                 self.widget.buttons('Select File(s)' , 0.1, 0.34, controller.openfilelist, self, all_files_type)
                 self.flist_label = self.widget.labels('Filelists', 0.1, 0.55, bd = 0, relwidth = 0.15, relheight = 0.2)
 
@@ -378,11 +379,11 @@ class Plot(Frame):
 
         def powerplot_func(self):
                 power_plot(
-                        self.filelist, self.location, self.dpi.get(), self.parent
+                        self.fname, self.filelist, self.combine.get(), self.location, self.dpi.get(), self.parent
                 )
         def just_plot_func(self):
                 plot(
-                        self.filelist, self.location, self.dpi.get(), self.parent
+                        self.fname, self.filelist, self.combine.get(), self.location, self.dpi.get(), self.parent
                 )
         def avg_theory_func(self):
                 exp_theory(
