@@ -137,19 +137,17 @@ welcome_msg = """
 The FELion Spectrum analyser for analysing FELIX data using Python;
 
 It consists: the following functions:
-    1. Normline and Average Spectrum Plot
+    1. Norm and Avg: For Baseline correction, SpectrumPlot, Average Plot
     2. Mass Spectrum Plot
     3. Powerfile Generator
-    4. Plot (For general X,Y plots:)
+    4. Plot (For Timescanplot, depletion plot, theory-avg plot and general X,Y plots:)
     5. Update Program (For updating to the latest version from github)
-
-NOTE: Before using Normline and Average Spectrum plot functions: 
-Make sure you already did "Baseline Correction" using "FELion_Baseline" Program
 
 If error: Maybe, try to avoid using //server as the location
 
-The processed raw data output files can be found in "EXPORT" and "DATA" folder.
-The processed output files can be found in "OUT" and "MassSpec_DATA"
+The felix datas are saved/moved into "DATA" folder.
+The processed raw data output files can be found in "EXPORT".
+The processed output files can be found in "OUT".
 
 Report bug/suggestion: aravindh@science.ru.nl
 """
