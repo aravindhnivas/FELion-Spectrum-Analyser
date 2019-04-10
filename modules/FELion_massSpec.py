@@ -30,24 +30,19 @@ def massSpec(*args):
     combine, fname, filelist, dpi, parent = args
 
     try:
+
         ####################################### Initialisation #######################################
+
         os.chdir(location)
         my_path = os.getcwd()
 
-        if not isdir("MassSpec_DATA"):
-            os.mkdir("MassSpec_DATA")
-        if fname.find(".mass")>=0:
-            fname = fname.split(".")[0]
+        if fname.find(".mass")>=0: fname = fname.split(".")[0]
+        else: return ShowInfo('No .mass file', 'Please select a .mass file.')
 
         if not combine:
+
             filename = fname + ".mass"
             res, b0, trap = var_find(filename, location)
-
-            if not os.path.isdir("MassSpec_DATA"):
-                os.mkdir("MassSpec_DATA")
-                shutil.copyfile(my_path + "/{}".format(filename), my_path + "/MassSpec_DATA/{}".format(filename))
-            else:
-                shutil.copyfile(my_path + "/{}".format(filename), my_path + "/MassSpec_DATA/{}".format(filename))
            
             mass = np.genfromtxt(filename)
             x, y = mass[:,0], mass[:,1]
@@ -57,15 +52,15 @@ def massSpec(*args):
             ####################################### Tkinter figure #######################################
 
             ## Embedding figure to tkinter Toplevel
-            title_name = 'Mass Spec Single'
+            title_name = f'Mass Spec: {filename}'
             root = Toplevel(parent)
             tk_widget = FELion_Toplevel(root, title_name, location)
 
             fig, canvas = tk_widget.figure(dpi, figsize = (fwidth, fheight))
             ax = fig.add_subplot(111)
+            tk_widget.add_log_btn(ax)
 
             ####################################### PLOTTING DETAILS #######################################
-            tk_widget.add_log_btn(ax)
 
             ax.semilogy(x, y, label = f'{fname}: Res: {res}; B0: {b0}ms; Trap: {trap}ms')
             cursor = Cursor(ax, useblit=True, color='red', linewidth=1)
@@ -89,6 +84,7 @@ def massSpec(*args):
             ####################################### END Tkinter figure #######################################
 
         if combine:
+
             if filelist == []: 
                 return ErrorInfo("Select Files: ", "Click Select File(s)")
 
@@ -98,13 +94,13 @@ def massSpec(*args):
             title_name1 = 'Mass Spec Combined'
             root1 = Toplevel(parent)
             tk_widget1 = FELion_Toplevel(root1, title_name1, location)
-
+            
             fig1, canvas1 = tk_widget1.figure(dpi, figsize = (fwidth, fheight))
             ax1 = fig1.add_subplot(111)
+            tk_widget1.add_log_btn(ax1)
 
             ####################################### PLOTTING DETAILS #######################################
             
-            tk_widget1.add_log_btn(ax1)
             for file in filelist:
                 res, b0, trap = var_find(file, location)
 
