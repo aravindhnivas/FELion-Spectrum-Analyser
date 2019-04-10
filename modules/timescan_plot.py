@@ -109,16 +109,13 @@ def timescanplot(scanfile, location, dpi, parent, depletion = False):
     log.set(False)
 
     ####################################### PLOTTING DETAILS #######################################
-
     check_text = mass.astype(str)
-    tk_widget.check_button_maker(check_text)
 
+    tk_widget.check_button_maker(check_text)
     ax.errorbar(time, unp.nominal_values(sum_mean_with_error), unp.std_devs(sum_mean_with_error), fmt = '--', label = f'SUM TOTAL', color = 'k')
-    
-    axes = {}
     for n, i in enumerate(check_text):
         lg = f'{mass[n]}[{iterations[n]}]; B0: {t_b0}ms; Res: {t_res}'
-        axes[i] = ax.errorbar(time, mean[n], error[n], fmt='.-', label = lg)
+        ax.errorbar(time, mean[n], error[n], fmt='.-', label = lg)
     
     # figure details      
     ax.set_title('Time Scan plot for %s'%scanfile)
@@ -161,14 +158,8 @@ def timescanplot(scanfile, location, dpi, parent, depletion = False):
     update_btn = ttk.Button(frame, text = 'Update Plot', command = lambda: update())
     update_btn.place(relx = 0.2, rely =  0.6, relwidth = 0.5, relheight = 0.05)
     
-
     ####################################### END Plotting details #######################################
     canvas.draw() # drawing in the tkinter canvas: canvas drawing board
     ####################################### END Tkinter figure #######################################
     t1 = check_time()
-
-    time_log = (t1-t0)*100
-    print(f'Timescan plot completed in {time_log:.2f} ms\n')
-
-
-
+    print(f'Timescan plot completed in {(t1-t0)*100:.2f} ms\n')
