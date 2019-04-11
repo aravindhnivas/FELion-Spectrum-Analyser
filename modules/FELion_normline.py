@@ -18,8 +18,6 @@ from FELion_definitions import ShowInfo, ErrorInfo, filecheck, move, FELion_Topl
 # Tkinter Modules
 from tkinter import Toplevel
 
-import matplotlib.pyplot as plt
-
 ################################################################################
 
 def export_file(fname, wn, inten):
