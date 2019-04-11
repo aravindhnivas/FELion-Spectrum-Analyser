@@ -12,7 +12,10 @@ from tkinter.messagebox import askokcancel
 import numpy as np
 
 # Built-In Modules
-import os, shutil, tempfile, git, subprocess, sys
+from time import time as check_time
+import itertools as it
+
+import os, shutil, tempfile, subprocess, sys
 from os.path import isdir, dirname, join, isfile
 import datetime
 
@@ -23,9 +26,8 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolb
 from matplotlib.backend_bases import key_press_handler
 from matplotlib.figure import Figure
 
-# Built-In Modules
-from time import time as check_time
-import itertools as it
+# Other Modules
+import git
 
 ################################################# MODULES IMPORTED #################################################
 ####################################################################################################################
