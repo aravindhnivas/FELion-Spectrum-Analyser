@@ -33,6 +33,10 @@ if '%errorlevel%' NEQ '0' (
 
 :: Installation Script
 
+call activate base
+call python -m pip install gitpython
+call python -m pip install uncertainties
+
 python compile.py
 ROBOCOPY %cd%\modules C:\FELion-GUI\software
 
