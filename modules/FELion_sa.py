@@ -15,7 +15,6 @@ from FELion_definitions import FELion_Toplevel
 from FELion_baseline_old import felix_read_file
 
 # Built-In Module
-import copy 
 import os
 from os.path import dirname
 ####################################### Modules Imported #######################################
