@@ -54,7 +54,7 @@ del %SCRIPT%
 
 
 ROBOCOPY C:\FELion-GUI\software "C:\Users\Public\Desktop" FELion-GUI.lnk
-ROBOCOPY C:\FELion-GUI\software "C:\ProgramData\Microsoft\Windows\Start Menu\Programs" FELion-Normline.lnk
+ROBOCOPY C:\FELion-GUI\software "C:\ProgramData\Microsoft\Windows\Start Menu\Programs" FELion-GUI.lnk
 
 echo "######################################################################################"
 echo "Installation Completed: Shorcuts created on Desktop and Start Menu"
