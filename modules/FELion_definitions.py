@@ -464,12 +464,11 @@ class FELion_Toplevel():
         update_btn = ttk.Button(self.widget_frame, text = 'Update Plot', command = lambda: self.update(ax))
         update_btn.place(relx = 0.1, rely =  0.4, relwidth = 0.5, relheight = 0.05)
 
-    def check_button_maker(self, text):
+    def check_button_maker(self, text, x, y):
         
         self.check_dict = {}
         position_change = it.cycle([True, True, False])
-        y = 0.4
-        x = 0.1
+        
         for i in text:
             self.check_dict[f'{i}_value'] = BooleanVar()
             self.check_dict[i] = ttk.Checkbutton(self.widget_frame, text = i, variable = self.check_dict[f'{i}_value'])
