@@ -111,7 +111,7 @@ def timescanplot(scanfile, location, dpi, parent, depletion = False):
     ####################################### PLOTTING DETAILS #######################################
     check_text = mass.astype(str)
 
-    tk_widget.check_button_maker(check_text)
+    tk_widget.check_button_maker(check_text, x = 0.1, y = 0.4)
     ax.errorbar(time, unp.nominal_values(sum_mean_with_error), unp.std_devs(sum_mean_with_error), fmt = '--', label = f'SUM TOTAL', color = 'k')
     for n, i in enumerate(check_text):
         lg = f'{mass[n]}[{iterations[n]}]; B0: {t_b0}ms; Res: {t_res}'
