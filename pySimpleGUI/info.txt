@@ -1,0 +1,90 @@
+import PySimpleGUI as sg
+
+# GUI Design Pattern
+
+# The stuff that tends not to change in GUIs are the calls that setup and show the Window. 
+# It's the layout of the Elements that changes from one program to another. 
+# This is the code from above with the layout removed:
+
+# import PySimpleGUI as sg    
+# # Define your window here (it's a list of lists)    
+# layout = [[ your layout ]]    
+# window = sg.Window('Simple data entry window').Layout(layout)       
+# button, values = window.Read()
+
+
+layout = [      
+          [sg.Text('Please enter your Name, Address, Phone')],      
+          [sg.Text('Name', size=(15, 1)), sg.InputText('name')],      
+          [sg.Text('Address', size=(15, 1)), sg.InputText('address')],      
+          [sg.Text('Phone', size=(15, 1)), sg.InputText('phone')],      
+          [sg.Submit(), sg.Cancel()]      
+         ]
+
+window = sg.Window('Simple data entry window').Layout(layout)         
+button, values = window.Read()
+
+print(values[0], values[1], values[2])
+
+# Buttons including these types:        
+#       File Browse        
+#       Folder Browse     
+#       Color chooser    
+#       Date picker       
+#       Read window       
+#       Close window        
+#       Realtime      
+#   Checkbox     
+#   Radio Button    
+#   Listbox        
+#   Slider        
+#   Multi-line Text Input        
+#   Scroll-able Output        
+#   Progress Bar      
+#   Option Menu      
+#   Image    
+#   Menu    
+#   Frame    
+#   Column    
+#   Graph    
+#   Table    
+#   Tabbed windows        
+#   Redirected Python Output/Errors to scrolling Window
+
+# SHORTCUTS
+
+# T = Text    
+# Txt = Text    
+# In = InputText    
+# Input = IntputText    
+# Combo = DropDown = Drop = InputCombo    
+# DropDown = InputCombo    
+# Drop = InputCombo    
+# OptionMenu = InputOptionMenu    
+# CB - CBox = Check = Checkbox    
+# RButton = ReadButton   
+# Button = SimpleButton
+
+# Button Shortcuts
+
+# FolderBrowse    
+# FileBrowse    
+# FilesBrowse    
+# FileSaveAs    
+# Save    
+# Open    
+# Submit    
+# OK    
+# Ok    
+# Cancel    
+# Quit    
+# Help    
+# Exit    
+# Yes    
+# No
+
+# Generic Buttons
+
+# Button    
+# RButton (ReadButton)    
+# RealtimeButton
