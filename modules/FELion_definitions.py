@@ -113,14 +113,11 @@ def is_admin():
 
 def update(*args):
     try:
-        
+
         t = "C:/FELion_update_cache"
         git.Repo.clone_from('https://github.com/aravindhnivas/FELion-Spectrum-Analyser', t, branch='master', depth=1)
         recursive_overwrite(os.path.join(t, 'modules'), 'C:/FELion-GUI/software')
-        if is_admin(): subprocess.call(["ROBOCOPY", r"C:\FELion-GUI\software", r"C:\Users\Public\Desktop", "FELion-GUI.lnk"])
-        else: ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, __file__, None, 1)
         ShowInfo("UPDATED", "Program is updated to the latest version.\nPlease restart the program.")
-        
 
     except Exception as e:
         ErrorInfo("ERROR: ", e)
