@@ -1,9 +1,11 @@
 #!/usr/bin/python3
 
+# Modules
+
 # Built-In Modules
 from time import time as check_time
 import itertools as it
-import os, shutil, datetime
+import os, shutil, datetime, sys, subprocess
 from os.path import isdir, dirname, join, isfile
 
 # Data Analysis
@@ -107,6 +109,7 @@ def update(*args):
         t = "C:/FELion_update_cache"
         git.Repo.clone_from('https://github.com/aravindhnivas/FELion-Spectrum-Analyser', t, branch='master', depth=1)
         recursive_overwrite(os.path.join(t, 'modules'), 'C:/FELion-GUI/software')
+        subprocess.call([sys.executable, "ROBOCOPY", r"C:\FELion-GUI\software", r"C:\Users\Public\Desktop", "FELion-GUI.lnk"])
         ShowInfo("UPDATED", "Program is updated to the latest version.\nPlease restart the program.")
 
     except Exception as e:
@@ -468,7 +471,7 @@ class FELion_Toplevel():
         
         self.check_dict = {}
         position_change = it.cycle([True, True, False])
-        
+
         for i in text:
             self.check_dict[f'{i}_value'] = BooleanVar()
             self.check_dict[i] = ttk.Checkbutton(self.widget_frame, text = i, variable = self.check_dict[f'{i}_value'])
