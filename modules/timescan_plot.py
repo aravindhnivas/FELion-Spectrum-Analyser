@@ -133,6 +133,7 @@ def timescanplot(scanfile, location, dpi, parent, depletion = False):
 
         counter = 0
         for n, i in enumerate(check_text):
+
             if check_dict[f'{i}_value'].get():
 
                 temp_mean.append(mean[n])
@@ -144,8 +145,10 @@ def timescanplot(scanfile, location, dpi, parent, depletion = False):
 
         temp_mean_with_error = unp.uarray(temp_mean, temp_error)
         temp_sum_mean_with_error = temp_mean_with_error.sum(axis = 0)
+
         if counter>1: ax.errorbar(time, unp.nominal_values(temp_sum_mean_with_error), unp.std_devs(temp_sum_mean_with_error), fmt = '--', label = f'SUM TOTAL', color = 'k')
         
+        # figure details
         ax.set_title('Time Scan plot for %s'%scanfile)
         ax.set_xlabel('Time (ms)')
         ax.set_ylabel('Counts')
@@ -169,7 +172,10 @@ def timescanplot(scanfile, location, dpi, parent, depletion = False):
     update_btn.place(relx = 0.2, rely =  0.4, relwidth = 0.5, relheight = 0.05)
     
     ####################################### END Plotting details #######################################
-    canvas.draw() # drawing in the tkinter canvas: canvas drawing board
+    
+    canvas.draw()
+
     ####################################### END Tkinter figure #######################################
+    
     t1 = check_time()
     print(f'Timescan plot completed in {(t1-t0)*100:.2f} ms\n')
