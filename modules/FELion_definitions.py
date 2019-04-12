@@ -5,7 +5,7 @@
 # Built-In Modules
 from time import time as check_time
 import itertools as it
-import os, shutil, datetime, sys, subprocess
+import os, shutil, datetime, sys, subprocess, ctypes
 from os.path import isdir, dirname, join, isfile
 
 # Data Analysis
@@ -104,16 +104,33 @@ def recursive_overwrite(src, dest, ignore=None):
     else:
         shutil.copyfile(src, dest)
 
+
+def is_admin():
+    try:
+        return ctypes.windll.shell32.IsUserAnAdmin()
+    except:
+        return False
+
 def update(*args):
     try:
-        t = "C:/FELion_update_cache"
-        git.Repo.clone_from('https://github.com/aravindhnivas/FELion-Spectrum-Analyser', t, branch='master', depth=1)
-        recursive_overwrite(os.path.join(t, 'modules'), 'C:/FELion-GUI/software')
-        subprocess.call(["ROBOCOPY", r"C:\FELion-GUI\software", r"C:\Users\Public\Desktop", "FELion-GUI.lnk"])
-        ShowInfo("UPDATED", "Program is updated to the latest version.\nPlease restart the program.")
+        if is_admin():
+            t = "C:/FELion_update_cache"
+            git.Repo.clone_from('https://github.com/aravindhnivas/FELion-Spectrum-Analyser', t, branch='master', depth=1)
+            recursive_overwrite(os.path.join(t, 'modules'), 'C:/FELion-GUI/software')
+            subprocess.call(["ROBOCOPY", r"C:\FELion-GUI\software", r"C:\Users\Public\Desktop", "FELion-GUI.lnk"])
+            ShowInfo("UPDATED", "Program is updated to the latest version.\nPlease restart the program.")
+        else:
+            ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, __file__, None, 1)
 
     except Exception as e:
         ErrorInfo("ERROR: ", e)
+
+
+
+
+
+
+    
 
 ####################################################################################################################
 
