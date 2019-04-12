@@ -107,7 +107,7 @@ def timescanplot(scanfile, location, dpi, parent, depletion = False):
     check_text = mass.astype(str)
 
     tk_widget.check_button_maker(check_text, x = 0.1, y = 0.5)
-    ax.errorbar(time, unp.nominal_values(sum_mean_with_error), unp.std_devs(sum_mean_with_error), fmt = '--', label = f'SUM TOTAL', color = 'k')
+    if len(mass)>1: ax.errorbar(time, unp.nominal_values(sum_mean_with_error), unp.std_devs(sum_mean_with_error), fmt = '--', label = f'SUM TOTAL', color = 'k')
     
     for n, i in enumerate(check_text):
         
@@ -122,6 +122,8 @@ def timescanplot(scanfile, location, dpi, parent, depletion = False):
     ax.grid(True)
 
     def update():
+
+        # Start Time
         t0 = check_time()
 
         ax.clear()
@@ -129,6 +131,7 @@ def timescanplot(scanfile, location, dpi, parent, depletion = False):
 
         temp_mean, temp_error = [], []
 
+        counter = 0
         for n, i in enumerate(check_text):
             if check_dict[f'{i}_value'].get():
 
@@ -137,18 +140,17 @@ def timescanplot(scanfile, location, dpi, parent, depletion = False):
 
                 lg = f'{mass[n]}[{iterations[n]}]; B0: {t_b0}ms; Res: {t_res}'
                 ax.errorbar(time, mean[n], error[n], fmt='.-', label = lg)
+                counter += 1
 
         temp_mean_with_error = unp.uarray(temp_mean, temp_error)
         temp_sum_mean_with_error = temp_mean_with_error.sum(axis = 0)
-        ax.errorbar(time, unp.nominal_values(temp_sum_mean_with_error), unp.std_devs(temp_sum_mean_with_error), fmt = '--', label = f'SUM TOTAL', color = 'k')
+        if counter>1: ax.errorbar(time, unp.nominal_values(temp_sum_mean_with_error), unp.std_devs(temp_sum_mean_with_error), fmt = '--', label = f'SUM TOTAL', color = 'k')
         
         ax.set_title('Time Scan plot for %s'%scanfile)
         ax.set_xlabel('Time (ms)')
         ax.set_ylabel('Counts')
         ax.legend()
         ax.grid(True)
-
-        t0 = check_time()
 
         if log.get(): 
             ax.set_yscale('log')
@@ -158,6 +160,7 @@ def timescanplot(scanfile, location, dpi, parent, depletion = False):
 
         canvas.draw()
 
+        # END Time
         t1 = check_time()
 
         print(f'Redrawn in {(t1-t0)*100:.2f} ms')
