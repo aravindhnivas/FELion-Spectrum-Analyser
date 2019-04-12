@@ -112,22 +112,14 @@ def is_admin():
         return False
 
 def update(*args):
-    try:
 
+    try:
         t = "C:/FELion_update_cache"
         git.Repo.clone_from('https://github.com/aravindhnivas/FELion-Spectrum-Analyser', t, branch='master', depth=1)
         recursive_overwrite(os.path.join(t, 'modules'), 'C:/FELion-GUI/software')
         ShowInfo("UPDATED", "Program is updated to the latest version.\nPlease restart the program.")
-
     except Exception as e:
         ErrorInfo("ERROR: ", e)
-
-
-
-
-
-
-    
 
 ####################################################################################################################
 
