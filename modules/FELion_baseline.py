@@ -63,7 +63,7 @@ class Create_Baseline():
             if isfile(self.felixfile): move(self.location, self.felixfile)
             if isfile(self.basefile): move(self.location, self.basefile)
             if isfile(self.powerfile): move(self.location, self.powerfile)
-            if isfile(f'./POW/{self.powerfile}'): move(self.location, self.powerfile)
+            #if isfile(f'./POW/{self.powerfile}'): move(self.location, self.powerfile)
         
         self.checkInf()
 
