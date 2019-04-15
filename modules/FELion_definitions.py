@@ -449,10 +449,10 @@ class FELion_Toplevel():
         position_change = it.cycle([True, True, False])
 
         for i in text:
-            self.check_dict[f'{i}_value'] = BooleanVar()
-            self.check_dict[i] = ttk.Checkbutton(self.widget_frame, text = i, variable = self.check_dict[f'{i}_value'])
-            self.check_dict[i].place(relx = x, rely = y, relwidth = 0.25, relheight = 0.05)
-            self.check_dict[f'{i}_value'].set(True)
+            self.check_dict[i] = BooleanVar()
+            self.check_dict[f'check_box_m{i}'] = ttk.Checkbutton(self.widget_frame, text = i, variable = self.check_dict[i])
+            self.check_dict[f'check_box_m{i}'].place(relx = x, rely = y, relwidth = 0.25, relheight = 0.05)
+            self.check_dict[i].set(True)
             
             if next(position_change): 
                 x += 0.25
