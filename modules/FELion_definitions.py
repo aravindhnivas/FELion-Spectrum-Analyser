@@ -175,36 +175,6 @@ def var_check(kw):
             kw[i] = constants[i]
     return kw
 
-def outFile(fname, location, file):
-    try:
-        os.chdir(location)
-        my_path = os.getcwd()
-
-        def saveinfo():
-                os.chdir(location)
-                if os.path.isfile(my_path+"/Pow/{}.pow".format(fname)):
-                        ShowInfo("SAVED", "File %s.pow saved in /Pow directory"%fname)
- 
-        def write():
-                f = open(my_path+"/Pow/{}.pow".format(fname), "w")
-                f.write(file)
-                f.close()
-                saveinfo()
-
-        if not os.path.isdir("Pow"): os.mkdir("Pow") 
-
-        if os.path.isfile(my_path+"/Pow/{}.pow".format(fname)):
-                messagebox.showerror("OVERWRITE","File already exist")
-                if messagebox.askokcancel("OVERWRITE", \
-                        "Do yo want to overwrite the existing {}.pow file?".format(fname)):
-                        write()
-                        
-        else:
-                write()
-
-    except Exception as e:
-            ErrorInfo("ERROR", e)
-
 def var_find(fname, location, time = False):
     print(f'###############\nFile: {fname}\nLocation: {location}\n###############')
 
