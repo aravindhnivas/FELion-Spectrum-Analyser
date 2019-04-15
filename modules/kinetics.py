@@ -26,7 +26,6 @@ def kinetics(scanfile, location, dpi, parent):
     ####################################### Initialisation #######################################
 
     os.chdir(location)
-
     time, counts, masslist, iterations, res, b0 = timescanplot(scanfile, location, dpi, parent, kinetics = True)
     
     ####################################### END Initialisation #######################################
@@ -43,7 +42,6 @@ def kinetics(scanfile, location, dpi, parent):
     ax = fig.add_subplot(111)
 
     frame = tk_widget.get_widget_frame()
-    
     widget = FELion_widgets(frame)
 
     log = widget.entries('Check', 'Log', 0.1, 0.3, relwidth = 0.5, relheight = 0.05, default = False)
@@ -109,11 +107,8 @@ def kinetics(scanfile, location, dpi, parent):
     widget.buttons('Update', 0.1, 0.6, update, relwidth = 0.5, relheight = 0.05)
 
     ####################################### END Plotting details #######################################
-    
     canvas.draw()
-
     ####################################### END Tkinter figure #######################################
     
     t1 = check_time()
     print(f'Kinetics Simulation completed in {(t1-t0)*100:.2f} ms\n')
-
