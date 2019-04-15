@@ -314,6 +314,7 @@ class Powerfile(Frame):
                 self.location_label.config(text = self.location)
                 
         def save_powerfile(self):
+
                 os.chdir(self.location)
                 print(f'Filename: {self.filename.get()}.pow\nLocation: {self.location}\n')
 
@@ -322,10 +323,12 @@ class Powerfile(Frame):
                                 with open(f'./{self.filename.get()}.pow', 'w') as f:
                                         f.write(self.power.get("1.0", "end-1c"))
                                 ShowInfo('Saved', f'File {self.filename.get()}.pow saved.')
+                                print(f'File {self.filename.get()}.pow saved.\n')
                 else:
                         with open(f'./{self.filename.get()}.pow', 'w') as f:
                                 f.write(self.power.get("1.0", "end-1c"))
                         ShowInfo('Saved', f'File {self.filename.get()}.pow saved.')
+                        print(f'File {self.filename.get()}.pow saved.\n')
                 
 
 class Plot(Frame):
