@@ -12,6 +12,7 @@ import datetime
 from timescan_plot import timescanplot
 from depletion_plot import depletionPlot
 from just_plot import power_plot, plot, exp_theory
+from kinetics import kinetics
 from FELion_definitions import *
 
 #FELion modules
@@ -328,7 +329,6 @@ class Powerfile(Frame):
                         ShowInfo('Saved', f'File {self.filename.get()}.pow saved.')
                         print(f'File {self.filename.get()}.pow saved.\n')
                 
-
 class Plot(Frame):
 
         def __init__(self, parent, controller):
@@ -365,9 +365,10 @@ class Plot(Frame):
                 self.widget.labels('DPI', 0.65, 0.23)
                 self.dpi = self.widget.entries('Entry', 100, 0.75, 0.23, bd = 5)
 
-                self.widget.buttons('Timescan' , 0.4, 0.3, self.timescan_func,help = 'Plot timescan files')
-                self.widget.buttons('Depletion' , 0.52, 0.3, self.depletion_func, help = 'Select two timescan files to see the depletion; and enter power_on, power_off and n')
-                self.depletion_power = self.widget.entries('Entry',  'power_on, power_off, n_shots' , 0.65, 0.33, bd = 5, relwidth = 0.25, help = 'Enter Power_ON, Power_OFF and N_Shots (comma separated)')
+                self.widget.buttons('Timescan' , 0.4, 0.3, self.timescan_func, help = 'Plot timescan files')
+                self.widget.buttons('kinetics' , 0.52, 0.3, self.kinetics_func, help = 'Simulate kinetics of the reaction from Timescan file')
+                self.widget.buttons('Depletion' , 0.65, 0.3, self.depletion_func, help = 'Select two timescan files to see the depletion; and enter power_on, power_off and n')
+                self.depletion_power = self.widget.entries('Entry',  'power_on, power_off, n_shots' , 0.65, 0.4, bd = 5, relwidth = 0.25, help = 'Enter Power_ON, Power_OFF and N_Shots (comma separated)')
                 
                 self.widget.buttons('PowerPlot' , 0.4, 0.4, self.powerplot_func, help = 'For plotting .pow files')
                 self.widget.buttons('JustPlot' , 0.52, 0.4, self.just_plot_func, help = 'Use it to plot any data file(s) with two columns')
@@ -380,6 +381,10 @@ class Plot(Frame):
 
         def timescan_func(self):
                 timescanplot(
+                        self.fname, self.location, self.dpi.get(), self.parent
+                )
+        def kinetics_func(self):
+                kinetics(
                         self.fname, self.location, self.dpi.get(), self.parent
                 )
         def depletion_func(self):
