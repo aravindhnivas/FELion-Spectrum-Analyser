@@ -55,10 +55,11 @@ def kinetics(scanfile, location, dpi, parent):
     He = widget.entries('Entry', '# density', 0.4, 0.5, relwidth = 0.4, relheight = 0.05, bd = 5)
     
     tk_widget.check_button_maker(masslist, x = 0.1, y = 0.7)
-    
+
     ####################################### PLOTTING DETAILS #######################################
 
     def plot():
+        
         mass_check = tk_widget.get_check_values()
 
         temp_mean, temp_error = [], []
