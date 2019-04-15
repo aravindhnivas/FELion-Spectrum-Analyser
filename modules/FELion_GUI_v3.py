@@ -1,7 +1,5 @@
 #!/usr/bin/python3
 
-## Imported Modules Informations
-
 # tkinter modules
 from tkinter import Frame, Label, SUNKEN, PhotoImage, ttk, messagebox
 
@@ -408,7 +406,6 @@ def on_closing():
         app.destroy()
 
 ###################################################################################################################################################
-
 app = FELion()
 app.tk.call('tk', 'scaling', 4.0)
 
@@ -425,5 +422,4 @@ restart.place(relx = 0.95, rely = 0.05)
 power.place(relx = 0.95, rely = 0.15)
 
 app.mainloop()
-
 ###################################################################################################################################################
