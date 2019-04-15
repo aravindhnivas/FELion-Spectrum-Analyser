@@ -307,13 +307,13 @@ class Powerfile(Frame):
                 self.quote = """#POWER file\n# 10 Hz FELIX\n#\n#SHOTS=26\n#INTERP=linear\n#    IN_no_UM (if one deletes the "no" the firs number will be in \mu m\n# wavelength/cm-1      energy/pulse/mJ\n"""
                 self.power = self.widget.entries('power_box', self.quote, 0.15, 0.4)
 
-                self.widget.buttons('Save' , 0.5, 0.3, self.power_box)
+                self.widget.buttons('Save' , 0.5, 0.3, self.save_powerfile)
       
         def open_full_dir(self, x, y):
                 self.location = self.widget.open_full_dir()
                 self.location_label.config(text = self.location)
                 
-        def power_box(self):
+        def save_powerfile(self):
                 os.chdir(self.location)
                 print(f'Filename: {self.filename.get()}.pow\nLocation: {self.location}\n')
 
