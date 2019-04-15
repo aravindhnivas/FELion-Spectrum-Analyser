@@ -7,7 +7,7 @@ from tkinter import Frame, Label, SUNKEN, PhotoImage, ttk, messagebox
 
 # Built-In modules
 import os
-from os.path import join
+from os.path import join, isfile, isdir
 import datetime
 
 # Custom function modules
@@ -314,7 +314,19 @@ class Powerfile(Frame):
                 self.location_label.config(text = self.location)
                 
         def power_box(self):
-                outFile(self.filename.get(), self.location, self.power.get("1.0", "end-1c"))
+                os.chdir(self.location)
+                print(f'Filename: {self.filename.get()}.pow\nLocation: {self.location}\n')
+
+                if isfile(f'./{self.filename.get()}.pow'): 
+                        if messagebox.askokcancel('Overwrite?',f'File {self.filename.get()}.pow already exist.\nDo you want to overwrite?'):
+                                with open(f'./{self.filename.get()}.pow', 'w') as f:
+                                        f.write(self.power.get("1.0", "end-1c"))
+                                ShowInfo('Saved', f'File {self.filename.get()}.pow saved.')
+                else:
+                        with open(f'./{self.filename.get()}.pow', 'w') as f:
+                                f.write(self.power.get("1.0", "end-1c"))
+                        ShowInfo('Saved', f'File {self.filename.get()}.pow saved.')
+                
 
 class Plot(Frame):
 
