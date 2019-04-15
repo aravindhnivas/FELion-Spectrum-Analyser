@@ -100,7 +100,7 @@ class Create_Baseline():
         if self.felixfile.endswith('.felix'): data = file[:,0], file[:,2], file[:, 3]
         elif self.felixfile.endswith('.cfelix'): data = file[:,0], file[:,1], file[:, 2]
         else: return ErrorInfo('FELIX FILE', 'Please select a .felix or .cfelix file')
-        with open(f'./DATA/{self.felixfile}') as f: self.info = f.readlines()[len(data[0])+2:]
+        with open(f'./DATA/{self.felixfile}') as f: self.info = f.readlines()[-50:]
         self.data = np.take(data, data[0].argsort(), 1)
 
     def checkInf(self):
