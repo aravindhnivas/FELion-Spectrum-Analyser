@@ -17,7 +17,7 @@ from time import time as check_time
 from tkinter import Toplevel, ttk, BooleanVar
 
 # FELion Modules
-from FELion_definitions import FELion_Toplevel, FELion_widgets, ErrorInfo
+from FELion_definitions import FELion_Toplevel, FELion_widgets, ErrorInfo, ShowInfo
 
 ####################################### Modules Imported #######################################
 
@@ -101,24 +101,23 @@ def kinetics(scanfile, location, dpi, parent):
 
     def fit():
 
-        try:
+        temp = eq.get().strip().split('=')
 
-            temp = eq.get().strip().split('=')
+        fit_mass = eval(temp[0])
+        var = k.get()
+        fit_eq = func(f'({temp[1]})*time', independent_variable = f'time, {var}', m = m, h2 = np.float(H2.get()))
 
-            fit_mass = eval(temp[0])
-            var = k.get()
-            fit_eq = func(f'({temp[1]})*time', independent_variable = f'time, {var}', m = m, h2 = H2.get())
+        pop, popc = curve_fit(fit_eq, time, fit_mass)
+        
+        perr = np.sqrt(np.diag(popc))
+        print(pop)
 
-            pop, popc = curve_fit(fit_eq, time, fit_mass)
-            
-            perr = np.sqrt(np.diag(popc))
-            print(pop)
+        ax.plot(time, fit_eq(time, *pop), label = 'Fit')
 
-            ax.plot(time, fit_eq(time, *pop), label = 'Fit')
+        '''except Exception as e:
+            ShowInfo('Equation', 'Please enter the proper equation in Equation entry box.\nEg. m[18.8]=k1*m[17.8]-k2*m[19.8]\nAnd enter the rate coefficient in the next entry box (in this case, enter: k1, k2)')
+            ErrorInfo('Error', e)'''
 
-        except:
-            ErrorInfo('Equation', 'Please enter the proper equation in Equation entry box.\nEg. m[18.8]=k1*m[17.8]-k2*m[19.8]\nAnd enter the rate coefficient in the next entry box (in this case, enter: k1, k2)')
-    
     widget.buttons('Fit', 0.1, 0.57, fit, relwidth = 0.5, relheight = 0.05)
 
     def update():
