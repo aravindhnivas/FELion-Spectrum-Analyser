@@ -49,7 +49,7 @@ def timescanplot(scanfile, location, dpi, parent, **kw):
     j = 0
     mean, error = [], []
     mass = []
-    counts = {}
+    m = {}
 
     for num, iteration in enumerate(iterations):
         
@@ -66,8 +66,8 @@ def timescanplot(scanfile, location, dpi, parent, **kw):
         mean = np.append(mean, mass_sort)
         error = np.append(error, error_sort)
 
-        counts[f'm{mass_value}'] =  mass_sort
-        counts[f'me{mass_value}'] = error_sort
+        m[f'{mass_value}'] =  mass_sort
+        m[f'e{mass_value}'] = error_sort
         
         j = k + j
         
@@ -93,7 +93,7 @@ def timescanplot(scanfile, location, dpi, parent, **kw):
 
     if kinetics:
         print('\nKinetics Measurements\n')
-        return time, counts, masslist, iterations, t_res, t_b0 
+        return time, m, masslist, iterations, t_res, t_b0 
 
     ####################################### END Initialisation #######################################
 
@@ -129,10 +129,10 @@ def timescanplot(scanfile, location, dpi, parent, **kw):
             if mass_check[i].get():
                 print(f'Plotting Mass: {i}\n')
                 lg = f'{i}[{n}]; B0: {t_b0}ms; Res: {t_res}'
-                ax.errorbar(time, counts[f'm{i}'], counts[f'me{i}'], fmt='.-', label = lg)
+                ax.errorbar(time, m[f'{i}'], m[f'e{i}'], fmt='.-', label = lg)
 
-                temp_mean.append(counts[f'm{i}'])
-                temp_error.append(counts[f'me{i}'])
+                temp_mean.append(m[f'{i}'])
+                temp_error.append(m[f'e{i}'])
 
                 counter += 1
             
