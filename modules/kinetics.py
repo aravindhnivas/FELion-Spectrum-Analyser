@@ -102,6 +102,7 @@ def kinetics(scanfile, location, dpi, parent):
     def fit():
 
         temp = eq.get().strip().split('=')
+        print(f'Equation: {temp}\nfit_mass = {temp[0]}\nfit_eq = {temp[1]}')
 
         fit_mass = eval(temp[0])
         var = k.get()
@@ -111,7 +112,6 @@ def kinetics(scanfile, location, dpi, parent):
         
         perr = np.sqrt(np.diag(popc))
         print(pop)
-
         ax.plot(time, fit_eq(time, *pop), label = 'Fit')
 
         '''except Exception as e:
