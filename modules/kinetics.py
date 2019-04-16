@@ -4,6 +4,7 @@
 import numpy as np
 from scipy.optimize import curve_fit
 from uncertainties import unumpy as unp
+from scitools.StringFunction import StringFunction as func
 
 # Custom Modules
 from timescan_plot import timescanplot
@@ -16,7 +17,7 @@ from time import time as check_time
 from tkinter import Toplevel, ttk, BooleanVar
 
 # FELion Modules
-from FELion_definitions import FELion_Toplevel, FELion_widgets
+from FELion_definitions import FELion_Toplevel, FELion_widgets, ErrorInfo
 
 ####################################### Modules Imported #######################################
 
@@ -26,39 +27,46 @@ def kinetics(scanfile, location, dpi, parent):
     ####################################### Initialisation #######################################
 
     os.chdir(location)
-    time, counts, masslist, iterations, res, b0 = timescanplot(scanfile, location, dpi, parent, kinetics = True)
+    time, m, masslist, iterations, res, b0 = timescanplot(scanfile, location, dpi, parent, kinetics = True)
     
     ####################################### END Initialisation #######################################
 
     ####################################### Tkinter figure #######################################
 
-    ## Embedding figure to tkinter Toplevel
+    # Tkinter Toplevel
     title_name = f'Kinetics: {scanfile}'
     root = Toplevel(parent)
+    tk_widget = FELion_Toplevel(root, title_name, location, add_buttons = False)
 
-    tk_widget = FELion_Toplevel(root, title_name, location)
-
+    # Making figure
     fig, canvas = tk_widget.figure(dpi, figsize=(15,5))
     ax = fig.add_subplot(111)
 
+    # Making frames
     frame = tk_widget.get_widget_frame()
     widget = FELion_widgets(frame)
 
-    log = widget.entries('Check', 'Log', 0.1, 0.3, relwidth = 0.5, relheight = 0.05, default = False)
+    # Buttons, labels, entries and checkboxes
 
-    widget.labels('H2: ', 0.1, 0.4, relwidth = 0.2, relheight = 0.05, bd = 2)
-    reactant = widget.entries('Entry', '# density', 0.4, 0.4, relwidth = 0.4, relheight = 0.05, bd = 5)
+    save_name = widget.entries('Entry', 'Plot', 0.1, 0.05, relwidth = 0.5, relheight = 0.05, bd = 5)
+    widget.buttons('Save', 0.1, 0.1, lambda: fig.savefig(save_name.get()), relwidth = 0.5, relheight = 0.05)
 
-    widget.labels('He: ', 0.1, 0.5, relwidth = 0.2, relheight = 0.05, bd = 2)
-    He = widget.entries('Entry', '# density', 0.4, 0.5, relwidth = 0.4, relheight = 0.05, bd = 5)
+    log = widget.entries('Check', 'Log', 0.1, 0.2, relwidth = 0.5, relheight = 0.05, default = False)
+
+    widget.labels('H2: ', 0.1, 0.3, relwidth = 0.2, relheight = 0.05, bd = 2)
+    reactant = widget.entries('Entry', '# density', 0.4, 0.3, relwidth = 0.4, relheight = 0.05, bd = 5)
+
+    widget.labels('He: ', 0.1, 0.36, relwidth = 0.2, relheight = 0.05, bd = 2)
+    He = widget.entries('Entry', '# density', 0.4, 0.36, relwidth = 0.4, relheight = 0.05, bd = 5)
     
-    eq = widget.entries('Entry', 'Equations', 0.1, 0.6, relwidth = 0.7, relheight = 0.05, bd = 5)
-    tk_widget.check_button_maker(masslist, x = 0.1, y = 0.8)
+    eq = widget.entries('Entry', 'Equations', 0.1, 0.45, relwidth = 0.7, relheight = 0.05, bd = 5)
+    k = widget.entries('Entry', 'Rate constants', 0.1, 0.52, relwidth = 0.7, relheight = 0.05, bd = 5)
 
+    tk_widget.check_button_maker(masslist, x = 0.1, y = 0.75)
+    
     ####################################### PLOTTING DETAILS #######################################
 
     def plot():
-        
         mass_check = tk_widget.get_check_values()
 
         temp_mean, temp_error = [], []
@@ -68,10 +76,10 @@ def kinetics(scanfile, location, dpi, parent):
             if mass_check[i].get():
                 print(f'Plotting Mass: {i}\n')
                 lg = f'{i}[{n}]; B0: {b0}ms; Res: {res}'
-                ax.errorbar(time, counts[f'm{i}'], counts[f'me{i}'], fmt='.-', label = lg)
+                ax.errorbar(time, m[f'{i}'], m[f'e{i}'], fmt='.-', label = lg)
 
-                temp_mean.append(counts[f'm{i}'])
-                temp_error.append(counts[f'me{i}'])
+                temp_mean.append(m[f'{i}'])
+                temp_error.append(m[f'e{i}'])
 
                 counter += 1
             
@@ -91,6 +99,24 @@ def kinetics(scanfile, location, dpi, parent):
         ax.legend()
         ax.grid(True)
 
+    def fit():
+
+        try:
+
+            temp = eq.get().strip().split('=')
+
+            fit_mass = eval(temp[0])
+            var = k.get()
+
+            fit_eq = func(temp[1], independent_variable = var, m = m)
+            
+
+
+        except:
+            ErrorInfo('Equation', 'Please enter the proper equation in Equation entry box.\nEg. m[18.8]=k1*m[17.8]-k2*m[19.8]\nAnd enter the rate coefficient in the next entry box (in this case, enter: k1, k2)')
+    
+    widget.buttons('Fit', 0.1, 0.57, fit, relwidth = 0.5, relheight = 0.05)
+
     def update():
 
         t0 = check_time()
@@ -105,7 +131,7 @@ def kinetics(scanfile, location, dpi, parent):
 
     plot()
 
-    widget.buttons('Update', 0.1, 0.7, update, relwidth = 0.5, relheight = 0.05)
+    widget.buttons('Update', 0.1, 0.65, update, relwidth = 0.5, relheight = 0.05)
 
     ####################################### END Plotting details #######################################
     canvas.draw()
