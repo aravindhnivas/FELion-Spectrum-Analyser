@@ -52,7 +52,8 @@ def kinetics(scanfile, location, dpi, parent):
     widget.labels('He: ', 0.1, 0.5, relwidth = 0.2, relheight = 0.05, bd = 2)
     He = widget.entries('Entry', '# density', 0.4, 0.5, relwidth = 0.4, relheight = 0.05, bd = 5)
     
-    tk_widget.check_button_maker(masslist, x = 0.1, y = 0.7)
+    eq = widget.entries('Entry', 'Equations', 0.1, 0.6, relwidth = 0.7, relheight = 0.05, bd = 5)
+    tk_widget.check_button_maker(masslist, x = 0.1, y = 0.8)
 
     ####################################### PLOTTING DETAILS #######################################
 
@@ -104,7 +105,7 @@ def kinetics(scanfile, location, dpi, parent):
 
     plot()
 
-    widget.buttons('Update', 0.1, 0.6, update, relwidth = 0.5, relheight = 0.05)
+    widget.buttons('Update', 0.1, 0.7, update, relwidth = 0.5, relheight = 0.05)
 
     ####################################### END Plotting details #######################################
     canvas.draw()
