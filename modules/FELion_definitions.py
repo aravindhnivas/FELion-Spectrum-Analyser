@@ -301,7 +301,6 @@ class FELion_widgets(Frame):
                 self.parent.entry.bind('<Enter>', on_enter)
                 self.parent.entry.bind('<Leave>', on_leave)
             
-            
             return self.parent.txt
 
         elif method == 'Check':
@@ -378,7 +377,7 @@ class FELion_widgets(Frame):
 
 class FELion_Toplevel():
 
-    def __init__(self, root, name, location):
+    def __init__(self, root, name, location, add_buttons = True):
         os.chdir(location)
         self.location = location
 
@@ -392,13 +391,14 @@ class FELion_Toplevel():
         self.widget_frame = Frame(self.root, bg = 'light grey')
         self.widget_frame.place(relx = 0.8, rely = 0, relwidth = 0.2, relheight = 1)
 
-        self.name = StringVar()
-        self.filename = Entry(self.widget_frame, textvariable = self.name, font = ("Verdana", 10, "italic"), bd = 5)
-        self.name.set('plot')
-        self.filename.place(relx = 0.1, rely = 0.1, relwidth = 0.5, relheight = 0.05)
+        if add_buttons:
+            self.name = StringVar()
+            self.filename = Entry(self.widget_frame, textvariable = self.name, font = ("Verdana", 10, "italic"), bd = 5)
+            self.name.set('plot')
+            self.filename.place(relx = 0.1, rely = 0.1, relwidth = 0.5, relheight = 0.05)
 
-        self.button = ttk.Button(self.widget_frame, text = 'Save', command = lambda: self.save())
-        self.button.place(relx = 0.1, rely = 0.2, relwidth = 0.5, relheight = 0.05)
+            self.button = ttk.Button(self.widget_frame, text = 'Save', command = lambda: self.save())
+            self.button.place(relx = 0.1, rely = 0.2, relwidth = 0.5, relheight = 0.05)
 
     def figure(self, dpi, connect = True, **kw):
         if 'figsize' in kw: self.fig = Figure(figsize = kw['figsize'], dpi = dpi)
