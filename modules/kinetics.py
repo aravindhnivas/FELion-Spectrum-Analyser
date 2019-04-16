@@ -54,7 +54,7 @@ def kinetics(scanfile, location, dpi, parent):
     log = widget.entries('Check', 'Log', 0.1, 0.2, relwidth = 0.5, relheight = 0.05, default = False)
 
     widget.labels('H2: ', 0.1, 0.3, relwidth = 0.2, relheight = 0.05, bd = 2)
-    reactant = widget.entries('Entry', '# density', 0.4, 0.3, relwidth = 0.4, relheight = 0.05, bd = 5)
+    H2 = widget.entries('Entry', '# density', 0.4, 0.3, relwidth = 0.4, relheight = 0.05, bd = 5)
 
     widget.labels('He: ', 0.1, 0.36, relwidth = 0.2, relheight = 0.05, bd = 2)
     He = widget.entries('Entry', '# density', 0.4, 0.36, relwidth = 0.4, relheight = 0.05, bd = 5)
@@ -107,10 +107,14 @@ def kinetics(scanfile, location, dpi, parent):
 
             fit_mass = eval(temp[0])
             var = k.get()
+            fit_eq = func(f'({temp[1]})*time', independent_variable = f'time, {var}', m = m, h2 = H2.get())
 
-            fit_eq = func(temp[1], independent_variable = var, m = m)
+            pop, popc = curve_fit(fit_eq, time, fit_mass)
             
+            perr = np.sqrt(np.diag(popc))
+            print(pop)
 
+            ax.plot(time, fit_eq(time, *pop), label = 'Fit')
 
         except:
             ErrorInfo('Equation', 'Please enter the proper equation in Equation entry box.\nEg. m[18.8]=k1*m[17.8]-k2*m[19.8]\nAnd enter the rate coefficient in the next entry box (in this case, enter: k1, k2)')
