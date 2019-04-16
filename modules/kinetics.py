@@ -105,7 +105,7 @@ def kinetics(scanfile, location, dpi, parent):
 
         fit_mass = eval(temp[0])
         var = k.get()
-        fit_eq = func(f'({temp[1]})*time', independent_variable = f'time, {var}', m = m, h2 = np.float(H2.get()))
+        fit_eq = func(f'({temp[1]})*time', independent_variable = f'time, {var}', m = m, nh = np.float(H2.get()))
 
         pop, popc = curve_fit(fit_eq, time, fit_mass)
         
