@@ -1,4 +1,3 @@
-git
 gitpython
-tkfilebrowser
 uncertainties
+scitools3
