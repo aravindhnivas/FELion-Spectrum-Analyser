@@ -69,6 +69,8 @@ class Create_Baseline():
 
     def save_cfelix(self):
 
+        self.cfelix = f'{self.name.get()}.cfelix'
+
         with open(f'./DATA/{self.cfelix}', 'w') as f:
             f.write(f'#Noise/Signal corrected for {self.felixfile} data file!\n')
             f.write(f'#Wavelength(cm-1)\t#Counts\tSA\n')
@@ -128,8 +130,11 @@ class Create_Baseline():
             self.interpol = f.readlines()[1].strip().split('=')[-1]
     
     def SaveBase(self):
+
         self.baseline = self.line.get_data()
         b = np.asarray(self.baseline)
+
+        self.basefile = f'{self.name.get()}.base'
         with open(f'./DATA/{self.basefile}', 'w') as f:
             f.write(f'#Baseline generated for {self.fname}.felix data file!\n')
             f.write("#BTYPE=cubic\n")
@@ -139,6 +144,15 @@ class Create_Baseline():
         if isfile(f'./DATA/{self.basefile}'):
             print(f'{self.basefile} is SAVED')
             ShowInfo('SAVED', f'{self.basefile} file is saved in /DATA directory')
+        
+        # powerfile
+        if not self.name.get() == self.fname:
+            with open(f'./DATA/{self.fname}.pow', 'r') as fr:
+                lines = fr.readlines()
+
+            with open(f'./DATA/{self.name.get()}.pow', 'w') as fw:
+                fw.writelines(lines)
+            ShowInfo('SAVED', f'{self.name.get()}.pow powerfile is saved in /DATA directory')
     
     def GuessBaseLine(self, PPS, NUM_POINTS):
         max_n = len(self.data[0]) - PPS
@@ -538,6 +552,7 @@ class Create_Baseline():
 
     def export_file(self):
         self.SaveBase()
+        self.fname = self.name.get()
         with open(f'./EXPORT/{self.fname}.dat', 'w') as f:
             f.write("#DATA points as shown in lower figure of: " + self.fname + ".pdf file!\n")
             f.write("#wn (cm-1)       intensity\n")

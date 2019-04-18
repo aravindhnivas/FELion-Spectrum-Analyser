@@ -183,7 +183,7 @@ def exp_theory(filelist, location, dpi, original_show, scale, smooth, parent):
                         x, y = data[:,0], data[:,1]
 
                         x = x * scale
-                        if len(dat)>1: y = y/y.max()*y_list.max()
+                        if len(dat)>0: y = y/y.max()*y_list.max()
 
                         ax.vlines(x, ymin = 0, ymax = y, color = colors[n], lw = 2, label = i)
                         n += 1

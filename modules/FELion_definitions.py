@@ -161,11 +161,11 @@ Report bug/suggestion: aravindh@science.ru.nl
 """
 #################### Variables ###############################
 
-felix_files_type = ("Felix Files", "*.felix")
-mass_files_type = ("Mass Files", "*.mass")
-time_files_type = ("Timescan Files", "*.scan")
-pow_files_type = ("Pow Files", "*.pow")
-all_files_type = ("All files", "*")
+felix_files_type = ("Felix Files", "*.felix"), ("Felix Files", "*.cfelix"), ("all files","*.*")
+mass_files_type = ("Mass Files", "*.mass"), ("all files","*.*")
+time_files_type = ("Timescan Files", "*.scan"), ("all files","*.*")
+pow_files_type = ("Pow Files", "*.pow"), ("all files","*.*")
+all_files_type = ("all files", "*"), ("all files","*.*")
 LARGE_FONT= ("Verdana", 15)
 
 #################### Definitions #############################
@@ -334,10 +334,12 @@ class FELion_widgets(Frame):
             return self.parent.T
 
     def open_dir(self, file_type):
+
         root = Tk()
         root.withdraw()
 
-        root.filename =  askopenfilename(initialdir = self.location, title = "Select file", filetypes = (file_type, ("all files","*.*")))
+        root.filename =  askopenfilename(initialdir = self.location, title = "Select file", filetypes = (file_type))
+
         filename = root.filename
         filename = filename.split("/")
 
@@ -354,7 +356,7 @@ class FELion_widgets(Frame):
     def openfilelist(self, file_type):
         self.filelist = [] # to prevent appending previously selected files
         self.openlist = askopenfilenames(initialdir=self.location, initialfile='tmp',
-                        filetypes=[file_type, ("All files", "*")])
+                        filetypes=file_type)
 
         for i in self.openlist:
             location = i.split("/")
