@@ -133,11 +133,11 @@ class Create_Baseline():
 
         self.baseline = self.line.get_data()
         b = np.asarray(self.baseline)
-        print(f'fname: {self.fname}')
+        print(f'\nCurrent Filename: {self.fname}.felix\n')
         change = False
         if not self.name.get() == self.fname:
 
-            if askokcancel('Modified name', f'Do you want to save this modification as a new file as well?\nsuch as: {self.name.get()}.base and {self.name.get()}.felix\nOtherwise only .dat and .png files will be saved in this new name.'):
+            if askokcancel('Modified name', f'Do you want to save this modification as a new file as well?\nsuch as: {self.name.get()}.base and {self.name.get()}.felix\nDo this in case you want to compare different baseline correction under different named file\nOtherwise only .dat and .png files will be saved in this new name.'):
                 self.basefile = f'{self.name.get()}.base'
                 change = True
 
