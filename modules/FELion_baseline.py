@@ -133,8 +133,15 @@ class Create_Baseline():
 
         self.baseline = self.line.get_data()
         b = np.asarray(self.baseline)
+        print(f'fname: {self.fname}')
+        change = False
+        if not self.name.get() == self.fname:
 
-        self.basefile = f'{self.name.get()}.base'
+            if askokcancel('Modified name', f'Do you want to save this modification as a new file as well?\nsuch as: {self.name.get()}.base and {self.name.get()}.felix\nOtherwise only .dat and .png files will be saved in this new name.'):
+                self.basefile = f'{self.name.get()}.base'
+                change = True
+
+        # Saving basefile
         with open(f'./DATA/{self.basefile}', 'w') as f:
             f.write(f'#Baseline generated for {self.fname}.felix data file!\n')
             f.write("#BTYPE=cubic\n")
@@ -143,17 +150,26 @@ class Create_Baseline():
         
         if isfile(f'./DATA/{self.basefile}'):
             print(f'{self.basefile} is SAVED')
-            ShowInfo('SAVED', f'{self.basefile} file is saved in /DATA directory')
-        
-        # powerfile
-        if not self.name.get() == self.fname:
+            if not change: ShowInfo('SAVED', f'{self.basefile} file is saved in /DATA directory')
+
+        if change:
+    
+            # powerfile
             with open(f'./DATA/{self.fname}.pow', 'r') as fr:
-                lines = fr.readlines()
+                lines_pow = fr.readlines()
 
             with open(f'./DATA/{self.name.get()}.pow', 'w') as fw:
-                fw.writelines(lines)
-            ShowInfo('SAVED', f'{self.name.get()}.pow powerfile is saved in /DATA directory')
-    
+                fw.writelines(lines_pow)
+
+            # FELIX file 
+            with open(f'./DATA/{self.fname}.felix', 'r') as ffr:
+                lines_felix = ffr.readlines()
+
+            with open(f'./DATA/{self.name.get()}.felix', 'w') as ffw:
+                ffw.writelines(lines_felix)
+            
+            ShowInfo('SAVED',f'{self.name.get()}.felix, {self.name.get()}.pow, {self.basefile} are saved in /DATA directory')
+        
     def GuessBaseLine(self, PPS, NUM_POINTS):
         max_n = len(self.data[0]) - PPS
         Bx, By = [self.data[0][0]-0.1], [self.data[1][0]]
@@ -492,8 +508,8 @@ class Create_Baseline():
         else:
             self.export_file()
             self.fig.savefig(f'./OUT/{self.name.get()}.png')
-            if isfile(f'./EXPORT/{self.fname}.dat') and isfile(f'./OUT/{self.name.get()}.png'): 
-                ShowInfo('SAVED', f'File: {self.fname}.dat saved in /EXPORT directory\nFile: {self.name.get()}.png saved in /OUT directory')
+            if isfile(f'./EXPORT/{self.name.get()}.dat') and isfile(f'./OUT/{self.name.get()}.png'): 
+                ShowInfo('SAVED', f'File: {self.name.get()}.dat saved in /EXPORT directory\nFile: {self.name.get()}.png saved in /OUT directory')
           
     def plot(self):
         print(f'\nLocation: {self.location}\nFilename: {self.felixfile}')
@@ -552,14 +568,14 @@ class Create_Baseline():
 
     def export_file(self):
         self.SaveBase()
-        self.fname = self.name.get()
-        with open(f'./EXPORT/{self.fname}.dat', 'w') as f:
-            f.write("#DATA points as shown in lower figure of: " + self.fname + ".pdf file!\n")
+
+        with open(f'./EXPORT/{self.name.get()}.dat', 'w') as f:
+            f.write(f"#DATA points as shown in lower figure of: {self.name.get()}.pdf file!\n")
             f.write("#wn (cm-1)       intensity\n")
             for i in range(len(self.wavelength())):
                 f.write("{:8.3f}\t{:8.2f}\n".format(self.wavelength()[i], self.intensity()[i]))
 
-        print(f'File {self.fname}.dat saved in EXPORT/ Directory')
+        print(f'File {self.name.get()}.dat saved in EXPORT/ Directory')
 
 def baseline_correction(felixfile, location, dpi, parent):
     
