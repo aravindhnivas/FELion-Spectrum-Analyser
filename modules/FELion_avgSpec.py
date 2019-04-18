@@ -19,14 +19,6 @@ from FELion_definitions import ShowInfo, ErrorInfo, move, FELion_Toplevel, FELio
 import os
 from os.path import dirname, isdir, isfile
 
-def export_file(fname, wn, inten):
-
-    with open(fname.split(".pdf")[0] + '.dat','w') as f:
-        f.write("#DATA points as shown in figure: " + fname + ".pdf file!\n")
-        f.write("#wn (cm-1)       intensity\n")
-        for i in range(len(wn)):
-            f.write("{:8.3f}\t{:8.2f}\n".format(wn[i], inten[i]))
-
 
 
 def avgSpec_plot(*args):
@@ -112,12 +104,21 @@ def avgSpec_plot(*args):
 
     def save():
 
+        # Save figure as .pdf
         F = f'./OUT/{save_name.get()}.pdf'
-        export_file(F, binns, inten)
         fig.savefig(F)
-        print(f'File {F} saved in OUT Directory')
-        if isfile(F):
-            ShowInfo('Saved', f'File {save_name.get()}.pdf saved in OUT Directory')
+        print(f'File {F} saved in /OUT Directory\n')
+
+        # Export File as .dat
+        with open(f'./EXPORT/{save_name.get()}.dat','w') as f:
+            f.write(f"#DATA points as shown in figure: {save_name.get()}.pdf file!\n")
+            f.write("#wn (cm-1)       intensity\n")
+            for i in range(len(binns)):
+                f.write("{:8.3f}\t{:8.2f}\n".format(binns[i], inten[i]))
+
+        print(f'File {save_name.get()}.dat saved in /EXPORT Directory')
+
+        ShowInfo('Saved', f'File {save_name.get()}.pdf saved in /OUT Directory\nFile {save_name.get()}.dat saved in /EXPORT Directory')
     
     widget.buttons('Save', 0.1, 0.2, save, relwidth = 0.5, relheight = 0.05)
 
