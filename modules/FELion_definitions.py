@@ -423,7 +423,7 @@ class FELion_Toplevel():
 
     def save(self):
         
-        if not isdir('OUT'): os.mkdir('OUT')
+        if not isdir('./OUT'): os.mkdir('OUT')
         if isfile(f'./OUT/{self.name.get()}.png'): 
                 if askokcancel('Overwrite?', f'File: {self.name.get()}.png already present. \nDo you want to Overwrite the file?'): 
                         self.fig.savefig(f'./OUT/{self.name.get()}.png')
@@ -431,6 +431,7 @@ class FELion_Toplevel():
         else: 
                 self.fig.savefig(f'./OUT/{self.name.get()}.png')
                 ShowInfo('SAVED', f'File: {self.name.get()}.png saved in OUT/ directory')
+        print(f'Filename saved: {self.name.get()}.png\nLocation: {self.location}\n')
 
     def get_widget_frame(self):
         return self.widget_frame
