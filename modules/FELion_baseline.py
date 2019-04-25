@@ -484,7 +484,7 @@ class Create_Baseline():
         self.fig.subplots_adjust(top = 0.95, bottom = 0.2, left = 0.1, right = 0.9)
         self.baseline_data, = self.ax.plot(self.data[0], self.data[1], ls='', marker='o', ms=5, markeredgecolor='r', c='r')
 
-        self.ax.set_title('BASELINE points are drag-able!')
+        self.ax.set_title(f'BASELINE: {self.felixfile}')
         self.ax.set_xlim((self.data[0][0]-70, self.data[0][-1]+70))
         self.ax.set_xlabel("wavenumber (cm-1)")
         self.ax.set_ylabel("Counts")
