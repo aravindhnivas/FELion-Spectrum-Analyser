@@ -330,7 +330,7 @@ def depletionPlot(files, location, power_n, dpi, parent):
         depletion_legend = depletion_plot.legend(loc = 'lower right', fontsize=lg_fontsize)
         depletion_plot.set_xlabel('$n * t * E (Joule)$', fontsize= lb_size)
         depletion_plot.set_ylabel('Relative abundance of active isomer', fontsize= lb_size)
-        depletion_plot.set_title('$D(ntE) = 1-N_{ON}/N_{OFF}$ fitted with $D(ntE) = A(1-e^{K_{ON}*ntE})$', fontsize = title_fontsize)
+        depletion_plot.set_title('$D(ntE) = 1-N_{ON}/N_{OFF}$ fitted with $D(ntE) = A(1-e^{-K_{ON}*ntE})$', fontsize = title_fontsize)
         
         ####################################### END Plotting details #######################################
 

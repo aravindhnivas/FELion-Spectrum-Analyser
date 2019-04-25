@@ -23,6 +23,7 @@ from os.path import isfile, dirname
 def power_plot(powerfile, powerfiles, combine, location, dpi, parent):
 
         ####################################### Initialisation #######################################
+        
         back_dir = dirname(location)
         folders = ["DATA", "EXPORT", "OUT"]
         if set(folders).issubset(os.listdir(back_dir)): 
@@ -46,17 +47,21 @@ def power_plot(powerfile, powerfiles, combine, location, dpi, parent):
         ################################ PLOTTING DETAILS ########################################
 
         def powerplot(powerfile):
-                with open(f'./DATA/{powerfile}', 'r') as f:
+                with open(f'./{powerfile}', 'r') as f:
                         for i in f:
                                 if i.find('#SHOTS')>=0:
                                         shots = int(i.strip().split('=')[-1])
                                         break
 
-                power_file = genfromtxt(f'./DATA/{powerfile}')
+                power_file = genfromtxt(f'./{powerfile}')
                 power_file_extrapolate = interpolate(power_file[:,0], power_file[:,1], kind = 'linear', fill_value = 'extrapolate')
+                fname = powerfile.split('.')[0]
+
+                if isfile(f'./{fname}.cfelix'): felixfile = f'{fname}.cfelix'
+                else: felixfile = f'{fname}.felix'
+
                 
-                felixfile = powerfile.split('.')[0]+'.felix'
-                temp = genfromtxt(f'./DATA/{felixfile}')
+                temp = genfromtxt(f'./{felixfile}')
                 x = temp[:,0]
 
                 power_extrapolated = power_file_extrapolate(x)
