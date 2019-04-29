@@ -1,3 +1,4 @@
 gitpython
 uncertainties
-scitools3
+symfit
+ipywidgets

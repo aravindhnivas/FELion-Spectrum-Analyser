@@ -34,8 +34,9 @@ if '%errorlevel%' NEQ '0' (
 :: Installation Script
 
 call activate base
-call python -m pip install gitpython
-call python -m pip install uncertainties
+call pip install -r requirements.txt
+
+call setx GIT_PYTHON_REFRESH quiet
 
 python compile.py
 ROBOCOPY %cd%\modules C:\FELion-GUI\software
