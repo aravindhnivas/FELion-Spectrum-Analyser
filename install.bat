@@ -34,7 +34,7 @@ if '%errorlevel%' NEQ '0' (
 :: Installation Script
 
 call activate base
-call pip install -r requirements.txt
+call python -m pip install -r requirements.txt
 
 call setx GIT_PYTHON_REFRESH quiet
 
