@@ -3,3 +3,4 @@ uncertainties
 scitools3
 symfit
 ipywidgets
+jupyterlab
