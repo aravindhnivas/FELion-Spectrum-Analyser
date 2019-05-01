@@ -5,3 +5,4 @@
 modules\build
 modules\dist
 *.dat
+testing/graphics/blender-2.79b-windows64.msi
