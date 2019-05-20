@@ -107,40 +107,40 @@ class FELion(Tk):
             cnt.widget.labels(j, 0.4, y_)
             y_ += 0.1
 
-        cnt.mname = cnt.widget.entries('Entry', 'Molecule', 0.25, 0.34, bd=5)
-        cnt.temp = cnt.widget.entries('Entry', 0, 0.25, 0.44, bd=5)
-        cnt.bwidth = cnt.widget.entries('Entry', 0, 0.25, 0.54, bd=5)
-        cnt.ie = cnt.widget.entries('Entry', 0, 0.25, 0.64, bd=5)
-        cnt.trap = cnt.widget.entries('Entry', 0, 0.25, 0.74, bd=5)
-        cnt.dpi = cnt.widget.entries('Entry', 100, 0.25, 0.84, bd=5)
+        cnt.mname = cnt.widget.entries('Entry', 'Molecule', 0.25, 0.34, bd=5, help='Molecule Name')
+        cnt.temp = cnt.widget.entries('Entry', 0, 0.25, 0.44, bd=5, help='Experiment temperature in Kelvin')
+        cnt.bwidth = cnt.widget.entries('Entry', 0, 0.25, 0.54, bd=5, help='Automatically set from file')
+        cnt.ie = cnt.widget.entries('Entry', 0, 0.25, 0.64, bd=5, help='Experiment Ionisation Energy')
+        cnt.trap = cnt.widget.entries('Entry', 0, 0.25, 0.74, bd=5, help='Automatically set from file')
+        cnt.dpi = cnt.widget.entries('Entry', 100, 0.25, 0.84, bd=5, help='Figure DPI')
 
         cnt.avg_title = cnt.widget.entries('Entry',  'Title', 0.55, 0.34, bd=2)
         cnt.avg_ts = cnt.widget.entries(
-            'Entry',  15, 0.55, 0.44, bd=2, relwidth=0.05)
+            'Entry',  15, 0.55, 0.44, bd=2, relwidth=0.05, help='Figure title fontsize')
         cnt.avg_lgs = cnt.widget.entries(
-            'Entry',  10, 0.6, 0.44, bd=2, relwidth=0.05)
+            'Entry',  10, 0.6, 0.44, bd=2, relwidth=0.05, help='Figure legend fontsize')
 
         cnt.avg_minor = cnt.widget.entries(
-            'Entry',  20, 0.55, 0.54, bd=2, relwidth=0.05)
+            'Entry',  20, 0.55, 0.54, bd=2, relwidth=0.05, help='X-axis tick mark scale position')
         cnt.avg_major = cnt.widget.entries(
-            'Entry',  100, 0.6, 0.54, bd=2, relwidth=0.05)
+            'Entry',  100, 0.6, 0.54, bd=2, relwidth=0.05, help='X-axis tick label scale position')
 
         cnt.avg_majorTick = cnt.widget.entries(
-            'Entry',  15, 0.55, 0.64, bd=2, relwidth=0.05)
+            'Entry',  15, 0.55, 0.64, bd=2, relwidth=0.05, help='X/Y Major tick label fontsize')
         cnt.avg_markersz = cnt.widget.entries(
-            'Entry',  2, 0.6, 0.64, bd=2, relwidth=0.05)
+            'Entry',  2, 0.6, 0.64, bd=2, relwidth=0.05, help='Scatter points fontsize (for average spectrum only)')
 
         cnt.output_filename = cnt.widget.entries(
             'Entry',  'Average', 0.55, 0.74, bd=2)
 
         cnt.avg_xlabelsz = cnt.widget.entries(
-            'Entry',  15, 0.55, 0.84, bd=2, relwidth=0.05)
+            'Entry',  15, 0.55, 0.84, bd=2, relwidth=0.05, help='X-label fontsize')
         cnt.avg_ylabelsz = cnt.widget.entries(
-            'Entry',  15, 0.6, 0.84, bd=2, relwidth=0.05)
+            'Entry',  15, 0.6, 0.84, bd=2, relwidth=0.05, help='Y-label fontsize')
         cnt.avg_fwidth = cnt.widget.entries(
-            'Entry',  10, 0.65, 0.84, bd=2, relwidth=0.05)
+            'Entry',  10, 0.65, 0.84, bd=2, relwidth=0.05, help='Figure width')
         cnt.avg_fheight = cnt.widget.entries(
-            'Entry',  5, 0.7, 0.84, bd=2, relwidth=0.05)
+            'Entry',  5, 0.7, 0.84, bd=2, relwidth=0.05,help='Figure height')
 
     def __repr__(self):
         return 'FELion Tkinter Tk() Class'
