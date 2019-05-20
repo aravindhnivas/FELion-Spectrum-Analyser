@@ -3,9 +3,21 @@
 # Modules
 
 # Built-In Modules
+from tkinter.messagebox import askokcancel
+from tkinter.filedialog import askopenfilenames, askopenfilename, askdirectory
+from tkinter import ttk, messagebox
+from tkinter import *
+from matplotlib.figure import Figure
+from matplotlib.backend_bases import key_press_handler
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from time import time as check_time
 import itertools as it
-import os, shutil, datetime, sys, subprocess, ctypes
+import os
+import shutil
+import datetime
+import sys
+import subprocess
+import ctypes
 from os.path import isdir, dirname, join, isfile
 
 # Data Analysis
@@ -17,34 +29,35 @@ import git
 # Matplotlib Modules for tkinter
 import matplotlib
 matplotlib.use("TkAgg")
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
-from matplotlib.backend_bases import key_press_handler
-from matplotlib.figure import Figure
 
 # Tkinter modules
-from tkinter import *
-from tkinter import ttk, messagebox
-from tkinter.filedialog import askopenfilenames, askopenfilename, askdirectory
-from tkinter.messagebox import askokcancel
 
 ################################################# MODULES IMPORTED #################################################
 ####################################################################################################################
 
 
 # General functions:
-copy = lambda pathdir, x: (shutil.copyfile(join(pathdir, x), join(pathdir,"DATA" ,x)), print("%s copied to DATA folder" %x))
-move = lambda pathdir, x: (shutil.move(join(pathdir, x), join(pathdir,"DATA" ,x)), print("%s moved to DATA folder"%x))
+def copy(pathdir, x): return (shutil.copyfile(join(pathdir, x), join(
+    pathdir, "DATA", x)), print("%s copied to DATA folder" % x))
+
+
+def move(pathdir, x): return (shutil.move(join(pathdir, x), join(
+    pathdir, "DATA", x)), print("%s moved to DATA folder" % x))
+
 
 colors = ['C0', 'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'C9']
 
 ####################################################################################################################
 
 # Tkinter messagebox
+
+
 def ErrorInfo(error, msg):
     root = Tk()
     root.withdraw()
     messagebox.showerror(str(error), str(msg))
     root.destroy()
+
 
 def ShowInfo(info, msg):
     root = Tk()
@@ -55,38 +68,42 @@ def ShowInfo(info, msg):
 ####################################################################################################################
 
 # Normline Filecheck method
+
+
 def filecheck(my_path, basefile, powerfile, fullname):
-    
-    #File check
+
+    # File check
     if not isfile(join(my_path, "DATA", fullname)):
         if isfile(join(my_path, fullname)):
             move(my_path, fullname)
         else:
-            return ErrorInfo("ERROR: ", "File %s NOT found"%fullname)
+            return ErrorInfo("ERROR: ", "File %s NOT found" % fullname)
 
-    #Powefile check
+    # Powefile check
     if not isfile(join(my_path, "DATA", powerfile)):
         if isfile(join(my_path, 'Pow', powerfile)):
-            shutil.move(join(my_path, "Pow", powerfile), join(my_path,"DATA"))
+            shutil.move(join(my_path, "Pow", powerfile), join(my_path, "DATA"))
 
         elif isfile(join(my_path, powerfile)):
             move(my_path, powerfile)
-        
-        else:
-            return ErrorInfo("ERROR: ", "Powerfile: %s NOT found"%powerfile)
 
-    #Basefile check
+        else:
+            return ErrorInfo("ERROR: ", "Powerfile: %s NOT found" % powerfile)
+
+    # Basefile check
     if not isfile(join(my_path, "DATA", basefile)):
         if isfile(join(my_path, basefile)):
             move(my_path, basefile)
         else:
-            return ErrorInfo("ERROR: ", "Basefile: %s NOT found"%basefile)
+            return ErrorInfo("ERROR: ", "Basefile: %s NOT found" % basefile)
 
     return True
 
 ####################################################################################################################
 
 # Update modules
+
+
 def recursive_overwrite(src, dest, ignore=None):
     if os.path.isdir(src):
         if not os.path.isdir(dest):
@@ -98,8 +115,8 @@ def recursive_overwrite(src, dest, ignore=None):
             ignored = set()
         for f in files:
             if f not in ignored:
-                recursive_overwrite(os.path.join(src, f), 
-                                    os.path.join(dest, f), 
+                recursive_overwrite(os.path.join(src, f),
+                                    os.path.join(dest, f),
                                     ignore)
     else:
         shutil.copyfile(src, dest)
@@ -111,13 +128,17 @@ def is_admin():
     except:
         return False
 
+
 def update(*args):
 
     try:
         t = "C:/FELion_update_cache"
-        git.Repo.clone_from('https://github.com/aravindhnivas/FELion-Spectrum-Analyser', t, branch='master', depth=1)
-        recursive_overwrite(os.path.join(t, 'modules'), 'C:/FELion-GUI/software')
-        ShowInfo("UPDATED", "Program is updated to the latest version.\nPlease restart the program.")
+        git.Repo.clone_from(
+            'https://github.com/aravindhnivas/FELion-Spectrum-Analyser', t, branch='master', depth=1)
+        recursive_overwrite(os.path.join(t, 'modules'),
+                            'C:/FELion-GUI/software')
+        ShowInfo(
+            "UPDATED", "Program is updated to the latest version.\nPlease restart the program.")
     except Exception as e:
         ErrorInfo("ERROR: ", e)
 
@@ -126,15 +147,16 @@ def update(*args):
 ############################################# Tkinter Class #################################################
 ####################################################################################################################
 
+
 #################### constants ###############################
 constants = {
-    'width':50,
-    'height':50,
-    'font':("Verdana", 10, "italic"),
-    'bg':'white',
-    'bd':0,
-    'anchor':'w',
-    'relief':SOLID,
+    'width': 50,
+    'height': 50,
+    'font': ("Verdana", 10, "italic"),
+    'bg': 'white',
+    'bd': 0,
+    'anchor': 'w',
+    'relief': SOLID,
     'relwidth': 0.1,
     'relheight': 0.06,
     'justify': 'left',
@@ -161,62 +183,78 @@ Report bug/suggestion: aravindh@science.ru.nl
 """
 #################### Variables ###############################
 
-felix_files_type = ("Felix Files", "*.felix"), ("Felix Files", "*.cfelix"), ("all files","*.*")
-mass_files_type = ("Mass Files", "*.mass"), ("all files","*.*")
-time_files_type = ("Timescan Files", "*.scan"), ("all files","*.*")
-pow_files_type = ("Pow Files", "*.pow"), ("all files","*.*")
-all_files_type = ("all files", "*"), ("all files","*.*")
-LARGE_FONT= ("Verdana", 15)
+felix_files_type = ("Felix Files", "*.felix"), ("Felix Files",
+                                                "*.cfelix"), ("all files", "*.*")
+mass_files_type = ("Mass Files", "*.mass"), ("all files", "*.*")
+time_files_type = ("Timescan Files", "*.scan"), ("all files", "*.*")
+pow_files_type = ("Pow Files", "*.pow"), ("all files", "*.*")
+all_files_type = ("all files", "*"), ("all files", "*.*")
+LARGE_FONT = ("Verdana", 15)
 
 #################### Definitions #############################
+
+
 def var_check(kw):
     for i in constants:
         if not i in list(kw.keys()):
             kw[i] = constants[i]
     return kw
 
-def var_find(fname, location, time = False):
-    print(f'###############\nFile: {fname}\nLocation: {location}\n###############')
+
+def var_find(fname, location, time=False):
+    print(
+        f'###############\nFile: {fname}\nLocation: {location}\n###############')
 
     if not fname is '':
         os.chdir(location)
-        if not time: var = {'res':'m03_ao13_reso', 'b0':'m03_ao09_width', 'trap': 'm04_ao04_sa_delay'}
-        else: var = {'res':'m03_ao13_reso', 'b0':'m03_ao09_width'}
+        if not time:
+            var = {'res': 'm03_ao13_reso', 'b0': 'm03_ao09_width',
+                   'trap': 'm04_ao04_sa_delay'}
+        else:
+            var = {'res': 'm03_ao13_reso', 'b0': 'm03_ao09_width'}
 
         print(var)
 
         with open(fname, 'r') as f:
             f = np.array(f.readlines())
         for i in f:
-            if not len(i.strip())==0 and i.split()[0]=='#':
+            if not len(i.strip()) == 0 and i.split()[0] == '#':
                 for j in var:
                     if var[j] in i.split():
                         var[j] = float(i.split()[-3])
 
-        if not time: res, b0, trap = round(var['res'], 1), int(var['b0']/1000), int(var['trap']/1000)
-        else: res, b0 = round(var['res'], 1), int(var['b0']/1000)
+        if not time:
+            res, b0, trap = round(var['res'], 1), int(
+                var['b0']/1000), int(var['trap']/1000)
+        else:
+            res, b0 = round(var['res'], 1), int(var['b0']/1000)
         print(var)
 
-        if time: return res, b0
+        if time:
+            return res, b0
 
         return res, b0, trap
     else:
-        if time: return 0, 0
+        if time:
+            return 0, 0
         return 0, 0, 0
 
 # Timescan plot
+
+
 def get_skip_line(scanfile, location):
     os.chdir(location)
     with open(scanfile, 'r') as f:
         skip = 0
         for line in f:
-            if len(line)>1:
+            if len(line) > 1:
                 line = line.strip()
                 if line == 'ALL:':
                     print(f'\n{line} found at line no. {skip+1}\n')
                     return skip + 1
             skip += 1
     return f'ALL: is not found in the file'
+
 
 def get_iterations(scanfile, location):
     os.chdir(location)
@@ -225,14 +263,17 @@ def get_iterations(scanfile, location):
         for line in f:
             if line.startswith('#mass'):
                 print(line)
-                iterations = np.append(iterations, line.split(':')[-1]).astype(np.int64)
-            else: continue
+                iterations = np.append(
+                    iterations, line.split(':')[-1]).astype(np.int64)
+            else:
+                continue
     return iterations
 
 ############################# FELion Tkinter Class #############################
 
+
 class FELion_widgets(Frame):
-    
+
     def __init__(self, parent, *args, **kw):
         Frame.__init__(self, parent)
         self.parent = parent
@@ -242,18 +283,23 @@ class FELion_widgets(Frame):
 
         if 'cnt' in kw:
             self.cnt = kw['cnt']
-              
+
     def labels(self, *args, **kw):
         txt = args[0]
         x, y = args[1], args[2]
         kw = var_check(kw)
-        
-        self.parent.txt = Label(self.parent, text = txt, justify = kw['justify'], font = kw['font'], bg = kw['bg'], bd = kw['bd'], relief = kw['relief'])
-        self.parent.txt.place(relx = x, rely = y, anchor = kw['anchor'], relwidth = kw['relwidth'], relheight = kw['relheight'])
+
+        self.parent.txt = Label(
+            self.parent, text=txt, justify=kw['justify'], font=kw['font'], bg=kw['bg'], bd=kw['bd'], relief=kw['relief'])
+        self.parent.txt.place(
+            relx=x, rely=y, anchor=kw['anchor'], relwidth=kw['relwidth'], relheight=kw['relheight'])
 
         if 'help' in kw:
-            on_enter = lambda x: self.cnt.statusBar_left.config(text = kw['help'])
-            on_leave = lambda x: self.cnt.statusBar_left.config(text = self.cnt.statusBar_left_text)
+            def on_enter(x): return self.cnt.statusBar_left.config(
+                text=kw['help'])
+
+            def on_leave(x): return self.cnt.statusBar_left.config(
+                text=self.cnt.statusBar_left_text)
 
             self.parent.txt.bind('<Enter>', on_enter)
             self.parent.txt.bind('<Leave>', on_leave)
@@ -264,20 +310,26 @@ class FELion_widgets(Frame):
         btn_txt = args[0]
         x, y = args[1], args[2]
         func = args[3]
-        
+
         kw = var_check(kw)
-        
-        if len(args)>4:
+
+        if len(args) > 4:
             func_parameters = args[4:]
-            self.button = ttk.Button(self.parent, text = btn_txt, command = lambda: func(*func_parameters))
-        else: 
-            self.button = ttk.Button(self.parent, text = btn_txt, command = lambda: func())  
-        
-        self.button.place(relx = x, rely = y, relwidth = kw['relwidth'], relheight = kw['relheight'])
+            self.button = ttk.Button(
+                self.parent, text=btn_txt, command=lambda: func(*func_parameters))
+        else:
+            self.button = ttk.Button(
+                self.parent, text=btn_txt, command=lambda: func())
+
+        self.button.place(
+            relx=x, rely=y, relwidth=kw['relwidth'], relheight=kw['relheight'])
 
         if 'help' in kw:
-            on_enter = lambda x: self.cnt.statusBar_left.config(text = kw['help'])
-            on_leave = lambda x: self.cnt.statusBar_left.config(text = self.cnt.statusBar_left_text)
+            def on_enter(x): return self.cnt.statusBar_left.config(
+                text=kw['help'])
+
+            def on_leave(x): return self.cnt.statusBar_left.config(
+                text=self.cnt.statusBar_left_text)
 
             self.button.bind('<Enter>', on_enter)
             self.button.bind('<Leave>', on_leave)
@@ -285,51 +337,65 @@ class FELion_widgets(Frame):
     def entries(self, method,  *args, **kw):
         txt, x, y = args[0], args[1], args[2]
         kw = var_check(kw)
-        
+
         if method == 'Entry':
-            if isinstance(txt, str): self.parent.txt = StringVar()
-            elif isinstance(txt, int) or isinstance(txt, float): self.parent.txt = DoubleVar()
-                
+            if isinstance(txt, str):
+                self.parent.txt = StringVar()
+            elif isinstance(txt, int) or isinstance(txt, float):
+                self.parent.txt = DoubleVar()
+
             self.parent.txt.set(txt)
-            self.parent.entry = Entry(self.parent, bg = kw['bg'], bd = kw['bd'], textvariable = self.parent.txt, font = kw['font'])
-            self.parent.entry.place(relx = x, rely = y, anchor = kw['anchor'], relwidth = kw['relwidth'], relheight = kw['relheight'])
-            
+            self.parent.entry = Entry(
+                self.parent, bg=kw['bg'], bd=kw['bd'], textvariable=self.parent.txt, font=kw['font'])
+            self.parent.entry.place(
+                relx=x, rely=y, anchor=kw['anchor'], relwidth=kw['relwidth'], relheight=kw['relheight'])
+
             if 'help' in kw:
-                on_enter = lambda x: self.cnt.statusBar_left.config(text = kw['help'])
-                on_leave = lambda x: self.cnt.statusBar_left.config(text = self.cnt.statusBar_left_text)
+                def on_enter(x): return self.cnt.statusBar_left.config(
+                    text=kw['help'])
+
+                def on_leave(x): return self.cnt.statusBar_left.config(
+                    text=self.cnt.statusBar_left_text)
 
                 self.parent.entry.bind('<Enter>', on_enter)
                 self.parent.entry.bind('<Leave>', on_leave)
-            
+
             return self.parent.txt
 
         elif method == 'Check':
             self.parent.txt = BooleanVar()
-            if 'default' in kw: self.parent.txt.set(kw['default'])
-            else: self.parent.txt.set(False)
+            if 'default' in kw:
+                self.parent.txt.set(kw['default'])
+            else:
+                self.parent.txt.set(False)
 
-            self.parent.Check = ttk.Checkbutton(self.parent, text = txt, variable = self.parent.txt)
-            self.parent.Check.place(relx = x, rely = y, relwidth = kw['relwidth'], relheight = kw['relheight'])
+            self.parent.Check = ttk.Checkbutton(
+                self.parent, text=txt, variable=self.parent.txt)
+            self.parent.Check.place(
+                relx=x, rely=y, relwidth=kw['relwidth'], relheight=kw['relheight'])
 
             if 'help' in kw:
-                on_enter = lambda x: self.cnt.statusBar_left.config(text = kw['help'])
-                on_leave = lambda x: self.cnt.statusBar_left.config(text = self.cnt.statusBar_left_text)
+                def on_enter(x): return self.cnt.statusBar_left.config(
+                    text=kw['help'])
+
+                def on_leave(x): return self.cnt.statusBar_left.config(
+                    text=self.cnt.statusBar_left_text)
 
                 self.parent.Check.bind('<Enter>', on_enter)
                 self.parent.Check.bind('<Leave>', on_leave)
 
             return self.parent.txt
-        
+
         elif method == 'power_box':
             self.parent.T = Text(self.parent)
             self.parent.S = Scrollbar(self.parent)
-            self.parent.T.config(yscrollcommand = self.parent.S.set)
-            self.parent.S.config(command = self.parent.T.yview)
-            
+            self.parent.T.config(yscrollcommand=self.parent.S.set)
+            self.parent.S.config(command=self.parent.T.yview)
+
             self.parent.T.insert(END, txt)
 
-            self.parent.T.place(relx = x,  rely = y, relwidth = 0.7, relheight = 0.4)
-            self.parent.S.place(relx = x + 0.7,  rely = y, width = 15, relheight = 0.4)
+            self.parent.T.place(relx=x,  rely=y, relwidth=0.7, relheight=0.4)
+            self.parent.S.place(relx=x + 0.7,  rely=y, width=15, relheight=0.4)
 
             return self.parent.T
 
@@ -338,7 +404,8 @@ class FELion_widgets(Frame):
         root = Tk()
         root.withdraw()
 
-        root.filename =  askopenfilename(initialdir = self.location, title = "Select file", filetypes = (file_type))
+        root.filename = askopenfilename(
+            initialdir=self.location, title="Select file", filetypes=(file_type))
 
         filename = root.filename
         filename = filename.split("/")
@@ -347,16 +414,16 @@ class FELion_widgets(Frame):
 
         self.fname = filename[-1]
         del filename[-1]
-        
+
         self.location = "/".join(filename)
         root.destroy()
-        
+
         return self.fname, self.location
 
     def openfilelist(self, file_type):
-        self.filelist = [] # to prevent appending previously selected files
+        self.filelist = []  # to prevent appending previously selected files
         self.openlist = askopenfilenames(initialdir=self.location, initialfile='tmp',
-                        filetypes=file_type)
+                                         filetypes=file_type)
 
         for i in self.openlist:
             location = i.split("/")
@@ -370,16 +437,17 @@ class FELion_widgets(Frame):
     def open_full_dir(self):
         root = Tk()
         root.withdraw()
-        root.directory =  askdirectory()
+        root.directory = askdirectory()
         self.location = root.directory
         root.destroy()
         return self.location
 
 ############################# FELion Tkinter Toplevel method for matplotlib figure #############################
 
+
 class FELion_Toplevel():
 
-    def __init__(self, root, name, location, add_buttons = True):
+    def __init__(self, root, name, location, add_buttons=True):
         os.chdir(location)
         self.location = location
 
@@ -387,95 +455,109 @@ class FELion_Toplevel():
         self.root.wm_title(name)
         self.root.wm_geometry('1000x600')
 
-        self.canvas_frame = Frame(self.root, bg = 'white')
-        self.canvas_frame.place(relx = 0, rely = 0, relwidth = 0.8, relheight = 1)
+        self.canvas_frame = Frame(self.root, bg='white')
+        self.canvas_frame.place(relx=0, rely=0, relwidth=0.8, relheight=1)
 
-        self.widget_frame = Frame(self.root, bg = 'light grey')
-        self.widget_frame.place(relx = 0.8, rely = 0, relwidth = 0.2, relheight = 1)
+        self.widget_frame = Frame(self.root, bg='light grey')
+        self.widget_frame.place(relx=0.8, rely=0, relwidth=0.2, relheight=1)
 
         if add_buttons:
             self.name = StringVar()
-            self.filename = Entry(self.widget_frame, textvariable = self.name, font = ("Verdana", 10, "italic"), bd = 5)
+            self.filename = Entry(self.widget_frame, textvariable=self.name, font=(
+                "Verdana", 10, "italic"), bd=5)
             self.name.set('plot')
-            self.filename.place(relx = 0.1, rely = 0.1, relwidth = 0.5, relheight = 0.05)
+            self.filename.place(relx=0.1, rely=0.1,
+                                relwidth=0.5, relheight=0.05)
 
-            self.button = ttk.Button(self.widget_frame, text = 'Save', command = lambda: self.save())
-            self.button.place(relx = 0.1, rely = 0.2, relwidth = 0.5, relheight = 0.05)
+            self.button = ttk.Button(
+                self.widget_frame, text='Save', command=lambda: self.save())
+            self.button.place(relx=0.1, rely=0.2, relwidth=0.5, relheight=0.05)
 
-    def figure(self, dpi, connect = True, **kw):
-        if 'figsize' in kw: self.fig = Figure(figsize = kw['figsize'], dpi = dpi)
-        else: self.fig = Figure(dpi = dpi)
+    def figure(self, dpi, connect=True, **kw):
+        if 'figsize' in kw:
+            self.fig = Figure(figsize=kw['figsize'], dpi=dpi)
+        else:
+            self.fig = Figure(dpi=dpi)
 
-        self.fig.subplots_adjust(top = 0.95, bottom = 0.2, left = 0.1, right = 0.9)
+        self.fig.subplots_adjust(top=0.95, bottom=0.2, left=0.1, right=0.9)
 
-        self.canvas = FigureCanvasTkAgg(self.fig, master = self.canvas_frame)
-        self.canvas.get_tk_widget().place(relx = 0, rely = 0, relwidth = 1, relheight = 1)
+        self.canvas = FigureCanvasTkAgg(self.fig, master=self.canvas_frame)
+        self.canvas.get_tk_widget().place(relx=0, rely=0, relwidth=1, relheight=1)
 
         self.toolbar = NavigationToolbar2Tk(self.canvas, self.root)
         self.toolbar.update()
 
-        if connect: self.canvas.mpl_connect("key_press_event", self.on_key_press)
-        
+        if connect:
+            self.canvas.mpl_connect("key_press_event", self.on_key_press)
+
         return self.fig, self.canvas
-    
+
     def on_key_press(self, event):
-            key_press_handler(event, self.canvas, self.toolbar)
+        key_press_handler(event, self.canvas, self.toolbar)
 
     def save(self):
-        
-        if not isdir('./OUT'): os.mkdir('OUT')
-        if isfile(f'./OUT/{self.name.get()}.png'): 
-                if askokcancel('Overwrite?', f'File: {self.name.get()}.png already present. \nDo you want to Overwrite the file?'): 
-                        self.fig.savefig(f'./OUT/{self.name.get()}.png')
-                        ShowInfo('SAVED', f'File: {self.name.get()}.png saved in OUT/ directory.')
-        else: 
+
+        if not isdir('./OUT'):
+            os.mkdir('OUT')
+        if isfile(f'./OUT/{self.name.get()}.png'):
+            if askokcancel('Overwrite?', f'File: {self.name.get()}.png already present. \nDo you want to Overwrite the file?'):
                 self.fig.savefig(f'./OUT/{self.name.get()}.png')
-                ShowInfo('SAVED', f'File: {self.name.get()}.png saved in OUT/ directory')
-        print(f'Filename saved: {self.name.get()}.png\nLocation: {self.location}\n')
+                ShowInfo(
+                    'SAVED', f'File: {self.name.get()}.png saved in OUT/ directory.')
+        else:
+            self.fig.savefig(f'./OUT/{self.name.get()}.png')
+            ShowInfo(
+                'SAVED', f'File: {self.name.get()}.png saved in OUT/ directory')
+        print(
+            f'Filename saved: {self.name.get()}.png\nLocation: {self.location}\n')
 
     def get_widget_frame(self):
         return self.widget_frame
-    
+
     def add_log_btn(self, ax):
 
         self.log = BooleanVar()
-        log_btn = ttk.Checkbutton(self.widget_frame, text = 'Log', variable = self.log)
-        log_btn.place(relx = 0.1, rely =  0.3, relwidth = 0.5, relheight = 0.05)
+        log_btn = ttk.Checkbutton(
+            self.widget_frame, text='Log', variable=self.log)
+        log_btn.place(relx=0.1, rely=0.3, relwidth=0.5, relheight=0.05)
         self.log.set(False)
 
-        update_btn = ttk.Button(self.widget_frame, text = 'Update Plot', command = lambda: self.update(ax))
-        update_btn.place(relx = 0.1, rely =  0.4, relwidth = 0.5, relheight = 0.05)
+        update_btn = ttk.Button(
+            self.widget_frame, text='Update Plot', command=lambda: self.update(ax))
+        update_btn.place(relx=0.1, rely=0.4, relwidth=0.5, relheight=0.05)
 
     def check_button_maker(self, text, x, y):
-        
+
         self.check_dict = {}
         position_change = it.cycle([True, True, False])
 
         for i in text:
             self.check_dict[i] = BooleanVar()
-            self.check_dict[f'check_box_m{i}'] = ttk.Checkbutton(self.widget_frame, text = i, variable = self.check_dict[i])
-            self.check_dict[f'check_box_m{i}'].place(relx = x, rely = y, relwidth = 0.25, relheight = 0.05)
+            self.check_dict[f'check_box_m{i}'] = ttk.Checkbutton(
+                self.widget_frame, text=i, variable=self.check_dict[i])
+            self.check_dict[f'check_box_m{i}'].place(
+                relx=x, rely=y, relwidth=0.25, relheight=0.05)
             self.check_dict[i].set(True)
-            
-            if next(position_change): 
+
+            if next(position_change):
                 x += 0.25
-            else: 
-                x = 0.1 
+            else:
+                x = 0.1
                 y += 0.05
-        
+
     def get_check_values(self):
         return self.check_dict
 
-    def update(self, ax, plot = False):
-        
+    def update(self, ax, plot=False):
+
         t0 = check_time()
 
-        if self.log.get(): 
+        if self.log.get():
             ax.set_yscale('log')
-        else: 
+        else:
             ax.set_yscale('linear')
-            ax.ticklabel_format(style='sci', axis='y', scilimits = (0, 0))
-            
+            ax.ticklabel_format(style='sci', axis='y', scilimits=(0, 0))
+
         self.canvas.draw()
 
         t1 = check_time()
