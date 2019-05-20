@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-## Importing Modules
+# Importing Modules
 
 # DATA Analysis modules:
 import numpy as np
@@ -18,15 +18,20 @@ from FELion_definitions import ShowInfo, ErrorInfo, filecheck, move, FELion_Topl
 # Tkinter Modules
 from tkinter import Toplevel
 
+# Error traceback
+import traceback
+
 ################################################################################
 
+
 def export_file(fname, wn, inten):
-    f = open('EXPORT/' + fname + '.dat','w')
+    f = open('EXPORT/' + fname + '.dat', 'w')
     f.write("#DATA points as shown in lower figure of: " + fname + ".pdf file!\n")
     f.write("#wn (cm-1)       intensity\n")
     for i in range(len(wn)):
         f.write("{:8.3f}\t{:8.2f}\n".format(wn[i], inten[i]))
     f.close()
+
 
 def norm_line_felix(felixfile, mname, temp, bwidth, ie, foravgshow, location, dpi, parent):
 
@@ -38,57 +43,62 @@ def norm_line_felix(felixfile, mname, temp, bwidth, ie, foravgshow, location, dp
     basefile = f'{fname}.base'
     powerfile = f'{fname}.pow'
 
-    PD=True
+    PD = True
 
     if not foravgshow:
         ####################################### END Initialisation #######################################
 
         ####################################### Tkinter figure #######################################
 
-        ## Embedding figure to tkinter Toplevel
+        # Embedding figure to tkinter Toplevel
         title_name = 'Normline Spectrum'
         root = Toplevel(parent)
         tk_widget = FELion_Toplevel(root, title_name, location)
 
         fig, canvas = tk_widget.figure(dpi)
-        ax = fig.add_subplot(3,1,1)
-        bx = fig.add_subplot(3,1,2)
-        cx = fig.add_subplot(3,1,3)
-        
+        ax = fig.add_subplot(3, 1, 1)
+        bx = fig.add_subplot(3, 1, 2)
+        cx = fig.add_subplot(3, 1, 3)
+
         ax2 = ax.twinx()
         bx2 = bx.twinx()
 
-        #Get the baseline
+        # Get the baseline
         baseCal = BaselineCalibrator(basefile)
         baseCal.plot(ax)
-        ax.plot(data[0], data[1], ls='', marker='o', ms=3, markeredgecolor='r', c='r')
+        ax.plot(data[0], data[1], ls='', marker='o',
+                ms=3, markeredgecolor='r', c='r')
         ax.set_ylabel("cnts")
         ax.set_xlim([data[0].min()*0.95, data[0].max()*1.05])
 
-        #Get the power and number of shots
+        # Get the power and number of shots
         powCal = PowerCalibrator(powerfile)
         powCal.plot(bx2, ax2)
 
-        #Get the spectrum analyser
+        # Get the spectrum analyser
         saCal = SpectrumAnalyserCalibrator(felixfile)
         saCal.plot(bx)
         bx.set_ylabel("SA")
 
-        #Calibrate X for all the data points
+        # Calibrate X for all the data points
         wavelength = saCal.sa_cm(data[0])
 
-        #Normalise the intensity
-        #multiply by 1000 because of mJ but ONLY FOR PD!!!
+        # Normalise the intensity
+        # multiply by 1000 because of mJ but ONLY FOR PD!!!
         if(PD):
-            intensity = -np.log(data[1]/baseCal.val(data[0])) / powCal.power(data[0]) / powCal.shots(data[0]) *1000 
+            intensity = -np.log(data[1]/baseCal.val(data[0])) / \
+                powCal.power(data[0]) / powCal.shots(data[0]) * 1000
         else:
-            intensity = (data[1]-baseCal.val(data[0])) / powCal.power(data[0]) / powCal.shots(data[0])
+            intensity = (data[1]-baseCal.val(data[0])) / \
+                powCal.power(data[0]) / powCal.shots(data[0])
 
-        cx.plot(wavelength, intensity, ls='-', marker='o', ms=2, c='r', markeredgecolor='k', markerfacecolor='k')
+        cx.plot(wavelength, intensity, ls='-', marker='o', ms=2,
+                c='r', markeredgecolor='k', markerfacecolor='k')
         cx.set_xlabel("wn (cm-1)")
         cx.set_ylabel("PowerCalibrated Intensity")
-        
-        ax.set_title(f'{fname}: {mname} at {temp}K with B0:{round(bwidth)}ms and IE:{ie}eV')
+
+        ax.set_title(
+            f'{fname}: {mname} at {temp}K with B0:{round(bwidth)}ms and IE:{ie}eV')
 
         ax.grid(True)
         bx.grid(True)
@@ -98,8 +108,8 @@ def norm_line_felix(felixfile, mname, temp, bwidth, ie, foravgshow, location, dp
 
         ####################################### END Plotting details #######################################
 
-        canvas.draw() # drawing in the tkinter canvas: canvas drawing board
-        
+        canvas.draw()  # drawing in the tkinter canvas: canvas drawing board
+
         ####################################### END Tkinter figure #######################################
 
     if foravgshow:
@@ -109,17 +119,20 @@ def norm_line_felix(felixfile, mname, temp, bwidth, ie, foravgshow, location, dp
         powCal = PowerCalibrator(powerfile)
 
         if(PD):
-            intensity = -np.log(data[1]/baseCal.val(data[0])) / powCal.power(data[0]) / powCal.shots(data[0]) *1000 
+            intensity = -np.log(data[1]/baseCal.val(data[0])) / \
+                powCal.power(data[0]) / powCal.shots(data[0]) * 1000
         else:
-            intensity = (data[1]-baseCal.val(data[0])) / powCal.power(data[0]) / powCal.shots(data[0])
+            intensity = (data[1]-baseCal.val(data[0])) / \
+                powCal.power(data[0]) / powCal.shots(data[0])
         return wavelength, intensity
-    
+
+
 def felix_binning(xs, ys, delta=1):
     """
     Binns the data provided in xs and ys to bins of width delta
     output: binns, intensity 
     """
-    
+
     #bins = np.arange(start, end, delta)
     #occurance = np.zeros(start, end, delta)
     BIN_STEP = delta
@@ -131,9 +144,10 @@ def felix_binning(xs, ys, delta=1):
     datay = ys[indices]
 
     print("In total we have: ", len(datax), ' data points.')
-    #do the binning of the data
+    # do the binning of the data
     bins = np.arange(BIN_START, BIN_STOP, BIN_STEP)
-    print("Binning starts: ", BIN_START, ' with step: ', BIN_STEP, ' ENDS: ', BIN_STOP)
+    print("Binning starts: ", BIN_START,
+          ' with step: ', BIN_STEP, ' ENDS: ', BIN_STOP)
 
     bin_i = np.digitize(datax, bins)
     bin_a = np.zeros(len(bins)+1)
@@ -153,7 +167,8 @@ def felix_binning(xs, ys, delta=1):
     #binsx = bins[non_zero_i] - BIN_STEP/2
     #data_binned = bin_a[non_zero_i]/bin_occ[non_zero_i]
 
-    return binsx, data_binned 
+    return binsx, data_binned
+
 
 def normline_correction(*args):
 
@@ -163,17 +178,17 @@ def normline_correction(*args):
 
         folders = ["DATA", "EXPORT", "OUT"]
         back_dir = dirname(location)
-        
-        if set(folders).issubset(os.listdir(back_dir)): 
+
+        if set(folders).issubset(os.listdir(back_dir)):
             os.chdir(back_dir)
             location = back_dir
             my_path = os.getcwd()
-        
-        else: 
+
+        else:
             os.chdir(location)
-            my_path = os.getcwd() 
-            
-        if(fname.find('felix')>=0):
+            my_path = os.getcwd()
+
+        if(fname.find('felix') >= 0):
             fname = fname.split('.')[0]
 
         fullname = fname + ".felix"
@@ -182,14 +197,17 @@ def normline_correction(*args):
         files = [fullname, powerfile, basefile]
 
         for dirs, filenames in zip(folders, files):
-            if not isdir(dirs): os.mkdir(dirs)
-            if isfile(filenames): move(my_path, filenames)
+            if not isdir(dirs):
+                os.mkdir(dirs)
+            if isfile(filenames):
+                move(my_path, filenames)
 
         if filecheck(my_path, basefile, powerfile, fullname):
             print(f'\nFilename-->{fullname}\nLocation-->{my_path}')
-            norm_line_felix(fullname, mname, temp, bwidth, ie, foravgshow, location, dpi, parent)
+            norm_line_felix(fullname, mname, temp, bwidth, ie,
+                            foravgshow, location, dpi, parent)
 
         print("DONE")
 
-    except Exception as e:
-        ErrorInfo("ERROR:", e)
+    except:
+        ErrorInfo('Error: ', traceback.format_exc())

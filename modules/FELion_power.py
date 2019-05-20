@@ -16,6 +16,9 @@ from FELion_definitions import ErrorInfo, FELion_Toplevel
 import os
 from os.path import dirname
 
+# Error traceback
+import traceback
+
 ####################################### Modules Imported #######################################
 
 class PowerCalibrator(object):
@@ -128,5 +131,5 @@ def FELion_Power(powerfile, location, dpi, parent):
         canvas.draw() # drawing in the tkinter canvas: canvas drawing board
         
         ####################################### END Tkinter figure #######################################
-    except Exception as e:
-        ErrorInfo("ERROR", e)
+    except:
+        ErrorInfo('Error: ', traceback.format_exc())

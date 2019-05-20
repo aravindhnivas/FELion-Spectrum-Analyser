@@ -28,6 +28,9 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolb
 from matplotlib.backend_bases import key_press_handler
 from matplotlib.figure import Figure
 
+# Error traceback
+import traceback
+
 ###################################################################################################
 
 class Create_Baseline():
@@ -578,25 +581,34 @@ class Create_Baseline():
         print(f'File {self.name.get()}.dat saved in EXPORT/ Directory')
 
 def baseline_correction(felixfile, location, dpi, parent):
-    
-    if felixfile is '': return ErrorInfo('No File', 'Please select a .felix or .cfelix file')
-    base = Create_Baseline(felixfile, location, dpi, parent)
 
-    print(f'\nLocation: {base.location}\nFilename: {base.felixfile}')
+    try:
+        if felixfile is '': return ErrorInfo('No File', 'Please select a .felix or .cfelix file')
+        base = Create_Baseline(felixfile, location, dpi, parent)
 
-    base.felix_read_file() # read felix file
-    PPS = 5
-    NUM_POINTS = 10
-    if isfile(f'./DATA/{base.basefile}'): base.ReadBase() # Read baseline file if exist else guess it
-    else: base.GuessBaseLine(PPS, NUM_POINTS)
-    base.PPS = PPS
+        print(f'\nLocation: {base.location}\nFilename: {base.felixfile}')
 
-    base.InteractivePlots() # Plot
+        base.felix_read_file() # read felix file
+        PPS = 5
+        NUM_POINTS = 10
+        if isfile(f'./DATA/{base.basefile}'): base.ReadBase() # Read baseline file if exist else guess it
+        else: base.GuessBaseLine(PPS, NUM_POINTS)
+        base.PPS = PPS
+
+        base.InteractivePlots() # Plot
+        
+    except:
+        ErrorInfo('Error: ', traceback.format_exc())
 
 def livePlot(felixfile, location, dpi, parent):
 
-    if felixfile is '': return ErrorInfo('No File', 'Please select a .felix or .cfelix file')
+    try:
 
-    live = Create_Baseline(felixfile, location, dpi, parent)
-    print(f'\nLocation: {live.location}\nFilename: {live.felixfile}')
-    live.livePlot(PPS = 5, NUM_POINTS = 10)
+        if felixfile is '': return ErrorInfo('No File', 'Please select a .felix or .cfelix file')
+
+        live = Create_Baseline(felixfile, location, dpi, parent)
+        print(f'\nLocation: {live.location}\nFilename: {live.felixfile}')
+        live.livePlot(PPS = 5, NUM_POINTS = 10)
+        
+    except:
+        ErrorInfo('Error: ', traceback.format_exc())
