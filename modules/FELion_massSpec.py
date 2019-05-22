@@ -28,6 +28,7 @@ from FELion_definitions import ShowInfo, ErrorInfo, var_find, FELion_Toplevel, F
 # Error traceback
 import traceback
 
+
 def save():
     print('Saving Plot')
     
