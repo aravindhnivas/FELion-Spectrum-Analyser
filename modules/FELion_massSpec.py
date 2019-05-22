@@ -65,6 +65,8 @@ def update():
 
 def publication():
 
+    global fname
+
     os.chdir(location)
     if not isdir('./OUT'): os.mkdir('./OUT')
 
@@ -75,13 +77,14 @@ def publication():
     with plt.style.context(['science']):
 
         plt_fig, plt_ax =  plt.subplots(dpi=300)
+        fname = fname.replace('_', '-')
         plt_ax.plot(x, y, label='$%s$'%fname)
 
         # Configuring plot
         plt_ax.set_xlabel('Mass [u]')
-        plt_ax.set_ylabel('$Counts\%ims$'%b0)
+        plt_ax.set_ylabel('$Counts$')
         title = f'Res: {res}; Trap: {trap}ms; T: {temp}K; IE :{ie}eV'
-        plt_ax.set_title('${}$'.format(title))
+        plt_ax.set_title('$%s$'%title)
 
         plt_ax.legend()
 
@@ -90,7 +93,6 @@ def publication():
 
         if isfile(f'./OUT/{save_name.get()}_high_res.png'): 
             print(f'File saved: {save_name.get()}_high_res.png\nLocation: {location}')
-
         #plt.show()
 
         t1 = check_time()
