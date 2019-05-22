@@ -66,6 +66,7 @@ def update():
 def publication():
 
     os.chdir(location)
+    if not isdir('./OUT'): os.mkdir('./OUT')
 
     t0 = check_time()
     
@@ -74,12 +75,14 @@ def publication():
     with plt.style.context(['science']):
 
         plt_fig, plt_ax =  plt.subplots(dpi=300)
-        plt_ax.plot(x, y, label='Checking')
+        plt_ax.plot(x, y, label='$%s$'%fname)
 
         # Configuring plot
         plt_ax.set_xlabel('Mass [u]')
-        #plt_ax.set_ylabel(f'Ion counts /{b0} ms')
-        #plt_ax.set_title(f'{fname} for {mname} at {temp}K with IE:{ie}eV')
+        plt_ax.set_ylabel('$Counts\%ims$'%b0)
+        title = f'Res: {res}; Trap: {trap}ms; T: {temp}K; IE :{ie}eV'
+        plt_ax.set_title('${}$'.format(title))
+
         plt_ax.legend()
 
         plt_fig.savefig(f'./OUT/{save_name.get()}_high_res.pdf')
@@ -149,8 +152,8 @@ def massSpec(*args):
             log = widget.entries('Check', 'Log', 0.1, 0.2, relwidth = 0.5, relheight = 0.05, default = False)
             update_btn = widget.buttons('Update Plot', 0.1, 0.3, update, relwidth = 0.5, relheight = 0.05)
 
-            high_res = widget.buttons('Publication\nQuality', 0.1, 0.4, publication, relwidth = 0.5, relheight = 0.07)
-            warning_label = widget.labels('NOTE: Rendering is slow', 0.1, 0.5, bg='grey', relwidth = 0.9, relheight = 0.05)
+            high_res = widget.buttons('Publication Quality\n(HDP-LATEX)', 0.1, 0.4, publication, relwidth = 0.7, relheight = 0.07)
+            warning_label = widget.labels('Rendering is very slow', 0.1, 0.5, bg='grey', relwidth = 0.9, relheight = 0.05)
                 
             ####################################### PLOTTING DETAILS #######################################
             ax.semilogy(x, y, label=f'{fname}: Res: {res}; B0: {b0}ms; Trap: {trap}ms')
