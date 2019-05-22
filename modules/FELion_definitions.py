@@ -309,9 +309,10 @@ class FELion_widgets(Frame):
     def buttons(self, *args, **kw):
         btn_txt = args[0]
         x, y = args[1], args[2]
-        func = args[3]
-
         kw = var_check(kw)
+
+        if len(args)>3:
+            func = args[3]
 
         if len(args) > 4:
             func_parameters = args[4:]
@@ -333,6 +334,8 @@ class FELion_widgets(Frame):
 
             self.button.bind('<Enter>', on_enter)
             self.button.bind('<Leave>', on_leave)
+            
+        return self.button
 
     def entries(self, method,  *args, **kw):
         txt, x, y = args[0], args[1], args[2]
