@@ -150,11 +150,11 @@ def massSpec(*args):
             update_btn = widget.buttons('Update Plot', 0.1, 0.3, update, relwidth = 0.5, relheight = 0.05)
 
             high_res = widget.buttons('Publication\nQuality', 0.1, 0.4, publication, relwidth = 0.5, relheight = 0.07)
+            warning_label = widget.labels('NOTE: Rendering is slow', 0.1, 0.5, bg='grey', relwidth = 0.9, relheight = 0.05)
                 
             ####################################### PLOTTING DETAILS #######################################
-            with style.context('default'):
-                ax.semilogy(x, y, label=f'{fname}: Res: {res}; B0: {b0}ms; Trap: {trap}ms')
-                ax.grid(True)
+            ax.semilogy(x, y, label=f'{fname}: Res: {res}; B0: {b0}ms; Trap: {trap}ms')
+            ax.grid(True)
             
             # Configuring plot
             ax.set_xlabel('Mass [u]', fontsize=xlabelsz)
