@@ -3,21 +3,9 @@
 # Modules
 
 # Built-In Modules
-from tkinter.messagebox import askokcancel
-from tkinter.filedialog import askopenfilenames, askopenfilename, askdirectory
-from tkinter import ttk, messagebox
-from tkinter import *
-from matplotlib.figure import Figure
-from matplotlib.backend_bases import key_press_handler
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from time import time as check_time
 import itertools as it
-import os
-import shutil
-import datetime
-import sys
-import subprocess
-import ctypes
+import os, shutil, datetime, sys, subprocess, ctypes
 from os.path import isdir, dirname, join, isfile
 
 # Data Analysis
@@ -26,11 +14,18 @@ import numpy as np
 # Other Modules
 import git
 
-# Matplotlib Modules for tkinter
-import matplotlib
-matplotlib.use("TkAgg")
-
 # Tkinter modules
+from tkinter.messagebox import askokcancel
+from tkinter.filedialog import askopenfilenames, askopenfilename, askdirectory
+from tkinter import ttk, messagebox
+from tkinter import *
+
+# Matplotlib
+import matplotlib
+matplotlib.use('TkAgg')
+from matplotlib.figure import Figure
+from matplotlib.backend_bases import key_press_handler
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 
 ################################################# MODULES IMPORTED #################################################
 ####################################################################################################################
