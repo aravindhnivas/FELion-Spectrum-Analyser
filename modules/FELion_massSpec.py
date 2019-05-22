@@ -78,8 +78,7 @@ def publication():
     with plt.style.context(['science']):
 
         plt_fig, plt_ax =  plt.subplots(dpi=300)
-        fname = fname.replace('_', '-')
-        plt_ax.plot(x, y, label='$%s$'%fname)
+        plt_ax.plot(x, y, label='$%s$'%fname.replace('_', '-'))
 
         # Configuring plot
         plt_ax.set_xlabel('Mass [u]')
