@@ -175,7 +175,7 @@ def normline_correction(*args):
     fname, location, mname, temp, bwidth, ie, foravgshow, dpi, parent = args
 
     try:
-
+        fullname = fname
         folders = ["DATA", "EXPORT", "OUT"]
         back_dir = dirname(location)
 
@@ -191,7 +191,6 @@ def normline_correction(*args):
         if(fname.find('felix') >= 0):
             fname = fname.split('.')[0]
 
-        fullname = fname + ".felix"
         basefile = fname + ".base"
         powerfile = fname + ".pow"
         files = [fullname, powerfile, basefile]
