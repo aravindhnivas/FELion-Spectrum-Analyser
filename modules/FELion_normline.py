@@ -56,9 +56,14 @@ def norm_line_felix(felixfile, mname, temp, bwidth, ie, foravgshow, location, dp
         tk_widget = FELion_Toplevel(root, title_name, location)
 
         fig, canvas = tk_widget.figure(dpi)
-        ax = fig.add_subplot(3, 1, 1)
-        bx = fig.add_subplot(3, 1, 2)
-        cx = fig.add_subplot(3, 1, 3)
+
+        ax = fig.add_subplot(311, )
+        bx = fig.add_subplot(312, sharex=ax)
+        cx = fig.add_subplot(313, sharex=ax)
+
+        # Set the x axis of top two plot invisible
+        # for axes in fig.get_axes():
+        #     axes.label_outer()
 
         ax2 = ax.twinx()
         bx2 = bx.twinx()
@@ -69,7 +74,7 @@ def norm_line_felix(felixfile, mname, temp, bwidth, ie, foravgshow, location, dp
         ax.plot(data[0], data[1], ls='', marker='o',
                 ms=3, markeredgecolor='r', c='r')
         ax.set_ylabel("cnts")
-        ax.set_xlim([data[0].min()*0.95, data[0].max()*1.05])
+        #ax.set_xlim([data[0].min()*0.95, data[0].max()*1.05])
 
         # Get the power and number of shots
         powCal = PowerCalibrator(powerfile)
