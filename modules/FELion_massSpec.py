@@ -224,11 +224,9 @@ class massSpec:
                         lg = f'{fname}: Res: {res}; Trap: {trap}ms; T: {self.temp}K; B0: {b0}ms; IE :{self.ie}eV'
                         plt_ax.plot(mass, counts, label='$%s$' % lg)
 
-                        plt_ax.set_title('$Combined Mass Spectrum$')
-
-                        l1 = plt_ax.legend(title='$%s$' %
-                                           self.mname, fontsize=self.lgs-6)
-                        l1.get_title().set_fontsize(self.ts-6)
+                        plt_ax.set_title('$%s$'%self.mname)
+                        l1 = plt_ax.legend(fontsize=self.lgs-6)
+                        # l1.get_title().set_fontsize(self.ts-6)
 
                 self.log_check(plt_ax, plt_fig.canvas, sci=False)
 
