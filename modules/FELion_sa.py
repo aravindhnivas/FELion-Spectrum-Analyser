@@ -25,11 +25,14 @@ import traceback
 
 
 class SpectrumAnalyserCalibrator(object):
-    def __init__(self, felixfile, fit='linear'):
+    def __init__(self, felixfile, fit='linear', ms=None):
         """
         Spectrum analyser calibration initialisation
         fit can be either linear, or cubic
         """
+
+        self.ms = ms
+
         data = felix_read_file(felixfile)
 
         # Spectrum analyser calibration
@@ -91,8 +94,12 @@ class SpectrumAnalyserCalibrator(object):
     def plot(self, ax):
         wn, sa = self.data
         X = np.arange(wn.min(), wn.max(), 1)
-        ax.plot(wn, sa, ls='', marker='s', ms=3, markeredgecolor='r', c='r')
-        ax.plot(X, self.sa_cm(X), ls='-', marker='', c='g')
+        if self.ms is not None:
+            ax.plot(wn, sa, 'x', c='r', ms=self.ms, markeredgecolor='r', label='SA')
+        else:
+            ax.plot(wn, sa, ls='', marker='s', ms=3, markeredgecolor='r', c='r')
+
+        ax.plot(X, self.sa_cm(X), ls='-', marker='', c='g', label='Fit')
 
 
 def FELion_Sa(felixfile, location, dpi, parent):

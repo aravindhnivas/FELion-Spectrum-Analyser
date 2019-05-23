@@ -26,10 +26,13 @@ class PowerCalibrator(object):
     Reads the power file and provides the power and n_shot
     for any given wavenumber
     """
-    def __init__(self, powerfile):
+    def __init__(self, powerfile, ms=None):
         """
         interpolation can be either 'cubic' or 'linear'
         """
+
+        self.ms = ms
+
         self.n_shots = 1
         self.interpol = 'linear'
         in_um = False
@@ -59,6 +62,7 @@ class PowerCalibrator(object):
         
         self.f = interp1d(self.xw, self.yw, kind=self.interpol, fill_value='extrapolate')
 
+
     def power(self, x):
         return self.f(x) 
 
@@ -72,12 +76,17 @@ class PowerCalibrator(object):
         return self.xw, self.yw, self.n_shots
 
     def plot(self, ax, bx):
-        ax.plot(self.xw, self.yw, ls='', marker='o', ms=5, markeredgecolor='r', c='r')
-        ax.plot(self.xw, self.power(self.xw), ls='-', c='m')
+
+        if self.ms is not None:
+            #ax.plot(self.xw, self.yw, ls='', marker='o', ms=self.ms, markeredgecolor='r', c='r')
+            ax.plot(self.xw, self.power(self.xw), '.--', c='m', ms=self.ms,  label='Power(mJ)')
+            bx.plot(self.xw, self.shots(self.xw), ls='-', marker='o', ms=self.ms, markeredgecolor='y', c='y', label='Shots(Hz)')
+        else:
+            ax.plot(self.xw, self.yw, ls='', marker='o', ms=3, markeredgecolor='r', c='r')
+            bx.plot(self.xw, self.shots(self.xw), ls='-', marker='o', ms=3, markeredgecolor='y', c='y')
+        
         ax.set_ylabel("power (mJ)")
         ax.set_ylim((0, self.yw.max()*1.1))
-
-        bx.plot(self.xw, self.shots(self.xw), ls='-', marker='o', ms=3, markeredgecolor='y', c='y')
         bx.set_ylabel("shots")
 
 def FELion_Power(powerfile, location, dpi, parent):

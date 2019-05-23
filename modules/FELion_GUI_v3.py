@@ -230,12 +230,13 @@ class Normline(Frame):
 
         # Entries
         self.delta = self.widget.entries('Entry', 2, 0.84, 0.24, bd=5)
+        self.hd = self.widget.entries('Check','HD', 0.8, 0.5, relwidth=0.05)
 
     def Normline_func(self):
 
         normline_correction(
             self.fname, self.location, self.mname.get(), self.temp.get(), self.bwidth.get(
-            ), self.ie.get(), self.foravgshow, self.dpi.get(), self.parent
+            ), self.ie.get(), self.foravgshow, self.dpi.get(), self.parent, hd=self.hd.get(), trap=self.trap.get()
         )
 
     def Avg_spectrum_func(self):

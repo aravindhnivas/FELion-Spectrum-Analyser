@@ -50,7 +50,9 @@ class BaselineCalibrator(object):
     Defines a baseline and is used to interpolate baseline for 
     any given wavenumber
     """
-    def __init__(self, basefile):
+    def __init__(self, basefile, ms=None):
+
+        self.ms = ms
         
         self.Bx, self.By, self.interpol = ReadBase(basefile)
         self.f = interp1d(self.Bx, self.By, kind=self.interpol)
@@ -59,9 +61,15 @@ class BaselineCalibrator(object):
         return self.f(x)
 
     def plot(self, ax):
+
         x = np.arange(self.Bx.min(), self.Bx.max(), 0.5)
         ax.plot(x, self.val(x), marker='', ls='-', c='b')
-        ax.plot(self.Bx, self.By, marker='s', ls='', ms=5, c='b', markeredgecolor='b', animated=True)
+
+        if self.ms is not None:
+            ax.plot(self.Bx, self.By, marker='s', ls='', ms=self.ms, c='b', markeredgecolor='b', animated=True, label='Baseline')
+        else:
+            ax.plot(self.Bx, self.By, marker='s', ls='', ms=5, c='b', markeredgecolor='b', animated=True)
+        
 ########################################################################################
 
 

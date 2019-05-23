@@ -36,7 +36,7 @@ def export_file(fname, wn, inten):
     f.close()
 
 
-def norm_line_felix(felixfile, mname, temp, bwidth, ie, foravgshow, location, dpi, parent, hd=False):
+def norm_line_felix(felixfile, mname, temp, bwidth, ie, foravgshow, location, dpi, parent, hd=False, trap=None):
 
     ####################################### Initialisation #######################################
 
@@ -48,45 +48,29 @@ def norm_line_felix(felixfile, mname, temp, bwidth, ie, foravgshow, location, dp
 
     PD = True
 
-    if not foravgshow:
-        ####################################### END Initialisation #######################################
-
-        ####################################### Tkinter figure #######################################
-
-        # Embedding figure to tkinter Toplevel
-        title_name = 'Normline Spectrum'
-        root = Toplevel(parent)
-        tk_widget = FELion_Toplevel(root, title_name, location)
-
-        fig, canvas = tk_widget.figure(dpi)
-
-        ax = fig.add_subplot(311, )
-        bx = fig.add_subplot(312, sharex=ax)
-        cx = fig.add_subplot(313, sharex=ax)
-
-        # Set the x axis of top two plot invisible
-        # for axes in fig.get_axes():
-        #     axes.label_outer()
+    def plot(fig, ax, bx, cx):
 
         ax2 = ax.twinx()
         bx2 = bx.twinx()
 
-        # Get the baseline
-        baseCal = BaselineCalibrator(basefile)
-        baseCal.plot(ax)
-        ax.plot(data[0], data[1], ls='', marker='o',
-                ms=3, markeredgecolor='r', c='r')
-        ax.set_ylabel("cnts")
-        #ax.set_xlim([data[0].min()*0.95, data[0].max()*1.05])
+        if not hd:
+            ms0, ms1, ms2, ms3, ms4 = 5, 3, 3, 3, 2
+        else:
+            ms0, ms1, ms2, ms3, ms4  = 1, 1, 1, 1, 1
 
+        # Get the baseline
+        baseCal = BaselineCalibrator(basefile, ms0)
+        baseCal.plot(ax)
+        ax.plot(data[0], data[1], '.--',
+                ms=ms1, markeredgecolor='r', c='r', label='felix')
+        
         # Get the power and number of shots
-        powCal = PowerCalibrator(powerfile)
-        powCal.plot(bx2, ax2)
+        powCal = PowerCalibrator(powerfile, ms=ms2)
+        powCal.plot(bx2, ax2) # Power, Shots
 
         # Get the spectrum analyser
-        saCal = SpectrumAnalyserCalibrator(felixfile)
+        saCal = SpectrumAnalyserCalibrator(felixfile, ms=ms3)
         saCal.plot(bx)
-        bx.set_ylabel("SA")
 
         # Calibrate X for all the data points
         wavelength = saCal.sa_cm(data[0])
@@ -100,56 +84,92 @@ def norm_line_felix(felixfile, mname, temp, bwidth, ie, foravgshow, location, dp
             intensity = (data[1]-baseCal.val(data[0])) / \
                 powCal.power(data[0]) / powCal.shots(data[0])
 
-        cx.plot(wavelength, intensity, ls='-', marker='o', ms=2,
-                c='r', markeredgecolor='k', markerfacecolor='k')
-        cx.set_xlabel("Calibrated wavelength $(cm^{-1})$")
-        cx.set_ylabel("PowerCalibrated Intensity")
+        cx.plot(wavelength, intensity, ls='-', marker='o', ms=ms4,
+                c='r', markeredgecolor='k', markerfacecolor='k', label='Normalised')
 
-        ax.set_title(
-            f'{fname}: {mname} at {temp}K with B0:{round(bwidth)}ms and IE:{ie}eV')
+        # Labels
+        ax.set_ylabel("Counts")
+        bx.set_ylabel("SA")
+        
+        if not hd: 
+            bx2.legend(fontsize=10)
+            ax2.legend(fontsize=10)
+            return wavelength, intensity
+        else:
+            bx2.legend(fontsize=6, loc='lower right')
+            ax2.legend(fontsize=6)
 
-        ax.grid(True)
-        bx.grid(True)
-        cx.grid(True)
+    if not foravgshow:
 
-        export_file(fname, wavelength, intensity)
+        if not hd:
 
-        ####################################### END Plotting details #######################################
+            ####################################### END Initialisation #######################################
 
-        canvas.draw()  # drawing in the tkinter canvas: canvas drawing board
+            ####################################### Tkinter figure #######################################
 
-        ####################################### END Tkinter figure #######################################
+            # Embedding figure to tkinter Toplevel
+            title_name = 'Normline Spectrum'
+            root = Toplevel(parent)
+            tk_widget = FELion_Toplevel(root, title_name, location)
+
+            fig, canvas = tk_widget.figure(dpi)
+
+            ax = fig.add_subplot(311, )
+            bx = fig.add_subplot(312, sharex=ax)
+            cx = fig.add_subplot(313, sharex=ax)
+
+            wavelength, intensity = plot(fig, ax, bx, cx)
+
+            ax.set_title(f'{fname}: {mname} at {temp}K with B0:{round(bwidth)}ms and IE:{ie}eV')
+
+            cx.set_xlabel("Calibrated wavelength $(cm^{-1})$")
+            cx.set_ylabel("PowerCalibrated Intensity")
+
+            export_file(fname, wavelength, intensity)
+            ####################################### END Plotting details #######################################
+            canvas.draw()  # drawing in the tkinter canvas: canvas drawing board
+            ####################################### END Tkinter figure #######################################
 
         if hd:
-            with plt.style.context('science'):
-                fig, (ax_, bx_, cx_) = plt.subplots(3,1)
+            with plt.style.context(['science']):
+                fig_, (ax_, bx_, cx_) = plt.subplots(3,1, sharex=True, gridspec_kw={'hspace':0})
+                plot(fig_, ax_, bx_, cx_)
 
-                ax_2 = ax_.twinx()
-                bx_2 = bx_.twinx()
-            
-                baseCal.plot(ax)
+                ax_lg = f'B_0:{round(bwidth)}ms; Trap={trap}ms'
+                l0 = ax_.legend(title='$%s$'%ax_lg, fontsize=6)
 
-                ax_.plot(data[0], data[1], ls='', marker='o',
-                    ms=3, markeredgecolor='r', c='r')
-                ax_.set_ylabel("cnts")
+                bx_.legend(fontsize=6)
 
-                saCal.plot(bx)
-                bx.set_ylabel("SA")
+                cx_lg = f'{temp}K; {ie}eV'
+                l1 = cx_.legend(title='$%s$'%cx_lg, fontsize=6)
+                
+                l0.get_title().set_fontsize(6)
+                l1.get_title().set_fontsize(6)
 
-                powCal.plot(bx2, ax2)
+                fname1 = felixfile.replace('_', '/')
+                title = f'{fname1}: {mname}'
+                ax_.set_title('$%s$'%title, fontsize=10)
 
-                cx.plot(wavelength, intensity, ls='-', marker='o', ms=2,
-                    c='r', markeredgecolor='k', markerfacecolor='k')
-                cx.set_xlabel("Calibrated wavelength $(cm^{-1})$")
-                cx.set_ylabel("PowerCalibrated Intensity")
+                cx_.set_xlabel("Calibrated wavelength $(cm^{-1})$")
+                cx_.set_ylabel("Intensity")
 
-                title = f'{fname}: {mname} at {temp}K with B0:{round(bwidth)}ms and IE:{ie}eV'
-                ax.set_title('$%s$'%title)
+                for i in (ax_, bx_, cx_):
+                    i.label_outer()
+                    i.grid()
 
-                fig.savefig('./highDP.png', dpi=dpi*3)
+                fig_.savefig(f'./OUT/{fname}_high_res.pdf', dpi=dpi*3)
+                fig_.savefig(f'./OUT/{fname}_high_res.png', dpi=dpi*3)
+
+                # # just baseline and spectrum
+
+                # bx_.set_visible(0)
+                # cx_.change_geometry(3,1,2)
+
+                # fig_.savefig(f'./OUT/{fname}_spectrum_high_res.pdf', dpi=dpi*3)
+                # fig_.savefig(f'./OUT/{fname}_spectrum_high_res.png', dpi=dpi*3)
 
 
-
+                
     if foravgshow:
         saCal = SpectrumAnalyserCalibrator(felixfile)
         wavelength = saCal.sa_cm(data[0])
@@ -208,7 +228,7 @@ def felix_binning(xs, ys, delta=1):
     return binsx, data_binned
 
 
-def normline_correction(*args):
+def normline_correction(*args, **kw):
 
     fname, location, mname, temp, bwidth, ie, foravgshow, dpi, parent = args
 
@@ -238,11 +258,17 @@ def normline_correction(*args):
                 os.mkdir(dirs)
             if isfile(filenames):
                 move(my_path, filenames)
+        
+        if 'hd' in kw:
+            if not kw['hd']:
+                if filecheck(my_path, basefile, powerfile, fullname):
+                    print(f'\nFilename-->{fullname}\nLocation-->{my_path}')
+                    norm_line_felix(fullname, mname, temp, bwidth, ie,
+                                    foravgshow, location, dpi, parent)
+            else:
+                norm_line_felix(fullname, mname, temp, bwidth, ie,
+                                foravgshow, location, dpi, parent, hd=True, trap=kw['trap'])
 
-        if filecheck(my_path, basefile, powerfile, fullname):
-            print(f'\nFilename-->{fullname}\nLocation-->{my_path}')
-            norm_line_felix(fullname, mname, temp, bwidth, ie,
-                            foravgshow, location, dpi, parent, hd=False)
 
         print("DONE")
 
