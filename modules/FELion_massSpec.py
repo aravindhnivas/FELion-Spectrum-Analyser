@@ -29,6 +29,7 @@ from FELion_definitions import ShowInfo, ErrorInfo, var_find, FELion_Toplevel, F
 # Error traceback
 import traceback
 
+
 class massSpec:
 
     def __init__(self, *args):
@@ -146,11 +147,13 @@ class massSpec:
             'Update Plot', 0.1, 0.3, self.update, relwidth=0.5, relheight=0.05)
 
         high_res = self.widget.buttons('Publication Quality\n(HD-LATEX)',
-                                       0.1, 0.4, self.publication, relwidth=0.7, relheight=0.07)
+                                       0.1, 0.37, self.publication, relwidth=0.7, relheight=0.07)
+
         self.warning_label = self.widget.labels(
-            'CAUTION!\nRendering will be slow', 0.1, 0.52, bg='grey', relwidth=0.8, relheight=0.07)
+            'CAUTION!\nRendering will be slow', 0.1, 0.5, bg='grey', relwidth=0.8, relheight=0.07)
+
         self.render_info = self.widget.labels(
-            '', 0.1, 0.63, bg='light grey', relwidth=0.75, relheight=0.07)
+            '', 0.1, 0.6, bg='light grey', relwidth=0.75, relheight=0.07)
 
     def save_info(self):
         self.fig.savefig(f'./OUT/{self.save_name.get()}.png')
@@ -208,21 +211,23 @@ class massSpec:
                                 self.fname.replace('_', '/'))
                     title = f'Res: {self.res}; Trap: {self.trap}ms; T: {self.temp}K; IE :{self.ie}eV'
                     plt_ax.set_title('$%s$' % title)
-                    l0 = plt_ax.legend(title='$%s$'%self.mname, fontsize=self.lgs)
+                    l0 = plt_ax.legend(title='$%s$' %
+                                       self.mname, fontsize=self.lgs)
                     l0.get_title().set_fontsize(self.ts)
-                
-                elif self.combine and len(self.filelist)>1:
+
+                elif self.combine and len(self.filelist) > 1:
                     for file in self.filelist:
 
                         res, b0, trap, mass, counts = self.open_mass_file(file)
                         fname = file.split('.')[0].replace('_', '/')
 
                         lg = f'{fname}: Res: {res}; Trap: {trap}ms; T: {self.temp}K; B0: {b0}ms; IE :{self.ie}eV'
-                        plt_ax.plot(mass, counts, label='$%s$'%lg)
-                        
+                        plt_ax.plot(mass, counts, label='$%s$' % lg)
+
                         plt_ax.set_title('$Combined Mass Spectrum$')
 
-                        l1 = plt_ax.legend(title='$%s$'%self.mname, fontsize=self.lgs-6)
+                        l1 = plt_ax.legend(title='$%s$' %
+                                           self.mname, fontsize=self.lgs-6)
                         l1.get_title().set_fontsize(self.ts-6)
 
                 self.log_check(plt_ax, plt_fig.canvas, sci=False)
@@ -230,7 +235,6 @@ class massSpec:
                 # Configuring plot
                 plt_ax.set_xlabel('Mass [u]')
                 plt_ax.set_ylabel('Counts')
-                
 
                 plt_fig.savefig(f'./OUT/{self.save_name.get()}_high_res.pdf')
                 plt_fig.savefig(
@@ -245,7 +249,6 @@ class massSpec:
 
                 self.render_info.config(text="Completed/Saved", bg='green')
 
-                #plt.show()
         except:
 
             self.render_info.config(text="ERROR!!", bg='red')
