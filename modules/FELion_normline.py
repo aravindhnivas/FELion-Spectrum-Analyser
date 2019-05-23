@@ -48,26 +48,30 @@ def norm_line_felix(felixfile, mname, temp, bwidth, ie, foravgshow, location, dp
 
     PD = True
 
-    def plot(fig, ax, bx, cx):
+    def plot(ax, bx, cx):
 
-        ax2 = ax.twinx()
-        bx2 = bx.twinx()
-
-        if not hd:
-            ms0, ms1, ms2, ms3, ms4 = 5, 3, 3, 3, 2
-        else:
+        #ax2 = ax.twinx() # Shots
+        bx2 = bx.twinx() # Power
+        
+        if hd:
             ms0, ms1, ms2, ms3, ms4  = 1, 1, 1, 1, 1
+        elif not hd:
+            ms0, ms1, ms2, ms3, ms4 = 5, 3, 3, 5, 2 # Baseline
+        else:
+            ms0, ms1, ms2, ms3, ms4 = None, None, None, None, None
+        
+        print('Markers:', ms0, ms1, ms2, ms3, ms4)
+
+        # Get the power and number of shots
+        powCal = PowerCalibrator(powerfile, ms=ms2)
+        powCal.plot(bx2) # Power, Shots
 
         # Get the baseline
         baseCal = BaselineCalibrator(basefile, ms0)
         baseCal.plot(ax)
         ax.plot(data[0], data[1], '.--',
-                ms=ms1, markeredgecolor='r', c='r', label='felix')
+                ms=ms1, markeredgecolor='r', c='r', label='Felix: %i Shots'%powCal.shots(data[0])[0])
         
-        # Get the power and number of shots
-        powCal = PowerCalibrator(powerfile, ms=ms2)
-        powCal.plot(bx2, ax2) # Power, Shots
-
         # Get the spectrum analyser
         saCal = SpectrumAnalyserCalibrator(felixfile, ms=ms3)
         saCal.plot(bx)
@@ -92,49 +96,48 @@ def norm_line_felix(felixfile, mname, temp, bwidth, ie, foravgshow, location, dp
         bx.set_ylabel("SA")
         
         if not hd: 
-            bx2.legend(fontsize=10)
-            ax2.legend(fontsize=10)
+            bx2.legend(fontsize=10, loc='lower right')
+            #ax2.legend(fontsize=10, loc='lower right')
             return wavelength, intensity
         else:
             bx2.legend(fontsize=6, loc='lower right')
-            ax2.legend(fontsize=6)
+            #ax2.legend(fontsize=6)
 
     if not foravgshow:
 
         if not hd:
 
-            ####################################### END Initialisation #######################################
-
-            ####################################### Tkinter figure #######################################
-
-            # Embedding figure to tkinter Toplevel
             title_name = 'Normline Spectrum'
             root = Toplevel(parent)
             tk_widget = FELion_Toplevel(root, title_name, location)
 
             fig, canvas = tk_widget.figure(dpi)
-
             ax = fig.add_subplot(311, )
             bx = fig.add_subplot(312, sharex=ax)
             cx = fig.add_subplot(313, sharex=ax)
 
-            wavelength, intensity = plot(fig, ax, bx, cx)
-
+            wavelength, intensity = plot(ax, bx, cx)
             ax.set_title(f'{fname}: {mname} at {temp}K with B0:{round(bwidth)}ms and IE:{ie}eV')
-
             cx.set_xlabel("Calibrated wavelength $(cm^{-1})$")
-            cx.set_ylabel("PowerCalibrated Intensity")
+            cx.set_ylabel("Normalised Intensity")
 
+            for i in (ax, bx, cx):
+                i.grid()
+                i.legend()
+
+            canvas.draw()
             export_file(fname, wavelength, intensity)
-            ####################################### END Plotting details #######################################
-            canvas.draw()  # drawing in the tkinter canvas: canvas drawing board
-            ####################################### END Tkinter figure #######################################
 
         if hd:
             with plt.style.context(['science']):
-                fig_, (ax_, bx_, cx_) = plt.subplots(3,1, sharex=True, gridspec_kw={'hspace':0})
-                plot(fig_, ax_, bx_, cx_)
 
+                # Making Figure
+                fig_, (ax_, bx_, cx_) = plt.subplots(3,1, sharex=True, gridspec_kw={'hspace':0})
+                
+                # PLotting
+                plot(ax_, bx_, cx_)
+
+                # Legends
                 ax_lg = f'B_0:{round(bwidth)}ms; Trap={trap}ms'
                 l0 = ax_.legend(title='$%s$'%ax_lg, fontsize=6)
 
@@ -146,6 +149,7 @@ def norm_line_felix(felixfile, mname, temp, bwidth, ie, foravgshow, location, dp
                 l0.get_title().set_fontsize(6)
                 l1.get_title().set_fontsize(6)
 
+                # Title and labels
                 fname1 = felixfile.replace('_', '/')
                 title = f'{fname1}: {mname}'
                 ax_.set_title('$%s$'%title, fontsize=10)
@@ -153,21 +157,14 @@ def norm_line_felix(felixfile, mname, temp, bwidth, ie, foravgshow, location, dp
                 cx_.set_xlabel("Calibrated wavelength $(cm^{-1})$")
                 cx_.set_ylabel("Intensity")
 
+                # Making labels invisible
                 for i in (ax_, bx_, cx_):
                     i.label_outer()
                     i.grid()
 
+                # Saving Figure
                 fig_.savefig(f'./OUT/{fname}_high_res.pdf', dpi=dpi*3)
                 fig_.savefig(f'./OUT/{fname}_high_res.png', dpi=dpi*3)
-
-                # # just baseline and spectrum
-
-                # bx_.set_visible(0)
-                # cx_.change_geometry(3,1,2)
-
-                # fig_.savefig(f'./OUT/{fname}_spectrum_high_res.pdf', dpi=dpi*3)
-                # fig_.savefig(f'./OUT/{fname}_spectrum_high_res.png', dpi=dpi*3)
-
 
                 
     if foravgshow:
@@ -258,18 +255,17 @@ def normline_correction(*args, **kw):
                 os.mkdir(dirs)
             if isfile(filenames):
                 move(my_path, filenames)
-        
-        if 'hd' in kw:
+
+        if filecheck(my_path, basefile, powerfile, fullname):
+            print(f'\nFilename-->{fullname}\nLocation-->{my_path}')
+
             if not kw['hd']:
-                if filecheck(my_path, basefile, powerfile, fullname):
-                    print(f'\nFilename-->{fullname}\nLocation-->{my_path}')
-                    norm_line_felix(fullname, mname, temp, bwidth, ie,
-                                    foravgshow, location, dpi, parent)
+                norm_line_felix(fullname, mname, temp, bwidth, ie,
+                                foravgshow, location, dpi, parent)
             else:
                 norm_line_felix(fullname, mname, temp, bwidth, ie,
                                 foravgshow, location, dpi, parent, hd=True, trap=kw['trap'])
-
-
+                ShowInfo('Done', 'Completed')
         print("DONE")
 
     except:

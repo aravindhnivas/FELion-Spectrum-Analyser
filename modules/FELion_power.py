@@ -75,19 +75,19 @@ class PowerCalibrator(object):
     def GetCalibData(self):
         return self.xw, self.yw, self.n_shots
 
-    def plot(self, ax, bx):
+    def plot(self, ax, bx=None):
 
         if self.ms is not None:
             #ax.plot(self.xw, self.yw, ls='', marker='o', ms=self.ms, markeredgecolor='r', c='r')
-            ax.plot(self.xw, self.power(self.xw), '.--', c='m', ms=self.ms,  label='Power(mJ)')
-            bx.plot(self.xw, self.shots(self.xw), ls='-', marker='o', ms=self.ms, markeredgecolor='y', c='y', label='Shots(Hz)')
+            ax.plot(self.xw, self.power(self.xw), 'm.--', ms=self.ms,  label='Power(mJ)')
+            #bx.plot(self.xw, self.shots(self.xw), ls='-', marker='o', ms=self.ms, markeredgecolor='y', c='y', label='Shots(Hz)')
         else:
             ax.plot(self.xw, self.yw, ls='', marker='o', ms=3, markeredgecolor='r', c='r')
-            bx.plot(self.xw, self.shots(self.xw), ls='-', marker='o', ms=3, markeredgecolor='y', c='y')
+            #bx.plot(self.xw, self.shots(self.xw), ls='-', marker='o', ms=3, markeredgecolor='y', c='y')
         
         ax.set_ylabel("power (mJ)")
-        ax.set_ylim((0, self.yw.max()*1.1))
-        bx.set_ylabel("shots")
+        #ax.set_ylim((0, self.yw.max()*1.1))
+        #bx.set_ylabel("shots")
 
 def FELion_Power(powerfile, location, dpi, parent):
 
