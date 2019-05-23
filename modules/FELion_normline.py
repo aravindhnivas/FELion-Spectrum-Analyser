@@ -125,7 +125,7 @@ def norm_line_felix(felixfile, mname, temp, bwidth, ie, foravgshow, location, dp
             cx = fig.add_subplot(313, sharex=ax)
 
             wavelength, intensity = plot(ax, bx, cx)
-            ax.set_title(f'{fname}: {mname} at {temp}K with B0:{round(bwidth)}ms and IE:{ie}eV')
+            ax.set_title(f'{felixfile}: {mname} at {temp}K; B0:{round(bwidth)}ms; Trap:{trap}ms and IE:{ie}eV')
             cx.set_xlabel("Calibrated wavelength $(cm^{-1})$")
             cx.set_ylabel("Normalised Intensity")
 
@@ -271,7 +271,7 @@ def normline_correction(*args, **kw):
 
             if not kw['hd']:
                 norm_line_felix(fullname, mname, temp, bwidth, ie,
-                                foravgshow, location, dpi, parent)
+                                foravgshow, location, dpi, parent, trap=kw['trap'])
             else:
                 norm_line_felix(fullname, mname, temp, bwidth, ie,
                                 foravgshow, location, dpi, parent, hd=True, trap=kw['trap'])
