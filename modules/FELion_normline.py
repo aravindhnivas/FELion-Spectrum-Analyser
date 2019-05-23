@@ -91,18 +91,26 @@ def norm_line_felix(felixfile, mname, temp, bwidth, ie, foravgshow, location, dp
         cx.plot(wavelength, intensity, ls='-', marker='o', ms=ms4,
                 c='r', markeredgecolor='k', markerfacecolor='k', label='Normalised')
 
-        # Labels
-        ax.set_ylabel("Counts")
-        bx.set_ylabel("SA")
-        
+                
         if not hd: 
+
+            # Labels
+            ax.set_ylabel("Counts")
+            bx.set_ylabel("SA $(cm^{-1})$")
+
             bx2.legend(fontsize=10, loc='lower right')
             #ax2.legend(fontsize=10, loc='lower right')
             return wavelength, intensity
+
         else:
+
+            # Labels
+            ax.set_ylabel("Counts", fontsize=7)
+            bx.set_ylabel("SA $(cm^{-1})$", fontsize=7)
+
             bx2.legend(fontsize=6, loc='lower right')
             #ax2.legend(fontsize=6)
-
+        
     if not foravgshow:
 
         if not hd:
@@ -123,9 +131,12 @@ def norm_line_felix(felixfile, mname, temp, bwidth, ie, foravgshow, location, dp
 
             for i in (ax, bx, cx):
                 i.grid()
-                i.legend()
-
+            ax.legend()
+            bx.legend(loc='upper left')
+            cx.legend()
+                
             canvas.draw()
+
             export_file(fname, wavelength, intensity)
 
         if hd:
@@ -142,7 +153,7 @@ def norm_line_felix(felixfile, mname, temp, bwidth, ie, foravgshow, location, dp
                 l0 = ax_.legend(title='$%s$'%ax_lg, fontsize=5)
                 l0.get_title().set_fontsize(5)
 
-                bx_.legend(fontsize=6)
+                bx_.legend(fontsize=6, loc='upper left')
 
                 cx_lg = f'{temp}K;{ie}eV'
                 l1 = cx_.legend(title='$%s$'%cx_lg, fontsize=5)
@@ -153,8 +164,8 @@ def norm_line_felix(felixfile, mname, temp, bwidth, ie, foravgshow, location, dp
                 title = f'{fname1}: {mname}'
                 ax_.set_title('$%s$'%title, fontsize=10)
 
-                cx_.set_xlabel("Calibrated wavelength $(cm^{-1})$")
-                cx_.set_ylabel("Intensity")
+                cx_.set_xlabel("Calibrated wavelength $(cm^{-1})$", fontsize=7)
+                cx_.set_ylabel("Intensity", fontsize=7)
 
                 # Making labels invisible
                 for i in (ax_, bx_, cx_):
@@ -264,7 +275,9 @@ def normline_correction(*args, **kw):
             else:
                 norm_line_felix(fullname, mname, temp, bwidth, ie,
                                 foravgshow, location, dpi, parent, hd=True, trap=kw['trap'])
-                ShowInfo('Done', 'Completed')
+                ShowInfo('Done', 
+                    f'Completed\nFile {fname}_high_red.pdf and {fname}_high_red.png saved in /OUT directory\nLocation: {location}')
+
         print("DONE")
 
     except:
