@@ -230,7 +230,7 @@ class Normline(Frame):
 
         # Entries
         self.delta = self.widget.entries('Entry', 2, 0.84, 0.24, bd=5)
-        self.hd = self.widget.entries('Check','HD', 0.8, 0.5, relwidth=0.05)
+        self.hd = self.widget.entries('Check','HD', 0.82, 0.5, relwidth=0.05, help='Renders very high quality pdf and png using LATEX: But SLOW')
 
     def Normline_func(self):
 
