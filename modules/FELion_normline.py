@@ -54,9 +54,9 @@ def norm_line_felix(felixfile, mname, temp, bwidth, ie, foravgshow, location, dp
         bx2 = bx.twinx() # Power
         
         if hd:
-            ms0, ms1, ms2, ms3, ms4  = 1, 1, 1, 1, 1
+            ms0, ms1, ms2, ms3, ms4  = 1, 1, 2, 2, 1 # Baseline, felix, power, SA, Normalised
         elif not hd:
-            ms0, ms1, ms2, ms3, ms4 = 5, 3, 3, 5, 2 # Baseline
+            ms0, ms1, ms2, ms3, ms4 = 5, 3, 3, 5, 2 
         else:
             ms0, ms1, ms2, ms3, ms4 = None, None, None, None, None
         
@@ -138,16 +138,15 @@ def norm_line_felix(felixfile, mname, temp, bwidth, ie, foravgshow, location, dp
                 plot(ax_, bx_, cx_)
 
                 # Legends
-                ax_lg = f'B_0:{round(bwidth)}ms; Trap={trap}ms'
-                l0 = ax_.legend(title='$%s$'%ax_lg, fontsize=6)
+                ax_lg = f'B_0={round(bwidth)}ms; Trap={trap}ms'
+                l0 = ax_.legend(title='$%s$'%ax_lg, fontsize=5)
+                l0.get_title().set_fontsize(5)
 
                 bx_.legend(fontsize=6)
 
-                cx_lg = f'{temp}K; {ie}eV'
-                l1 = cx_.legend(title='$%s$'%cx_lg, fontsize=6)
-                
-                l0.get_title().set_fontsize(6)
-                l1.get_title().set_fontsize(6)
+                cx_lg = f'{temp}K;{ie}eV'
+                l1 = cx_.legend(title='$%s$'%cx_lg, fontsize=5)
+                l1.get_title().set_fontsize(5)
 
                 # Title and labels
                 fname1 = felixfile.replace('_', '/')
@@ -160,7 +159,7 @@ def norm_line_felix(felixfile, mname, temp, bwidth, ie, foravgshow, location, dp
                 # Making labels invisible
                 for i in (ax_, bx_, cx_):
                     i.label_outer()
-                    i.grid()
+                    #i.grid()
 
                 # Saving Figure
                 fig_.savefig(f'./OUT/{fname}_high_res.pdf', dpi=dpi*3)
