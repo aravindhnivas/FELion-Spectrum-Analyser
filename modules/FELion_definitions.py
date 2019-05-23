@@ -329,7 +329,7 @@ class FELion_widgets(Frame):
 
             self.button.bind('<Enter>', on_enter)
             self.button.bind('<Leave>', on_leave)
-            
+
         return self.button
 
     def entries(self, method,  *args, **kw):
