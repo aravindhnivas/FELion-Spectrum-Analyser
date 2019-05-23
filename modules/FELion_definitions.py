@@ -357,6 +357,9 @@ class FELion_widgets(Frame):
 
                 self.parent.entry.bind('<Enter>', on_enter)
                 self.parent.entry.bind('<Leave>', on_leave)
+            
+            if 'get_widget' in kw:
+                return self.parent.entry, self.parent.txt
 
             return self.parent.txt
 
@@ -381,6 +384,9 @@ class FELion_widgets(Frame):
 
                 self.parent.Check.bind('<Enter>', on_enter)
                 self.parent.Check.bind('<Leave>', on_leave)
+
+            if 'get_widget' in kw:
+                return self.parent.Check, self.parent.txt
 
             return self.parent.txt
 
