@@ -17,8 +17,9 @@ from tkinter.messagebox import askokcancel
 
 # Built-In Modules
 import os
-from os.path import join, isdir, isfile
 import shutil
+from os.path import join, isdir, isfile
+from pathlib import Path as pt
 from time import time as check_time
 #from pathlib import Path as pt
 
@@ -28,204 +29,226 @@ from FELion_definitions import ShowInfo, ErrorInfo, var_find, FELion_Toplevel, F
 # Error traceback
 import traceback
 
+class massSpec:
 
-def save():
-    print('Saving Plot')
-    
-    def save_info():
-        fig.savefig(f'./OUT/{save_name.get()}.png')
-        ShowInfo('SAVED', f'File: {save_name.get()}.png saved in OUT/ directory.')
-        print(f'Filename saved: {save_name.get()}.png\nLocation: {location}\n')
+    def __init__(self, *args):
 
-    if not isdir('./OUT'): os.mkdir('./OUT')
-    if isfile(f'./OUT/{save_name.get()}.png'):
-        if askokcancel('Overwrite?', f'File: {save_name.get()}.png already present. \nDo you want to Overwrite the file?'):
-            save_info()
-    else:
-        save_info()
+        self.t, self.ts, self.lgs, self.minor, self.major, self.majorTickSize, \
+            self.xlabelsz, self.ylabelsz, self.fwidth, self.fheight, self.avgname,\
+            self.location, self.mname, self.temp, self.ie,\
+            self.combine, self.massfile, self.filelist, self.dpi, self.parent = args
 
-def update():
+        os.chdir(self.location)
+        if not isdir('./OUT'):
+            os.mkdir('./OUT')
 
-    print('Updating Plot\n')
-    t0 = check_time()
+        try:
+            if not self.combine:
+                if not self.massfile.endswith('.mass'):
+                    ErrorInfo('Not a .mass file', 'Please select a .mass file')
 
-    def log_check():
-        if log.get():
+                print(f'\nSingle Mode:\nMassfile: {self.massfile}\n')
+                self.mass_plot()
+
+            if self.combine:
+                if len(self.filelist) < 1:
+                    ErrorInfo("Select Files: ", "Click Select File(s)")
+
+                print(f'\Combine Mode:\nMassfiles: {self.filelist}\n')
+                self.mass_plot()
+
+        except:
+            ErrorInfo('Error: ', traceback.format_exc())
+
+    def open_mass_file(self, filename):
+        print(f'\nOpening Massfile to plot: {filename}\n')
+        res, b0, trap = var_find(filename, self.location)
+        mass, counts = np.genfromtxt(filename).T
+
+        return res, b0, trap, mass, counts
+
+    def mass_plot(self):
+
+        # Making figure, canvas and ax
+        self.embbed_tkinter()
+
+        if self.combine:
+            files = self.filelist
+        else:
+            files = [self.massfile]
+
+        for file in files:
+            res, b0, trap, mass, counts = self.open_mass_file(file)
+            fname = file.split('.')[0]
+
+            self.ax.semilogy(
+                mass, counts, label=f'{fname}: Res: {res}; B0: {b0}ms; Trap: {trap}ms')
+
+        # Configuring title
+        if not self.combine or len(self.filelist) == 1:
+            self.res, self.b0, self.trap, self.mass, self.counts = res, b0, trap, mass, counts
+            self.fname = fname
+            self.ax.set_title(
+                f'{self.fname} for {self.mname} at {self.temp}K with IE:{self.ie}eV')
+        else:
+            self.ax.set_title(f'{self.avgname}')
+
+        # Configuring figure
+        self.ax.grid(True)
+        self.ax.set_xlabel('Mass [u]', fontsize=self.xlabelsz)
+        self.ax.set_ylabel(f'Ion counts', fontsize=self.ylabelsz)
+        l = self.ax.legend(title=self.t, fontsize=self.lgs)
+        l.get_title().set_fontsize(self.ts)
+        self.ax.xaxis.set_minor_locator(MultipleLocator(self.minor))
+        self.ax.xaxis.set_major_locator(MultipleLocator(self.major))
+        self.ax.tick_params(axis='both', which='major',
+                            labelsize=self.majorTickSize)
+
+        cursor = Cursor(self.ax, useblit=True, color='red', linewidth=1)
+        self.canvas.draw()
+
+    def embbed_tkinter(self):
+
+        ####################################### Tkinter figure #######################################
+
+        # Embedding figure to tkinter Toplevel
+        if self.combine:
+            title_name = f'Mass Spec: Combine Mode active'
+        else:
+            title_name = f'Mass Spec: {self.massfile}: Single Mode active'
+
+        root = Toplevel(self.parent)
+        tk_widget = FELion_Toplevel(
+            root, title_name, self.location, add_buttons=False)
+
+        # Making frames
+        frame = tk_widget.get_widget_frame()
+        self.widget = FELion_widgets(frame)
+
+        # Making figure
+        self.fig, self.canvas = tk_widget.figure(
+            self.dpi, figsize=(self.fwidth, self.fheight))
+        self.ax = self.fig.add_subplot(111)
+
+        # Making widgets in tkinter frame
+        self.masspec_widgets()
+
+    def masspec_widgets(self):
+
+        self.save_name = self.widget.entries(
+            'Entry', 'Plot', 0.1, 0.05, relwidth=0.5, relheight=0.05, bd=5)
+        save_btn = self.widget.buttons('Save', 0.1, 0.1, self.save,
+                                       relwidth=0.5, relheight=0.05)
+
+        self.log = self.widget.entries('Check', 'Log', 0.1, 0.2,
+                                       relwidth=0.5, relheight=0.05, default=True)
+        update_btn = self.widget.buttons(
+            'Update Plot', 0.1, 0.3, self.update, relwidth=0.5, relheight=0.05)
+
+        high_res = self.widget.buttons('Publication Quality\n(HD-LATEX)',
+                                       0.1, 0.4, self.publication, relwidth=0.7, relheight=0.07)
+        self.warning_label = self.widget.labels(
+            'CAUTION!\nRendering will be slow', 0.1, 0.52, bg='grey', relwidth=0.8, relheight=0.07)
+        self.render_info = self.widget.labels(
+            '', 0.1, 0.63, bg='light grey', relwidth=0.75, relheight=0.07)
+
+    def save_info(self):
+        self.fig.savefig(f'./OUT/{self.save_name.get()}.png')
+        ShowInfo(
+            'SAVED', f'File: {self.save_name.get()}.png saved in OUT/ directory.')
+        print(
+            f'Filename saved: {self.save_name.get()}.png\nLocation: {self.location}\n')
+
+    def save(self):
+        print('Saving Plot\n')
+
+        if isfile(f'./OUT/{self.save_name.get()}.png'):
+            if askokcancel('Overwrite?', f'File: {self.save_name.get()}.png already present. \nDo you want to Overwrite the file?'):
+                self.save_info()
+        else:
+            self.save_info()
+
+    def log_check(self, ax, canvas, sci=True):
+
+        if self.log.get():
             ax.set_yscale('log')
         else:
             ax.set_yscale('linear')
-            ax.ticklabel_format(style='sci', axis='y', scilimits=(0, 0))
+            if sci:
+                ax.ticklabel_format(style='sci', axis='y', scilimits=(0, 0))
 
-    log_check()
+        canvas.draw()
 
-    canvas.draw()
+    def update(self):
 
-    t1 = check_time()
-    time_log = (t1-t0)*100
-    print(f'Redrawn in {time_log:.2f} ms\n')
+        print('Updating Plot\n')
+        t0 = check_time()
 
-def publication():
-
-    global fname
-
-    os.chdir(location)
-    if not isdir('./OUT'): os.mkdir('./OUT')
-
-    t0 = check_time()
-    
-    print('High Resolution image rendering\n')
-    
-    with plt.style.context(['science']):
-
-        plt_fig, plt_ax =  plt.subplots(dpi=300)
-        plt_ax.plot(x, y, label='$%s$'%fname.replace('_', '-'))
-
-        # Configuring plot
-        plt_ax.set_xlabel('Mass [u]')
-        plt_ax.set_ylabel('$Counts$')
-        title = f'Res: {res}; Trap: {trap}ms; T: {temp}K; IE :{ie}eV'
-        plt_ax.set_title('$%s$'%title)
-
-        plt_ax.legend()
-
-        plt_fig.savefig(f'./OUT/{save_name.get()}_high_res.pdf')
-        plt_fig.savefig(f'./OUT/{save_name.get()}_high_res.png', dpi=300)
-
-        if isfile(f'./OUT/{save_name.get()}_high_res.png'): 
-            print(f'File saved: {save_name.get()}_high_res.png\nLocation: {location}')
-        #plt.show()
+        self.log_check(self.ax, self.canvas)
 
         t1 = check_time()
         time_log = (t1-t0)*100
 
-        print(f'Rendered in {time_log:.2f} ms\n')
+        print(f'Redrawn in {time_log:.2f} ms\n')
 
-def massSpec(*args):
+    def publication(self):
 
-    global save_name, fig, canvas, ax, log, location, high_res, x, y, ie, temp, mname, trap, b0, res, fname
+        self.render_info.config(text="Please Wait\nRendering", bg='light blue')
 
-    t, ts, lgs, minor, major, majorTickSize, \
-        xlabelsz, ylabelsz, fwidth, fheight, avgname,\
-        location, mname, temp, ie,\
-        combine, fname, filelist, dpi, parent = args
+        try:
+            t0 = check_time()
+            print('\nHigh Resolution image rendering\n')
 
-    try:
+            with plt.style.context(['science']):
 
-        ####################################### Initialisation #######################################
+                plt_fig, plt_ax = plt.subplots(dpi=self.dpi*3)
 
-        os.chdir(location)
-        my_path = os.getcwd()
-
-        if fname.find(".mass") >= 0:
-            fname = fname.split(".")[0]
-        else:
-            return ShowInfo('No .mass file', 'Please select a .mass file.')
-
-        if not combine:
-
-            filename = fname + ".mass"
-            res, b0, trap = var_find(filename, location)
-
-            mass = np.genfromtxt(filename)
-            x, y = mass[:, 0], mass[:, 1]
-
-            ####################################### END Initialisation #######################################
-
-            ####################################### Tkinter figure #######################################
-
-            # Embedding figure to tkinter Toplevel
-            title_name = f'Mass Spec: {filename}'
-            root = Toplevel(parent)
-            tk_widget = FELion_Toplevel(root, title_name, location, add_buttons=False)
-
-            # Making frames
-            frame = tk_widget.get_widget_frame()
-            widget = FELion_widgets(frame)
-
-            # Making figure
-            fig, canvas = tk_widget.figure(dpi, figsize=(fwidth, fheight))
-            ax = fig.add_subplot(111)
-
-            # Buttons, labels, entries and checkboxes
-            
-            save_name = widget.entries('Entry', 'Plot', 0.1, 0.05, relwidth = 0.5, relheight = 0.05, bd = 5)
-            save_btn = widget.buttons('Save', 0.1, 0.1, save, relwidth = 0.5, relheight = 0.05)
-
-            log = widget.entries('Check', 'Log', 0.1, 0.2, relwidth = 0.5, relheight = 0.05, default = False)
-            update_btn = widget.buttons('Update Plot', 0.1, 0.3, update, relwidth = 0.5, relheight = 0.05)
-
-            high_res = widget.buttons('Publication Quality\n(HDP-LATEX)', 0.1, 0.4, publication, relwidth = 0.7, relheight = 0.07)
-            warning_label = widget.labels('Rendering is very slow', 0.1, 0.5, bg='grey', relwidth = 0.9, relheight = 0.05)
+                if not self.combine or len(self.filelist) == 1:
+                    plt_ax.plot(self.mass, self.counts, label='$%s$' %
+                                self.fname.replace('_', '/'))
+                    title = f'Res: {self.res}; Trap: {self.trap}ms; T: {self.temp}K; IE :{self.ie}eV'
+                    plt_ax.set_title('$%s$' % title)
+                    l0 = plt_ax.legend(title='$%s$'%self.mname, fontsize=self.lgs)
+                    l0.get_title().set_fontsize(self.ts)
                 
-            ####################################### PLOTTING DETAILS #######################################
-            ax.semilogy(x, y, label=f'{fname}: Res: {res}; B0: {b0}ms; Trap: {trap}ms')
-            ax.grid(True)
-            
-            # Configuring plot
-            ax.set_xlabel('Mass [u]', fontsize=xlabelsz)
-            ax.set_ylabel(f'Ion counts /{b0} ms', fontsize=ylabelsz)
-            ax.set_title(f'{fname} for {mname} at {temp}K with IE:{ie}eV')
-            l = ax.legend(title=t, fontsize=lgs)
-            l.get_title().set_fontsize(ts)
-            ax.xaxis.set_minor_locator(MultipleLocator(minor))
-            ax.xaxis.set_major_locator(MultipleLocator(major))
-            ax.tick_params(axis='both', which='major', labelsize=majorTickSize)
+                elif self.combine and len(self.filelist)>1:
+                    for file in self.filelist:
 
-            cursor = Cursor(ax, useblit=True, color='red', linewidth=1)
+                        res, b0, trap, mass, counts = self.open_mass_file(file)
+                        fname = file.split('.')[0].replace('_', '/')
 
-            ####################################### END Plotting details #######################################
+                        lg = f'{fname}: Res: {res}; Trap: {trap}ms; T: {self.temp}K; B0: {b0}ms; IE :{self.ie}eV'
+                        plt_ax.plot(mass, counts, label='$%s$'%lg)
+                        
+                        plt_ax.set_title('$Combined Mass Spectrum$')
 
-            canvas.draw()  # drawing in the tkinter canvas: canvas drawing board
+                        l1 = plt_ax.legend(title='$%s$'%self.mname, fontsize=self.lgs-6)
+                        l1.get_title().set_fontsize(self.ts-6)
 
-            ####################################### END Tkinter figure #######################################
+                self.log_check(plt_ax, plt_fig.canvas, sci=False)
 
-        if combine:
+                # Configuring plot
+                plt_ax.set_xlabel('Mass [u]')
+                plt_ax.set_ylabel('Counts')
+                
 
-            if filelist == []:
-                return ErrorInfo("Select Files: ", "Click Select File(s)")
+                plt_fig.savefig(f'./OUT/{self.save_name.get()}_high_res.pdf')
+                plt_fig.savefig(
+                    f'./OUT/{self.save_name.get()}_high_res.png', dpi=self.dpi*3)
 
-            ####################################### Tkinter figure #######################################
+                t1 = check_time()
+                time_log = (t1-t0)*100
 
-            # Embedding figure to tkinter Toplevel
-            title_name1 = 'Mass Spec Combined'
-            root1 = Toplevel(parent)
-            tk_widget1 = FELion_Toplevel(root1, title_name1, location)
+                print(f'Rendered in {time_log:.2f} ms\n')
+                print(
+                    f'File saved: {self.save_name.get()}_high_res.png\nLocation: {self.location}')
 
-            fig1, canvas1 = tk_widget1.figure(dpi, figsize=(fwidth, fheight))
-            ax1 = fig1.add_subplot(111)
-            tk_widget1.add_log_btn(ax1)
+                self.render_info.config(text="Completed/Saved", bg='green')
 
-            ####################################### PLOTTING DETAILS #######################################
+                #plt.show()
+        except:
 
-            for file in filelist:
-                res, b0, trap = var_find(file, location)
+            self.render_info.config(text="ERROR!!", bg='red')
 
-                mass = np.genfromtxt(file)
-                x, y = mass[:, 0], mass[:, 1]
-
-                ax1.semilogy(
-                    x, y, label=f'{file}: Res: {res}; B0: {b0}ms; Trap: {trap}ms')
-
-            cursor = Cursor(ax1, useblit=True, color='red', linewidth=1)
-
-            # Configuring plot
-            ax1.grid(True)
-            ax1.set_xlabel('Mass [u]', fontsize=xlabelsz)
-            ax1.set_ylabel(f'Ion counts', fontsize=ylabelsz)
-            ax1.set_title(f'{avgname}')
-
-            l1 = ax1.legend(title=t, fontsize=lgs)
-            l1.get_title().set_fontsize(ts)
-            ax1.xaxis.set_minor_locator(MultipleLocator(minor))
-            ax1.xaxis.set_major_locator(MultipleLocator(major))
-            ax1.tick_params(axis='both', which='major',
-                            labelsize=majorTickSize)
-
-            ####################################### END Plotting details #######################################
-
-            canvas1.draw()  # drawing in the tkinter canvas: canvas drawing board
-
-            ####################################### END Tkinter figure #######################################
-
-    except:
-        ErrorInfo('Error: ', traceback.format_exc())
+            print(f'ERROR: {traceback.format_exc()}\n')
+            ErrorInfo('Error: ', traceback.format_exc())
