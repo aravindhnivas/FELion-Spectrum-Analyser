@@ -21,6 +21,9 @@ from tkinter import Toplevel
 # Error traceback
 import traceback
 
+# Matplotlib
+import matplotlib.pyplot as plt
+
 ################################################################################
 
 
@@ -33,7 +36,7 @@ def export_file(fname, wn, inten):
     f.close()
 
 
-def norm_line_felix(felixfile, mname, temp, bwidth, ie, foravgshow, location, dpi, parent):
+def norm_line_felix(felixfile, mname, temp, bwidth, ie, foravgshow, location, dpi, parent, hd=False):
 
     ####################################### Initialisation #######################################
 
@@ -99,7 +102,7 @@ def norm_line_felix(felixfile, mname, temp, bwidth, ie, foravgshow, location, dp
 
         cx.plot(wavelength, intensity, ls='-', marker='o', ms=2,
                 c='r', markeredgecolor='k', markerfacecolor='k')
-        cx.set_xlabel("wn (cm-1)")
+        cx.set_xlabel("Calibrated wavelength $(cm^{-1})$")
         cx.set_ylabel("PowerCalibrated Intensity")
 
         ax.set_title(
@@ -116,6 +119,36 @@ def norm_line_felix(felixfile, mname, temp, bwidth, ie, foravgshow, location, dp
         canvas.draw()  # drawing in the tkinter canvas: canvas drawing board
 
         ####################################### END Tkinter figure #######################################
+
+        if hd:
+            with plt.style.context('science'):
+                fig, (ax_, bx_, cx_) = plt.subplots(3,1)
+
+                ax_2 = ax_.twinx()
+                bx_2 = bx_.twinx()
+            
+                baseCal.plot(ax)
+
+                ax_.plot(data[0], data[1], ls='', marker='o',
+                    ms=3, markeredgecolor='r', c='r')
+                ax_.set_ylabel("cnts")
+
+                saCal.plot(bx)
+                bx.set_ylabel("SA")
+
+                powCal.plot(bx2, ax2)
+
+                cx.plot(wavelength, intensity, ls='-', marker='o', ms=2,
+                    c='r', markeredgecolor='k', markerfacecolor='k')
+                cx.set_xlabel("Calibrated wavelength $(cm^{-1})$")
+                cx.set_ylabel("PowerCalibrated Intensity")
+
+                title = f'{fname}: {mname} at {temp}K with B0:{round(bwidth)}ms and IE:{ie}eV'
+                ax.set_title('$%s$'%title)
+
+                fig.savefig('./highDP.png', dpi=dpi*3)
+
+
 
     if foravgshow:
         saCal = SpectrumAnalyserCalibrator(felixfile)
@@ -209,7 +242,7 @@ def normline_correction(*args):
         if filecheck(my_path, basefile, powerfile, fullname):
             print(f'\nFilename-->{fullname}\nLocation-->{my_path}')
             norm_line_felix(fullname, mname, temp, bwidth, ie,
-                            foravgshow, location, dpi, parent)
+                            foravgshow, location, dpi, parent, hd=False)
 
         print("DONE")
 
