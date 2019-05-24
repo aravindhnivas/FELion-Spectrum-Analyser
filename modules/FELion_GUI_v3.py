@@ -246,7 +246,7 @@ class Normline(Frame):
             self.avg_xlabelsz.get(), self.avg_ylabelsz.get(), self.avg_fwidth.get(
             ), self.avg_fheight.get(), self.output_filename.get(),
             self.location, self.mname.get(), self.temp.get(), self.bwidth.get(), self.ie.get(),
-            self.delta.get(), self.filelist, self.dpi.get(), self.parent
+            self.delta.get(), self.filelist, self.dpi.get(), self.parent, self.hd.get()
         )
 
     def SA(self):
