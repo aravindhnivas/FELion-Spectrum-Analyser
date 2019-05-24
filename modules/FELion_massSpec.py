@@ -39,6 +39,8 @@ class massSpec:
             self.location, self.mname, self.temp, self.ie,\
             self.combine, self.massfile, self.filelist, self.dpi, self.parent = args
 
+        self.mname = '$%s$'%self.mname
+        
         os.chdir(self.location)
         if not isdir('./OUT'):
             os.mkdir('./OUT')

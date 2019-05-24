@@ -125,6 +125,7 @@ def norm_line_felix(felixfile, mname, temp, bwidth, ie, foravgshow, location, dp
             cx = fig.add_subplot(313, sharex=ax)
 
             wavelength, intensity = plot(ax, bx, cx)
+            mname = '$%s$'%mname
             ax.set_title(f'{felixfile}: {mname} at {temp}K; B0:{round(bwidth)}ms; Trap:{trap}ms and IE:{ie}eV')
             cx.set_xlabel("Calibrated wavelength $(cm^{-1})$")
             cx.set_ylabel("Normalised Intensity")
