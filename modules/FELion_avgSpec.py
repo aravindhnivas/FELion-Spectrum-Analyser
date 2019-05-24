@@ -7,6 +7,7 @@ import numpy as np
 
 # Matplotlib Modules
 from matplotlib.ticker import MultipleLocator
+import matplotlib.pyplot as plt
 
 # Tkinter Modules
 from tkinter import Toplevel
@@ -28,11 +29,9 @@ def avgSpec_plot(*args):
     t, ts, lgs, minor, major, majorTickSize, markersz,\
         xlabelsz, ylabelsz, fwidth, fheight, outFilename,\
         location, mname, temp, bwidth, ie,\
-        DELTA, fileNameList, dpi, parent = args
+        DELTA, fileNameList, dpi, parent, hd = args
 
     try:
-
-        ####################################### Initialisation #######################################
 
         if fileNameList == []:
             return ShowInfo("Information", "Click Select File(s)")
@@ -53,89 +52,121 @@ def avgSpec_plot(*args):
             if not isdir(dirs):
                 os.mkdir(dirs)
 
-        ####################################### END Initialisation #######################################
-
-        ####################################### Tkinter figure #######################################
-
-        # Embedding figure to tkinter Toplevel
-        title_name = 'Average Spectrum'
-        root = Toplevel(parent)
-        tk_widget = FELion_Toplevel(
-            root, title_name, location, add_buttons=False)
-
-        fig, canvas = tk_widget.figure(dpi, figsize=(fwidth, fheight))
-        ax = fig.add_subplot(111)
-        frame = tk_widget.get_widget_frame()
-
-        widget = FELion_widgets(frame)
-        save_name = widget.entries(
-            'Entry', outFilename, 0.1, 0.1, bd=5, relwidth=0.5, relheight=0.05)
-
-        ####################################### PLOTTING DETAILS #######################################
         xs = np.array([], dtype='double')
         ys = np.array([], dtype='double')
 
         foravgshow = True
-        for f in fileNameList:
-            felixfile = f
-            fname = f.split(".")[0]
-            basefile = fname + ".base"
-            powerfile = fname + ".pow"
-            files = [felixfile, powerfile, basefile]
+        if not hd:
 
-            for filenames in files:
-                if isfile(filenames):
-                    move(my_path, filenames)
+            # Embedding figure to tkinter Toplevel
+            title_name = 'Average Spectrum'
+            root = Toplevel(parent)
+            tk_widget = FELion_Toplevel(
+                root, title_name, location, add_buttons=False)
 
-            print(f'\nFilename: {felixfile}\n')
-            a, b = norm_line_felix(
-                felixfile, mname, temp, bwidth, ie, foravgshow, location, dpi, parent)
-            ax.plot(a, b, ls='', marker='o', ms=markersz, label=fname)
-            xs = np.append(xs, a)
-            ys = np.append(ys, b)
+            fig, canvas = tk_widget.figure(dpi, figsize=(fwidth, fheight))
+            ax = fig.add_subplot(111)
+            frame = tk_widget.get_widget_frame()
 
-        # Binning
-        binns, inten = felix_binning(xs, ys, delta=DELTA)
-        ax.plot(binns, inten, ls='-', marker='', c='k')
+            widget = FELion_widgets(frame)
+            save_name = widget.entries(
+                'Entry', outFilename, 0.1, 0.1, bd=5, relwidth=0.5, relheight=0.05)
 
-        ax.set_xlabel(r"Calibrated lambda (cm-1)", fontsize=xlabelsz)
-        ax.set_ylabel(r"Normalized Intensity", fontsize=ylabelsz)
-        ax.tick_params(axis='both', which='major', labelsize=majorTickSize)
+            for f in fileNameList:
+                felixfile = f
+                fname = f.split(".")[0]
+                basefile = fname + ".base"
+                powerfile = fname + ".pow"
+                files = [felixfile, powerfile, basefile]
 
-        ax.grid(True)
-        ax.xaxis.set_minor_locator(MultipleLocator(minor))
-        ax.xaxis.set_major_locator(MultipleLocator(major))
+                for filenames in files:
+                    if isfile(filenames):
+                        move(my_path, filenames)
 
-        l = ax.legend(title=t, fontsize=lgs)
-        l.get_title().set_fontsize(ts)
+                print(f'\nFilename: {felixfile}\n')
+                a, b = norm_line_felix(
+                    felixfile, mname, temp, bwidth, ie, foravgshow, location, dpi, parent)
+                ax.plot(a, b, ls='', marker='o', ms=markersz, label=felixfile)
+                xs = np.append(xs, a)
+                ys = np.append(ys, b)
 
-        def save():
+            # Binning
+            binns, inten = felix_binning(xs, ys, delta=DELTA)
+            ax.plot(binns, inten, ls='-', marker='', c='k')
 
-            # Save figure as .pdf
-            F = f'./OUT/{save_name.get()}.pdf'
-            fig.savefig(F)
-            print(f'File {F} saved in /OUT Directory\n')
+            ax.set_xlabel(r"Calibrated lambda $(cm^-1)$", fontsize=xlabelsz)
+            ax.set_ylabel(r"Normalized Intensity", fontsize=ylabelsz)
+            ax.set_title('$%s$'%t, fontsize=ts)
 
-            # Export File as .dat
-            with open(f'./EXPORT/{save_name.get()}.dat', 'w') as f:
-                f.write(
-                    f"#DATA points as shown in figure: {save_name.get()}.pdf file!\n")
-                f.write("#wn (cm-1)       intensity\n")
-                for i in range(len(binns)):
-                    f.write("{:8.3f}\t{:8.2f}\n".format(binns[i], inten[i]))
+            ax.tick_params(axis='both', which='major', labelsize=majorTickSize)
+            ax.grid(True)
+            ax.xaxis.set_minor_locator(MultipleLocator(minor))
+            ax.xaxis.set_major_locator(MultipleLocator(major))
 
-            print(f'File {save_name.get()}.dat saved in /EXPORT Directory')
+            l = ax.legend(fontsize=lgs)
+            #l.get_title().set_fontsize()
 
-            ShowInfo(
-                'Saved', f'File {save_name.get()}.pdf saved in /OUT Directory\nFile {save_name.get()}.dat saved in /EXPORT Directory')
+            def save():
+                # Save figure as .pdf
+                F = f'./OUT/{save_name.get()}.pdf'
+                fig.savefig(F)
+                print(f'File {F} saved in /OUT Directory\n')
 
-        widget.buttons('Save', 0.1, 0.2, save, relwidth=0.5, relheight=0.05)
+                # Export File as .dat
+                with open(f'./EXPORT/{save_name.get()}.dat', 'w') as f:
+                    f.write(
+                        f"#DATA points as shown in figure: {save_name.get()}.pdf file!\n")
+                    f.write("#wn (cm-1)       intensity\n")
+                    for i in range(len(binns)):
+                        f.write("{:8.3f}\t{:8.2f}\n".format(binns[i], inten[i]))
 
-        ####################################### END Plotting details #######################################
+                print(f'File {save_name.get()}.dat saved in /EXPORT Directory')
 
-        canvas.draw()  # drawing in the tkinter canvas: canvas drawing board
+                ShowInfo(
+                    'Saved', f'File {save_name.get()}.pdf saved in /OUT Directory\nFile {save_name.get()}.dat saved in /EXPORT Directory')
 
-        ####################################### END Tkinter figure #######################################
+            widget.buttons('Save', 0.1, 0.2, save, relwidth=0.5, relheight=0.05)
+            canvas.draw()
+
+        if hd:
+
+            with plt.style.context(['science', 'scatter']):
+                fig, ax = plt.subplots()
+
+                for f in fileNameList:
+                    felixfile = f
+                    fname = f.split(".")[0]
+                    basefile = fname + ".base"
+                    powerfile = fname + ".pow"
+                    files = [felixfile, powerfile, basefile]
+
+                    for filenames in files:
+                        if isfile(filenames):
+                            move(my_path, filenames)
+
+                    print(f'\nFilename: {felixfile}\n')
+                    a, b = norm_line_felix(
+                        felixfile, mname, temp, bwidth, ie, foravgshow, location, dpi, parent)
+                    ax.plot(a, b, ms=0.5, label=felixfile.replace('_', '/'))
+                    xs = np.append(xs, a)
+                    ys = np.append(ys, b)
+
+                # Binning
+                binns, inten = felix_binning(xs, ys, delta=DELTA)
+                ax.plot(binns, inten, 'k-', label='$\Delta$=%i'%DELTA)
+
+                # labels and title
+                ax.set(xlabel='Wavenumber $(cm^-1)$', ylabel='Intensity', title='$%s$'%t)
+                ax.legend(fontsize=6)
+
+                if not isdir('./OUT'): os.mkdir('./OUT')
+
+                fig.savefig(f'./OUT/{outFilename}_high_res.pdf')
+                fig.savefig(f'./OUT/{outFilename}_high_res.png', dpi=dpi*3)
+
+                if isfile(f'./OUT/{outFilename}_high_res.pdf') and isfile(f'./OUT/{outFilename}_high_res.png'):
+                    print(f'File saved: {outFilename}_high_res.pdf and {outFilename}_high_res.png\nLocation: {location}')
+                    ShowInfo('Saved', f'{outFilename}_high_res.pdf and {outFilename}_high_res.png saved.\nLocation: {location}')
 
     except:
         ErrorInfo('Error: ', traceback.format_exc())
