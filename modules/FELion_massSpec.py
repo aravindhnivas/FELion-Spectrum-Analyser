@@ -223,7 +223,7 @@ class massSpec:
                         res, b0, trap, mass, counts = self.open_mass_file(file)
                         fname = file.split('.')[0].replace('_', '/')
 
-                        lg = f'{fname}: Res: {res}; Trap: {trap}ms; T: {self.temp}K; B0: {b0}ms; IE :{self.ie}eV'
+                        lg = f'{fname}: Res: {res}; Trap: {trap}ms; T: {self.temp}K; B0: {b0}ms'
                         plt_ax.plot(mass, counts, label='$%s$' % lg)
 
                         plt_ax.set_title('$%s$'%self.mname)
