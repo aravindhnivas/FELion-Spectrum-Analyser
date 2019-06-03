@@ -1,4 +1,4 @@
-Gaussian Simulation: Mon Jun  3 21:28:22 2019
+Gaussian Simulation: Mon Jun  3 21:28:12 2019
 
 Focii:
 f(+ve): 6.29; f(-ve): -15.96
