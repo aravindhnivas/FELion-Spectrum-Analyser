@@ -431,22 +431,26 @@ class Plot(Frame):
         self.widget.labels('DPI', 0.65, 0.23)
         self.dpi = self.widget.entries('Entry', 100, 0.75, 0.23, bd=5)
 
-        self.widget.buttons('Timescan', 0.4, 0.3,
+        timescan_btn = self.widget.buttons('Timescan', 0.4, 0.3,
                             self.timescan_func, help='Plot timescan files')
-        self.widget.buttons('kinetics', 0.52, 0.3, self.kinetics_func,
+
+        kinetics_btn = self.widget.buttons('kinetics', 0.52, 0.3, self.kinetics_func,
                             help='Simulate kinetics of the reaction from Timescan file')
-        self.widget.buttons('Depletion', 0.65, 0.3, self.depletion_func,
+        kinetics_btn['state'] = 'disable'
+
+        depletion_btn = self.widget.buttons('Depletion', 0.65, 0.3, self.depletion_func,
                             help='Select two timescan files to see the depletion; and enter power_on, power_off and n')
         self.depletion_power = self.widget.entries('Entry',  'power_on, power_off, n_shots', 0.65,
                                                    0.4, bd=5, relwidth=0.25, help='Enter Power_ON, Power_OFF and N_Shots (comma separated)')
 
-        self.widget.buttons('PowerPlot', 0.4, 0.4,
+        powerplot_btn = self.widget.buttons('PowerPlot', 0.4, 0.4,
                             self.powerplot_func, help='For plotting .pow files')
-        self.widget.buttons('JustPlot', 0.52, 0.4, self.just_plot_func,
+        justPlot_btn = self.widget.buttons('JustPlot', 0.52, 0.4, self.just_plot_func,
                             help='Use it to plot any data file(s) with two columns')
 
-        self.widget.buttons('Exp-Theory', 0.4, 0.55, self.avg_theory_func,
+        exp_theory_btn = self.widget.buttons('Exp-Theory', 0.4, 0.55, self.avg_theory_func,
                             help='Plot exp and theoreitical data together')
+                            
         self.theory_scaling = self.widget.entries(
             'Entry', 0.97, 0.52, 0.58, bd=5, help='Scaling the theoretical values')
         self.smooth = self.widget.entries(
