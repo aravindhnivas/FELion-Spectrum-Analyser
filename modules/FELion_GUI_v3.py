@@ -25,19 +25,18 @@ from FELion_baseline import baseline_correction, livePlot
 
 
 try:
-    
     # Make the window not to change the scale of this tkinter dpi application
     import ctypes
     ctypes.windll.shcore.SetProcessDpiAwareness(0)
     print("Dpi awarness turned off")
 
 except Exception:
-
     print("Dpi awarness cannot be turned off")
 
+__version__ = "3.1.0"
+print(f"\nFELion Spectrum Analyser {__version__}\n")
 ################################################# MODULES IMPORTED #################################################
 ####################################################################################################################
-
 
 class FELion(Tk):
 
