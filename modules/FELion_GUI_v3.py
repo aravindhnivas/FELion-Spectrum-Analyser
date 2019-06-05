@@ -25,12 +25,16 @@ from FELion_baseline import baseline_correction, livePlot
 
 
 try:
+
+    print("Dpi awarness turned off")
     # Make the window not to change the scale of this tkinter dpi application
     import ctypes
     ctypes.windll.shcore.SetProcessDpiAwareness(0)
+
 except Exception:
-    pass
-    
+
+    print("Dpi awarness cannot be turned off")
+
 ################################################# MODULES IMPORTED #################################################
 ####################################################################################################################
 
