@@ -44,7 +44,7 @@ class FELion(Tk):
         Tk.__init__(self, *args, **kwargs)
 
         Tk.iconbitmap(self, default='C:/FELion-GUI/software/FELion_Icon.ico')
-        Tk.wm_title(self, "FELion-Spectrum Analyser v.3.0")
+        Tk.wm_title(self, f"FELion-Spectrum Analyser v.{__version__}")
         Tk.wm_geometry(self, "1000x600")
 
         container = Frame(self)
@@ -55,7 +55,7 @@ class FELion(Tk):
         self.StatusBarFrame = Frame(self)
         self.StatusBarFrame.pack(side="bottom", fill="both", expand=False)
 
-        self.statusBar_left_text = "Version 3.0"
+        self.statusBar_left_text = f"Version {__version__}"
         self.statusBar_left = Label(self.StatusBarFrame)
         self.statusBar_left.config(text=self.statusBar_left_text,
                                    relief=SUNKEN, bd=2, font="Times 10 italic", pady=5, anchor="w")
