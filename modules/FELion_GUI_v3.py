@@ -23,10 +23,14 @@ from FELion_power import FELion_Power
 from FELion_sa import FELion_Sa
 from FELion_baseline import baseline_correction, livePlot
 
-# Make the window not to change the scale of this tkinter dpi application
-import ctypes
-ctypes.windll.shcore.SetProcessDpiAwareness(0)
 
+try:
+    # Make the window not to change the scale of this tkinter dpi application
+    import ctypes
+    ctypes.windll.shcore.SetProcessDpiAwareness(0)
+except Exception:
+    pass
+    
 ################################################# MODULES IMPORTED #################################################
 ####################################################################################################################
 
