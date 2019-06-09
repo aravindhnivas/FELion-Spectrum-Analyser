@@ -1,23 +1,50 @@
 <!DOCTYPE html>
-  <html>
-    <head>
-      <meta charset="UTF-8">
-      <link rel="stylesheet" href="styles.css">
-      <title>FELion SA v4.0.1</title>
-    </head>
-    <body>
-      <div class="container">
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="styles.css">
+    <title>FELion SA v4.0.1</title>
+</head>
+
+<body class="body">
+    <div class="container">
         <div class="jumbotraon">
-            <br>
-            <div>
-                <button class="Home btn"><a style="color:black" href="index.html">Home</a></button>
-                <button><a href="masspec.html" style="color: black">Masspec</a></button>
-                <button><a href="plot.html" style="color: black">Plot</a></button>
+            <div class="col-xs-4">
+                <button class="btn btn-info"><a style="color:black" href="index.html">Home</a></button>
+                <button class="btn btn-info"><a style="color:black" href="masspec.html">Masspec</a></button>
+                <button class="btn btn-info"><a style="color:black" href="plot.html">Plot</a></button>
             </div>
-            <h1>Normalise spectrum<img src="img/FELion_Icon.ico" style="width: 5%"></h1>
-            <p>To do baseline correction and normalise the spectrum</p>
+            <br>
+            <h1 class="row">Normalise spectrum <img src="img/Normline.jpg" style="width: 5%"></h1>
         </div>
+        <br>
+        <div class="row">
+            <style>
+                .body {
+                    background-color: rgb(89, 107, 155)
+                }
+                
+                .btn {
+                    width: 100px;
+                    background-color: rgb(16, 112, 168);
+                    border: none;
+                    color: white;
+                    padding: 16px 16px;
+                    text-align: center;
+                    font-size: 16px;
+                    margin: 4px 2px;
+                    opacity: 1;
+                    transition: 0.1s;
+                }
+                
+                .btn:hover {
+                    width: 110px
+                }
+            </style>
+
         </div>
-      </div>
-    </body>
-  </html>
+    </div>
+</body>
+
+</html>
