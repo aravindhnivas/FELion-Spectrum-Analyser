@@ -1,17 +1,41 @@
 <!DOCTYPE html>
 <html>
 <link rel="stylesheet" href="../css/styles.css">
+<script src="../js/main.js"></script>
+<script>
+    function showFileBox() {
+        const {
+            dialog
+        } = require('electron').remote;
+        dialog.showOpenDialog((fileNames) => {
+            if (fileNames === undefined) {
+                return;
+            }
+            document.getElementById("path").value = fileNames[0]
+
+        });
+    }
+</script>
 
 <head>
     <meta charset="UTF-8">
     <title>FELion SA v4.0.1</title>
 </head>
 
-<body class="body">
+<body>
     <div class="container">
-        <button class="btn btn-info"><a style="color:black" href="index.html">Home</a></button>
-        <h1 id="main-title">Normline <img src="img/Normline.jpg" style="width: 5%"></h1>
-        <p>Baseline correction and normalise spectrum</p>
+        <div class="Normline">
+            <button class="btn"><a style="color:black" href="index.html">Home</a></button>
+            <h1>Normalise Spectrum <img src="img/Normline.jpg" style="width: 5%"></h1>
+            <p>Baseline correction and power calibrate the intensity</p>
+            <br>
+            <button onclick="showFileBox()">Open File</button>
+
+            <form method='POST'>
+                <input type="text" value="" name="path" id="path" style="display: none"></input>
+            </form>
+
+        </div>
     </div>
 </body>
 

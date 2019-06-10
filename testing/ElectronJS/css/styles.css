@@ -29,10 +29,3 @@ body {
 .main_title {
     transform: translate(25%, 70%);
 }
-
-
-}
-.contact {
-    background-color: blue;
-    margin: 100% 50%;
-}
