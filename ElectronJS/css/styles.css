@@ -1,10 +1,25 @@
 body {
-    background-color: rgb(230, 239, 247);
+    background-color: #152533
 }
 
 .jumbotron {
-    background-color: rgb(230, 239, 247);
+    background-color: #152533;
     text-align: center;
+}
+
+h1,
+p,
+.nav-link {
+    color: white
+}
+
+.nav-pills .nav-link.active,
+.nav-pills .show>.nav-link {
+    background-color: #335880cf
+}
+
+label {
+    color: white
 }
 
 footer {
@@ -15,7 +30,7 @@ footer {
 }
 
 .card {
-    background-color: rgb(166, 199, 226)
+    background-color: #152533
 }
 
 .normline-open {
