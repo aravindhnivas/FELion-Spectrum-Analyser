@@ -23,6 +23,7 @@ let openDirBtn = document.querySelector('.pow-opendir')
 openDirBtn.addEventListener('click', openDir)
 
 let folder;
+let dirLabel;
 
 function openDir(e) {
 
@@ -33,15 +34,23 @@ function openDir(e) {
 
     folder = dialog.showOpenDialog(mainWindow, options);
 
-    if (dirLabelPlace.children.length > 0) {
-        dirLabel = document.querySelector('.pow-dirLabel')
-        dirLabel.innerHTML = folder[0]
+    if (folder !== undefined) {
+        if (dirLabelPlace.children.length > 0) {
+            dirLabel = document.querySelector('.pow-dirLabel')
+            dirLabel.innerHTML = folder[0]
+        } else {
+            dirLabel = document.createElement('label');
+            dirLabel.className = "alert alert-primary pow-dirLabel";
+            let itemText = document.createTextNode(folder);
+            dirLabel.appendChild(itemText);
+            dirLabelPlace.appendChild(dirLabel);
+        }
     } else {
-        const dirLabel = document.createElement('label');
-        dirLabel.className = "alert alert-primary pow-dirLabel";
-        const itemText = document.createTextNode(folder);
-        dirLabel.appendChild(itemText);
-        dirLabelPlace.appendChild(dirLabel);
+
+        if (dirLabelPlace.children.length > 0) {
+            dirLabel.remove()
+
+        }
     }
 }
 
@@ -61,8 +70,10 @@ function saveAlert(e) {
     console.log(`Filecontents ${contents}; ${typeof contents}`)
 
     if (folder === undefined) {
+
         alert.className = 'alert alert-danger save-alert'
         itemText = document.createTextNode('ERROR: Please open a directory to save!')
+        dirLabel.remove()
 
     } else {
 
