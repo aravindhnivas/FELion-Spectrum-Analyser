@@ -46,10 +46,8 @@ function openDir(e) {
             dirLabelPlace.appendChild(dirLabel);
         }
     } else {
-
         if (dirLabelPlace.children.length > 0) {
             dirLabel.remove()
-
         }
     }
 }
