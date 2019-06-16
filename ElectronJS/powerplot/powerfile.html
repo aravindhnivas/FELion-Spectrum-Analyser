@@ -15,10 +15,10 @@
 
 <body>
 
+    <!--Navbar-->
     <div class="card text-center">
         <div class="card-header">
             <ul class="nav nav-pills">
-
                 <li class="nav-item">
                     <a class="nav-link" href="../normline/normline.html">Normline</a>
                 </li>
@@ -36,22 +36,73 @@
                 <li class="nav-item">
                     <a class="nav-link" href="../index.html">Home</a>
                 </li>
-
             </ul>
         </div>
+    </div>
+    <!--Navbar END-->
 
+    <!--Main containter BEGINS-->
+    <div class="container pow-main-container">
+
+        <!--Open directory container-->
+        <div class="containter">
+            <div class="row">
+                <div class="col-md-3">
+                    <button type="button" class="btn btn-secondary pow-opendir">Open Directory</button>
+                </div>
+                <div class="col-md-9 pow-dirLabel-place"></div>
+            </div>
+        </div>
+
+        <!--Form-->
+        <form class='pow-form container'>
+            <div class="form-group mt-2">
+                <label>Filename</label>
+                <input class="form-control" id="pow-filename" type="text" placeholder="Please enter in 'dd_mm_yy-#.pow' format ">
+            </div>
+
+            <div class="form-group">
+                <label>File contents</label>
+                <textarea class="form-control" rows="7">
+#POWER file
+# 10 Hz FELIX
+#
+#SHOTS=26
+#INTERP=linear
+#    IN_no_UM (if one deletes the "no" the firs number will be in \mu m
+# wavelength/cm-1      energy/pulse/mJ
+        
+                </textarea>
+            </div>
+        </form>
+
+        <!--Save dialog container-->
+        <div class="container">
+            <div class="row">
+
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-success pow-save-btn">Save</button>
+                </div>
+                <div class="col-md-10 pow-save-alert"></div>
+            </div>
+        </div>
+
+        <!--Main container END-->
     </div>
 
-
+    <!--Footer-->
     <footer>
         <div class="card-footer text-muted">
             Developed at Dr.Sandra's lab FELion@FELIX
         </div>
     </footer>
 
+    <!--JS files-->
+    <script src="powerfile.js"></script>
     <script src="../js/jquery-3.3.1.slim.min.js"></script>
     <script src="../js/popper.min.js"></script>
     <script src="../js/bootstrap.min.js"></script>
+
 </body>
 
 </html>
