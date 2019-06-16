@@ -2,11 +2,13 @@
 const { remote } = require('electron');
 const dialog = remote.dialog;
 const mainWindow = remote.getCurrentWindow();
+const fs = require('fs');
+const path = require('path');
 
 //setting default powerfile name with current date
 let filename = document.querySelector('#pow-filename')
 
-// Getting today's data
+// Getting today's data to set the filename
 let today = new Date();
 const dd = String(today.getDate()).padStart(2, '0');
 const mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
@@ -20,6 +22,8 @@ let dirLabelPlace = document.querySelector('.pow-dirLabel-place')
 let openDirBtn = document.querySelector('.pow-opendir')
 openDirBtn.addEventListener('click', openDir)
 
+let folder;
+
 function openDir(e) {
 
     const options = {
@@ -27,7 +31,7 @@ function openDir(e) {
         properties: ['openDirectory'],
     };
 
-    const folder = dialog.showOpenDialog(mainWindow, options);
+    folder = dialog.showOpenDialog(mainWindow, options);
 
     if (dirLabelPlace.children.length > 0) {
         dirLabel = document.querySelector('.pow-dirLabel')
@@ -48,11 +52,34 @@ powSaveBtn.addEventListener('click', saveAlert)
 
 function saveAlert(e) {
 
+    //creating alert label
     const alert = document.createElement('label')
-    alert.className = 'alert alert-success save-alert'
+    let itemText;
 
-    const itemText = document.createTextNode(`File saved! ${filename.value}.pow`)
+    //Getting the filecontents
+    contents = document.querySelector('#pow-filecontents').value
+    console.log(`Filecontents ${contents}; ${typeof contents}`)
 
+    if (folder === undefined) {
+        alert.className = 'alert alert-danger save-alert'
+        itemText = document.createTextNode('ERROR: Please open a directory to save!')
+
+    } else {
+
+        alert.className = 'alert alert-success save-alert'
+        itemText = document.createTextNode(`File saved! ${filename.value}.pow`)
+
+        let fullname = path.join(folder[0], filename.value + '.pow')
+        console.log(`Filename: ${fullname}`)
+
+        fs.writeFile(fullname, contents, (err) => {
+            if (err) {
+                alert.className = 'alert alert-danger save-alert'
+                let itemText = document.createTextNode(`Error: ${err}`)
+            }
+        })
+    }
+    // Placing the alert label
     alert.appendChild(itemText)
     powSaveAlertPlace.appendChild(alert)
 

@@ -15,6 +15,7 @@
 
 <body>
 
+    <!--Navbar Begins-->
     <div class="card text-center">
         <div class="card-header">
             <ul class="nav nav-pills nav-bg">
@@ -38,15 +39,34 @@
             </ul>
         </div>
     </div>
+    <!--Navbar END-->
 
-    <button type="button" class="btn btn-secondary normline-open" onclick="openFile()">Open File</button>
+    <!--Main Contents BEGIN-->
+    <div class="container" id="normline-main-containter">
 
+        <!--Open button and Labels-->
+        <div class="containter" id="normline-openBtn-container">
+            <div class="row">
+                <div class="col">
+                    <button type="button" class="btn btn-secondary" id="normline-open-btn">Open File</button>
+                </div>
+
+                <div class="col-md-10" id="normline-open-alert"></div>
+
+            </div>
+        </div>
+
+        <!--Main Container END-->
+    </div>
+
+    <!--footer-->
     <footer>
         <div class="card-footer text-muted">
             Developed at Dr.Sandra's lab FELion@FELIX
         </div>
     </footer>
 
+    <!--JS Script files-->
     <script src="normline.js"></script>
     <script src="../js/jquery-3.3.1.slim.min.js"></script>
     <script src="../js/popper.min.js"></script>

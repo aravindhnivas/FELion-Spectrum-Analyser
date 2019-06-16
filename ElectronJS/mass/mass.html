@@ -15,6 +15,7 @@
 
 <body>
 
+    <!--Navbar Begins-->
     <div class="card text-center">
         <div class="card-header">
             <ul class="nav nav-pills">
@@ -40,13 +41,44 @@
 
     </div>
 
+    <!--Navbar END-->
 
+    <!--Main Contents BEGIN-->
+    <div class="container" id="mass-main-containter">
+
+        <!--Open button and Labels-->
+        <div class="containter" id="mass-openBtn-container">
+            <div class="row">
+                <div class="col">
+                    <button type="button" class="btn btn-secondary" id="mass-open-btn">Open File</button>
+                </div>
+
+                <div class="col-md-10" id="mass-open-alert"></div>
+
+            </div>
+        </div>
+
+        <!--Mass Spectrum plot with python as backend-->
+        <div class="containter mt-3" id="massplot">
+            <div class="row">
+                <div class="col">
+                    <button type="button" class="btn btn-primary" id="massplot-btn">MassPlot</button>
+                </div>
+            </div>
+        </div>
+
+        <!--Main Container END-->
+    </div>
+
+    <!--footer-->
     <footer>
         <div class="card-footer text-muted">
             Developed at Dr.Sandra's lab FELion@FELIX
         </div>
     </footer>
 
+    <!--JS Script files-->
+    <script src="mass.js"></script>
     <script src="../js/jquery-3.3.1.slim.min.js"></script>
     <script src="../js/popper.min.js"></script>
     <script src="../js/bootstrap.min.js"></script>
