@@ -5,3 +5,4 @@
 *.dat
 ElectronJS/node_modules/
 *.pow
+*.msi
