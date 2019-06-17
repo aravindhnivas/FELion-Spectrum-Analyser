@@ -1,5 +1,6 @@
-body {
-    background-color: #152533
+body,
+.card {
+    background-color: #152533;
 }
 
 .jumbotron {
@@ -29,10 +30,6 @@ footer {
     width: 100%
 }
 
-.card {
-    background-color: #152533
-}
-
 .normline-open {
     text-align: left;
     margin-top: 1.2rem;
@@ -44,5 +41,6 @@ footer {
 }
 
 .container {
+    color: #152533;
     margin: 2rem;
 }
