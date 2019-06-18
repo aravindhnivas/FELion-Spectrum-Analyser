@@ -1,9 +1,13 @@
 //Importing required modules
+
 const { remote } = require('electron');
 const dialog = remote.dialog;
 const mainWindow = remote.getCurrentWindow();
 const path = require('path')
 const spawn = require("child_process").spawn;
+
+
+/////////////////////////////////////////////////////////
 
 //Showing opened file label
 let openFilePlace = document.querySelector('#mass-open-alert')
@@ -16,6 +20,8 @@ $(document).ready(function() {
 let filePaths;
 let openLabel;
 let itemText;
+
+/////////////////////////////////////////////////////////
 
 function openFile(e) {
 
@@ -58,13 +64,51 @@ function openFile(e) {
 
     }
 }
+/////////////////////////////////////////////////////////
+
+let dataFromPython;
 //python backend
 
 function masspec(e) {
+
+    console.log("I am in javascript now!!")
     console.log(`File: ${filePaths}; ${typeof filePaths}`)
 
     const py = spawn('python', [path.join(__dirname, "./mass.py"), filePaths]);
 
-    py.stdout.on('data', (data) => console.log(data.toString()));
-    py.on('close', () => { console.log('Done') });
+    py.stdout.on('data', (data) => {
+
+        dataFromPython = data.toString('utf8')
+        dataFromPython = JSON.parse(dataFromPython)
+        console.log(dataFromPython)
+
+        /*
+
+        let trace1 = {
+            x: dataFromPython["mass"][0],
+            y: dataFromPython["counts"][0],
+            mode: 'lines',
+            name: dataFromPython["filename"]
+        };
+
+        let layout = {
+            title: 'Mass spectrum',
+            xaxis: {
+                title: 'Mass [u]'
+            },
+            yaxis: {
+                title: 'Counts'
+            }
+        };
+
+        let dataPlot = [trace1];
+        Plotly.newPlot('plot', dataPlot, layout);
+
+        */
+    });
+
+    py.on('close', () => {
+        console.log('Returned to javascript');
+    });
 }
+/////////////////////////////////////////////////////////
