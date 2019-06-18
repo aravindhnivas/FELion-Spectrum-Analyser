@@ -58,13 +58,13 @@ function openFile(e) {
 
     }
 }
-
 //python backend
 
 function masspec(e) {
     console.log(`File: ${filePaths}; ${typeof filePaths}`)
 
     const py = spawn('python', [path.join(__dirname, "./mass.py"), filePaths]);
-    py.stdout.on('data', data => { console.log(data.toString()) });
+
+    py.stdout.on('data', (data) => console.log(data.toString()));
     py.on('close', () => { console.log('Done') });
 }
