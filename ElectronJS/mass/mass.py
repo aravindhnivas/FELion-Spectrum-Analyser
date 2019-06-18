@@ -10,4 +10,5 @@ ax.plot([1, 2, 3], [1, 2, 3])
 
 ax.set(title=f"{args}")
 plt.show()
+
 sys.stdout.flush()
