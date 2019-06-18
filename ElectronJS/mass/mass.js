@@ -1,13 +1,29 @@
+(function() {
+    var childProcess = require("child_process");
+    var oldSpawn = childProcess.spawn;
+
+    function mySpawn() {
+        console.log('spawn called');
+        console.log(arguments);
+        var result = oldSpawn.apply(this, arguments);
+        return result;
+    }
+    childProcess.spawn = mySpawn;
+})();
+
 //Importing required modules
 const { remote } = require('electron');
 const dialog = remote.dialog;
 const mainWindow = remote.getCurrentWindow();
-const { PythonShell } = require('python-shell');
+const path = require('path')
 
 //Showing opened file label
 let openFilePlace = document.querySelector('#mass-open-alert')
-let openFileBtn = document.querySelector('#mass-open-btn')
-openFileBtn.addEventListener('click', openFile)
+
+$(document).ready(function() {
+    $("#mass-open-btn").click(openFile);
+    $("#massplot-btn").click(masspec);
+});
 
 let filePaths;
 let openLabel;
@@ -50,30 +66,19 @@ function openFile(e) {
         openLabel.appendChild(itemText);
         openFilePlace.appendChild(openLabel);
 
+        setTimeout(() => openLabel.remove(), 3000)
+
     }
 }
 
 //python backend
-let massplotBtn = document.querySelector('#massplot-btn')
-massplotBtn.addEventListener('click', masspec)
-
-//Running the python script with options and arguments
 function masspec(e) {
 
     console.log(`File: ${filePaths}; ${typeof filePaths}`)
 
-    let options = {
-        mode: 'text',
-        pythonPath: 'C:\\ProgramData\\Anaconda3\\',
-        //pythonOptions: ['-u'], // get print results in real-time
-        scriptPath: './',
-        args: filePaths
-    };
+    const spawn = require("child_process").spawn;
+    const py = spawn('python', [path.join(__dirname, "./mass.py"), filePaths[0]]);
 
-    PythonShell.run('mass.py', null, function(err, results) {
-        if (err) throw err;
-        // results is an array consisting of messages collected during execution
-        console.log('results: %j', results);
-    });
-
+    py.stdout.on('data', data => { console.log(data.toString()) })
+    py.on('close', () => { console.log('Done') })
 }

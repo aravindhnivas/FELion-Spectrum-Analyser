@@ -1,5 +1,7 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, Menu } = require('electron')
+const { app, BrowserWindow, Menu } = require('electron');
+const path = require('path');
+const url = require('url');
 
 let mainWindow
 
@@ -13,7 +15,11 @@ function createWindow() {
             nodeIntegration: true,
         }
     })
-    mainWindow.loadFile('index.html')
+    mainWindow.loadURL(url.format({
+        pathname: path.join(__dirname, 'index.html'),
+        protocol: 'file:',
+        slashes: true
+    }));
     mainWindow.on('closed', () => mainWindow = null)
 
     // Build menu from template

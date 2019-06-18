@@ -60,7 +60,7 @@ powSaveBtn.addEventListener('click', saveAlert)
 function saveAlert(e) {
 
     //creating alert label
-    const alert = document.createElement('label')
+    const saveAlertLabel = document.createElement('label')
     let itemText;
 
     //Getting the filecontents
@@ -69,13 +69,12 @@ function saveAlert(e) {
 
     if (folder === undefined) {
 
-        alert.className = 'alert alert-danger save-alert'
+        saveAlertLabel.className = 'alert alert-danger save-alert'
         itemText = document.createTextNode('ERROR: Please open a directory to save!')
-        dirLabel.remove()
 
     } else {
 
-        alert.className = 'alert alert-success save-alert'
+        saveAlertLabel.className = 'alert alert-success save-alert'
         itemText = document.createTextNode(`File saved! ${filename.value}.pow`)
 
         let fullname = path.join(folder[0], filename.value + '.pow')
@@ -83,15 +82,15 @@ function saveAlert(e) {
 
         fs.writeFile(fullname, contents, (err) => {
             if (err) {
-                alert.className = 'alert alert-danger save-alert'
+                saveAlertLabel.className = 'alert alert-danger save-alert'
                 let itemText = document.createTextNode(`Error: ${err}`)
             }
         })
     }
     // Placing the alert label
-    alert.appendChild(itemText)
-    powSaveAlertPlace.appendChild(alert)
+    saveAlertLabel.appendChild(itemText)
+    powSaveAlertPlace.appendChild(saveAlertLabel)
 
     // disappear after 3seconds
-    setTimeout(() => alert.remove(), 3000);
+    setTimeout(() => saveAlertLabel.remove(), 3000);
 }

@@ -1,11 +1,13 @@
 import sys
+import matplotlib.pyplot as plt
 
-filename = sys.argv[1]
+args = sys.argv[1:]
+print(f"Hello from python: {args}")
 
-def masspec(massfile, location):
-    print(f"Hello from Python\nFilename: {massfile}\nLocation: {location}")
+fig, ax = plt.subplots()
 
-if __name__=="__main__":
-    print(filename)
+ax.plot([1, 2, 3], [1, 2, 3])
 
+ax.set(title=f"{args}")
+plt.show()
 sys.stdout.flush()
