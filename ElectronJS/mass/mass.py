@@ -11,23 +11,31 @@ def main(*args):
 		received_files = args[0][0].split(',')
 		mass, counts = [], []
 
+		filenames = []
+
 		for filepath in received_files:
+
+			mass_temp, counts_temp = [], []
+
 			massfile = pt(filepath)
 			mass_temp, counts_temp = np.genfromtxt(massfile).T
 
 			mass.append(mass_temp)
 			counts.append(counts_temp)
+			filenames.append(massfile.stem)
+		
+		data = {}
+		i = 0
+		for m, c, f in zip(mass, counts, filenames):
+			data[f"data_{i}"] = {"x":list(m), "y":list(c), "name": f, "mode":"lines"}
+			i += 1
 
-		mass = np.array(mass, dtype=np.float).tolist()
-		counts = np.array(counts, dtype=np.float).tolist()
-
-		data = dict(mass=mass, counts=counts, filename=massfile.stem)
 		dataJson = json.dumps(data)
 		print(dataJson)
 
 	except Exception:
 		err = traceback.format_exc()
-		print(f"\nError occured:\n\n{err}\n\nEND FILE")
+		print(f"\nError occured in python code:\n{err}\n\nEND FILE")
 
 if __name__=="__main__":
 	args = sys.argv[1:]

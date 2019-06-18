@@ -20,6 +20,8 @@ $(document).ready(function() {
 let filePaths;
 let openLabel;
 let itemText;
+let labelName;
+let baseName = []
 
 /////////////////////////////////////////////////////////
 
@@ -34,40 +36,48 @@ function openFile(e) {
         ],
         properties: ['openFile', 'multiSelections'],
     };
+
     filePaths = dialog.showOpenDialog(mainWindow, options);
 
-    if (filePaths !== undefined) {
-        if (openFilePlace.children.length > 0) {
-            openLabel = document.querySelector('.mass-openFileLabel');
-            openLabel.className = "alert alert-primary mass-openFileLabel";
-            openLabel.innerHTML = filePaths
-        } else {
-            openLabel = document.createElement('label');
-            openLabel.className = "alert alert-primary mass-openFileLabel";
-            itemText = document.createTextNode(filePaths);
+    //create an alert label
+    if (openFilePlace.children.length > 0) { //Check if the alert label is already created under openFileLabel class
+        openLabel = document.querySelector('.mass-openFileLabel');
+    } else { // if not then create one
+        openLabel = document.createElement('label');
+        openLabel.className = "alert alert-primary mass-openFileLabel";
+    }
+
+    if (filePaths !== undefined) { // The file is defined
+
+        // defining the basename of the file
+        for (let i = 0; i < filePaths.length; i++) {
+            baseName.push(path.basename(filePaths[i]))
+        }
+
+        labelName = `${path.dirname(filePaths[0])}; \n${baseName}`
+
+        if (openFilePlace.children.length > 0) { // We have already created a label, so let's just replace the name with this new filepaths
+            openLabel.innerHTML = labelName
+        } else { // The label is empty hence first create a label
+            itemText = document.createTextNode(labelName);
             openLabel.appendChild(itemText);
             openFilePlace.appendChild(openLabel);
         }
-    } else {
-        if (openFilePlace.children.length > 0) {
-            openLabel = document.querySelector('.mass-openFileLabel');
+    } else { // The file is undefined
+        if (openFilePlace.children.length > 0) { // we already have the file label so remove it.
             openLabel.remove()
         }
 
-        openLabel = document.createElement('label');
+        //Alret that no-file is selected
         openLabel.className = "alert alert-danger mass-openFileLabel";
-        itemText = document.createTextNode("No file selected");
-        openLabel.appendChild(itemText);
+        openLabel.innerHTML = "No file selected"
         openFilePlace.appendChild(openLabel);
-
-        setTimeout(() => openLabel.remove(), 3000)
-
+        setTimeout(() => openLabel.remove(), 2000)
     }
 }
 /////////////////////////////////////////////////////////
-
-let dataFromPython;
 //python backend
+let dataFromPython;
 
 function masspec(e) {
 
@@ -78,33 +88,36 @@ function masspec(e) {
 
     py.stdout.on('data', (data) => {
 
-        dataFromPython = data.toString('utf8')
-        dataFromPython = JSON.parse(dataFromPython)
-        console.log(dataFromPython)
+        try {
 
-        /*
+            dataFromPython = data.toString('utf8')
+                //console.log("Before JSON parse :" + dataFromPython)
+            dataFromPython = JSON.parse(dataFromPython)
+            console.log("After JSON parse :" + dataFromPython)
 
-        let trace1 = {
-            x: dataFromPython["mass"][0],
-            y: dataFromPython["counts"][0],
-            mode: 'lines',
-            name: dataFromPython["filename"]
-        };
+            let layout = {
+                title: 'Mass spectrum',
+                xaxis: {
+                    title: 'Mass [u]'
+                },
+                yaxis: {
+                    title: 'Counts',
+                    type: "log"
+                }
+            };
 
-        let layout = {
-            title: 'Mass spectrum',
-            xaxis: {
-                title: 'Mass [u]'
-            },
-            yaxis: {
-                title: 'Counts'
+            let dataPlot = [];
+            for (x in dataFromPython) {
+                dataPlot.push(dataFromPython[x])
             }
-        };
 
-        let dataPlot = [trace1];
-        Plotly.newPlot('plot', dataPlot, layout);
+            console.log(dataPlot)
+            Plotly.newPlot('plot', dataPlot, layout);
 
-        */
+        } catch (err) {
+            console.log("Error Occured in javascript code: " + err.message)
+        }
+
     });
 
     py.on('close', () => {
