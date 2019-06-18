@@ -440,8 +440,12 @@ class Plot(Frame):
 
         depletion_btn = self.widget.buttons('Depletion', 0.65, 0.3, self.depletion_func,
                             help='Select two timescan files to see the depletion; and enter power_on, power_off and n')
+
         self.depletion_power = self.widget.entries('Entry',  'power_on, power_off, n_shots', 0.65,
                                                    0.4, bd=5, relwidth=0.25, help='Enter Power_ON, Power_OFF and N_Shots (comma separated)')
+        
+        self.timeIndex = self.widget.entries('Entry', '1', 0.8, 0.33, bd=5,
+                    help="Enter the timescan mass index (if the timescan file has more than 1 mass)")
 
         powerplot_btn = self.widget.buttons('PowerPlot', 0.4, 0.4,
                             self.powerplot_func, help='For plotting .pow files')
@@ -471,7 +475,7 @@ class Plot(Frame):
 
     def depletion_func(self):
         depletionPlot(
-            self.filelist, self.location, self.depletion_power.get(), self.dpi.get(), self.parent
+            self.filelist, self.location, self.depletion_power.get(), self.dpi.get(), self.timeIndex.get(), self.parent
         )
 
     def powerplot_func(self):

@@ -28,7 +28,7 @@ import os
 import traceback
 
 
-def depletionPlot(files, location, power_n, dpi, parent):
+def depletionPlot(files, location, power_n, dpi, timeIndex, parent):
 
     try:
         ####################################### Initialisation #######################################
@@ -60,17 +60,21 @@ def depletionPlot(files, location, power_n, dpi, parent):
         title_fontsize = 15
         lb_size = 15
 
+        print(f"TimeIndex: {timeIndex}")
+        timeIndex = int(timeIndex)
+        print(f"TimeIndex: {timeIndex}")
+
         counts, stde = [], []
         for f in files:
             mass, iterations, t_res, t_b0, mean, error, time = timescanplot(
                 f, location, dpi, parent, depletion=True)
             print('\nReturned.\n')
-            axs0.errorbar(time, mean[0], yerr=error[0], label='{}; {}:[{}], B0:{}ms, Res:{}'.format(
+            axs0.errorbar(time, mean[timeIndex], yerr=error[timeIndex], label='{}; {}:[{}], B0:{}ms, Res:{}'.format(
                 f, mass[0], iterations[0], t_b0, t_res))
 
             time = time[1:]/1000
-            mean = mean[0][1:]
-            stde.append(error[0][1:])
+            mean = mean[timeIndex][1:]
+            stde.append(error[timeIndex][1:])
             counts.append(mean)
 
         counts, stde = np.array(counts), np.array(stde)
