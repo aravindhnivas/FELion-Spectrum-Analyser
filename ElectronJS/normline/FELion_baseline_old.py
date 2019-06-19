@@ -72,7 +72,6 @@ class BaselineCalibrator(object):
         
 ########################################################################################
 
-
 class InteractivePoints(object):
     """
     Line editor

@@ -75,7 +75,7 @@ class SpectrumAnalyserCalibrator(object):
         self.f = fitfunc
         self.data = (data[0][data[2] > 100], data[2][data[2] > 100])
         info = self.getInfo()
-        print(info)
+        #print(info)
 
     def sa_cm(self, x):
         return self.f(self.p, x)

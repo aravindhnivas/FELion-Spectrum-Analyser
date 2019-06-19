@@ -2,13 +2,13 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
     <link rel="stylesheet" href="../css/bootstrap.min.css">
     <link rel="stylesheet" href="../css/styles.css">
-
     <title>FELion Spectrum Analyser</title>
 
 </head>
@@ -18,7 +18,7 @@
     <!--Navbar Begins-->
     <div class="card text-center">
         <div class="card-header">
-            <ul class="nav nav-pills nav-bg">
+            <ul class="nav nav-pills">
                 <li class="nav-item">
                     <a class="nav-link active" href="#">Normline</a>
                 </li>
@@ -42,35 +42,60 @@
     <!--Navbar END-->
 
     <!--Main Contents BEGIN-->
-    <div class="container" id="normline-main-containter">
+    <div class="container-fluid m-3" id="normline-main-containter">
 
         <!--Open button and Labels-->
-        <div class="containter" id="normline-openBtn-container">
+        <div class="containter mr-3" id="normline-openBtn-container">
             <div class="row">
+                <!--Open Button-->
                 <div class="col">
                     <button type="button" class="btn btn-secondary" id="normline-open-btn">Open File</button>
                 </div>
+                <!--Filename Label-->
+                <div class="col-md-10 mr-3" id="labelHolder"><label id="label"></label></div>
+            </div>
+        </div>
+        <!---->
 
-                <div class="col-md-10" id="normline-open-alert"></div>
+        <!--Buttons-->
+        <div class="containter mt-3" id="normlinePlot">
+            <div class="row">
+                <div class="col">
+                    <button type="button" class="btn btn-primary" id="normlinePlot-btn">Felix Plot</button>
+                    <button type="button" class="btn btn-primary" id="avgPlot-btn">Average Plot</button>
+                </div>
 
             </div>
         </div>
+        <!---->
 
-        <!--Main Container END-->
+        <!--Plotting Area-->
+        <div class="container-fluid mt-3">
+            <div class="row">
+                <div class="col-sm-11" id="plot"></div>
+            </div>
+        </div>
+        <!---->
     </div>
+    <!--Main Container END-->
 
-    <!--footer-->
+    <!--footer BEGINS-->
     <footer>
         <div class="card-footer text-muted">
             Developed at Dr.Sandra's lab FELion@FELIX
         </div>
     </footer>
+    <!--footer ENDS-->
 
     <!--JS Script files-->
-    <script src="normline.js"></script>
+    <script src="../js/jquery-3.4.1.min.js"></script>
     <script src="../js/jquery-3.3.1.slim.min.js"></script>
     <script src="../js/popper.min.js"></script>
     <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/plotly-latest.min.js"></script>
+    <script src="normline.js"></script>
+    <!---->
+
 </body>
 
 </html>

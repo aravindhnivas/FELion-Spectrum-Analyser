@@ -4,7 +4,6 @@ const path = require('path');
 const url = require('url');
 
 let mainWindow
-
 process.env.NODE_ENV = 'development';
 
 function createWindow() {
@@ -13,7 +12,8 @@ function createWindow() {
         height: 700,
         webPreferences: {
             nodeIntegration: true,
-        }
+        },
+        icon: path.join(__dirname, 'FELion_Icon.ico')
     })
     mainWindow.loadURL(url.format({
         pathname: path.join(__dirname, 'index.html'),
@@ -21,50 +21,35 @@ function createWindow() {
         slashes: true
     }));
     mainWindow.on('closed', () => mainWindow = null)
-
-    // Build menu from template
     const mainMenu = Menu.buildFromTemplate(mainMenuTemplate);
-    // Insert menu
     Menu.setApplicationMenu(mainMenu);
 }
 
 app.on('ready', createWindow)
 
-// Quit when all windows are closed.
 app.on('window-all-closed', function() {
-    // On macOS it is common for applications and their menu bar
-    // to stay active until the user quits explicitly with Cmd + Q
     if (process.platform !== 'darwin') app.quit()
 })
 
 app.on('activate', function() {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
     if (mainWindow === null) createWindow()
 })
 
+const mainMenuTemplate = [{
+    label: 'File',
+    submenu: [{
+        label: 'Quit',
+        accelerator: process.platform == 'darwin' ? 'Command+Q' : 'Ctrl+Q',
+        click() {
+            app.quit();
+        }
+    }]
+}];
 
-// Create menu template
-const mainMenuTemplate = [
-    // Each object is a dropdown
-    {
-        label: 'File',
-        submenu: [{
-            label: 'Quit',
-            accelerator: process.platform == 'darwin' ? 'Command+Q' : 'Ctrl+Q',
-            click() {
-                app.quit();
-            }
-        }]
-    }
-];
-
-// If OSX, add empty object to menu
 if (process.platform == 'darwin') {
     mainMenuTemplate.unshift({});
 }
 
-// Add developer tools option if in dev
 if (process.env.NODE_ENV !== 'production') {
     mainMenuTemplate.push({
         label: 'Developer Tools',
@@ -81,3 +66,10 @@ if (process.env.NODE_ENV !== 'production') {
         ]
     });
 }
+//////////////////////////////////////////////////////////
+// Gloabel sharedbjects:
+global.sharedObject = {
+        someProperty: "default value"
+    }
+    // To set it in different page, use
+    // require('electron').remote.getGlobal('sharedObject').someProperty = 'new value'

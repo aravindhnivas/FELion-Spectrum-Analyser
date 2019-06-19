@@ -1,6 +1,14 @@
+/* Main index page styles*/
+
 body,
 .card {
-    background-color: #3f464c
+    background-color: #3f464c;
+}
+
+.container {
+    color: #152533;
+    margin-top: 2rem;
+    margin-left: 2rem;
 }
 
 .jumbotron {
@@ -11,7 +19,7 @@ body,
 h1,
 p,
 .nav-link {
-    color: white
+    color: white;
 }
 
 .nav-pills .nav-link.active,
@@ -20,8 +28,38 @@ p,
 }
 
 label {
-    color: white
+    color: white;
 }
+
+
+/* Common */
+
+#mass-main-containter,
+#normline-main-containter {
+    width: 99%!important;
+}
+
+
+/* Normline */
+
+.normline-open {
+    text-align: left;
+    margin-top: 1.2rem;
+    margin-left: 1.2rem
+}
+
+
+/* Mass spec page*/
+
+
+/* Powerfile */
+
+.pow-opendir {
+    text-align: right;
+}
+
+
+/* Footer */
 
 footer {
     text-align: center;
@@ -30,18 +68,6 @@ footer {
     width: 100%
 }
 
-.normline-open {
-    text-align: left;
-    margin-top: 1.2rem;
-    margin-left: 1.2rem
-}
-
-.pow-opendir {
-    text-align: right;
-}
-
-.container {
-    color: #152533;
-    margin-top: 2rem;
-    margin-left: 2rem;
+.text-muted {
+    color: #ffffff!important
 }
