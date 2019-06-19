@@ -38,9 +38,7 @@
                 </li>
             </ul>
         </div>
-
     </div>
-
     <!--Navbar END-->
 
     <!--Main Contents BEGIN-->
@@ -49,16 +47,17 @@
         <!--Open button and Labels-->
         <div class="containter mr-3" id="mass-openBtn-container">
             <div class="row">
+                <!--Open Button-->
                 <div class="col">
                     <button type="button" class="btn btn-secondary" id="mass-open-btn">Open File</button>
                 </div>
-
-                <div class="col-md-10 mr-3" id="mass-open-alert"></div>
-
+                <!--Filename Label-->
+                <div class="col-md-10 mr-3" id="labelHolder"><label id="label"></label></div>
             </div>
         </div>
+        <!---->
 
-        <!--Mass Spectrum plot with python as backend-->
+        <!--MassPlot Button-->
         <div class="containter mt-3" id="massplot">
             <div class="row">
                 <div class="col">
@@ -66,23 +65,25 @@
                 </div>
             </div>
         </div>
+        <!---->
 
+        <!--Plotting Area-->
         <div class="container-fluid mt-3">
             <div class="row">
-                <div class="col-sm-11" id="plot">
-                </div>
+                <div class="col-sm-11" id="plot"></div>
             </div>
         </div>
-
+        <!---->
     </div>
     <!--Main Container END-->
 
-    <!--footer-->
+    <!--footer BEGINS-->
     <footer>
         <div class="card-footer text-muted">
             Developed at Dr.Sandra's lab FELion@FELIX
         </div>
     </footer>
+    <!--footer ENDS-->
 
     <!--JS Script files-->
     <script src="../js/jquery-3.4.1.min.js"></script>
@@ -91,6 +92,7 @@
     <script src="../js/bootstrap.min.js"></script>
     <script src="../js/plotly-latest.min.js"></script>
     <script src="mass.js"></script>
+    <!---->
 
 </body>
 

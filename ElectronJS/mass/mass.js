@@ -1,5 +1,4 @@
 //Importing required modules
-
 const { remote } = require('electron');
 const dialog = remote.dialog;
 const mainWindow = remote.getCurrentWindow();
@@ -8,22 +7,17 @@ const spawn = require("child_process").spawn;
 
 
 /////////////////////////////////////////////////////////
-
-//Showing opened file label
-let openFilePlace = document.querySelector('#mass-open-alert')
-
 $(document).ready(function() {
     $("#mass-open-btn").click(openFile);
     $("#massplot-btn").click(masspec);
+
 });
 
-let filePaths;
-let openLabel;
-let itemText;
-let labelName;
-let baseName = []
-
 /////////////////////////////////////////////////////////
+
+//Showing opened file label
+let filePaths;
+let label = document.querySelector("#label")
 
 function openFile(e) {
 
@@ -39,40 +33,18 @@ function openFile(e) {
 
     filePaths = dialog.showOpenDialog(mainWindow, options);
 
-    //create an alert label
-    if (openFilePlace.children.length > 0) { //Check if the alert label is already created under openFileLabel class
-        openLabel = document.querySelector('.mass-openFileLabel');
-    } else { // if not then create one
-        openLabel = document.createElement('label');
-        openLabel.className = "alert alert-primary mass-openFileLabel";
+    let baseName = [];
+    for (x in filePaths) {
+        baseName.push(`: ${path.basename(filePaths[x])}`)
     }
 
-    if (filePaths !== undefined) { // The file is defined
+    if (filePaths == undefined) {
+        label.textContent = "No files selected "
+        label.className = "alert alert-danger"
 
-        // defining the basename of the file
-        for (let i = 0; i < filePaths.length; i++) {
-            baseName.push(path.basename(filePaths[i]))
-        }
-
-        labelName = `${path.dirname(filePaths[0])}; \n${baseName}`
-
-        if (openFilePlace.children.length > 0) { // We have already created a label, so let's just replace the name with this new filepaths
-            openLabel.innerHTML = labelName
-        } else { // The label is empty hence first create a label
-            itemText = document.createTextNode(labelName);
-            openLabel.appendChild(itemText);
-            openFilePlace.appendChild(openLabel);
-        }
-    } else { // The file is undefined
-        if (openFilePlace.children.length > 0) { // we already have the file label so remove it.
-            openLabel.remove()
-        }
-
-        //Alret that no-file is selected
-        openLabel.className = "alert alert-danger mass-openFileLabel";
-        openLabel.innerHTML = "No file selected"
-        openFilePlace.appendChild(openLabel);
-        setTimeout(() => openLabel.remove(), 2000)
+    } else {
+        label.textContent = `${path.dirname(filePaths[0])} ${baseName}`;
+        label.className = "alert alert-success"
     }
 }
 /////////////////////////////////////////////////////////
