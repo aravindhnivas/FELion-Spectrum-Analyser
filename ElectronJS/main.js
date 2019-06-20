@@ -13,7 +13,7 @@ function createWindow() {
         webPreferences: {
             nodeIntegration: true,
         },
-        icon: path.join(__dirname, 'FELion_Icon.ico')
+        icon: path.join(__dirname, 'FELion_Icon3.png')
     })
     mainWindow.loadURL(url.format({
         pathname: path.join(__dirname, 'index.html'),

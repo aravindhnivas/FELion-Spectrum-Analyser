@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
+    <!--CSS Files-->
+    <link rel="stylesheet" href="../css/bootstrap4-toggle.min.css">
     <link rel="stylesheet" href="../css/bootstrap.min.css">
     <link rel="stylesheet" href="../css/styles.css">
 
@@ -36,12 +38,26 @@
                 </li>
             </ul>
 
-            <!--Home Page-->
+            <!--Navbar Right-->
             <ul class="navbar-nav ml-auto">
+
+                <!--Home Page-->
                 <li class="nav-item">
                     <a class="navbar-brand abs" href="../index.html">Home</a>
                 </li>
+
+                <!--About Page-->
+                <li class="nav-item">
+                    <a class="navbar-brand abs" href="../about/about.html">About</a>
+                </li>
+
+                <!--Help Toogles-->
+                <li class="nav-item">
+                    <input type="checkbox" data-toggle="toggle" data-onstyle="success" data-offstyle="danger" id="help">
+                </li>
+
             </ul>
+            <!---->
         </div>
         <!---->
     </nav>
@@ -102,11 +118,14 @@
         </div>
     </footer>
 
-    <!--JS files-->
-    <script src="powerfile.js"></script>
+    <!--JS Script files-->
+    <script src="../js/jquery-3.4.1.min.js"></script>
     <script src="../js/jquery-3.3.1.slim.min.js"></script>
     <script src="../js/popper.min.js"></script>
     <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/plotly-latest.min.js"></script>
+    <script src="powerfile.js"></script>
+    <script src="../js/bootstrap4-toggle.min.js"></script>
 
 </body>
 

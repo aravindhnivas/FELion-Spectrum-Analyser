@@ -71,3 +71,10 @@ footer {
 .text-muted {
     color: #ffffff!important
 }
+
+
+/* About Page*/
+
+.about-container p {
+    color: black
+}

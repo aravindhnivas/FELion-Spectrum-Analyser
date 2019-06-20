@@ -11,7 +11,31 @@ $(document).ready(function() {
     $("#mass-open-btn").click(openFile);
     $("#massplot-btn").click(masspec);
 
-});
+    // Info  display toggle
+    $("#help").bootstrapToggle({
+        on: 'Help',
+        off: 'Help'
+    });
+
+    $('#help').change(function() {
+        let info = $(this).prop('checked')
+        console.log(`Status: ${info}\nType: ${typeof info}`)
+        info_status(info)
+    });
+
+
+    //END
+})
+
+function info_status(info) {
+    if (info) {
+        $(() => $('[data-toggle="tooltip"]').tooltip("enable"))
+        $(() => $('[data-toggle="tooltip"]').tooltip("show"))
+    } else {
+        $(() => $('[data-toggle="tooltip"]').tooltip("hide"))
+        $(() => $('[data-toggle="tooltip"]').tooltip("disable"))
+    }
+}
 
 /////////////////////////////////////////////////////////
 

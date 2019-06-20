@@ -74,8 +74,9 @@ class normplot:
 
                 #print(f"Base_line: {base_line}\nBase_felix: {base_felix}")
 
-                dataToSend["base"][f"{felixfile}_line"] = {"x": list(base_line[0]), "y": list(base_line[1]), "name": f"{filename.stem}_base","mode":"lines+markers", "marker":{"color":"black"}}
                 dataToSend["base"][f"{felixfile}_base"] = {"x": list(base_felix[0]), "y": list(base_felix[1]), "name": f"{filename.stem}_felix", "mode":"lines", "line":{"color":f"rgb{colors[c]}"}}
+                dataToSend["base"][f"{felixfile}_line"] = {"x": list(base_line[0]), "y": list(base_line[1]), "name": f"{filename.stem}_base","mode":"lines+markers", "marker":{"color":"black"}}
+                
                 c += 1
 
             #print(f"Before JSON DATA: {dataToSend}")

@@ -37,14 +37,28 @@
                 </li>
             </ul>
 
-            <!--Home Page-->
+            <!--Navbar Right-->
             <ul class="navbar-nav ml-auto">
+
+                <!--Home Page-->
                 <li class="nav-item">
                     <a class="navbar-brand abs" href="../index.html">Home</a>
                 </li>
+
+                <!--About Page-->
+                <li class="nav-item">
+                    <a class="navbar-brand abs" href="../about/about.html">About</a>
+                </li>
+
+                <!--Help Toogles-->
+                <li class="nav-item">
+                    <input type="checkbox" data-toggle="toggle" data-onstyle="success" data-offstyle="danger" id="help" value="Help">
+                </li>
+
             </ul>
+            <!---->
         </div>
-        <!---->
+        <!--Navbar itemlist ENDS-->
 
     </nav>
     <!--Navbar ENDS-->
@@ -64,41 +78,31 @@
                 <!--Filename Label-->
                 <div class="col-md-7 mr-auto" id="labelHolder"><label id="label"></label></div>
 
-                <!--Help Toogles-->
-                <input type="checkbox" checked data-toggle="toggle" data-onstyle="success" data-offstyle="danger" id="help">
-
             </div>
         </div>
-
 
         <!--Buttons-->
         <div class="containter mt-3" id="normlinePlot">
             <div class="row">
 
-                <!--Baseline button-->
-                <div class="col-sm-2">
-                    <button type="button" class="btn btn-primary" id="baseline-btn" data-toggle="tooltip" data-placement="top" title="For baseline correction">Create Baseline</button>
-                </div>
-
-                <!--Normline plot button-->
-                <div class="col-sm-2">
+                <!--Function Buttons-->
+                <ul>
+                    <button type="button" class="btn btn-primary" id="baseline-btn" data-toggle="tooltip" data-placement="bottom" title="For baseline correction">Create Baseline</button>
                     <button type="button" class="btn btn-primary" id="normlinePlot-btn" data-toggle="tooltip" data-placement="top" title="To plot Normalised spectrum">Felix Plot</button>
-                </div>
-
-                <!--Average plot button-->
-                <div class="col-sm-2">
-                    <button type="button" class="btn btn-primary" id="avgPlot-btn" data-toggle="tooltip" data-placement="top" title="To plot Averaged spectrum">Average Plot</button>
-                </div>
+                    <button type="button" class="btn btn-primary" id="avgPlot-btn" data-toggle="tooltip" data-placement="bottom" title="To plot Averaged spectrum">Average Plot</button>
+                </ul>
+                <!---->
 
                 <!--Delta value-->
                 <div class="col-sm-2">
                     <div class="input-group">
-                        <div class="input-group-prepend">
+                        <input type="text" class="form-control" placeholder="Delta (default=2)" id="delta" , value=2 data-toggle="tooltip" data-placement="top" title="Delta value for binnsteps in Average Plot (default=2)">
+                        <div class="input-group-append">
                             <span class="input-group-text">Delta</span>
                         </div>
-                        <input type="text" class="form-control" placeholder="Delta (default=2)" id="delta" , value=2 data-toggle="tooltip" data-placement="top" title="Delta value for binnsteps in Average Plot (default=2)">
                     </div>
                 </div>
+                <!---->
 
             </div>
         </div>

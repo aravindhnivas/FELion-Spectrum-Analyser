@@ -1,37 +1,54 @@
 //Importing required modules
-
 const { remote } = require('electron');
 const dialog = remote.dialog;
 const mainWindow = remote.getCurrentWindow();
 const path = require('path')
 const spawn = require("child_process").spawn;
+const fs = require('fs')
 
 /////////////////////////////////////////////////////////
-
 $(document).ready(function() {
+
+
     $("#normline-open-btn").click(openFile);
     $("#normlinePlot-btn").click(normplot);
     $("#avgPlot-btn").click(avgplot);
     $("#baseline-btn").click(basePlot);
-    $(() => $('[data-toggle="tooltip"]').tooltip("show"))
 
+    $(() => $('[data-toggle="tooltip"]').tooltip("disable"))
+
+    // Info  display toggle
     $("#help").bootstrapToggle({
         on: 'Help',
         off: 'Help'
     });
 
     $('#help').change(function() {
-        let status = $(this).prop('checked')
-        console.log(`Status: ${status}\nType: ${typeof status}`)
+        let info = $(this).prop('checked')
+        console.log(`Status: ${info}\nType: ${typeof info}`)
+        info_status(info)
     });
+
 
     //END
 })
+
+function info_status(info) {
+    if (info) {
+        $(() => $('[data-toggle="tooltip"]').tooltip("enable"))
+        $(() => $('[data-toggle="tooltip"]').tooltip("show"))
+    } else {
+        $(() => $('[data-toggle="tooltip"]').tooltip("hide"))
+        $(() => $('[data-toggle="tooltip"]').tooltip("disable"))
+    }
+}
 
 /////////////////////////////////////////////////////////
 //Showing opened file label
 let filePaths;
 let label = document.querySelector("#label")
+let fileLocation;
+let baseName = [];
 
 function openFile(e) {
 
@@ -47,9 +64,11 @@ function openFile(e) {
 
     filePaths = dialog.showOpenDialog(mainWindow, options);
 
-    let baseName = [];
+    fileLocation = path.dirname(filePaths[0])
+
+    baseName = [];
     for (x in filePaths) {
-        baseName.push(`: ${path.basename(filePaths[x])}`)
+        baseName.push(`| ${path.basename(filePaths[x])}`)
     }
 
     if (filePaths == undefined) {
@@ -57,7 +76,7 @@ function openFile(e) {
         label.className = "alert alert-danger"
 
     } else {
-        label.textContent = `${path.dirname(filePaths[0])} ${baseName}`;
+        label.textContent = `${fileLocation} ${baseName}`;
         label.className = "alert alert-success"
     }
 }
@@ -78,6 +97,33 @@ function normplot(e) {
         normlineBtn.className = "btn btn-danger"
         return setTimeout(() => normlineBtn.className = "btn btn-primary", 2000)
     }
+
+    /*
+    // Chcking whether .pow and .base exists in DATA directory
+    for (x in filePaths) {
+
+        x = filePaths[x]
+        console.log("Running File Check: ", x)
+        console.log(`Location: ${fileLocation}`)
+
+        let powerfile = [path.join(fileLocation, `${path.basename(x).split('.')[0]}.pow`)]
+        let basefile = [path.join(fileLocation, `${path.basename(x).split('.')[0]}.base`)]
+        let files = [powerfile, basefile]
+
+        for (y in files) {
+
+            y = files[y]
+            console.log(`Checking for file: ${y}`)
+
+            fs.access(y, fs.F_OK, (err) => {
+                if (err) {
+                    console.log(err)
+                }
+                console.log(`File exists: ${y}`)
+            })
+        }
+    }
+    */
 
     const py = spawn('python', [path.join(__dirname, "./normline.py"), [filePaths]]);
 
