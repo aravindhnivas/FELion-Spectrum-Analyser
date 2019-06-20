@@ -3,6 +3,8 @@
 *.zip
 *.png
 *.dat
-ElectronJS/node_modules/
 *.pow
 *.msi
+*.base
+*.felix
+ElectronJS/node_modules/
