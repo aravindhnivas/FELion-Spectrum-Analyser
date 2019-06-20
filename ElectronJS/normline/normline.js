@@ -12,12 +12,23 @@ $(document).ready(function() {
     $("#normline-open-btn").click(openFile);
     $("#normlinePlot-btn").click(normplot);
     $("#avgPlot-btn").click(avgplot);
-    $(() => { $('[data-toggle="tooltip"]').tooltip() });
     $("#baseline-btn").click(basePlot);
-});
+    $(() => $('[data-toggle="tooltip"]').tooltip("show"))
+
+    $("#help").bootstrapToggle({
+        on: 'Help',
+        off: 'Help'
+    });
+
+    $('#help').change(function() {
+        let status = $(this).prop('checked')
+        console.log(`Status: ${status}\nType: ${typeof status}`)
+    });
+
+    //END
+})
 
 /////////////////////////////////////////////////////////
-
 //Showing opened file label
 let filePaths;
 let label = document.querySelector("#label")
@@ -25,7 +36,7 @@ let label = document.querySelector("#label")
 function openFile(e) {
 
     const options = {
-        title: "Open .mass file(s)",
+        title: "Open Felix file(s)",
         defaultPath: "D:",
         filters: [
             { name: 'Felix files', extensions: ['felix', 'cfelix'] },
@@ -81,21 +92,37 @@ function normplot(e) {
             console.log("After JSON parse :" + dataFromPython_norm)
 
             let layout = {
-                title: 'Normlised Spectrum',
+                title: 'Processing Felix data',
                 xaxis: {
+                    domain: [0, 0.3],
+                    anchor: 'y1',
                     title: 'Calibrated Wavelength'
                 },
                 yaxis: {
-                    title: 'Normalised Intesity',
-                }
+                    domain: [0, 1],
+                    anchor: 'y1',
+                    title: 'Intesity',
+                },
+                xaxis2: {
+                    domain: [0.4, 1],
+                    anchor: 'y2',
+                    title: "Calibrated Wavelength"
+                },
+                yaxis2: {
+                    domain: [0, 1],
+                    anchor: 'x2',
+                    title: "Normalised Intesity"
+                },
             };
 
             let dataPlot = [];
-            for (x in dataFromPython_norm) {
-                dataPlot.push(dataFromPython_norm[x])
-            }
+            for (x in dataFromPython_norm["felix"]) {
+                dataPlot.push(dataFromPython_norm["felix"][x])
 
-            console.log(dataPlot)
+            }
+            for (x in dataFromPython_norm["base"]) {
+                dataPlot.push(dataFromPython_norm["base"][x])
+            }
             Plotly.newPlot('plot', dataPlot, layout);
 
         } catch (err) {
@@ -109,10 +136,9 @@ function normplot(e) {
     });
 }
 /////////////////////////////////////////////////////////
+
 let dataFromPython_avg;
 let delta = document.querySelector("#delta")
-let dataPlot = [];
-let layout;
 
 let avgPlotBtn = document.querySelector("#avgPlot-btn")
 
@@ -141,7 +167,7 @@ function avgplot(e) {
             dataFromPython_avg = JSON.parse(dataFromPython_avg)
             console.log("After JSON parse :" + dataFromPython_avg)
 
-            layout = {
+            let layout = {
                 title: `Average of Normalised Spectrum (delta=${delta.value})`,
                 xaxis: {
                     title: 'Calibrated Wavelength'
@@ -151,7 +177,7 @@ function avgplot(e) {
                 }
             };
 
-            dataPlot = [];
+            let dataPlot = [];
             for (x in dataFromPython_avg) {
                 dataPlot.push(dataFromPython_avg[x])
             }
@@ -187,8 +213,8 @@ function basePlot(e) {
         baselineBtn.className = "btn btn-danger"
         return setTimeout(() => baselineBtn.className = "btn btn-primary", 2000)
     }
-
     const py = spawn('python', [path.join(__dirname, "./baseline.py"), [filePaths]]);
+
     py.stdout.on('data', (data) => {
         try {
             let logFromPython = data.toString('utf8')
@@ -198,7 +224,9 @@ function basePlot(e) {
         }
 
     });
+
     py.on('close', () => {
         console.log('Returned to javascript');
     });
+
 }

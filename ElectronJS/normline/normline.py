@@ -13,7 +13,15 @@ import numpy as np
 from FELion_baseline_old import felix_read_file, BaselineCalibrator
 from FELion_power import PowerCalibrator
 from FELion_sa import SpectrumAnalyserCalibrator
+from baseline import Create_Baseline
+
 ######################################################################################
+
+colors = [(31, 119, 180), (174, 199, 232), (255, 127, 14), (255, 187, 120),    
+             (44, 160, 44), (152, 223, 138), (214, 39, 40), (255, 152, 150),    
+             (148, 103, 189), (197, 176, 213), (140, 86, 75), (196, 156, 148),    
+             (227, 119, 194), (247, 182, 210), (127, 127, 127), (199, 199, 199),    
+             (188, 189, 34), (219, 219, 141), (23, 190, 207), (158, 218, 229)]
 
 class normplot:
 
@@ -34,9 +42,11 @@ class normplot:
             else:
                 os.chdir(self.location)
 
-            dataToSend = {}
+            dataToSend = {"felix": {}, "base": {}}
 
+            c = 0
             for filename in received_files:
+                location = filename.parent
                 felixfile = filename.name
                 fname = filename.stem
                 basefile = f"{fname}.base"
@@ -51,8 +61,22 @@ class normplot:
                         shutil.move(self.location.joinpath(filetype), self.location.joinpath("DATA", filetype))
                 
                 wavelength, intensity = self.norm_line_felix()
-                dataToSend[felixfile] = {"x": list(wavelength), "y": list(intensity), "name": felixfile, "mode":"lines"}
+                dataToSend["felix"][felixfile] = {"x": list(wavelength), "y": list(intensity), "name": f"{filename.stem}_norm", "mode":"lines", "xaxis":"x2", "yaxis":"y2", "line":{"color":f"rgb{colors[c]}"}}
                 self.export_file(fname, wavelength, intensity)
+
+                basefile_data = np.array(Create_Baseline(felixfile, location, plotIt=False).get_data())
+                #print(f"Basefile_data: {basefile_data}\n{basefile_data.shape}\n[0]{basefile_data[0]}\n{basefile_data[0].shape}\n\n[1, 0]{basefile_data[1][0]}\n{basefile_data[1][0].shape}")
+
+                base_line = basefile_data[1][0]
+                base_line = np.take(base_line, base_line[0].argsort(), 1).tolist()
+                base_felix = basefile_data[0]
+                base_felix = np.take(base_felix, base_felix[0].argsort(), 1).tolist()
+
+                #print(f"Base_line: {base_line}\nBase_felix: {base_felix}")
+
+                dataToSend["base"][f"{felixfile}_line"] = {"x": list(base_line[0]), "y": list(base_line[1]), "name": f"{filename.stem}_base","mode":"lines+markers", "marker":{"color":"black"}}
+                dataToSend["base"][f"{felixfile}_base"] = {"x": list(base_felix[0]), "y": list(base_felix[1]), "name": f"{filename.stem}_felix", "mode":"lines", "line":{"color":f"rgb{colors[c]}"}}
+                c += 1
 
             #print(f"Before JSON DATA: {dataToSend}")
             dataJson = json.dumps(dataToSend)

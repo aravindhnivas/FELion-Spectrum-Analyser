@@ -54,7 +54,8 @@ if (process.env.NODE_ENV !== 'production') {
     mainMenuTemplate.push({
         label: 'Developer Tools',
         submenu: [{
-                role: 'reload'
+                role: 'reload',
+                //accelerator: process.platform == 'darwin' ? 'Command+I' : 'R',
             },
             {
                 label: 'Toggle DevTools',

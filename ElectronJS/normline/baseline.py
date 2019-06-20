@@ -26,13 +26,13 @@ class Create_Baseline():
 
     epsilon = 5
 
-    def __init__(self, felixfile, location):
+    def __init__(self, felixfile, location, plotIt=True):
 
         attributes = {
             'felixfile': felixfile, 'fname': felixfile.split(".")[0],
             'baseline': None, 'data': None, 'undo_counter': 0, 'redo_counter': 0, 
             'removed_datas': np.array([[], [], []]), 'redo_datas': np.array([[], [], []]), 'removed_index': [], 'redo_index': [],
-            'felix_corrected': False
+            'felix_corrected': False, 'plotIt':plotIt
         }
         for keys, values in attributes.items():
             setattr(self, keys, values)
@@ -118,7 +118,6 @@ class Create_Baseline():
         self.fig, self.ax = plt.subplots()
         self.canvas = self.fig.canvas
         
-        
         self.line = Line2D(self.xs, self.ys, marker='s', ls='', ms=6, c='b', markeredgecolor='b', animated=True)
         self.ax.add_line(self.line)        
         
@@ -135,7 +134,8 @@ class Create_Baseline():
         self.canvas.mpl_connect('button_release_event', self.button_release_callback)
         self.canvas.mpl_connect('motion_notify_event', self.motion_notify_callback)
 
-        self.plot()
+        if self.plotIt: self.plot()
+        else: return
 
     def plot(self):
 
@@ -386,6 +386,7 @@ class Create_Baseline():
             print(f'{self.basefile} is SAVED')
             return ShowInfo('Info', f'{self.basefile} file is saved in /EXPORT directory')
 
+    def get_data(self): return np.asarray([self.data[0], self.data[1]]), np.asarray([self.line.get_data()])
 
 if __name__ == "__main__":
 
