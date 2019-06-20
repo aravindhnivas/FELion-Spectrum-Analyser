@@ -1,24 +1,19 @@
-## MODULES ##
+# Importing Modules
 
 # System modules
-import sys
-import json
-import os
-from os.path import dirname, isdir, isfile
+import sys, json, os, shutil
+from os.path import isdir, isfile
 from pathlib import Path as pt
 import traceback
 
-# Data analysis and plotting packages
+# Data analysis
 import numpy as np
 
 # FELion modules
 from FELion_baseline_old import felix_read_file, BaselineCalibrator
 from FELion_power import PowerCalibrator
 from FELion_sa import SpectrumAnalyserCalibrator
-from FELion_definitions import filecheck, move
-
-# Error traceback
-import traceback
+######################################################################################
 
 class avgPlot:
 
@@ -38,10 +33,7 @@ class avgPlot:
             else:
                 os.chdir(self.location)
 
-            #print(f'Location: {self.location}')
-
             dataToSend = {}
-
             self.xs = np.array([], dtype=np.float)
             self.ys = np.array([], dtype=np.float)
 
@@ -51,28 +43,26 @@ class avgPlot:
                 basefile = f"{fname}.base"
                 powerfile = f"{fname}.pow"
 
-                self.files = [felixfile, basefile, powerfile]
+                self.fietypes = [felixfile, basefile, powerfile]
 
-                for dirs, filenames in zip(folders, self.files):
-                    if not isdir(dirs):
-                        os.mkdir(dirs)
-                    if isfile(filenames):
-                        move(self.location, filenames)
+                for folder, filetype in zip(folders, self.fietypes):
+                    if not isdir(folder):
+                        os.mkdir(folder)
+                    if isfile(filetype):
+                        shutil.move(self.location.joinpath(filetype), self.location.joinpath("DATA", filetype))
                 
-                if filecheck(self.location, basefile, powerfile, felixfile):
-                    #print(f'\nFilename-->{felixfile}\nLocation-->{self.location}')
-                    wavelength, intensity = self.norm_line_felix()
-                    dataToSend[felixfile] = {"x": list(wavelength), "y": list(intensity), "name": felixfile, "mode":"markers"}
+                wavelength, intensity = self.norm_line_felix()
+                dataToSend[felixfile] = {"x": list(wavelength), "y": list(intensity), "name": felixfile, "mode":"markers"}
 
-                    self.xs = np.append(self.xs, wavelength)
-                    self.ys = np.append(self.ys, intensity)
+                self.xs = np.append(self.xs, wavelength)
+                self.ys = np.append(self.ys, intensity)
 
             self.delta = delta
             self.binns, self.inten = self.felix_binning()
             self.avgName = "average"
             self.export_file()
 
-            dataToSend["binns"] = {"x": list(self.binns), "y": list(self.inten), "name": f"Binn: delta={self.delta}", "mode":"lines", "line":{"color":"black"}}
+            dataToSend["binns"] = {"x": list(self.binns), "y": list(self.inten), "name": "Averaged", "mode":"lines", "line":{"color":"black"}}
 
             #print(f"Before JSON DATA: {dataToSend}")
             dataJson = json.dumps(dataToSend)
@@ -85,7 +75,7 @@ class avgPlot:
             print(f"\nError occured in python code:\n{err}\n\nEND FILE")
     
     def norm_line_felix(self, PD=True):
-        felixfile, basefile, powerfile = self.files
+        felixfile, basefile, powerfile = self.fietypes
 
         data = felix_read_file(felixfile)
 
@@ -161,6 +151,5 @@ if __name__ == "__main__":
     
     args = sys.argv[1:][0].split(",")
     filepaths = args[:-1]
-    delta = int(args[-1])
-
+    delta = float(args[-1])
     avgPlot(filepaths, delta)

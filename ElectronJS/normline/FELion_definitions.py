@@ -29,12 +29,9 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolb
 
 ################################################# MODULES IMPORTED #################################################
 ####################################################################################################################
-
-
 # General functions:
 def copy(pathdir, x): return (shutil.copyfile(join(pathdir, x), join(
     pathdir, "DATA", x)), print("%s copied to DATA folder" % x))
-
 
 def move(pathdir, x): return (shutil.move(join(pathdir, x), join(
     pathdir, "DATA", x)), print("%s moved to DATA folder" % x))

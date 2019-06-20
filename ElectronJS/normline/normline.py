@@ -1,26 +1,22 @@
 # Importing Modules
 
 # System modules
-import sys
-import json
-import os
-from os.path import dirname, isdir, isfile
+import sys, json, os, shutil
+from os.path import isdir, isfile
 from pathlib import Path as pt
 import traceback
 
 # Data analysis
 import numpy as np
 
-# FELion-Modules
+# FELion modules
 from FELion_baseline_old import felix_read_file, BaselineCalibrator
 from FELion_power import PowerCalibrator
 from FELion_sa import SpectrumAnalyserCalibrator
-from FELion_definitions import filecheck, move
-
 ######################################################################################
 
-
 class normplot:
+
     def __init__(self, received_files):
 
         try:
@@ -46,19 +42,17 @@ class normplot:
                 basefile = f"{fname}.base"
                 powerfile = f"{fname}.pow"
 
-                self.files = [felixfile, basefile, powerfile]
+                self.fietypes = [felixfile, basefile, powerfile]
 
-                for dirs, filenames in zip(folders, self.files):
-                    if not isdir(dirs):
-                        os.mkdir(dirs)
-                    if isfile(filenames):
-                        move(self.location, filenames)
+                for folder, filetype in zip(folders, self.fietypes):
+                    if not isdir(folder):
+                        os.mkdir(folder)
+                    if isfile(filetype):
+                        shutil.move(self.location.joinpath(filetype), self.location.joinpath("DATA", filetype))
                 
-                if filecheck(self.location, basefile, powerfile, felixfile):
-                    #print(f'\nFilename-->{felixfile}\nLocation-->{self.location}')
-                    wavelength, intensity = self.norm_line_felix()
-                    dataToSend[felixfile] = {"x": list(wavelength), "y": list(intensity), "name": felixfile, "mode":"lines"}
-                    self.export_file(fname, wavelength, intensity)
+                wavelength, intensity = self.norm_line_felix()
+                dataToSend[felixfile] = {"x": list(wavelength), "y": list(intensity), "name": felixfile, "mode":"lines"}
+                self.export_file(fname, wavelength, intensity)
 
             #print(f"Before JSON DATA: {dataToSend}")
             dataJson = json.dumps(dataToSend)
@@ -71,10 +65,10 @@ class normplot:
             print(f"\nError occured in python code:\n{err}\n\nEND FILE")
 
     def norm_line_felix(self, PD=True):
-        felixfile, basefile, powerfile = self.files
+
+        felixfile, basefile, powerfile = self.fietypes
 
         data = felix_read_file(felixfile)
-
         powCal = PowerCalibrator(powerfile)
         baseCal = BaselineCalibrator(basefile)
         saCal = SpectrumAnalyserCalibrator(felixfile)
@@ -93,6 +87,7 @@ class normplot:
         return wavelength, intensity
 
     def export_file(self, fname, wn, inten):
+
         f = open('EXPORT/' + fname + '.dat', 'w')
         f.write("#DATA points as shown in lower figure of: " + fname + ".pdf file!\n")
         f.write("#wn (cm-1)       intensity\n")

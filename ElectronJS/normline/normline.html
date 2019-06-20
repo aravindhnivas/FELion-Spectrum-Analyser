@@ -44,30 +44,54 @@
     <!--Main Contents BEGIN-->
     <div class="container-fluid m-3" id="normline-main-containter">
 
-        <!--Open button and Labels-->
+        <!--Open buttons and Labels-->
         <div class="containter mr-3" id="normline-openBtn-container">
             <div class="row">
+
                 <!--Open Button-->
                 <div class="col">
                     <button type="button" class="btn btn-secondary" id="normline-open-btn">Open File</button>
                 </div>
+
                 <!--Filename Label-->
                 <div class="col-md-10 mr-3" id="labelHolder"><label id="label"></label></div>
+
             </div>
         </div>
-        <!---->
+        <!--Open Buttons and Labels ENDS-->
 
         <!--Buttons-->
         <div class="containter mt-3" id="normlinePlot">
             <div class="row">
-                <div class="col">
-                    <button type="button" class="btn btn-primary" id="normlinePlot-btn">Felix Plot</button>
-                    <button type="button" class="btn btn-primary" id="avgPlot-btn">Average Plot</button>
+
+                <!--Baseline button-->
+                <div class="col-sm-2">
+                    <button type="button" class="btn btn-primary" id="baseline-btn" data-toggle="tooltip" data-placement="top" title="For baseline correction">Create Baseline</button>
+                </div>
+
+                <!--Normline plot button-->
+                <div class="col-sm-2">
+                    <button type="button" class="btn btn-primary" id="normlinePlot-btn" data-toggle="tooltip" data-placement="top" title="To plot Normalised spectrum">Felix Plot</button>
+                </div>
+
+                <!--Average plot button-->
+                <div class="col-sm-2">
+                    <button type="button" class="btn btn-primary" id="avgPlot-btn" data-toggle="tooltip" data-placement="top" title="To plot Averaged spectrum">Average Plot</button>
+                </div>
+
+                <!--Delta value-->
+                <div class="col-sm-2">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Delta</span>
+                        </div>
+                        <input type="text" class="form-control" placeholder="Delta (default=2)" id="delta" , value=2 data-toggle="tooltip" data-placement="top" title="Delta value for binnsteps in Average Plot (default=2)">
+                    </div>
                 </div>
 
             </div>
         </div>
-        <!---->
+        <!--Buttons ENDS-->
 
         <!--Plotting Area-->
         <div class="container-fluid mt-3">
@@ -75,7 +99,8 @@
                 <div class="col-sm-11" id="plot"></div>
             </div>
         </div>
-        <!---->
+        <!--Plotting Area ENDS-->
+
     </div>
     <!--Main Container END-->
 
