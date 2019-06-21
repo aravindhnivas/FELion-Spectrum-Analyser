@@ -1,10 +1,4 @@
 *.pyc
-*.pdf
 *.zip
-*.png
-*.dat
-*.pow
 *.msi
-*.base
-*.felix
 ElectronJS/node_modules/
