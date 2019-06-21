@@ -98,8 +98,7 @@ function normplot(e) {
         return setTimeout(() => normlineBtn.className = "btn btn-primary", 2000)
     }
 
-
-    const py = spawn('python', [path.join(__dirname, "./normline.py"), [filePaths]]);
+    const py = spawn('python', [path.join(__dirname, "./normline.py"), [filePaths, delta.value]]);
 
     py.stdout.on('data', (data) => {
 
@@ -114,7 +113,7 @@ function normplot(e) {
             console.log("After JSON parse :" + dataFromPython_norm)
 
             let layout = {
-                title: 'Processing Felix data',
+                title: `Processing Felix data (delta=${delta.value})`,
                 xaxis: {
                     domain: [0, 0.3],
                     anchor: 'y1',

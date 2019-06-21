@@ -32,9 +32,10 @@ colors = [(31, 119, 180), (174, 199, 232), (255, 127, 14), (255, 187, 120),
 
 class normplot:
 
-    def __init__(self, received_files):
+    def __init__(self, received_files, delta):
 
         try:
+            self.delta = delta
             received_files = [pt(files) for files in received_files]
             self.location = received_files[0].parent
 
@@ -71,7 +72,10 @@ class normplot:
 
                 #if self.filecheck(basefile, powerfile):
                 wavelength, intensity = self.norm_line_felix()
-                dataToSend["felix"][felixfile] = {"x": list(wavelength), "y": list(intensity),"name": f"{filename.stem}_norm", "mode": "lines", "xaxis": "x2", "yaxis": "y2","line": {"color": f"rgb{colors[c]}"}}
+                wavelength, intensity = self.felix_binning(wavelength, intensity)
+
+                dataToSend["felix"][f"{felixfile}_histo"] = {"x": list(wavelength), "y": list(intensity), "name": f"{filename.stem}_bar","type": "bar","xaxis": "x2", "yaxis": "y2","marker": {"color": f"rgb{colors[c]}"}}
+                dataToSend["felix"][felixfile] = {"x": list(wavelength), "y": list(intensity),"name": f"{filename.stem}_norm", "type": "scatter", "xaxis": "x2", "yaxis": "y2","line": {"color": f"rgb{colors[c]}"}}
 
                 self.export_file(fname, wavelength, intensity)
 
@@ -138,6 +142,50 @@ class normplot:
             f.write("{:8.3f}\t{:8.2f}\n".format(wn[i], inten[i]))
         f.close()
 
+    def felix_binning(self, xs, ys):
+
+        delta = self.delta
+        """
+        Binns the data provided in xs and ys to bins of width delta
+        output: binns, intensity 
+        """
+
+        #bins = np.arange(start, end, delta)
+        #occurance = np.zeros(start, end, delta)
+        BIN_STEP = delta
+        BIN_START = xs.min()
+        BIN_STOP = xs.max()
+
+        indices = xs.argsort()
+        datax = xs[indices]
+        datay = ys[indices]
+
+        #print("In total we have: ", len(datax), ' data points.')
+        # do the binning of the data
+        bins = np.arange(BIN_START, BIN_STOP, BIN_STEP)
+        #print("Binning starts: ", BIN_START,
+        #    ' with step: ', BIN_STEP, ' ENDS: ', BIN_STOP)
+
+        bin_i = np.digitize(datax, bins)
+        bin_a = np.zeros(len(bins)+1)
+        bin_occ = np.zeros(len(bins)+1)
+
+        for i in range(datay.size):
+            bin_a[bin_i[i]] += datay[i]
+            bin_occ[bin_i[i]] += 1
+
+        binsx, data_binned = [], []
+        for i in range(bin_occ.size-1):
+            if bin_occ[i] > 0:
+                binsx.append(bins[i]-BIN_STEP/2)
+                data_binned.append(bin_a[i]/bin_occ[i])
+
+        #non_zero_i = bin_occ > 0
+        #binsx = bins[non_zero_i] - BIN_STEP/2
+        #data_binned = bin_a[non_zero_i]/bin_occ[non_zero_i]
+
+        return binsx, data_binned
+
     def filecheck(self, basefile, powerfile):
 
         # Powefile check
@@ -168,5 +216,6 @@ class normplot:
 if __name__ == "__main__":
 
     args = sys.argv[1:][0].split(",")
-    filepaths = args
-    normplot(filepaths)
+    filepaths = args[:-1]
+    delta = float(args[-1])
+    normplot(filepaths, delta)
