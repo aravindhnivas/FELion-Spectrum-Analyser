@@ -98,38 +98,14 @@ function normplot(e) {
         return setTimeout(() => normlineBtn.className = "btn btn-primary", 2000)
     }
 
-    /*
-    // Chcking whether .pow and .base exists in DATA directory
-    for (x in filePaths) {
-
-        x = filePaths[x]
-        console.log("Running File Check: ", x)
-        console.log(`Location: ${fileLocation}`)
-
-        let powerfile = [path.join(fileLocation, `${path.basename(x).split('.')[0]}.pow`)]
-        let basefile = [path.join(fileLocation, `${path.basename(x).split('.')[0]}.base`)]
-        let files = [powerfile, basefile]
-
-        for (y in files) {
-
-            y = files[y]
-            console.log(`Checking for file: ${y}`)
-
-            fs.access(y, fs.F_OK, (err) => {
-                if (err) {
-                    console.log(err)
-                }
-                console.log(`File exists: ${y}`)
-            })
-        }
-    }
-    */
 
     const py = spawn('python', [path.join(__dirname, "./normline.py"), [filePaths]]);
 
     py.stdout.on('data', (data) => {
 
         try {
+
+            console.log("Receiving data")
 
             dataFromPython_norm = data.toString('utf8')
                 //console.log("Before JSON parse (from python):\n" + dataFromPython_norm)
@@ -164,15 +140,19 @@ function normplot(e) {
             let dataPlot = [];
             for (x in dataFromPython_norm["felix"]) {
                 dataPlot.push(dataFromPython_norm["felix"][x])
+                console.log(`Felix file: ${x}`)
 
             }
             for (x in dataFromPython_norm["base"]) {
                 dataPlot.push(dataFromPython_norm["base"][x])
+                console.log(`Base file: ${x}`)
             }
+
             Plotly.newPlot('plot', dataPlot, layout);
+            console.log("Graph Plotted")
 
         } catch (err) {
-            console.log("Error Occured in javascript code: " + err.message)
+            console.error("Error Occured in javascript code: " + err)
         }
 
     });
