@@ -134,6 +134,12 @@ function normplot(e) {
                     anchor: 'x2',
                     title: "Normalised Intesity"
                 },
+                yaxis3: {
+                    anchor: 'x1',
+                    overlaying:'y1',
+                    side:'right',
+                    title:'Power mJ',
+                }
             };
 
             let dataPlot = [];
