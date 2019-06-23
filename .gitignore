@@ -2,3 +2,9 @@
 *.zip
 *.msi
 ElectronJS/node_modules/
+*.png
+*.pdf
+*.felix
+*.base
+*.pow
+*.dat
