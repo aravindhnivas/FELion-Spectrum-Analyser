@@ -63,21 +63,22 @@ function openFile(e) {
         ],
         properties: ['openFile', 'multiSelections'],
     };
-
     filePaths = dialog.showOpenDialog(mainWindow, options);
 
-    fileLocation = path.dirname(filePaths[0])
-
-    baseName = [];
-    for (x in filePaths) {
-        baseName.push(`| ${path.basename(filePaths[x])}`)
-    }
-
     if (filePaths == undefined) {
+
         label.textContent = "No files selected "
         label.className = "alert alert-danger"
 
     } else {
+
+        baseName = [];
+        for (x in filePaths) {
+            baseName.push(`| ${path.basename(filePaths[x])}`)
+        }
+
+        fileLocation = path.dirname(filePaths[0])
+
         label.textContent = `${fileLocation} ${baseName}`;
         label.className = "alert alert-success"
     }
@@ -87,9 +88,7 @@ let dataFromPython_norm;
 let normlineBtn = document.querySelector("#normlinePlot-btn")
 let footer = document.querySelector("#footer")
 
-
 function normplot(e) {
-
     console.log("\n\nNormline Spectrum")
     console.log("I am in javascript now!!")
     console.log(`File: ${filePaths}; ${typeof filePaths}`)
@@ -120,7 +119,7 @@ function normplot(e) {
             let blayout = {
                 title: "Baseline Corrected",
                 xaxis: {
-                    domain: [0, 0.9],
+                    domain: [0, 0.95],
                     title: 'Calibrated Wavelength'
                 },
                 yaxis: {
@@ -194,7 +193,6 @@ function normplot(e) {
         }
 
         /////////////////////////////////////////////////////////
-
     });
     py.stderr.on('data', (data) => {
 
@@ -202,8 +200,14 @@ function normplot(e) {
     })
 
     py.on('close', () => {
+
         console.log('Returned to javascript');
+        footer.parentElement.className = "card-footer text-muted"
+        footer.parentElement.style.position = "relative"
+        footer.parentElement.style.bottom = 0
     });
+
+
 }
 /////////////////////////////////////////////////////////
 
@@ -236,6 +240,10 @@ function basePlot(e) {
         }
 
     });
+
+    py.stderr.on('data', (data) => {
+        console.error(`Error from python: ${data}`)
+    })
 
     py.on('close', () => {
         console.log('Returned to javascript');
