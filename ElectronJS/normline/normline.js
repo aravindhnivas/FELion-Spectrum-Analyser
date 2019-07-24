@@ -12,8 +12,8 @@ $(document).ready(function() {
 
     $("#normline-open-btn").click(openFile);
     $("#normlinePlot-btn").click(normplot);
-    $("#avgPlot-btn").click(avgplot);
     $("#baseline-btn").click(basePlot);
+
 
     $(() => $('[data-toggle="tooltip"]').tooltip("disable"))
 
@@ -44,7 +44,9 @@ function info_status(info) {
 }
 
 /////////////////////////////////////////////////////////
+
 //Showing opened file label
+
 let filePaths;
 let label = document.querySelector("#label")
 let fileLocation;
@@ -83,6 +85,8 @@ function openFile(e) {
 /////////////////////////////////////////////////////////
 let dataFromPython_norm;
 let normlineBtn = document.querySelector("#normlinePlot-btn")
+let footer = document.querySelector("#footer")
+
 
 function normplot(e) {
 
@@ -105,62 +109,97 @@ function normplot(e) {
         try {
 
             console.log("Receiving data")
-
             dataFromPython_norm = data.toString('utf8')
                 //console.log("Before JSON parse (from python):\n" + dataFromPython_norm)
-
             dataFromPython_norm = JSON.parse(dataFromPython_norm)
             console.log("After JSON parse :" + dataFromPython_norm)
 
-            let layout = {
-                title: `Processing Felix data (delta=${delta.value})`,
+            /////////////////////////////////////////////////////////
+            // Baseline plot
+
+            let blayout = {
+                title: "Baseline Corrected",
                 xaxis: {
-                    domain: [0, 0.3],
-                    anchor: 'y1',
+                    domain: [0, 0.9],
                     title: 'Calibrated Wavelength'
                 },
                 yaxis: {
-                    domain: [0, 1],
-                    anchor: 'y1',
                     title: 'Intesity',
                 },
-                xaxis2: {
-                    domain: [0.4, 1],
-                    anchor: 'y2',
-                    title: "Calibrated Wavelength"
-                },
                 yaxis2: {
-                    domain: [0, 1],
-                    anchor: 'x2',
-                    title: "Normalised Intesity"
-                },
-                yaxis3: {
-                    anchor: 'x1',
-                    overlaying:'y1',
-                    side:'right',
-                    title:'Power mJ',
+                    anchor: 'x',
+                    overlaying: 'y',
+                    side: 'right',
+                    title: 'Power mJ',
                 }
             };
 
-            let dataPlot = [];
-            for (x in dataFromPython_norm["felix"]) {
-                dataPlot.push(dataFromPython_norm["felix"][x])
-                console.log(`Felix file: ${x}`)
-
-            }
+            let bdataPlot = []
             for (x in dataFromPython_norm["base"]) {
-                dataPlot.push(dataFromPython_norm["base"][x])
-                console.log(`Base file: ${x}`)
+                bdataPlot.push(dataFromPython_norm["base"][x])
             }
 
-            Plotly.newPlot('plot', dataPlot, layout);
+            Plotly.newPlot('bplot', bdataPlot, blayout);
+
+            /////////////////////////////////////////////////////////
+
+            //Normalised plot
+
+            let nlayout = {
+                title: `Normalized Spectrum (delta=${delta.value})`,
+                xaxis: {
+                    title: "Calibrated Wavelength"
+                },
+                yaxis: {
+                    title: "Normalised Intesity"
+                },
+            }
+
+            let ndataPlot = [];
+            for (x in dataFromPython_norm["felix"]) {
+                ndataPlot.push(dataFromPython_norm["felix"][x])
+            }
+
+            Plotly.newPlot('nplot', ndataPlot, nlayout);
+
+            /////////////////////////////////////////////////////////
+
+            /////////////////////////////////////////////////////////
+
+            //Averaged normalised plot
+
+            let avg_layout = {
+                title: `Average of Normalised Spectrum (delta=${delta.value})`,
+                xaxis: {
+                    title: 'Calibrated Wavelength'
+                },
+                yaxis: {
+                    title: 'Normalised Intesity',
+                },
+            }
+
+            let avg_dataPlot = [];
+            for (x in dataFromPython_norm["average"]) {
+                avg_dataPlot.push(dataFromPython_norm["average"][x])
+            }
+
+            Plotly.newPlot('avgplot', avg_dataPlot, avg_layout);
+
+            /////////////////////////////////////////////////////////
+
             console.log("Graph Plotted")
 
         } catch (err) {
             console.error("Error Occured in javascript code: " + err)
         }
 
+        /////////////////////////////////////////////////////////
+
     });
+    py.stderr.on('data', (data) => {
+
+        console.error(`Error from python: ${data}`)
+    })
 
     py.on('close', () => {
         console.log('Returned to javascript');
@@ -168,64 +207,6 @@ function normplot(e) {
 }
 /////////////////////////////////////////////////////////
 
-let dataFromPython_avg;
-let delta = document.querySelector("#delta")
-
-let avgPlotBtn = document.querySelector("#avgPlot-btn")
-
-function avgplot(e) {
-
-    console.log("\n\nAverage Spectrum")
-
-    console.log("I am in javascript now!!")
-    console.log(`File: ${filePaths}; ${typeof filePaths}`)
-    console.log("--------------------------")
-
-    if (filePaths === undefined) {
-        label.textContent = "No files selected "
-        label.className = "alert alert-danger"
-        avgPlotBtn.className = "btn btn-danger"
-        return setTimeout(() => avgPlotBtn.className = "btn btn-primary", 2000)
-    }
-
-    const py = spawn('python', [path.join(__dirname, "./avgplot.py"), [filePaths, delta.value]]);
-
-    py.stdout.on('data', (data) => {
-
-        try {
-            dataFromPython_avg = data.toString('utf8')
-                //console.log("Before JSON parse (from python):\n" + dataFromPython_avg)
-            dataFromPython_avg = JSON.parse(dataFromPython_avg)
-            console.log("After JSON parse :" + dataFromPython_avg)
-
-            let layout = {
-                title: `Average of Normalised Spectrum (delta=${delta.value})`,
-                xaxis: {
-                    title: 'Calibrated Wavelength'
-                },
-                yaxis: {
-                    title: 'Normalised Intesity',
-                }
-            };
-
-            let dataPlot = [];
-            for (x in dataFromPython_avg) {
-                dataPlot.push(dataFromPython_avg[x])
-            }
-
-            console.log(dataPlot)
-            Plotly.newPlot('plot', dataPlot, layout);
-
-        } catch (err) {
-            console.log("Error Occured in javascript code: " + err.message)
-        }
-
-    });
-
-    py.on('close', () => {
-        console.log('Returned to javascript');
-    });
-}
 /////////////////////////////////////////////////////////
 
 let baselineBtn = document.querySelector("#baseline-btn")

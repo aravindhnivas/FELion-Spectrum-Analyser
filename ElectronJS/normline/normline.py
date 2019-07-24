@@ -19,8 +19,6 @@ from FELion_power import PowerCalibrator
 from FELion_sa import SpectrumAnalyserCalibrator
 from baseline import Create_Baseline
 
-# Tkinter modules
-from tkinter import Tk, messagebox
 
 ######################################################################################
 
@@ -51,126 +49,140 @@ colors = [
 class normplot:
     def __init__(self, received_files, delta):
 
-        try:
-            self.delta = delta
-            received_files = [pt(files) for files in received_files]
-            self.location = received_files[0].parent
+        self.delta = delta
+        received_files = [pt(files) for files in received_files]
+        self.location = received_files[0].parent
 
-            # Cheking if the folder contents are already created
-            folders = ["DATA", "EXPORT", "OUT"]
-            back_dir = self.location.parent
+        # Cheking if the folder contents are already created
+        folders = ["DATA", "EXPORT", "OUT"]
+        back_dir = self.location.parent
 
-            if set(folders).issubset(os.listdir(back_dir)):
-                os.chdir(back_dir)
-                self.location = back_dir
-            else:
-                os.chdir(self.location)
+        if set(folders).issubset(os.listdir(back_dir)):
+            os.chdir(back_dir)
+            self.location = back_dir
+        else:
+            os.chdir(self.location)
 
-            dataToSend = {"felix": {}, "base": {}}
-            # dataToSend["params"] = {"location":f"{self.location}"}
+        dataToSend = {"felix": {}, "base": {}, "average": {}}
+        xs = np.array([], dtype=np.float)
+        ys = np.array([], dtype=np.float)
 
-            c = 0
+        c = 0
 
-            for filename in received_files:
+        for filename in received_files:
 
-                felixfile = filename.name
-                fname = filename.stem
-                basefile = f"{fname}.base"
-                powerfile = f"{fname}.pow"
+            felixfile = filename.name
+            fname = filename.stem
+            basefile = f"{fname}.base"
+            powerfile = f"{fname}.pow"
 
-                self.fietypes = [felixfile, basefile, powerfile]
+            self.filetypes = [felixfile, basefile, powerfile]
 
-                for folder, filetype in zip(folders, self.fietypes):
-                    if not isdir(folder):
-                        os.mkdir(folder)
-                    if isfile(filetype):
-                        shutil.move(
-                            self.location.joinpath(filetype),
-                            self.location.joinpath("DATA", filetype),
-                        )
+            for folder, filetype in zip(folders, self.filetypes):
+                if not isdir(folder):
+                    os.mkdir(folder)
+                if isfile(filetype):
+                    shutil.move(
+                        self.location.joinpath(filetype),
+                        self.location.joinpath("DATA", filetype),
+                    )
 
-                wavelength, intensity = self.norm_line_felix()
-                wavelength, intensity = self.felix_binning(wavelength, intensity)
+            # Wavelength and intensity of individuals without binning
+            wavelength, intensity = self.norm_line_felix()
 
-                self.powerPlot(powerfile, wavelength)
+            # collecting Wavelength and intensity to average spectrum with binning
+            xs = np.append(xs, wavelength)
+            ys = np.append(ys, intensity)
 
-                dataToSend["felix"][f"{felixfile}_histo"] = {
-                    "x": list(wavelength),
-                    "y": list(intensity),
-                    "name": f"{filename.stem}_bar",
-                    "type": "bar",
-                    "xaxis": "x2",
-                    "yaxis": "y2",
-                    "marker": {"color": f"rgb{colors[c]}"},
-                }
-                dataToSend["felix"][felixfile] = {
-                    "x": list(wavelength),
-                    "y": list(intensity),
-                    "name": f"{filename.stem}_norm",
-                    "type": "scatter",
-                    "xaxis": "x2",
-                    "yaxis": "y2",
-                    "line": {"color": f"rgb{colors[c]}"},
-                }
-                dataToSend["felix"][powerfile] = {
-                    "x": list(self.power_wn),
-                    "y": list(self.power_mj),
-                    "name": powerfile,
-                    "mode": "lines+markers",
-                    "yaxis": "y3",
-                    "line": {"color": f"rgb{colors[c]}"},
-                    "marker" : {"color":"black"}
-                }
-                self.export_file(fname, wavelength, intensity)
+            # Wavelength and intensity of individuals with binning
+            wavelength, intensity = self.felix_binning(
+                wavelength, intensity)
 
-                basefile_data = np.array(
-                    Create_Baseline(felixfile, self.location, plotIt=False).get_data()
-                )
-                # print(f"Basefile_data: {basefile_data}\n{basefile_data.shape}\n[0]{basefile_data[0]}\n{basefile_data[0].shape}\n\n[1, 0]{basefile_data[1][0]}\n{basefile_data[1][0].shape}")
+            self.powerPlot(powerfile, wavelength)
 
-                # Ascending order sort by wn
-                base_line = basefile_data[1][0]
-                base_line = np.take(base_line, base_line[0].argsort(), 1).tolist()
-                base_felix = basefile_data[0]
-                base_felix = np.take(base_felix, base_felix[0].argsort(), 1).tolist()
-                # print(f"Base_line: {base_line}\nBase_felix: {base_felix}")
+            dataToSend["felix"][f"{felixfile}_histo"] = {
+                "x": list(wavelength),
+                "y": list(intensity),
+                "name": f"{filename.stem}_bar",
+                "type": "bar",
+                "marker": {"color": f"rgb{colors[c]}"},
+            }
+            dataToSend["felix"][felixfile] = {
+                "x": list(wavelength),
+                "y": list(intensity),
+                "name": f"{filename.stem}_norm",
+                "type": "scatter",
+                "line": {"color": f"rgb{colors[c]}"},
+            }
 
-                dataToSend["base"][f"{felixfile}_base"] = {
-                    "x": list(base_felix[0]),
-                    "y": list(base_felix[1]),
-                    "name": f"{filename.stem}_felix",
-                    "mode": "lines",
-                    "line": {"color": f"rgb{colors[c]}"},
-                }
-                dataToSend["base"][f"{felixfile}_line"] = {
-                    "x": list(base_line[0]),
-                    "y": list(base_line[1]),
-                    "name": f"{filename.stem}_base",
-                    "mode": "lines+markers",
-                    "marker": {"color": "black"},
-                }
+            dataToSend["average"][felixfile] = {
+                "x": list(wavelength),
+                "y": list(intensity),
+                "name": f"{filename.stem}_norm",
+                "mode": "markers",
+                "line": {"color": f"rgb{colors[c]}"},
+            }
 
-                # Logging file status of powerfiles and basefiles
-                # dataToSend["params"]["powerfiles"] = {powerfile:self.location.joinpath("DATA", powerfile).exists()}
-                # dataToSend["params"]["basefiles"] = {basefile:self.location.joinpath("DATA", basefile).exists()}
+            self.export_file(fname, wavelength, intensity)
 
-                # dataToSend["params"]["powerfiles"] = {f"{powerfile}":self.powerfile_status}
-                # dataToSend["params"]["basefiles"] = {f"{basefile}":self.basefile_status}
-                c += 1
+            basefile_data = np.array(
+                Create_Baseline(felixfile, self.location,
+                                plotIt=False).get_data()
+            )
 
-            # print(f"Before JSON DATA: {dataToSend}")
-            dataJson = json.dumps(dataToSend)
-            print(dataJson)
+            # Ascending order sort by wn
+            base_line = basefile_data[1][0]
+            base_line = np.take(
+                base_line, base_line[0].argsort(), 1).tolist()
+            base_felix = basefile_data[0]
+            base_felix = np.take(
+                base_felix, base_felix[0].argsort(), 1).tolist()
 
-            # print("DONE")
+            dataToSend["base"][f"{felixfile}_base"] = {
+                "x": list(base_felix[0]),
+                "y": list(base_felix[1]),
+                "name": f"{filename.stem}_felix",
+                "mode": "lines",
+                "line": {"color": f"rgb{colors[c]}"},
+            }
+            dataToSend["base"][f"{felixfile}_line"] = {
+                "x": list(base_line[0]),
+                "y": list(base_line[1]),
+                "name": f"{filename.stem}_base",
+                "mode": "lines+markers",
+                "marker": {"color": "black"},
+            }
 
-        except Exception:
-            err = traceback.format_exc()
-            print(f"\nError occured in python code:\n{err}\n\nEND FILE")
+            dataToSend["base"][powerfile] = {
+                "x": list(self.power_wn),
+                "y": list(self.power_mj),
+                "name": powerfile,
+                "mode": "markers",
+                "yaxis": "y2",
+                #"line": {"color": f"rgb{colors[c]}"},
+                "marker": {"color": f"rgb{colors[c]}"},
+            }
+
+            c += 1
+
+        binns, intens = self.felix_binning(xs, ys)
+        
+        dataToSend["average"]["average"] = {
+            "x": list(binns),
+            "y": list(intens),
+            "name": "Averaged",
+            "mode": "lines",
+            "line": {"color": "black"},
+        }
+
+        # print(f"Before JSON DATA: {dataToSend}")
+        dataJson = json.dumps(dataToSend)
+        print(dataJson)
+        # print("DONE")
 
     def norm_line_felix(self, PD=True):
 
-        felixfile, basefile, powerfile = self.fietypes
+        felixfile, basefile, powerfile = self.filetypes
 
         data = felix_read_file(felixfile)
         powCal = PowerCalibrator(powerfile)
@@ -200,7 +212,8 @@ class normplot:
     def export_file(self, fname, wn, inten):
 
         f = open("EXPORT/" + fname + ".dat", "w")
-        f.write("#DATA points as shown in lower figure of: " + fname + ".pdf file!\n")
+        f.write("#DATA points as shown in lower figure of: " +
+                fname + ".pdf file!\n")
         f.write("#wn (cm-1)       intensity\n")
         for i in range(len(wn)):
             f.write("{:8.3f}\t{:8.2f}\n".format(wn[i], inten[i]))
@@ -258,45 +271,12 @@ class normplot:
                         self.n_shots = float(line.split("=")[-1])
 
         self.xw, self.yw = np.genfromtxt(f"./DATA/{powerfile}").T
-        self.f = interp1d(self.xw, self.yw, kind="linear", fill_value="extrapolate")
-        self.power_wn = np.arange(wavelength[0], wavelength[-1], (wavelength[-1]-wavelength[0])/10)
-        self.power_mj = self.f(self.power_wn)
-
-    def filecheck(self, basefile, powerfile):
-
-        # Powefile check
-        if not self.location.joinpath("DATA", powerfile).exists():
-            if self.location.joinpath("Pow", powerfile).exists():
-                shutil.move(
-                    self.location.joinpath("Pow", powerfile),
-                    self.location.joinpath("DATA", powerfile),
-                )
-
-            elif self.location.joinpath(powerfile).exists():
-                shutil.move(
-                    self.location.joinpath(powerfile),
-                    self.location.joinpath("DATA", powerfile),
-                )
-
-            else:
-                self.powerfile_status = False
-                return False
-
-        # Basefile check
-        if not self.location.joinpath("DATA", basefile).exists():
-            if self.location.joinpath(basefile).exists():
-                shutil.move(
-                    self.location.joinpath(basefile),
-                    self.location.joinpath("DATA", basefile),
-                )
-            else:
-                self.basefile_status = False
-                return False
-
-        self.powerfile_status = True
-        self.basefile_status = True
-
-        return True
+        self.f = interp1d(self.xw, self.yw, kind="linear",
+                          fill_value="extrapolate")
+        #self.power_wn = np.arange(
+        #    wavelength[0], wavelength[-1]+10, (wavelength[-1]-wavelength[0])/10)
+        self.power_wn = wavelength
+        self.power_mj = self.f(wavelength)
 
 
 if __name__ == "__main__":

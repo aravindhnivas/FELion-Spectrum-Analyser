@@ -25,6 +25,8 @@
 
         <!--Navbar items list-->
         <div class="navbar-collapse collapse">
+
+            <!--Navbar Left-->
             <ul class="navbar-nav">
                 <li class="nav-item">
                     <a class="nav-link" href="../mass/mass.html">Mass Spectrum</a>
@@ -57,14 +59,14 @@
 
             </ul>
             <!---->
+
         </div>
         <!--Navbar itemlist ENDS-->
-
     </nav>
     <!--Navbar ENDS-->
 
     <!--Main Contents BEGIN-->
-    <div class="container-fluid m-3" id="normline-main-containter">
+    <div class="container mt-3 mb-3" id="normline-main-containter">
 
         <!--Open buttons and Labels-->
         <div class="containter mr-3" id="normline-openBtn-container">
@@ -89,14 +91,13 @@
                 <ul>
                     <button type="button" class="btn btn-primary" id="baseline-btn" data-toggle="tooltip" data-placement="bottom" title="For baseline correction">Create Baseline</button>
                     <button type="button" class="btn btn-primary" id="normlinePlot-btn" data-toggle="tooltip" data-placement="top" title="To plot Normalised spectrum">Felix Plot</button>
-                    <button type="button" class="btn btn-primary" id="avgPlot-btn" data-toggle="tooltip" data-placement="bottom" title="To plot Averaged spectrum">Average Plot</button>
                 </ul>
                 <!---->
 
                 <!--Delta value-->
                 <div class="col-sm-2">
                     <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Delta (default=2)" id="delta" , value=1 data-toggle="tooltip" data-placement="top" title="Delta value for binnsteps (default=1)">
+                        <input type="text" class="form-control" placeholder="Delta (default=2)" id="delta" , value=1 data-toggle="tooltip" data-placement="bottom" title="Delta value for binnsteps (default=1)">
                         <div class="input-group-append">
                             <span class="input-group-text">Delta</span>
                         </div>
@@ -108,23 +109,47 @@
         </div>
         <!--Buttons ENDS-->
 
-        <!--Plotting Area-->
+        <!--Plotting Area BEGINS-->
+
+        <!--Baseline Correction-->
         <div class="container-fluid mt-3">
             <div class="row">
-                <div class="col-sm-11" id="plot"></div>
+                <div class="col" id="bplot"></div>
+            </div>
+
+        </div>
+
+        <!--Normalized plot-->
+        <div class="container-fluid mt-3">
+            <div class="row">
+                <div class="col" id="nplot"></div>
             </div>
         </div>
+
+        <!--Averaged Plot-->
+        <div class="container-fluid mt-3">
+            <div class="row">
+                <div class="col" id="avgplot"></div>
+            </div>
+        </div>
+
         <!--Plotting Area ENDS-->
 
     </div>
     <!--Main Container END-->
 
     <!--footer BEGINS-->
-    <footer>
-        <div class="card-footer text-muted">
-            Developed at Dr.Sandra's lab FELion@FELIX
+    <!--
+    <div class="container-fluid mt-3">
+        <div class="row">
+            <footer>
+                <div class="card-footer text-muted" id="footer">
+                    Developed at Dr.Sandra's lab FELion@FELIX
+                </div>
+            </footer>
         </div>
-    </footer>
+    </div>
+    -->
     <!--footer ENDS-->
 
     <!--JS Script files-->
@@ -132,7 +157,6 @@
     <script src="../js/jquery-3.3.1.slim.min.js"></script>
     <script src="../js/popper.min.js"></script>
     <script src="../js/bootstrap.min.js"></script>
-
     <script src="../js/plotly-latest.min.js"></script>
     <script src="normline.js"></script>
     <script src="../js/bootstrap4-toggle.min.js"></script>

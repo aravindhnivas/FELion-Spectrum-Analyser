@@ -1,3 +1,4 @@
 pushd D:\FELion-Spectrum-Analyser\ElectronJS
-npm start
+call activate base
+call npm start
 pause
