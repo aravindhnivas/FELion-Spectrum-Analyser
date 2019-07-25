@@ -84,11 +84,16 @@ function openFile(e) {
     }
 }
 /////////////////////////////////////////////////////////
+
 let dataFromPython_norm;
 let normlineBtn = document.querySelector("#normlinePlot-btn")
 let footer = document.querySelector("#footer")
+let loading = document.querySelector("#loading")
+let loading_parent = document.querySelector("#loading-parent")
+let error_occured = false
 
 function normplot(e) {
+
     console.log("\n\nNormline Spectrum")
     console.log("I am in javascript now!!")
     console.log(`File: ${filePaths}; ${typeof filePaths}`)
@@ -103,10 +108,15 @@ function normplot(e) {
 
     const py = spawn('python', [path.join(__dirname, "./normline.py"), [filePaths, delta.value]]);
 
+    loading_parent.className = "alert alert-primary"
+    loading.innerText = "Loading"
+
     py.stdout.on('data', (data) => {
 
-        try {
+        loading_parent.style.visibility = "visible"
+        loading.innerText = "Loading"
 
+        try {
             console.log("Receiving data")
             dataFromPython_norm = data.toString('utf8')
                 //console.log("Before JSON parse (from python):\n" + dataFromPython_norm)
@@ -194,20 +204,36 @@ function normplot(e) {
 
         /////////////////////////////////////////////////////////
     });
+
     py.stderr.on('data', (data) => {
 
+        error_occured = true
         console.error(`Error from python: ${data}`)
+
     })
 
     py.on('close', () => {
 
         console.log('Returned to javascript');
-        footer.parentElement.className = "card-footer text-muted"
-        footer.parentElement.style.position = "relative"
-        footer.parentElement.style.bottom = 0
+
+        if (error_occured) {
+
+            console.log(`Error occured ${error_occured}`);
+            loading_parent.style.visibility = "visible"
+            loading_parent.className = "alert alert-danger"
+            loading.innerText = "Error! (Some file might be missing)"
+            error_occured = false
+
+        } else {
+
+            footer.parentElement.className = "card-footer text-muted"
+            footer.parentElement.style.position = "relative"
+            footer.parentElement.style.bottom = 0
+            loading_parent.style.visibility = "hidden"
+
+        }
+
     });
-
-
 }
 /////////////////////////////////////////////////////////
 

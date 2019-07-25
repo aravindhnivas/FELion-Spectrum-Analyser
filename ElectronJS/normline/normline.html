@@ -65,6 +65,7 @@
     </nav>
     <!--Navbar ENDS-->
 
+    <!--########################################################################################-->
     <!--Main Contents BEGIN-->
     <div class="container-fluid mt-3 mr-2" id="normline-main-containter">
 
@@ -102,13 +103,18 @@
             </div>
             <!---->
 
+            <!--Loading message-->
+            <div class="col-sm-2" id="loading-parent">
+                <ul id="loading" style="text-align:center"></ul>
+            </div>
+
         </div>
         <!--Buttons ENDS-->
 
-        <!--/////////////////////////////////////////////////////////////////////////////////////-->
+        <!--/////////////////////////////////////////////////////////////////////////-->
         <!--Plotting Area BEGINS-->
 
-        <div class="container-fluid">
+        <div class="container-fluid" id="main-plot">
             <!--Baseline correccted-->
             <div class="row mt-3">
                 <div class="col" id="bplot"></div>
@@ -127,19 +133,20 @@
         </div>
 
         <!--Plotting Area ENDS-->
-        <!--/////////////////////////////////////////////////////////////////////////////////////-->
-
-        <!--footer-->
-        <div class="row">
-            <footer>
-                <div class="card-footer text-muted" id="footer">
-                    <ul>Developed at Dr.Sandra's lab FELion@FELIX</ul>
-                </div>
-            </footer>
-        </div>
+        <!--/////////////////////////////////////////////////////////////////////////-->
 
     </div>
     <!--Main Container END-->
+    <!--########################################################################################-->
+
+
+
+    <!--footer-->
+    <footer>
+        <div class="card-footer text-muted" id="footer">
+            Developed at Dr.Sandra's lab FELion@FELIX
+        </div>
+    </footer>
 
     <!--JS Script files-->
     <script src="../js/jquery-3.4.1.min.js"></script>
