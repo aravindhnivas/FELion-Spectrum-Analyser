@@ -38,6 +38,7 @@ print(f"\nFELion Spectrum Analyser {__version__}\n")
 ################################################# MODULES IMPORTED #################################################
 ####################################################################################################################
 
+
 class FELion(Tk):
 
     def __init__(self, *args, **kwargs):
@@ -114,12 +115,18 @@ class FELion(Tk):
             cnt.widget.labels(j, 0.4, y_)
             y_ += 0.1
 
-        cnt.mname = cnt.widget.entries('Entry', 'Molecule', 0.25, 0.34, bd=5, help='Molecule Name')
-        cnt.temp = cnt.widget.entries('Entry', 0, 0.25, 0.44, bd=5, help='Experiment temperature in Kelvin')
-        cnt.bwidth = cnt.widget.entries('Entry', 0, 0.25, 0.54, bd=5, help='Automatically set from file')
-        cnt.ie = cnt.widget.entries('Entry', 0, 0.25, 0.64, bd=5, help='Experiment Ionisation Energy')
-        cnt.trap = cnt.widget.entries('Entry', 0, 0.25, 0.74, bd=5, help='Automatically set from file')
-        cnt.dpi = cnt.widget.entries('Entry', 100, 0.25, 0.84, bd=5, help='Figure DPI')
+        cnt.mname = cnt.widget.entries(
+            'Entry', 'Molecule', 0.25, 0.34, bd=5, help='Molecule Name')
+        cnt.temp = cnt.widget.entries(
+            'Entry', 0, 0.25, 0.44, bd=5, help='Experiment temperature in Kelvin')
+        cnt.bwidth = cnt.widget.entries(
+            'Entry', 0, 0.25, 0.54, bd=5, help='Automatically set from file')
+        cnt.ie = cnt.widget.entries(
+            'Entry', 0, 0.25, 0.64, bd=5, help='Experiment Ionisation Energy')
+        cnt.trap = cnt.widget.entries(
+            'Entry', 0, 0.25, 0.74, bd=5, help='Automatically set from file')
+        cnt.dpi = cnt.widget.entries(
+            'Entry', 100, 0.25, 0.84, bd=5, help='Figure DPI')
 
         cnt.avg_title = cnt.widget.entries('Entry',  'Title', 0.55, 0.34, bd=2)
         cnt.avg_ts = cnt.widget.entries(
@@ -147,7 +154,7 @@ class FELion(Tk):
         cnt.avg_fwidth = cnt.widget.entries(
             'Entry',  10, 0.65, 0.84, bd=2, relwidth=0.05, help='Figure width')
         cnt.avg_fheight = cnt.widget.entries(
-            'Entry',  5, 0.7, 0.84, bd=2, relwidth=0.05,help='Figure height')
+            'Entry',  5, 0.7, 0.84, bd=2, relwidth=0.05, help='Figure height')
 
     def __repr__(self):
         return 'FELion Tkinter Tk() Class'
@@ -237,7 +244,8 @@ class Normline(Frame):
 
         # Entries
         self.delta = self.widget.entries('Entry', 2, 0.84, 0.24, bd=5)
-        self.hd = self.widget.entries('Check','HD', 0.82, 0.5, relwidth=0.05, help='Renders very high quality pdf and png using LATEX: But SLOW')
+        self.hd = self.widget.entries('Check', 'HD', 0.82, 0.5, relwidth=0.05,
+                                      help='Renders very high quality pdf and png using LATEX: But SLOW')
 
     def Normline_func(self):
 
@@ -432,31 +440,36 @@ class Plot(Frame):
         self.dpi = self.widget.entries('Entry', 100, 0.75, 0.23, bd=5)
 
         timescan_btn = self.widget.buttons('Timescan', 0.4, 0.3,
-                            self.timescan_func, help='Plot timescan files')
+                                           self.timescan_func, help='Plot timescan files')
 
         kinetics_btn = self.widget.buttons('kinetics', 0.52, 0.3, self.kinetics_func,
-                            help='Simulate kinetics of the reaction from Timescan file')
+                                           help='Simulate kinetics of the reaction from Timescan file')
         kinetics_btn['state'] = 'disable'
 
         depletion_btn = self.widget.buttons('Depletion', 0.65, 0.3, self.depletion_func,
-                            help='Select two timescan files to see the depletion; and enter power_on, power_off and n')
+                                            help='Select two timescan files to see the depletion; and enter power_on, power_off and n')
 
         self.depletion_power = self.widget.entries('Entry',  'power_on, power_off, n_shots', 0.65,
                                                    0.4, bd=5, relwidth=0.25, help='Enter Power_ON, Power_OFF and N_Shots (comma separated)')
-        
-        self.timeIndex = self.widget.entries('Entry', '1', 0.8, 0.33, bd=5,
-                    help="Enter the timescan mass index (if the timescan file has more than 1 mass)")
+
+        self.timeIndex = self.widget.entries('Entry', '1', 0.77, 0.33, bd=5, relwidth=0.05,
+                                             help="Enter the timescan mass index (if the timescan file has more than 1 mass)")
+
+        self.timeStartIndex = self.widget.entries('Entry', '1', 0.82, 0.33, bd=5, relwidth=0.05,
+                                                  help="Enter the timescan starting point number")
 
         powerplot_btn = self.widget.buttons('PowerPlot', 0.4, 0.4,
-                            self.powerplot_func, help='For plotting .pow files')
+                                            self.powerplot_func, help='For plotting .pow files')
+
         justPlot_btn = self.widget.buttons('JustPlot', 0.52, 0.4, self.just_plot_func,
-                            help='Use it to plot any data file(s) with two columns')
+                                           help='Use it to plot any data file(s) with two columns')
 
         exp_theory_btn = self.widget.buttons('Exp-Theory', 0.4, 0.55, self.avg_theory_func,
-                            help='Plot exp and theoreitical data together')
-                            
+                                             help='Plot exp and theoreitical data together')
+
         self.theory_scaling = self.widget.entries(
             'Entry', 0.97, 0.52, 0.58, bd=5, help='Scaling the theoretical values')
+
         self.smooth = self.widget.entries(
             'Entry', '21, 6', 0.52, 0.68, bd=5, help='Savitzky–Golay filter for smoothening data: Window_length, polyorder')
 
@@ -475,7 +488,8 @@ class Plot(Frame):
 
     def depletion_func(self):
         depletionPlot(
-            self.filelist, self.location, self.depletion_power.get(), self.dpi.get(), self.timeIndex.get(), self.parent
+            self.filelist, self.location, self.depletion_power.get(), self.dpi.get(
+            ), self.timeIndex.get(), self.timeStartIndex.get(), self.parent
         )
 
     def powerplot_func(self):

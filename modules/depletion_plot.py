@@ -28,7 +28,7 @@ import os
 import traceback
 
 
-def depletionPlot(files, location, power_n, dpi, timeIndex, parent):
+def depletionPlot(files, location, power_n, dpi, timeIndex, timeStartIndex, parent):
 
     try:
         ####################################### Initialisation #######################################
@@ -62,6 +62,7 @@ def depletionPlot(files, location, power_n, dpi, timeIndex, parent):
 
         print(f"TimeIndex: {timeIndex}")
         timeIndex = int(timeIndex)
+        timeStartIndex = int(timeStartIndex)
         print(f"TimeIndex: {timeIndex}")
 
         counts, stde = [], []
@@ -72,9 +73,9 @@ def depletionPlot(files, location, power_n, dpi, timeIndex, parent):
             axs0.errorbar(time, mean[timeIndex], yerr=error[timeIndex], label='{}; {}:[{}], B0:{}ms, Res:{}'.format(
                 f, mass[0], iterations[0], t_b0, t_res))
 
-            time = time[1:]/1000
-            mean = mean[timeIndex][1:]
-            stde.append(error[timeIndex][1:])
+            time = time[timeStartIndex:]/1000
+            mean = mean[timeIndex][timeStartIndex:]
+            stde.append(error[timeIndex][timeStartIndex:])
             counts.append(mean)
 
         counts, stde = np.array(counts), np.array(stde)
@@ -136,6 +137,7 @@ def depletionPlot(files, location, power_n, dpi, timeIndex, parent):
             power_on = (power_values[i]*n*time) / \
                 1000.  # divide by 1000 for mJ to J conversion
             power_off = (power_values[i+1]*n*time)/1000.
+            
             power_max = power_values.max()*n*time.max()/1000.
             x = np.linspace(0, power_max, num=len(time))
 
@@ -246,19 +248,22 @@ def depletionPlot(files, location, power_n, dpi, timeIndex, parent):
                 power_values[i], uK_ON[i], uNa0[i]+uNn0[i], uNa0[i], uNn0[i]))
 
             # deletion plot
-            udepletion_new = 1 - \
-                uy_ON(x, uNa0[i], uNn0[i], uK_OFF[i], uK_ON[i]) / \
-                uy_OFF(x, uN[i], uK_OFF[i])
-            depletion_new, depletion_error_new = unp.nominal_values(
-                udepletion_new), unp.std_devs(udepletion_new)
-
-            depletion0, = depletion_plot.plot(x, depletion_new, '--')
-
             depletion_fitted = Depletion(X, A[i])
             depletion1, = depletion_plot.plot(x, depletion_fitted,
                                               label='A = {:.2fP}, K_ON = {:.2fP}/J'.format(
                                                   uA[i], uK_ON[i])
                                               )
+
+            udepletion_new = 1 - \
+                uy_ON(x, uNa0[i], uNn0[i], uK_OFF[i], uK_ON[i]) / \
+                uy_OFF(x, uN[i], uK_OFF[i])
+            depletion_new, depletion_error_new = unp.nominal_values(
+                udepletion_new), unp.std_devs(udepletion_new)
+            depletion0, = depletion_plot.plot(x, depletion_new, '--', label="Fitted DATA depletion factor")
+            
+            depletion_original_with_error = 1 - (unp.uarray(depletion_on, depletion_on_err)/unp.uarray(depletion_off, depletion_off_err))
+            depletion_original = depletion_plot.errorbar(power_on, unp.nominal_values(
+                depletion_original_with_error), yerr=unp.std_devs(depletion_original_with_error), label="Original DATA depletion factor")
 
             # controlling fitting parameters
             axcolor = 'lightgoldenrodyellow'
@@ -276,10 +281,16 @@ def depletionPlot(files, location, power_n, dpi, timeIndex, parent):
 
             kon_slider = Slider(
                 kon_g, '$K_{ON}$', 0, K_ON[i]+10, valinit=K_ON[i])
-            na_slider = Slider(na_g, '$Na_0$', 0,
+            """na_slider = Slider(na_g, '$Na_0$', 0,
                                Na0[i]+(Na0[i]/2), valinit=Na0[i])
             nn_slider = Slider(nn_g, '$Nn_0$', 0,
-                               Nn0[i]+(Nn0[i]/2), valinit=Nn0[i])
+                               Nn0[i]+(Nn0[i]/2), valinit=Nn0[i])"""
+
+            na_slider = Slider(na_g, '$Na_0$', 0,
+                               10*Na0[i], valinit=Na0[i])
+
+            nn_slider = Slider(nn_g, '$Nn_0$', 0,
+                               10*Nn0[i], valinit=Nn0[i])
 
             def update(val):
 
