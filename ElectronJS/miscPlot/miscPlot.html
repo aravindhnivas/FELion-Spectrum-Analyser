@@ -71,20 +71,35 @@
 
         <div class="row mt-3">
             <!--Label-->
-            <div class="col" id="Timescan-labelHolder"><label id="timescan-label"></label></div>
+            <div class="col" id="labelHolder"><label id="label"></label></div>
         </div>
 
         <!--Timescan-->
         <div class="row mt-3">
             <!--Timescan button-->
-            <div class="col">
+            <div class="col-sm-4">
                 <button type="button" class="btn btn-primary" id="timescan-btn">Timescan</button>
             </div>
 
+            <!--Loading message-->
+            <div class="col-sm-2" id="loading-parent">
+                <ul id="loading" style="text-align:center"></ul>
+            </div>
         </div>
 
     </div>
     <!--Main Container END-->
+
+    <!--Plotting Area BEGINS-->
+
+    <div class="container-fluid" id="main-plot">
+
+        <!--Timescan-->
+        <div class="row mt-3">
+            <div class="col" id="timescan"></div>
+        </div>
+
+    </div>
 
     <!--footer-->
     <footer>

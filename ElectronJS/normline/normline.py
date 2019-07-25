@@ -7,7 +7,6 @@ import os
 import shutil
 from os.path import isdir, isfile
 from pathlib import Path as pt
-import traceback
 
 # Data analysis
 import numpy as np
@@ -18,7 +17,6 @@ from FELion_baseline_old import felix_read_file, BaselineCalibrator
 from FELion_power import PowerCalibrator
 from FELion_sa import SpectrumAnalyserCalibrator
 from baseline import Create_Baseline
-
 
 ######################################################################################
 
@@ -45,8 +43,8 @@ colors = [
     (158, 218, 229),
 ]
 
-
 class normplot:
+
     def __init__(self, received_files, delta):
 
         self.delta = delta
@@ -277,7 +275,6 @@ class normplot:
         #    wavelength[0], wavelength[-1]+10, (wavelength[-1]-wavelength[0])/10)
         self.power_wn = wavelength
         self.power_mj = self.f(wavelength)
-
 
 if __name__ == "__main__":
 

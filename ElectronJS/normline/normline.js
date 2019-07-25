@@ -9,11 +9,9 @@ const fs = require('fs')
 /////////////////////////////////////////////////////////
 $(document).ready(function() {
 
-
     $("#normline-open-btn").click(openFile);
     $("#normlinePlot-btn").click(normplot);
     $("#baseline-btn").click(basePlot);
-
 
     $(() => $('[data-toggle="tooltip"]').tooltip("disable"))
 
@@ -28,8 +26,6 @@ $(document).ready(function() {
         console.log(`Status: ${info}\nType: ${typeof info}`)
         info_status(info)
     });
-
-
     //END
 })
 
@@ -235,6 +231,7 @@ function normplot(e) {
 
     });
 }
+
 /////////////////////////////////////////////////////////
 
 /////////////////////////////////////////////////////////
