@@ -54,12 +54,9 @@ function openFile(e) {
         defaultPath: "D:",
         filters: [
             { name: 'Timescan', extensions: ['scan'] },
-            { name: 'DAT', extensions: ['dat'] },
-            { name: 'Powerfile', extensions: ['pow'] },
-            { name: 'txt', extensions: ['txt'] },
             { name: 'All Files', extensions: ['*'] }
         ],
-        properties: ['openFile', 'multiSelections'],
+        properties: ['openFile'],
     };
     filePaths = dialog.showOpenDialog(mainWindow, options);
 
@@ -118,38 +115,33 @@ function timescanplot(e) {
         loading.innerText = "Loading"
 
         try {
+
             console.log("Receiving data")
             dataFromPython_timescan = data.toString('utf8')
-            console.log("Before JSON parse (from python):\n" + dataFromPython_timescan)
-                //dataFromPython_norm = JSON.parse(dataFromPython_norm)
-                //console.log("After JSON parse :" + dataFromPython_norm)
+                //console.log("Before JSON parse (from python):\n" + dataFromPython_timescan)
+            dataFromPython_timescan = JSON.parse(dataFromPython_timescan)
+            console.log("After JSON parse :" + dataFromPython_timescan)
 
             /////////////////////////////////////////////////////////
-            // Baseline plot
+            // Timescan plot
 
-            /*let blayout = {
-                title: "Baseline Corrected",
+            let layout = {
+                title: `Timescan ${baseName[0]} |`,
                 xaxis: {
-                    domain: [0, 0.95],
-                    title: 'Calibrated Wavelength'
+                    title: 'Time (in ms)'
                 },
                 yaxis: {
-                    title: 'Intesity',
-                },
-                yaxis2: {
-                    anchor: 'x',
-                    overlaying: 'y',
-                    side: 'right',
-                    title: 'Power mJ',
+                    title: 'Counts',
                 }
             };
 
-            let bdataPlot = []
-            for (x in dataFromPython_norm["base"]) {
-                bdataPlot.push(dataFromPython_norm["base"][x])
+            let dataPlot = [];
+            for (x in dataFromPython_timescan) {
+                dataPlot.push(dataFromPython_timescan[x])
             }
 
-            Plotly.newPlot('bplot', bdataPlot, blayout);*/
+            console.log(dataPlot)
+            Plotly.newPlot('timeplot', dataPlot, layout);
 
         } catch (err) {
             console.error("Error Occured in javascript code: " + err)
