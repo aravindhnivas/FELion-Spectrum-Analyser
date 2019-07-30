@@ -48,7 +48,7 @@ class timescanplot:
             error = np.append(error, error_sort)
 
             m[f"{mass_value}u"] = {"x":list(time), "y":list(mass_sort), 
-                    "name": f"{mass_value}u; B0:{t_b0}; Res: {t_res}", "mode": 'lines+markers',
+                    "name": f"{mass_value}u[{iteration}]; B0:{t_b0}ms; Res: {t_res}", "mode": 'lines+markers',
                     "error_y":{"type": "data","array": list(error_sort),"visible": True}}
 
             j = k + j
@@ -136,4 +136,5 @@ if __name__ == "__main__":
     args = sys.argv[1:][0].split(",")
     filepaths = [pt(i) for i in args]
     location = filepaths[0].parent
+
     timescanplot(filepaths[0], location)
