@@ -179,13 +179,13 @@ def depletionPlot(files, location, power_n, dpi, timeIndex, timeStartIndex, pare
                 x, K_OFF = X
                 return Na0*np.exp(-K_ON*x)*np.exp(-K_OFF*x) + Nn0*np.exp(-K_OFF*x)
 
-            #K_ON_init, Na0_init, Nn0_init = ()
+            #K_ON_init, Na0_init, Nn0_init = (pop_off[0]+0.5, pop_off[1], pop_off[1]/2)
             X = (power_on, pop_off[0])
             pop_on, popc_on = curve_fit(
                 N_ON, X, depletion_on,
                 sigma=stde[on],
                 absolute_sigma=True,
-                #p0 = [Na0_init, Nn0_init, K_ON_init]
+                #p0 = [Na0_init, Nn0_init, K_ON_init],
                 bounds=([0, 0, -np.inf], [pop_off[1], pop_off[1], np.inf])
             )
             perr_on = np.sqrt(np.diag(popc_on))
@@ -202,6 +202,7 @@ def depletionPlot(files, location, power_n, dpi, timeIndex, timeStartIndex, pare
         uK_OFF, uN = unp.uarray(K_OFF, K_OFF_err), unp.uarray(N, N_err)
         uK_ON, uNa0, uNn0 = unp.uarray(K_ON, K_ON_err), unp.uarray(
             Na0, Na0_err), unp.uarray(Nn0, Nn0_err)
+        print(f"\nFitted Parameters:\nk_off: {uK_OFF}, k_on: {uK_ON},\nN: {uN},\nNa: {uNa0}, Nn: {uNn0}\n")
 
         def Depletion(X, A):
             x, K_ON = X
@@ -281,10 +282,6 @@ def depletionPlot(files, location, power_n, dpi, timeIndex, timeStartIndex, pare
 
             kon_slider = Slider(
                 kon_g, '$K_{ON}$', 0, K_ON[i]+10, valinit=K_ON[i])
-            """na_slider = Slider(na_g, '$Na_0$', 0,
-                               Na0[i]+(Na0[i]/2), valinit=Na0[i])
-            nn_slider = Slider(nn_g, '$Nn_0$', 0,
-                               Nn0[i]+(Nn0[i]/2), valinit=Nn0[i])"""
 
             na_slider = Slider(na_g, '$Na_0$', 0,
                                10*Na0[i], valinit=Na0[i])
@@ -315,6 +312,35 @@ def depletionPlot(files, location, power_n, dpi, timeIndex, timeStartIndex, pare
                 yon = N_ON((x, koff), na, nn, kon)
                 g_on0.set_ydata(yon)
 
+                #######################################################################################
+                ## TESTING fitting with new initial conditions ###
+                X = (power_on, koff)
+                pop_on_new, popc_on_new = curve_fit(
+                    N_ON, X, depletion_on,
+                    sigma=stde[on],
+                    absolute_sigma=True,
+                    p0 = [na, nn, kon],
+                    bounds=([0, 0, -np.inf], [n, n, np.inf])
+                )
+                perr_on_new = np.sqrt(np.diag(popc_on_new))
+
+                # on fitting variables
+                Na0_new = pop_on_new[0]
+                Nn0_new = pop_on_new[1]
+                K_ON_new = pop_on_new[2]
+
+                Na0_err_new = perr_on_new[0]
+                Nn0_err_new = perr_on_new[1]
+                K_ON_err_new = perr_on_new[2]
+
+                ukon_new = uf(K_ON_new, K_ON_err_new)
+                uNa_new = uf(Na0_new, Na0_err_new)
+                uNn_new = uf(Nn0_new, Nn0_err_new)
+
+                print(f"Fitting with new Initial conditions:\nNa: {na}, Nn: {nn}, k_on: {kon}:/\nNa: {uNa_new:.4f},\nNn: {uNn_new:.4f},\nk_on: {ukon_new:.4f}\n")
+
+                ####################################################################################
+                
                 # depletion
                 udepletion_new1 = 1 - \
                     uy_ON(x, una, unn, ukoff, ukon)/uy_OFF(x, un, ukoff)
