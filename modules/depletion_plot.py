@@ -322,7 +322,7 @@ def depletionPlot(files, location, power_n, dpi, timeIndex, timeStartIndex, pare
                     udepletion_new1), unp.std_devs(udepletion_new1)
                 depletion0.set_ydata(depletion_new1)
 
-                print(f"\n#############\nModified depletion values: {udepletion_new1}\n")
+                #print(f"\n#############\nModified depletion values: {udepletion_new1}\n")
                 X = (x, kon)
                 pop_depletion, poc_depletion = curve_fit(
                     Depletion, X, depletion_new1,
