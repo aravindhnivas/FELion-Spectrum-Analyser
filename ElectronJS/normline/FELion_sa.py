@@ -1,28 +1,10 @@
 #!/usr/bin/python3
 
-# Importing Modules
-
-# DATA analysis modules
 import numpy as np
 from scipy.optimize import leastsq
-
-# Tkinter Modules
-from tkinter import Toplevel
-
-# FELion Module
-from FELion_definitions import ErrorInfo
-from FELion_definitions import FELion_Toplevel
 from FELion_baseline_old import felix_read_file
 
-# Built-In Module
-import os
-from os.path import dirname
-
-# Error traceback
-import traceback
-
 ####################################### Modules Imported #######################################
-
 
 class SpectrumAnalyserCalibrator(object):
     def __init__(self, felixfile, fit='linear', ms=None):
@@ -74,75 +56,6 @@ class SpectrumAnalyserCalibrator(object):
         self.sigma = sigma
         self.f = fitfunc
         self.data = (data[0][data[2] > 100], data[2][data[2] > 100])
-        info = self.getInfo()
-        #print(info)
 
     def sa_cm(self, x):
         return self.f(self.p, x)
-
-    def getData(self):
-        return self.data
-
-    def getInfo(self):
-        info = "#Fit SA vs UNDULATOR (polynome p[0]*x**n + p[1]*x**(n-1) + ... + p[n]):\n"
-        info += "#p[]     = " + "".join("{:.4e} ".format(i) for i in self.p) + \
-            "\n#sigma[] = " + "".join("{:.4e} ".format(i)
-                                      for i in self.sigma) + "\n"
-        info += "#----------------------------------------\n"
-        return info
-
-    def plot(self, ax):
-        wn, sa = self.data
-        X = np.arange(wn.min(), wn.max(), 1)
-        if self.ms is not None:
-            ax.plot(wn, sa, 'x', c='r', ms=self.ms, markeredgecolor='r', label='SA')
-        else:
-            ax.plot(wn, sa, ls='', marker='s', ms=3, markeredgecolor='r', c='r')
-
-        ax.plot(X, self.sa_cm(X), ls='-', marker='', c='g', label='Fit')
-
-
-def FELion_Sa(felixfile, location, dpi, parent):
-
-    ####################################### Initialisation #######################################
-
-    folders = ["DATA", "EXPORT", "OUT"]
-    back_dir = dirname(location)
-
-    if set(folders).issubset(os.listdir(back_dir)):
-        os.chdir(back_dir)
-        location = back_dir
-
-    else:
-        os.chdir(location)
-
-    ####################################### END Initialisation #######################################
-
-    try:
-
-        saCalibrator = SpectrumAnalyserCalibrator(felixfile, fit='cubic')
-
-        ####################################### Tkinter figure #######################################
-
-        # Embedding figure to tkinter Toplevel
-        title_name = 'SA'
-        root = Toplevel(parent)
-        tk_widget = FELion_Toplevel(root, title_name, location)
-
-        fig, canvas = tk_widget.figure(dpi)
-        ax = fig.add_subplot(111)
-
-        ####################################### PLOTTING DETAILS #######################################
-        saCalibrator.plot(ax)
-
-        ax.set_title(f'Spectrum analyser calibration from {felixfile} file')
-        ax.set_xlabel("wn set (cm-1)")
-        ax.set_ylabel("wn SA (cm-1)")
-
-        ####################################### END Plotting details #######################################
-
-        canvas.draw()  # drawing in the tkinter canvas: canvas drawing board
-
-        ####################################### END Tkinter figure #######################################
-    except:
-        ErrorInfo('Error: ', traceback.format_exc())

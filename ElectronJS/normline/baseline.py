@@ -1,18 +1,16 @@
-#!/usr/bin/python3
+# Importing Modules
 
 # FELion Module
-from FELion_definitions import move, ShowInfo, ErrorInfo
-from FELion_power import PowerCalibrator
-from FELion_sa import SpectrumAnalyserCalibrator
-
+from FELion_definitions import move, ShowInfo
 
 # DATA analysis modules
 from scipy.interpolate import interp1d
 import numpy as np
 
 # Matplotlib modules
-from matplotlib.lines import Line2D
 import matplotlib
+matplotlib.use('TkAgg')
+from matplotlib.lines import Line2D
 import matplotlib.pyplot as plt
 
 # System modules
@@ -390,14 +388,9 @@ class Create_Baseline():
 
 if __name__ == "__main__":
 
-    try:
-        args = sys.argv[1:][0].split(",")
-        filepaths = [pt(files) for files in args]
-        for files in filepaths:
-            felixfile = files.name
-            location = files.parent
-            Create_Baseline(felixfile, location)
-
-    except Exception:
-        err = traceback.format_exc()
-        print(f"\nError occured in python code:\n{err}\n\nEND FILE")
+    args = sys.argv[1:][0].split(",")
+    filepaths = [pt(files) for files in args]
+    for files in filepaths:
+        felixfile = files.name
+        location = files.parent
+        Create_Baseline(felixfile, location)
