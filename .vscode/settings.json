@@ -4,4 +4,5 @@
     "eslint.enable": false,
     "emmet.includeLanguages": { "javascript": "html" },
     "emmet.triggerExpansionOnTab": true,
+    "git.ignoreLimitWarning": true,
 }
