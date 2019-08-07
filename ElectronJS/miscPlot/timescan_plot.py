@@ -29,17 +29,18 @@ class timescanplot:
         time = data[:, 1][: cycle] # in ms
 
         # Calculating mean and std_devs
-        j = 0
-        mean, error = [], []
-        mass = []
-        m = {}
+        j, mass_count = 0, 0
+        mean, error, mass, m = [], [], [], {}
         t_res, t_b0 = var_find(scanfile, location, time=True)
 
         for iteration in iterations:
-
             k = iteration*cycle
-
             mass_value = data[:, 0][j:k+j][0]
+
+            if mass_value in mass:
+                mass_count += 1
+                mass_value = f'{mass_value}_{mass_count}'
+
             mass_sort = data[:, 2][j:k + j].reshape(iteration, cycle).mean(axis=0)
             error_sort = data[:, 2][j:k + j].reshape(iteration, cycle).std(axis=0)
 

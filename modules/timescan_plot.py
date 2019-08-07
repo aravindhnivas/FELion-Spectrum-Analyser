@@ -60,6 +60,7 @@ def timescanplot(scanfile, location, dpi, parent, **kw):
         mass = []
         m = {}
 
+        mass_count = 0
         for num, iteration in enumerate(iterations):
 
             k = iteration*cycle
@@ -68,6 +69,11 @@ def timescanplot(scanfile, location, dpi, parent, **kw):
             print(f'DATA collecting: data[:, 2][{j}:{k+j}]\n')
 
             mass_value = data[:, 0][j:k+j][0]
+
+            if mass_value in mass:
+                mass_count += 1
+                mass_value = f'{mass_value}_{mass_count}'
+
             mass_sort = data[:, 2][j:k +
                                    j].reshape(iteration, cycle).mean(axis=0)
             error_sort = data[:, 2][j:k +
