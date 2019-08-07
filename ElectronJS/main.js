@@ -13,13 +13,17 @@ function createWindow() {
         webPreferences: {
             nodeIntegration: true,
         },
-        icon: path.join(__dirname, 'FELion_Icon3.png')
+        //icon: path.join(__dirname, 'FELion_Icon3.png')
+
     })
+
     mainWindow.loadURL(url.format({
         pathname: path.join(__dirname, 'index.html'),
         protocol: 'file:',
         slashes: true
+        
     }));
+    
     mainWindow.on('closed', () => mainWindow = null)
     const mainMenu = Menu.buildFromTemplate(mainMenuTemplate);
     Menu.setApplicationMenu(mainMenu);
@@ -55,7 +59,6 @@ if (process.env.NODE_ENV !== 'production') {
         label: 'Developer Tools',
         submenu: [{
                 role: 'reload',
-                //accelerator: process.platform == 'darwin' ? 'Command+I' : 'R',
             },
             {
                 label: 'Toggle DevTools',
@@ -67,10 +70,3 @@ if (process.env.NODE_ENV !== 'production') {
         ]
     });
 }
-//////////////////////////////////////////////////////////
-// Gloabel sharedbjects:
-global.sharedObject = {
-        someProperty: "default value"
-    }
-    // To set it in different page, use
-    // require('electron').remote.getGlobal('sharedObject').someProperty = 'new value'
