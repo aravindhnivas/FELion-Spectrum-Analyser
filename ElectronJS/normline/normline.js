@@ -102,7 +102,7 @@ function normplot(e) {
         return setTimeout(() => normlineBtn.className = "btn btn-primary", 2000)
     }
 
-    const py = spawn('python', [path.join(__dirname, "./normline.py"), [filePaths, delta.value]]);
+    const py = spawn(path.join(__dirname, "..", "python3.7", "python"), [path.join(__dirname, "./normline.py"), [filePaths, delta.value]]);
 
     loading_parent.className = "alert alert-primary"
     loading.innerText = "Loading"
@@ -252,7 +252,7 @@ function basePlot(e) {
         baselineBtn.className = "btn btn-danger"
         return setTimeout(() => baselineBtn.className = "btn btn-primary", 2000)
     }
-    const py = spawn('python', [path.join(__dirname, "./baseline.py"), [filePaths]]);
+    const py = spawn(path.join(__dirname, "..", "python3.7", "python"), [path.join(__dirname, "./baseline.py"), [filePaths]]);
 
     py.stdout.on('data', (data) => {
         try {

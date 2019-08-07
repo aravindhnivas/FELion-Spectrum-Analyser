@@ -104,7 +104,7 @@ function timescanplot(e) {
         return setTimeout(() => normlineBtn.className = "btn btn-primary", 2000)
     }
 
-    const py = spawn('python', [path.join(__dirname, "./timescan_plot.py"), [filePaths]]);
+    const py = spawn(path.join(__dirname, "..", "python3.7", "python"), [path.join(__dirname, "./timescan_plot.py"), [filePaths]]);
 
     loading_parent.className = "alert alert-primary"
     loading.innerText = "Loading"
