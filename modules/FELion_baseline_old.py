@@ -5,11 +5,11 @@ import matplotlib
 matplotlib.use('TkAgg')
 #from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import numpy as np
-import pylab as P
+#import pylab as P
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
-from matplotlib.artist import Artist
-from matplotlib.mlab import dist_point_to_segment
+#from matplotlib.artist import Artist
+#from matplotlib.mlab import dist_point_to_segment
 
 from scipy.interpolate import interp1d
 import os

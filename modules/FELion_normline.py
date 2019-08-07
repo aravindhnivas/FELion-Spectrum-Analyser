@@ -27,14 +27,17 @@ import matplotlib.pyplot as plt
 ################################################################################
 
 
-def export_file(fname, wn, inten):
-    f = open('EXPORT/' + fname + '.dat', 'w')
-    f.write("#DATA points as shown in lower figure of: " + fname + ".pdf file!\n")
-    f.write("#wn (cm-1)       intensity\n")
-    for i in range(len(wn)):
-        f.write("{:8.3f}\t{:8.2f}\n".format(wn[i], inten[i]))
-    f.close()
+def export_file(fname, wn, inten, raw_intensity, relative_depletion):
 
+    f = open('EXPORT/' + fname + '.dat', 'w')
+    #f.write("#DATA points as shown in lower figure of: " + fname + ".pdf file!\n")
+    f.write("#NormalisedWavelength(cm-1)\t#NormalisedIntensity\t#RawIntensity\t#RelativeDepletion\n")
+
+    for i in range(len(wn)):
+        f.write(f"{wn[i]}\t{inten[i]}\t{raw_intensity[i]}\t{relative_depletion[i]}\n")
+        #f.write("{:8.3f}\t{:8.2f}\n".format(wn[i], inten[i]))
+
+    f.close()
 
 def norm_line_felix(felixfile, mname, temp, bwidth, ie, foravgshow, location, dpi, parent, hd=False, trap=None):
 
@@ -100,7 +103,10 @@ def norm_line_felix(felixfile, mname, temp, bwidth, ie, foravgshow, location, dp
 
             bx2.legend(fontsize=10, loc='lower right')
             #ax2.legend(fontsize=10, loc='lower right')
-            return wavelength, intensity
+
+            relative_depletion = 1-(data[1]/baseCal.val(data[0]))
+
+            return wavelength, intensity, relative_depletion
 
         else:
 
@@ -124,7 +130,7 @@ def norm_line_felix(felixfile, mname, temp, bwidth, ie, foravgshow, location, dp
             bx = fig.add_subplot(312, sharex=ax)
             cx = fig.add_subplot(313, sharex=ax)
 
-            wavelength, intensity = plot(ax, bx, cx)
+            wavelength, intensity, relative_depletion = plot(ax, bx, cx)
             mname = '$%s$'%mname
             ax.set_title(f'{felixfile}: {mname} at {temp}K; B0:{round(bwidth)}ms; Trap:{trap}ms and IE:{ie}eV')
             cx.set_xlabel("Calibrated wavelength $(cm^{-1})$")
@@ -138,7 +144,7 @@ def norm_line_felix(felixfile, mname, temp, bwidth, ie, foravgshow, location, dp
                 
             canvas.draw()
 
-            export_file(fname, wavelength, intensity)
+            export_file(fname, wavelength, intensity, data[1], relative_depletion)
 
         if hd:
             with plt.style.context(['science']):

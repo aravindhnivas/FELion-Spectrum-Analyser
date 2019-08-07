@@ -22,7 +22,6 @@ import traceback
 
 ####################################### Modules Imported #######################################
 
-
 def power_plot(powerfile, powerfiles, combine, location, dpi, parent):
 
     ####################################### Initialisation #######################################
