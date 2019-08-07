@@ -1,5 +1,3 @@
-#!/usr/bin/python3
-
 # Modules
 import shutil
 from os.path import join 

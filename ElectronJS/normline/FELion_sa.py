@@ -1,5 +1,3 @@
-#!/usr/bin/python3
-
 import numpy as np
 from scipy.optimize import leastsq
 from FELion_baseline_old import felix_read_file
