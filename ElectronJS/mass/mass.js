@@ -81,7 +81,7 @@ function masspec(e) {
     console.log("I am in javascript now!!")
     console.log(`File: ${filePaths}; ${typeof filePaths}`)
 
-    const py = spawn('python', [path.join(__dirname, "./mass.py"), filePaths]);
+    const py = spawn(path.join(__dirname, "python3.7", "python"), [path.join(__dirname, "./mass.py"), filePaths]);
 
     py.stdout.on('data', (data) => {
 
