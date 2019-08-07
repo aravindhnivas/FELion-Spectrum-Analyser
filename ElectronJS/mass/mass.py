@@ -7,35 +7,31 @@ import traceback
 import numpy as np
 
 def main(*args):
-	try:
-		received_files = args[0][0].split(',')
-		mass, counts = [], []
+	
+	received_files = args[0][0].split(',')
+	mass, counts = [], []
 
-		filenames = []
+	filenames = []
 
-		for filepath in received_files:
+	for filepath in received_files:
 
-			mass_temp, counts_temp = [], []
+		mass_temp, counts_temp = [], []
 
-			massfile = pt(filepath)
-			mass_temp, counts_temp = np.genfromtxt(massfile).T
+		massfile = pt(filepath)
+		mass_temp, counts_temp = np.genfromtxt(massfile).T
 
-			mass.append(mass_temp)
-			counts.append(counts_temp)
-			filenames.append(massfile.stem)
-		
-		data = {}
-		i = 0
-		for m, c, f in zip(mass, counts, filenames):
-			data[f"data_{i}"] = {"x":list(m), "y":list(c), "name": f, "mode":"lines"}
-			i += 1
+		mass.append(mass_temp)
+		counts.append(counts_temp)
+		filenames.append(massfile.stem)
+	
+	data = {}
+	i = 0
+	for m, c, f in zip(mass, counts, filenames):
+		data[f"data_{i}"] = {"x":list(m), "y":list(c), "name": f, "mode":"lines"}
+		i += 1
 
-		dataJson = json.dumps(data)
-		print(dataJson)
-
-	except Exception:
-		err = traceback.format_exc()
-		print(f"\nError occured in python code:\n{err}\n\nEND FILE")
+	dataJson = json.dumps(data)
+	print(dataJson)
 
 if __name__=="__main__":
 	args = sys.argv[1:]

@@ -73,6 +73,7 @@ function openFile(e) {
 }
 /////////////////////////////////////////////////////////
 //python backend
+
 let dataFromPython;
 
 function masspec(e) {
@@ -111,10 +112,14 @@ function masspec(e) {
             Plotly.newPlot('plot', dataPlot, layout);
 
         } catch (err) {
-            console.log("Error Occured in javascript code: " + err.message)
+            console.error("Error Occured in javascript code: " + err.message)
         }
 
     });
+
+    py.stderr.on('data', (data) => {
+        console.error(`Error from python: ${data}`)
+    })
 
     py.on('close', () => {
         console.log('Returned to javascript');
