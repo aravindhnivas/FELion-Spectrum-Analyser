@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 
 # Built-In modules
 import os
@@ -10,7 +9,7 @@ import numpy as np
 from uncertainties import unumpy as unp
 
 # FELion Modules
-from FELion_definitions import ErrorInfo, FELion_Toplevel, get_iterations, get_skip_line, var_find
+from FELion_definitions import ErrorInfo, FELion_Toplevel, get_iterations, get_skip_line, var_find, FELion_widgets
 
 # Tkinter modules
 from tkinter import Toplevel, ttk, BooleanVar
@@ -131,8 +130,15 @@ def timescanplot(scanfile, location, dpi, parent, **kw):
 
         log = BooleanVar()
         log_btn = ttk.Checkbutton(frame, text='Log', variable=log)
-        log_btn.place(relx=0.1, rely=0.3, relwidth=0.5, relheight=0.05)
+        log_btn.place(relx=0.1, rely=0.3, relwidth=0.25, relheight=0.05)
         log.set(False)
+
+
+        frame = tk_widget.get_widget_frame()
+
+        widget = FELion_widgets(frame)
+        legend_status = widget.entries('Check', 'Legend', 0.4, 0.3,
+                                    relwidth=0.4, relheight=0.05, default=True)
 
         ####################################### PLOTTING DETAILS #######################################
 
@@ -173,12 +179,23 @@ def timescanplot(scanfile, location, dpi, parent, **kw):
             ax.legend()
             ax.grid(True)
 
+        def legend_check():
+            legend = ax.legend()
+
+            if legend_status.get():
+                legend.set_visible(True)
+            else:
+                legend.set_visible(False)
+
+            canvas.draw()
+
         def update():
 
             t0 = check_time()
             ax.clear()
-
             plot()
+
+            legend_check()
             canvas.draw()
 
             t1 = check_time()

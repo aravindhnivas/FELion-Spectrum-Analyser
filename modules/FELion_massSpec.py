@@ -144,7 +144,11 @@ class massSpec:
                                        relwidth=0.5, relheight=0.05)
 
         self.log = self.widget.entries('Check', 'Log', 0.1, 0.2,
-                                       relwidth=0.5, relheight=0.05, default=True)
+                                       relwidth=0.25, relheight=0.05, default=True)
+
+        self.legend = self.widget.entries('Check', 'Legend', 0.4, 0.2,
+                                       relwidth=0.4, relheight=0.05, default=True)
+
         update_btn = self.widget.buttons(
             'Update Plot', 0.1, 0.3, self.update, relwidth=0.5, relheight=0.05)
 
@@ -184,12 +188,27 @@ class massSpec:
 
         canvas.draw()
 
+    def legend_check(self):
+        legend = self.ax.legend()
+
+        if self.legend.get():
+            legend.set_title(self.t)
+            legend.get_title().set_fontsize(self.ts)
+
+            legend.set_visible(True)
+        else:
+            legend.set_visible(False)
+
+        self.canvas.draw()
+
     def update(self):
 
         print('Updating Plot\n')
         t0 = check_time()
 
         self.log_check(self.ax, self.canvas)
+
+        self.legend_check()
 
         t1 = check_time()
         time_log = (t1-t0)*100
